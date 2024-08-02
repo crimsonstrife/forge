@@ -8,11 +8,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
-use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\HasApiTokens as SanctumApiTokens;
+use Laravel\Passport\HasApiTokens as PassportApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens;
+    use SanctumApiTokens;
+    use PassportApiTokens;
     use HasFactory;
     use HasProfilePhoto;
     use Notifiable;
