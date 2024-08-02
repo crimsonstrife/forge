@@ -21,5 +21,5 @@ Route::middleware('auth:api')->get('/projects/{project}', function (Request $req
     return $project;
 });
 Route::middleware('auth:api')->get('/projects/{project}/issues', function (Request $request, Project $project) {
-    return $project->issues;
+    return $project->getIssues();
 });
