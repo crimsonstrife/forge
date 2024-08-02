@@ -11,6 +11,8 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens as SanctumApiTokens;
 use Laravel\Passport\HasApiTokens as PassportApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\PermissionGroup;
+use App\Traits\HasPermissions;
 
 class User extends Authenticatable
 {
@@ -21,6 +23,7 @@ class User extends Authenticatable
     use Notifiable;
     use TwoFactorAuthenticatable;
     use HasRoles;
+    use HasPermissions;
 
     /**
      * The attributes that are mass assignable.
@@ -65,5 +68,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the permission groups that the user belongs to.
+     */
+    public function permissionGroups()
+    {
+        return $this->belongsToMany(PermissionGroup::class, 'user_permission_group');
     }
 }
