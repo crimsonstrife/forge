@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('comment', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('issue_id')->unsigned();
             $table->bigInteger('user_id')->unsigned();
             $table->longText('content');
             $table->boolean('is_edited')->default(false);
@@ -24,7 +23,8 @@ return new class extends Migration
         });
 
         Schema::table('comment', function (Blueprint $table) {
-            $table->foreign('issue_id')->references('id')->on('issues');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('parent_id')->references('id')->on('comment');
         });
     }
 
