@@ -23,8 +23,8 @@ return new class extends Migration
         });
 
         Schema::table('milestones', function (Blueprint $table) {
-            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
-            $table->foreign('sprint_id')->references('id')->on('sprints')->onDelete('cascade');
+            $table->foreign('project_id')->references('id')->on('projects');
+            $table->foreign('sprint_id')->references('id')->on('sprints');
         });
     }
 
