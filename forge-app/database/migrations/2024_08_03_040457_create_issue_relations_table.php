@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('issue_id')->unsigned();
             $table->bigInteger('related_issue_id')->unsigned();
-            $table->string('relation_type');
-            $table->integer('sort')->default(1);
+            $table->string('issue_relation_type');
+            $table->integer('issue_sort')->default(1);
             $table->timestamps();
         });
 
@@ -27,7 +27,7 @@ return new class extends Migration
 
         // Add a unique constraint to prevent duplicate relations
         Schema::table('issue_relations', function (Blueprint $table) {
-            $table->unique(['issue_id', 'related_issue_id', 'relation_type']);
+            $table->unique(['issue_id', 'related_issue_id', 'issue_relation_type'], 'unique_issue_relations');
         });
     }
 
