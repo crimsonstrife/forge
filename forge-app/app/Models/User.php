@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\UserCreatedNotification;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,8 +14,15 @@ use Laravel\Passport\HasApiTokens as PassportApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\PermissionGroup;
 use App\Traits\HasPermissions;
+use Filament\Models\Contracts\FilamentUser;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Ramsey\Uuid\Uuid;
+use ProtoneMedia\LaravelVerifyNewEmail\MustVerifyNewEmail;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
     use SanctumApiTokens;
     use PassportApiTokens;
@@ -24,6 +32,8 @@ class User extends Authenticatable
     use TwoFactorAuthenticatable;
     use HasRoles;
     use HasPermissions;
+    use MustVerifyNewEmail;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -31,9 +41,14 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first-name',
+        'last-name',
+        'username',
         'email',
         'password',
+        'creation_token',
+        'type',
+        'email_verified_at',
     ];
 
     /**
@@ -67,15 +82,134 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             // file deepcode ignore HardcodedPassword: <this is not a hardcoded password, it's a cast to a hashed value.>
-            'password' => 'hashed',
+            //'password' => 'hashed',
         ];
     }
 
     /**
+     * Add a boot for the model.
+     * @return void
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (User $item) {
+            if ($item->type == 'db') {
+                $item->password = bcrypt(uniqid());
+                $item->creation_token = Uuid::uuid4()->toString();
+            }
+        });
+
+        static::created(function (User $item) {
+            if ($item->type == 'db') {
+                $item->notify(new UserCreatedNotification($item));
+            }
+        });
+    }
+
+    /**
+     * Check if the user can access Filament.
+     * @return bool
+     */
+    public function canAccessFilament(): bool
+    {
+        return true; // return true if the user can access Filament TODO: implement this
+    }
+
+    /**
+     * Check if the user can access the Filament panel.
+     *
+     * @param \Filament\Panel $panel
+     * @return bool
+     */
+    public function canAccessPanel(\Filament\Panel $panel): bool
+    {
+        return true; // return true if the user can access the panel TODO: implement this
+    }
+
+    /**
      * Get the permission groups that the user belongs to.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function permissionGroups()
     {
         return $this->belongsToMany(PermissionGroup::class, 'user_permission_group');
+    }
+
+    /**
+     * Get the permissions that the user has.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'user_has_permission');
+    }
+
+    /**
+     * Get the projects that the user has created.
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function projectsOwning(): HasMany
+    {
+        return $this->hasMany(Project::class, 'owner_id', 'id');
+    }
+
+    /**
+     * Get the projects that the user has affected/contributed to.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function projectsAffected(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'project_users', 'user_id', 'project_id')->withPivot(['role']);
+    }
+
+    /**
+     * Get the projects that the user has starred (is a favorite).
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function favoriteProjects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'project_favorites', 'user_id', 'project_id');
+    }
+
+    /**
+     * Get the issues that the user has created.\
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function issuesOwned(): HasMany
+    {
+        return $this->hasMany(Issue::class, 'owner_id', 'id');
+    }
+
+    /**
+     * Get the issues that the user is responsible for/has assigned to them.
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function issuesResponsible(): HasMany
+    {
+        return $this->hasMany(Issue::class, 'responsible_id', 'id');
+    }
+
+    /**
+     * Get the issue hours that the user has logged.
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function hours(): HasMany
+    {
+        return $this->hasMany(IssueHour::class, 'user_id', 'id');
+    }
+
+    /**
+     * Get the total number of hours that the user has logged.
+     * Returns a sum
+     */
+    public function totalLoggedInHours(): Attribute
+    {
+        return new Attribute(
+            get: function () {
+                return $this->hours->sum('value'); // get the sum of all the hours logged by the user in the issue hours table
+            }
+        );
     }
 }
