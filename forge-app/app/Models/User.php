@@ -66,6 +66,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            // file deepcode ignore HardcodedPassword: <this is not a hardcoded password, it's a cast to a hashed value.>
             'password' => 'hashed',
         ];
     }
