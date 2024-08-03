@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('issue_priorities', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->string('icon')->nullable();
             $table->string('color')->default('#cecece');
             $table->boolean('is_default')->default(false);
             $table->softDeletes();
