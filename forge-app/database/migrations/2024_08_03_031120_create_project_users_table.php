@@ -15,18 +15,20 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('project_id')->unsigned();
             $table->bigInteger('user_id')->unsigned();
-            $table->string('role');
+            $table->bigInteger('role_id')->unsigned()->nullable();
             $table->timestamps();
         });
 
         Schema::table('project_users', function (Blueprint $table) {
             $table->foreign('project_id')->references('id')->on('projects');
             $table->foreign('user_id')->references('id')->on('users');
+            //TODO: add foreign key constraint for role_id when the project_roles table is created
         });
 
         //set constraints
         Schema::table('project_users', function (Blueprint $table) {
             $table->unique(['project_id', 'user_id']);
+            //TODO: add unique constraint for role_id when the project_roles table is created
         });
     }
 
