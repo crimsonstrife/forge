@@ -13,13 +13,15 @@ class DeleteAccountTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_accounts_can_be_deleted(): void
+    public function TestUserAccountsCanBeDeleted(): void
     {
-        if (! Features::hasAccountDeletionFeatures()) {
+        if (!Features::hasAccountDeletionFeatures()) {
             $this->markTestSkipped('Account deletion is not enabled.');
         }
 
-        $this->actingAs($user = User::factory()->create());
+        $user = User::factory()->create();
+
+        $this->actingAs($user->id);
 
         $component = Livewire::test(DeleteUserForm::class)
             ->set('password', 'password')
@@ -28,13 +30,15 @@ class DeleteAccountTest extends TestCase
         $this->assertNull($user->fresh());
     }
 
-    public function test_correct_password_must_be_provided_before_account_can_be_deleted(): void
+    public function TestCorrectPasswordMustBeProvidedBeforeAccountCanBeDeleted(): void
     {
-        if (! Features::hasAccountDeletionFeatures()) {
+        if (!Features::hasAccountDeletionFeatures()) {
             $this->markTestSkipped('Account deletion is not enabled.');
         }
 
-        $this->actingAs($user = User::factory()->create());
+        $user = User::factory()->create();
+
+        $this->actingAs($user->id);
 
         Livewire::test(DeleteUserForm::class)
             ->set('password', 'wrong-password')
