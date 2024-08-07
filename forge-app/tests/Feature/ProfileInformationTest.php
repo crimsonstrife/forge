@@ -12,9 +12,11 @@ class ProfileInformationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_current_profile_information_is_available(): void
+    public function testCurrentProfileInformationIsAvailable(): void
     {
-        $this->actingAs($user = User::factory()->create());
+        $user = User::factory()->create();
+
+        $this->actingAs($user->id);
 
         $component = Livewire::test(UpdateProfileInformationForm::class);
 
@@ -22,9 +24,11 @@ class ProfileInformationTest extends TestCase
         $this->assertEquals($user->email, $component->state['email']);
     }
 
-    public function test_profile_information_can_be_updated(): void
+    public function testProfileInformationCanBeUpdated(): void
     {
-        $this->actingAs($user = User::factory()->create());
+        $user = User::factory()->create();
+
+        $this->actingAs($user->id);
 
         Livewire::test(UpdateProfileInformationForm::class)
             ->set('state', ['name' => 'Test Name', 'email' => 'test@example.com'])
