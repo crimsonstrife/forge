@@ -30,7 +30,7 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
-    public function testUsersCanNotAuthenticatWithInvalidPassword(): void
+    public function testUsersCanNotAuthenticateWithInvalidPassword(): void
     {
         $user = User::factory()->create();
 
