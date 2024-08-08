@@ -588,3 +588,5 @@ docs/_book
 # TODO: where does this rule come from?
 test/
 
+/forge-app/install-conditional-packages.min.js
+/forge-app/.npmrc
