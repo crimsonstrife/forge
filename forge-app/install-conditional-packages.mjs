@@ -23,12 +23,11 @@ async function backupFile () {
 
 async function createCredentialFile () {
   // set a constant variable to hold the contents of the npmrc file that will be created, leave the token blank for now.
-  const npmrc =
+  const npmrc = String(
         `@awesome.me:registry=https://npm.fontawesome.com/
 @fortawesome:registry=https://npm.fontawesome.com/
-//npm.fontawesome.com/:_authToken=` +
-        process.env.FONTAWESOME_PACKAGE_TOKEN +
-        ''
+//npm.fontawesome.com/:_authToken=` + process.env.FONTAWESOME_PACKAGE_TOKEN
+  )
 
   /*     //if there is an existing npmrc file, back it up before creating a new one.
     try {
