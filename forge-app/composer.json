@@ -52,14 +52,14 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "friendsofphp/php-cs-fixer": "^3.62.0",
         "laravel/pint": "^1.17",
         "laravel/pulse": "^1.2",
         "laravel/sail": "^1.31",
         "laravel/telescope": "^5.1",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
-        "phpunit/phpunit": "^11.0.1",
-        "friendsofphp/php-cs-fixer": "^3.62.0"
+        "phpunit/phpunit": "^11.0.1"
     },
     "autoload": {
         "psr-4": {
