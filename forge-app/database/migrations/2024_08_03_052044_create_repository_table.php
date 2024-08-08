@@ -19,10 +19,10 @@ return new class extends Migration
             $table->bigInteger('remote_id')->unsigned()->unique();
             $table->string('name')->unique();
             $table->string('slug')->unique();
-            $table->string('http_url');
-            $table->string('ssh_url');
-            $table->string('scm');
-            $table->json('history');
+            $table->string('http_url')->nullable();
+            $table->string('ssh_url')->nullable();
+            $table->enum('scm_type', ['git', 'svn', 'p4'])->default('git');
+            $table->json('history')->nullable();
             $table->timestamps();
         });
     }
