@@ -588,5 +588,9 @@ docs/_book
 # TODO: where does this rule come from?
 test/
 
+# TODO: where does this rule come from?
 /forge-app/install-conditional-packages.min.js
 /forge-app/.npmrc
+
+# TODO: where does this rule come from?
+/.phpdoc/cache
