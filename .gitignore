@@ -596,3 +596,4 @@ test/
 /.phpdoc/cache
 /string
 /build/cache
+/tools
