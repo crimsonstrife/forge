@@ -1,0 +1,216 @@
+<?php
+
+namespace App\Traits\HelperTraits;
+
+use App\Models\User;
+use App\Models\Project;
+use App\Models\Issue;
+use App\Models\IssueType;
+use App\Models\IssueStatus;
+use App\Models\IssuePriority;
+use App\Models\Board;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Collection;
+use Illuminate\Support\HtmlString;
+
+/**
+ * Provides functions to help organize and manage Kanban and Scrum boards.
+ * @package App\Traits\HelperTraits
+ */
+trait KanbanScrumHelper
+{
+    // Public Variables
+    public bool $isSortable = true;
+    public Project|null $project = null;
+    public $users = [];
+    public $types = [];
+    public $priorities = [];
+    public $statuses = [];
+    public $issues = [];
+    public Board|null $board = null;
+    public bool $includeNotAffectedIssues = false;
+    public bool $issue = false;
+
+    /**
+     * Make a Schema array
+     * @return array Returns a Schema array.
+     */
+    protected function formSchema(): array
+    {
+        return [
+            Grid::make([
+                'default' => 2,
+                'md' => 6
+            ])
+                ->schema([
+                    Select::make('users')
+                        ->label('Owners / Assignees')
+                        ->multiple()
+                        ->options(User::all()->pluck('name', 'id')->toArray())
+                        ->on('change', fn() => $this->emit('userSelected', $this->user_id)),
+                    Select::make('types')
+                        ->label('Issue Types')
+                        ->multiple()
+                        ->options(IssueType::all()->pluck('name', 'id')->toArray())
+                        ->on('change', fn() => $this->emit('typeSelected', $this->type_id)),
+                    Select::make('priorities')
+                        ->label('Issue Priorities')
+                        ->multiple()
+                        ->options(IssuePriority::all()->pluck('name', 'id')->toArray())
+                        ->on('change', fn() => $this->emit('prioritySelected', $this->priority_id)),
+                    Select::make('statuses')
+                        ->label('Issue Statuses')
+                        ->multiple()
+                        ->options(IssueStatus::all()->pluck('name', 'id')->toArray())
+                        ->on('change', fn() => $this->emit('statusSelected', $this->status_id)),
+                    Toggle::make('includeNotAffectedIssues')
+                        ->label('Show Only Affected Issues')
+                        ->on('change', fn() => $this->emit('includeNotAffectedIssuesSelected', $this->includeNotAffectedIssues))
+                        ->columnSpan(2),
+                    Placeholder::make('search')->label(new HtmlString('&nbsp;'))->content(
+                        new HtmlString('
+                            <button type="button"
+                                    wire:click="filter" wire:loading.attr="disabled"
+                                    class="px-3 py-2 text-white rounded bg-primary-500 hover:bg-primary-600 disabled:bg-primary-300">
+                                ' . __('Filter') . '
+                            </button>
+                            <button type="button"
+                                    wire:click="resetFilters" wire:loading.attr="disabled"
+                                    class="px-3 py-2 ml-2 text-white bg-gray-800 rounded hover:bg-gray-900 disabled:bg-gray-300">
+                                ' . __('Reset filters') . '
+                            </button>
+                        ')
+                    ),
+                ]),
+        ];
+    }
+
+    /**
+     * Get the Issue Statuses
+     * @return Collection Returns a collection of IssueStatus objects.
+     */
+    public function getStatuses(): Collection
+    {
+        // Build the statuses query
+        $query = IssueStatus::q();
+
+        // If the project is set, filter by project
+        if ($this->project) {
+            $query->where('project_id', $this->project->id);
+        } else {
+            $query->whereNull('project_id');
+
+            // Return the statuses ordered by the Order value
+            return $query->orderBy('order')->get()->map(function ($item) {
+                // Query the issues
+                $query = Issue::query();
+                // If the project is set, filter by project
+                if ($this->project) {
+                    $query->where('project_id', $this->project->id);
+                } else {
+                    $query->whereNull('project_id');
+                }
+
+                // If the status is set, filter by status
+                $query->where('status_id', $item->id);
+
+                // Return the result
+                return [
+                    'id' => $item->id,
+                    'title' => $item->name,
+                    'color' => $item->color,
+                    'size' => $query->count(),
+                    'priority' => $item->priority,
+                    'add_issue' => $this->is_default && Gate::allows('create', Issue::class)
+                ];
+            });
+        }
+
+        // Return the statuses ordered by the Order value
+        return $query->orderBy('order')->get()->map(function ($item) {
+            // Query the issues
+            $query = Issue::query();
+            // If the project is set, filter by project
+            if ($this->project) {
+                $query->where('project_id', $this->project->id);
+            } else {
+                $query->whereNull('project_id');
+            }
+
+            // If the status is set, filter by status
+            $query->where('status_id', $item->id);
+
+            // Return the result
+            return [
+                'id' => $item->id,
+                'title' => $item->name,
+                'color' => $item->color,
+                'size' => $query->count(),
+                'priority' => $item->priority,
+                'add_issue' => $this->is_default && Gate::allows('create', Issue::class)
+            ];
+        });
+    }
+
+    /**
+     * Get the records for the board.
+     * @return Collection Returns a collection of Issue objects.
+     */
+    public function getRecords(): Collection
+    {
+        // Build the issues query
+        $query = Issue::query();
+
+        // If the project is set, filter by project
+        if ($this->project) {
+            $query->where('project_id', $this->project->id);
+        } else {
+            $query->whereNull('project_id');
+        }
+
+        // If the user is set, filter by user
+        if ($this->users) {
+            $query->whereIn('user_id', $this->users);
+        }
+
+        // If the type is set, filter by type
+        if ($this->types) {
+            $query->whereIn('type_id', $this->types);
+        }
+
+        // If the priority is set, filter by priority
+        if ($this->priorities) {
+            $query->whereIn('priority_id', $this->priorities);
+        }
+
+        // If the status is set, filter by status
+        if ($this->statuses) {
+            $query->whereIn('status_id', $this->statuses);
+        }
+
+        // If the includeNotAffectedIssues is set, filter by affected issues
+        if (!$this->includeNotAffectedIssues) {
+            $query->whereNotNull('status_id');
+        }
+
+        // Return the issues ordered by the Order value
+        return $query->orderBy('order')->get();
+    }
+
+    /**
+     * Is the board a multi-project board?
+     * @return bool
+     */
+    public function isMultiProject(): bool
+    {
+        return $this->project === null;
+    }
+
+    //TODO: Finish this helper
+}
