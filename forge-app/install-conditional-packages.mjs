@@ -30,7 +30,7 @@ async function createCredentialFile() {
 @fortawesome:registry=https://npm.fontawesome.com/
 //npm.fontawesome.com/:_authToken=` +
         process.env.FONTAWESOME_PACKAGE_TOKEN +
-        ``;
+        "";
 
     /*     //if there is an existing npmrc file, back it up before creating a new one.
     try {
