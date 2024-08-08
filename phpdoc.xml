@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor xmlns="https://www.phpdoc.org"
+        configVersion="3"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/phpDocumentor/phpDocumentor/master/data/xsd/phpdoc.xsd"
+>
+    <paths>
+        <output>build/api</output>
+        <cache>build/cache</cache>
+    </paths>
+    <version number="0.1.0">
+        <!--Optional:-->
+    <folder>0.1.0</folder>
+        <api>
+            <source dsn="./forge-app">
+            </source>
+            <!--Optional:-->
+            <!--Optional:-->
+      <default-package-name>Forge</default-package-name>
+      <include-source>true</include-source>
+      <!--Optional:-->
+      <markers>
+        <!--1 or more repetitions:-->
+        <marker>TODO</marker>
+        <marker>FIXME</marker>
+      </markers>
+      <!--Optional:-->
+      <output>api</output>
+      <!--Optional:-->
+      <ignore hidden="true" symlinks="true">
+        <!--1 or more repetitions:-->
+        <path>tests/**/*</path>
+        <path>vendor/**/*</path>
+        <path>node_modules/**/*</path>
+      </ignore>
+        </api>
+    </version>
+</phpdocumentor>
