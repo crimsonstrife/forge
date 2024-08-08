@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const $window = window;
+
 $window.axios = axios;
 
 $window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
