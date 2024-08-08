@@ -200,7 +200,21 @@ trait KanbanScrumHelper
         }
 
         // Return the issues ordered by the Order value
-        return $query->orderBy('order')->get();
+        return $query->get()->map(function (Issue $item) {
+            return [
+                'id' => $item->id,
+                'title' => $item->title,
+                'owner' => $item->owner,
+                'code' => $item->code,
+                'responsible' => $item->responsible,
+                'project' => $item->project,
+                'status' => $item->status->id,
+                'priority' => $item->priority,
+                'epic' => $item->epic,
+                'relations' => $item->relations,
+                'totalLoggedHours' => $item->totalLoggedSeconds ? $item->totalLoggedHours : null
+            ];
+        });
     }
 
     /**
@@ -212,5 +226,148 @@ trait KanbanScrumHelper
         return $this->project === null;
     }
 
-    //TODO: Finish this helper
+    /**
+     * Filter the records.
+     * @return void
+     */
+    public function filter(): void
+    {
+        $this->getRecords();
+    }
+
+    /**
+     * Reset the filters.
+     * @return void
+     */
+    public function resetFilters(): void
+    {
+        $this->form->fill();
+        $this->filter();
+    }
+
+    /**
+     * Create a new issue.
+     * @return void
+     */
+    public function createIssue(): void
+    {
+        $this->issue = true;
+    }
+
+    /**
+     * Close the issue dialog.
+     * @param bool $refresh
+     * @return void
+     */
+    public function closeIssueDialog(bool $refresh): void
+    {
+        $this->issue = false;
+        if ($refresh) {
+            $this->filter();
+        }
+    }
+
+    /**
+     * Update Record
+     * @param int $recordId
+     * @param int $newIndex
+     * @param int $newStatusId
+     * @return void
+     */
+    public function updateRecord(int $recordId, int $newIndex, int $newStatusId): void
+    {
+        $issue = Issue::find($recordId);
+        if ($issue) {
+            $issue->order = $newIndex;
+            $issue->status_id = $newStatusId;
+            $issue->save();
+            Filament::notify(__('Issue updated.'));
+        }
+    }
+
+    /**
+     * Get the board Heading for Kanban Boards.
+     * @return string|Htmlable
+     */
+    protected function kanbanHeading(): string|Htmlable
+    {
+        $heading = '<div class="flex flex-col w-full gap-1">';
+        $heading .= '<a href="' . route('filament.pages.board') . '"
+                            class="text-xs font-medium text-primary-500 hover:underline">';
+        $heading .= __('Back to board');
+        $heading .= '</a>';
+        $heading .= '<div class="flex flex-col gap-1">';
+        $heading .= '<span>' . __('Kanban');
+        if ($this->project) {
+            $heading .= ' - ' . $this->project->name . '</span>';
+        } else {
+            $heading .= '</span><span class="text-xs text-gray-400">'
+                . __('Only default statuses are listed when no projects selected')
+                . '</span>';
+        }
+        $heading .= '</div>';
+        $heading .= '</div>';
+        return new HtmlString($heading);
+    }
+
+    /**
+     * Get the board Heading for Scrum Boards.
+     * @return string|Htmlable
+     */
+    protected function scrumHeading(): string|Htmlable
+    {
+        $heading = '<div class="flex flex-col w-full gap-1">';
+        $heading .= '<a href="' . route('filament.pages.board') . '"
+                            class="text-xs font-medium text-primary-500 hover:underline">';
+        $heading .= __('Back to board');
+        $heading .= '</a>';
+        $heading .= '<div class="flex flex-col gap-1">';
+        $heading .= '<span>' . __('Scrum');
+        if ($this->project) {
+            $heading .= ' - ' . $this->project->name . '</span>';
+        } else {
+            $heading .= '</span><span class="text-xs text-gray-400">'
+                . __('Only default statuses are listed when no projects selected')
+                . '</span>';
+        }
+        $heading .= '</div>';
+        $heading .= '</div>';
+        return new HtmlString($heading);
+    }
+
+    /**
+     * Get the Scrum Subheading.
+     * @return string|Htmlable|null
+     */
+    protected function scrumSubheading(): string|Htmlable|null
+    {
+        if ($this->project?->currentSprint) {
+            return new HtmlString(
+                '<div class="flex flex-col w-full gap-1">'
+                    . '<div class="flex items-center w-full gap-2">'
+                    . '<span class="px-2 py-1 text-sm text-white rounded bg-danger-500">'
+                    . $this->project->currentSprint->name
+                    . '</span>'
+                    . '<span class="text-xs text-gray-400">'
+                    . __('Started at:') . ' ' . $this->project->currentSprint->started_at->format(__('Y-m-d')) . ' - '
+                    . __('Ends at:') . ' ' . $this->project->currentSprint->ends_at->format(__('Y-m-d')) . ' - '
+                    . ($this->project->currentSprint->remaining ?
+                        (
+                            __('Remaining:') . ' ' . $this->project->currentSprint->remaining . ' ' . __('days'))
+                        : ''
+                    )
+                    . '</span>'
+                    . '</div>'
+                    . ($this->project->nextSprint ? '<span class="text-xs font-medium text-primary-500">'
+                        . __('Next sprint:') . ' ' . $this->project->nextSprint->name . ' - '
+                        . __('Starts at:') . ' ' . $this->project->nextSprint->starts_at->format(__('Y-m-d'))
+                        . ' (' . __('in') . ' ' . $this->project->nextSprint->starts_at->diffForHumans() . ')'
+                        . '</span>'
+                        . '</span>' : '')
+                    . '</div>'
+            );
+        } else {
+            return null;
+        }
+    }
 }
