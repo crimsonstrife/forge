@@ -7,8 +7,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Stores basic identifying information about a repository pull from the Crucible API.
  */
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
