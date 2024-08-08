@@ -595,3 +595,4 @@ test/
 # TODO: where does this rule come from?
 /.phpdoc/cache
 /string
+/build/cache
