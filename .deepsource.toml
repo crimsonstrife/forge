@@ -6,7 +6,8 @@ test_patterns = [
   "**/*.spec.js",
   "**/*.test.ts",
   "**/*.test.js",
-  "**/test_*.py"
+  "**/test_*.py",
+  "**/tests/**"
 ]
 
 exclude_patterns = [
