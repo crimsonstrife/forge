@@ -226,7 +226,7 @@ class Project extends Model implements HasMedia
 
         return new Attribute(
             //get the project icon
-            get: fn () => $this->media('icon')?->first()?->getFullUrl()
+            get: fn() => $this->media('icon')?->first()?->getFullUrl()
                 ??
                 'https://ui-avatars.com/api/?background=' . $this->color . '&color=' . $this->font_color . '&name=' . $this->name
         );
@@ -297,7 +297,7 @@ class Project extends Model implements HasMedia
     public function currentSprint(): Attribute
     {
         return new Attribute(
-            get: fn () => $this->sprints()
+            get: fn() => $this->sprints()
                 ->whereNotNull('started_at')
                 ->whereNull('ended_at')
                 ->first()

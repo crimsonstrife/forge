@@ -205,7 +205,7 @@ trait KanbanScrumHelper
                 'id' => $item->id,
                 'title' => $item->title,
                 'owner' => $item->owner,
-                'code' => $item->code,
+                'slug' => $item->slug,
                 'responsible' => $item->responsible,
                 'project' => $item->project,
                 'status' => $item->status->id,
