@@ -35,5 +35,9 @@ Route::middleware('auth:api')->get('/projects/{project}', function (Request $req
     return $project;
 });
 Route::middleware('auth:api')->get('/projects/{project}/issues', function (Request $request, Project $project) {
-    return $project->getIssues();
+    return $project->issues();
 });
+
+// List for Repository changes from connected Crucible instances.
+Route::post('/webhooks/crucible', [RepositoryController::class, 'handleCrucibleWebhook']);
+

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ProjectRepository;
+use Illuminate\Support\Facades\Log;
 
 class RepositoryController extends Controller
 {
@@ -30,7 +31,12 @@ class RepositoryController extends Controller
 
         $repository = ProjectRepository::create($request->all());
 
-        return response()->json($repository, 201);
+        if ($repository->verifyAndFetchMetadata()) {
+            return response()->json($repository, 201);
+        } else {
+            $repository->delete();
+            return response()->json(['error' => 'Repository verification failed'], 400);
+        }
     }
 
     // Get details of a specific repository
@@ -69,4 +75,36 @@ class RepositoryController extends Controller
 
         return response()->json(['message' => 'Repository removed successfully, your data still exists on the remote server']);
     }
+
+    // Manually update metadata
+    public function updateMetadata($id)
+    {
+        $repository = ProjectRepository::findOrFail($id);
+        $repository->updateMetadata();
+
+        return response()->json($repository);
+    }
+
+    /**
+     * Process metadata updates when triggered by a webhook from Crucible.
+     * @param Request $request
+     * @return
+     */
+    public function handleCrucibleWebhook(Request $request)
+    {
+        $event = $request->header('X-Crucible-Event');
+        $payload = $request->all();
+
+        if ($event == 'repository.updated') {
+            $repository = ProjectRepository::where('url', $payload['url'])->first();
+
+            if ($repository) {
+                $repository->updateMetadata();
+                return response()->json(['message' => 'Repository metadata updated successfully']);
+            }
+        }
+
+        return response()->json(['message' => 'Event not handled'], 400);
+    }
+
 }
