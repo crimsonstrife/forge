@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('project_has_repository', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('project_id')->unsigned()->unique();
+            $table->bigInteger('project_id')->unsigned();
             $table->bigInteger('repository_id')->unsigned();
             $table->softDeletes();
             $table->timestamps();
