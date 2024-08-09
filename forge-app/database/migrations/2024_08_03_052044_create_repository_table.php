@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Stores basic identifying information about a repository pull from the Crucible API.
  */
-return new class () extends Migration {
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,10 +17,13 @@ return new class () extends Migration {
             $table->id();
             $table->bigInteger('remote_id')->unsigned()->unique();
             $table->string('name')->unique();
+            $table->longText('description')->nullable();
             $table->string('slug')->unique();
-            $table->string('http_url')->nullable();
+            $table->string('http_url');
             $table->string('ssh_url')->nullable();
             $table->enum('scm_type', ['git', 'svn', 'p4'])->default('git');
+            $table->json('metadata')->nullable();
+            $table->string('main_branch')->nullable();
             $table->json('history')->nullable();
             $table->timestamps();
         });
