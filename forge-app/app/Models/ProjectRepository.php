@@ -41,7 +41,12 @@ class ProjectRepository extends Model
      */
     public function verifyAndFetchMetadata()
     {
-        $crucibleService = new CrucibleService();
+        $crucibleService = app(CrucibleService::class);
+
+        if (!$crucibleService->isEnabled()) {
+            Log::warning('Crucible connection is disabled or not configured properly.');
+            return false;
+        }
 
         if ($this->verify($this->http_url, $crucibleService)) {
             $result = $this->fetchMetaData($this->http_url, $crucibleService);
@@ -68,7 +73,13 @@ class ProjectRepository extends Model
      */
     public function updateMetadata()
     {
-        $crucibleService = new CrucibleService();
+        $crucibleService = app(CrucibleService::class);
+
+        if (!$crucibleService->isEnabled()) {
+            Log::warning('Crucible connection is disabled or not configured properly.');
+            return false;
+        }
+
         $data = $crucibleService->fetchRepositoryMetadata($this->url);
 
         if ($data) {
@@ -95,6 +106,13 @@ class ProjectRepository extends Model
     protected function verify(string $url, CrucibleService $service)
     {
         $crucibleService = $service;
+
+        if (!$crucibleService->isEnabled()) {
+            Log::warning('Crucible connection is disabled or not configured properly.');
+            return false;
+        }
+
+        // Verify the repository URL using the Crucible service
         $data = $crucibleService->verifyRepository($url);
 
         // Log the response, and return true if the response is successful
@@ -117,6 +135,12 @@ class ProjectRepository extends Model
     protected function fetchMetaData(string $url, CrucibleService $service)
     {
         $crucibleService = $service;
+
+        if (!$crucibleService->isEnabled()) {
+            Log::warning('Crucible connection is disabled or not configured properly.');
+            return false;
+        }
+
         $data = $crucibleService->fetchRepositoryMetadata($url);
 
         if ($data) {

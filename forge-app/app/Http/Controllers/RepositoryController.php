@@ -35,7 +35,7 @@ class RepositoryController extends Controller
             return response()->json($repository, 201);
         } else {
             $repository->delete();
-            return response()->json(['error' => 'Repository verification failed'], 400);
+            return response()->json(['error' => 'Repository verification failed or Crucible connection is disabled'], 400);
         }
     }
 
@@ -106,5 +106,4 @@ class RepositoryController extends Controller
 
         return response()->json(['message' => 'Event not handled'], 400);
     }
-
 }

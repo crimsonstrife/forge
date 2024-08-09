@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\ProjectRepository;
+use App\Services\CrucibleService;
+use Illuminate\Support\Facades\Log;
 
 class UpdateRepositoryMetadata extends Command
 {
@@ -17,6 +19,13 @@ class UpdateRepositoryMetadata extends Command
 
     public function handle()
     {
+        $crucibleService = app(CrucibleService::class);
+
+        if (!$crucibleService->isEnabled()) {
+            Log::warning('Crucible connection is disabled or not configured properly.');
+            return;
+        }
+
         $repositories = ProjectRepository::all();
 
         foreach ($repositories as $repository) {
