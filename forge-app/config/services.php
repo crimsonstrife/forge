@@ -35,4 +35,21 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | First Party Services
+    |--------------------------------------------------------------------------
+    |
+    | This section is for services that are developed by the Helical Games team.
+    | These services are used to interact with our internal systems.
+    | This includes services like Crucible, Codex, and more.
+    |
+    */
+
+    // Crucible Service Configuration - Used to interact with Crucible Repositories
+    'crucible' => [
+        'base_url' => env('CRUCIBLE_BASE_URL', 'http://crucible.example.com'),
+        'api_token' => env('CRUCIBLE_API_TOKEN'),
+    ],
+
 ];
