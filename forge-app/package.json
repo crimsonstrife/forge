@@ -29,6 +29,7 @@
         "bootstrap": "^5.3.3",
         "dotenv": "^16.4.5",
         "jquery": "^3.7.1",
-        "jquery-ui": "^1.14.0"
+        "jquery-ui": "^1.14.0",
+        "tinymce": "^7.3.0"
     }
 }
