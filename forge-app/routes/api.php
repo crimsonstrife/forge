@@ -31,13 +31,6 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/projects/{id}/repositories/{repositoryId}', [RepositoryController::class, 'update']);
     Route::delete('/projects/{id}/repositories/{repositoryId}', [RepositoryController::class, 'destroy']);
 });
-Route::middleware('auth:api')->get('/projects/{project}', function (Request $request, Project $project) {
-    return $project;
-});
-Route::middleware('auth:api')->get('/projects/{project}/issues', function (Request $request, Project $project) {
-    return $project->issues();
-});
 
 // List for Repository changes from connected Crucible instances.
 Route::post('/webhooks/crucible', [RepositoryController::class, 'handleCrucibleWebhook']);
-

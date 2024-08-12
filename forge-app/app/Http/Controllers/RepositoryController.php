@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ProjectRepository;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 
 class RepositoryController extends Controller
 {
