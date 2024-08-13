@@ -33,6 +33,9 @@ class RepositoryController extends Controller
         $repository = ProjectRepository::create($request->all());
 
         if ($repository->verifyAndFetchMetadata()) {
+            // Log the result
+
+            // Return the response
             return response()->json($repository, 201);
         } else {
             $repository->delete();
