@@ -3,13 +3,22 @@
 namespace App\Providers;
 
 use Laravel\Passport\Passport;
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+//use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\PassportServiceProvider;
 use Laravel\Sanctum\Sanctum;
 
 class AuthServerProvider extends ServiceProvider
 {
+    /**
+     * The model to policy mappings for the application.
+     *
+     * @var array<class-string, class-string>
+     */
+    protected $policies = [
+        // 'App\Models\Model' => 'App\Policies\ModelPolicy',
+    ];
+
     /**
      * Register services.
      */
