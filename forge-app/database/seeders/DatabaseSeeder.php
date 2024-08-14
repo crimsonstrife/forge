@@ -6,6 +6,12 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+/**
+ * DatabaseSeeder class
+ * Extends Seeder
+ *
+ * @category Seeder
+ */
 class DatabaseSeeder extends Seeder
 {
     /**
