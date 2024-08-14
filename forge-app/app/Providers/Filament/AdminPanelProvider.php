@@ -18,8 +18,19 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
+/**
+ * Class AdminPanelProvider
+ *
+ * The AdminPanelProvider class is responsible for providing the admin panel configuration for the Filament application.
+ */
 class AdminPanelProvider extends PanelProvider
 {
+    /**
+     * Define the panel for the Filament admin panel.
+     *
+     * @param Panel $panel The panel instance.
+     * @return Panel The modified panel instance.
+     */
     public function panel(Panel $panel): Panel
     {
         return $panel

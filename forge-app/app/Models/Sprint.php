@@ -10,6 +10,45 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
+/**
+ * Sprint Model
+ *
+ * Represents a sprint in the application.
+ *
+ * @package App\Models
+ * @property int $id
+ * @property string $name
+ * @property string $description
+ * @property \Illuminate\Support\Carbon $start_date
+ * @property \Illuminate\Support\Carbon $end_date
+ * @property string $status
+ * @property int $project_id
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Project $project
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Issue[] $issues
+ * @property-read int|null $issues_count
+ * @property-read \App\Models\Epic $epic
+ * @property-read \Illuminate\Support\Carbon|null $remaining
+ * @property-read \Illuminate\Support\Carbon|null $progress
+ * @method static \Illuminate\Database\Eloquent\Builder|Sprint newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Sprint newQuery()
+ * @method static \Illuminate\Database\Query\Builder|Sprint onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Sprint query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Sprint whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Sprint whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Sprint whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Sprint whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Sprint whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Sprint whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Sprint whereProjectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Sprint whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Sprint whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Sprint whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|Sprint withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Sprint withoutTrashed()
+ */
 class Sprint extends Model
 {
     use HasFactory;

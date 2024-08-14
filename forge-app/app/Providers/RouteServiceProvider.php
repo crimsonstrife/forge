@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
+/**
+ * The RouteServiceProvider class is responsible for configuring the routes and rate limiting for the application.
+ */
 class RouteServiceProvider extends ServiceProvider
 {
 /**

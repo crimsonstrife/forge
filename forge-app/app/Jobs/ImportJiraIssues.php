@@ -17,6 +17,12 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * ImportJiraIssues class.
+ *
+ * This class represents a job for importing Jira issues into the application.
+ * It implements the ShouldQueue interface to allow the job to be queued for background processing.
+ */
 class ImportJiraIssues implements ShouldQueue
 {
     use Queueable;

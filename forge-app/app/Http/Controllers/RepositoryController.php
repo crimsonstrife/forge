@@ -6,16 +6,32 @@ use Illuminate\Http\Request;
 use App\Models\ProjectRepository;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
+/**
+ * Class RepositoryController
+ *
+ * This class is responsible for handling repository-related operations.
+ */
 class RepositoryController extends Controller
 {
-    // Get list of all repositories
+    /**
+     * Retrieve all project repositories.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
         return response()->json(ProjectRepository::all());
     }
 
-    // Create a new repository
+    /**
+     * Validates the request data and creates a new repository.
+     *
+     * @param Illuminate\Http\Request $request The request object.
+     * @return Illuminate\Http\JsonResponse The JSON response containing the created repository or an error message.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -43,14 +59,25 @@ class RepositoryController extends Controller
         }
     }
 
-    // Get details of a specific repository
+    /**
+     * Show the specified repository.
+     *
+     * @param int $id The ID of the repository.
+     * @return \Illuminate\Http\JsonResponse The JSON response containing the repository data.
+     */
     public function show($id)
     {
         $repository = ProjectRepository::findOrFail($id);
         return response()->json($repository);
     }
 
-    // Update a specific repository
+    /**
+     * Update a repository.
+     *
+     * @param \Illuminate\Http\Request $request The request object.
+     * @param int $id The ID of the repository.
+     * @return \Illuminate\Http\JsonResponse The JSON response containing the updated repository.
+     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -71,7 +98,12 @@ class RepositoryController extends Controller
         return response()->json($repository);
     }
 
-    // Delete a specific repository
+    /**
+     * Delete a repository.
+     *
+     * @param int $id The ID of the repository to be deleted.
+     * @return \Illuminate\Http\JsonResponse The JSON response indicating the success of the deletion.
+     */
     public function destroy($id)
     {
         $repository = ProjectRepository::findOrFail($id);
@@ -80,7 +112,12 @@ class RepositoryController extends Controller
         return response()->json(['message' => 'Repository removed successfully, your data still exists on the remote server']);
     }
 
-    // Manually update metadata
+    /**
+     * Update the metadata of a repository.
+     *
+     * @param int $id The ID of the repository.
+     * @return \Illuminate\Http\JsonResponse The JSON response containing the updated repository.
+     */
     public function updateMetadata($id)
     {
         $repository = ProjectRepository::findOrFail($id);

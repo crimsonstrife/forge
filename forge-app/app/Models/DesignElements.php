@@ -5,6 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class DesignElements
+ * Model for the DesignElements table
+ * @package App\Models
+ */
 class DesignElements extends Model
 {
     use HasFactory;

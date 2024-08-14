@@ -8,6 +8,14 @@ use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
 
+/**
+ * CreateNewUser class.
+ *
+ * This class implements the CreatesNewUsers interface and is responsible for creating new user instances.
+ * It is used in the Forge application to handle the creation of new users.
+ *
+ * @package App\Actions\Fortify
+ */
 class CreateNewUser implements CreatesNewUsers
 {
     use PasswordValidationRules;

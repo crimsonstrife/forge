@@ -7,6 +7,30 @@ use Illuminate\Database\Eloquent\Model;
 use App\Services\CrucibleService;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * ProjectRepository Model
+ *
+ * This model represents a repository for a project. It extends the base Model class and uses the HasFactory trait.
+ *
+ * @property int $id The unique identifier of the repository
+ * @property int $remote_id The remote identifier of the repository
+ * @property string $name The name of the repository
+ * @property string $description The description of the repository
+ * @property string $slug The slug of the repository
+ * @property string $http_url The HTTP URL of the repository
+ * @property string $ssh_url The SSH URL of the repository
+ * @property string $scm_type The SCM type of the repository
+ * @property string $main_branch The main branch of the repository
+ * @property int $project_id The ID of the associated project
+ * @property array $metadata The metadata of the repository
+ * @property array $history The history of the repository
+ * @property \App\Models\Project $project The associated project
+ *
+ * @method bool verifyAndFetchMetadata() Verify the repository URL, and fetch the metadata if the connection is successful
+ * @method bool updateMetadata() Update the metadata of the repository
+ *
+ * @package App\Models
+ */
 class ProjectRepository extends Model
 {
     use HasFactory;
@@ -30,6 +54,11 @@ class ProjectRepository extends Model
         'history' => 'array',
     ];
 
+    /**
+     * Get the project that owns the project repository.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function project()
     {
         return $this->belongsTo(Project::class);

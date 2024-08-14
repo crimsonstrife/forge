@@ -7,6 +7,11 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class Redirect
+ * Redirects authenticated users to the home page
+ * @package App\Http\Middleware
+ */
 class Redirect
 {
     /**

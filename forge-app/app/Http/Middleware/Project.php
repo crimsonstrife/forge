@@ -8,6 +8,11 @@ use Symfony\Component\HttpFoundation\Response;
 //use App\Http\Controllers\Controller;
 //use App\Models\Project as ProjectModel;
 
+/**
+ * Class Project
+ * Middleware for handling project requests
+ * @package App\Http\Middleware
+ */
 class Project
 {
     /**

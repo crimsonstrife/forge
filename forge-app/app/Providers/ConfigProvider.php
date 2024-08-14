@@ -6,6 +6,11 @@ use App\Settings\CrucibleSettings;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Class ConfigProvider
+ *
+ * This class is responsible for registering and bootstrapping services, as well as loading Crucible settings.
+ */
 class ConfigProvider extends ServiceProvider
 {
     /**

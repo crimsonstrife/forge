@@ -4,6 +4,12 @@ namespace App\Settings;
 
 use Spatie\LaravelSettings\Settings;
 
+/**
+ * Class GeneralSettings
+ *
+ * This class represents the general settings for the application.
+ * It extends the Settings class and defines various properties related to the general settings.
+ */
 class GeneralSettings extends Settings
 {
     public string $site_name;
@@ -17,6 +23,11 @@ class GeneralSettings extends Settings
     public bool $enable_registration_form;
 
 
+    /**
+     * Returns the group name for the general settings.
+     *
+     * @return string The group name.
+     */
     public static function group(): string
     {
         return 'general';

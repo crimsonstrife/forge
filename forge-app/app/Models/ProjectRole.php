@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Represents a model for Project Git History.
+ * Represents a project role in the application.
  *
  * This class extends the Laravel Model class and uses the HasFactory trait.
- * It is used to interact with the "project_git_histories" table in the database.
+ * It is used to interact with the project_roles table in the database.
  */
-class ProjectGitHistory extends Model
+class ProjectRole extends Model
 {
     use HasFactory;
 }

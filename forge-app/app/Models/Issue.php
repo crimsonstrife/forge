@@ -10,14 +10,20 @@ use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Support\Facades\Auth as Auth;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use WpOrg\Requests\Auth as WpOrgAuth;
 
+/**
+ * Class Issue
+ * Model for the Issue table
+ * @package App\Models
+ */
 class Issue extends Model implements HasMedia
 {
     use HasFactory;
@@ -78,7 +84,7 @@ class Issue extends Model implements HasMedia
                     'issue_id' => $issue->id,
                     'old_status_id' => $oldStatus,
                     'new_status_id' => $issue->status_id,
-                    'user_id' => auth()->user()->id
+                    'user_id' => Auth::user()->id,
                 ]);
 
                 // notify watchers

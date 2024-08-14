@@ -6,6 +6,14 @@ use App\Models\Activity;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class ActivityPolicy
+ *
+ * @package App\Policies
+ *
+ * @property-read \App\Models\User $user
+ * @property-read \App\Models\Activity $activity
+ */
 class ActivityPolicy
 {
     use HandlesAuthorization;

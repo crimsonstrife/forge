@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Http\Controllers\Controller;
 
-//use App\Models\ProjectRepository as Repository;
-
 class ProjectController extends Controller
 {
     // Get list of all projects

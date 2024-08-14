@@ -4,6 +4,11 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * AppServiceProvider class.
+ *
+ * This class is responsible for registering and bootstrapping any application services.
+ */
 class AppServiceProvider extends ServiceProvider
 {
     /**

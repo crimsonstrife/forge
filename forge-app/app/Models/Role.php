@@ -7,12 +7,24 @@ use Spatie\Permission\Models\Role as SpatieRole;
 use App\Models\PermissionGroup;
 use App\Traits\HasPermissions;
 
+/**
+ * Role Model
+ *
+ * This class represents a role in the application.
+ * It extends the SpatieRole class and uses the HasFactory and HasPermissions traits.
+ *
+ * @package App\Models
+ */
 class Role extends SpatieRole
 {
     use HasFactory;
     use HasPermissions;
 
-    // In Role model
+    /**
+     * Get the permission groups associated with the role.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function permissionGroups()
     {
         return $this->belongsToMany(PermissionGroup::class, 'role_permission_group');

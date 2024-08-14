@@ -6,6 +6,12 @@ use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ *
+ * Class PermissionPolicy
+ *
+ * This class defines the authorization policies for permissions.
+ */
 class PermissionPolicy
 {
     use HandlesAuthorization;

@@ -5,6 +5,11 @@ namespace App\Http\Middleware;
 use Illuminate\Http\Middleware\TrustProxies as Middleware;
 use Illuminate\Http\Request;
 
+/**
+ * Class TrustProxy
+ * Extends the default Laravel TrustProxies middleware
+ * @package App\Http\Middleware
+ */
 class TrustProxy extends Middleware
 {
     /**

@@ -12,6 +12,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
+/**
+ * Class IssueStatusUpdated
+ *
+ * This class represents a notification that is sent when the status of an issue is updated.
+ * It extends the Notification class and implements the ShouldQueue interface for queueing the notification.
+ *
+ * @package App\Notifications
+ */
 class IssueStatusUpdated extends Notification implements ShouldQueue
 {
     use Queueable;

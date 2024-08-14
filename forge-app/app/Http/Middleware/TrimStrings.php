@@ -4,6 +4,11 @@ namespace App\Http\Middleware;
 
 use Illuminate\Foundation\Http\Middleware\TrimStrings as Middleware;
 
+/**
+ * Class TrimStrings
+ * Extends the default Laravel TrimStrings middleware
+ * @package App\Http\Middleware
+ */
 class TrimStrings extends Middleware
 {
     /**

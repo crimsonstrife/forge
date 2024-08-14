@@ -4,6 +4,11 @@ namespace App\Http\Middleware;
 
 use Illuminate\Routing\Middleware\ValidateSignature as Middleware;
 
+/**
+ * Class SignatureValidation
+ * Extends the default Laravel ValidateSignature middleware
+ * @package App\Http\Middleware
+ */
 class SignatureValidation extends Middleware
 {
     /**

@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Horizon\Horizon;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
 
+/**
+ * HorizonServiceProvider class.
+ *
+ * This class is responsible for bootstrapping any application services related to Horizon.
+ */
 class HorizonServiceProvider extends HorizonApplicationServiceProvider
 {
     /**

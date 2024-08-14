@@ -6,6 +6,11 @@ use App\Models\Project;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class ProjectPolicy
+ *
+ * This class defines the authorization policies for the Project model.
+ */
 class ProjectPolicy
 {
     use HandlesAuthorization;

@@ -6,11 +6,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Project;
 use App\Models\Epic;
 use App\Models\Issue;
 use App\Models\Story;
 
+/**
+ * DataController class.
+ *
+ * This class is responsible for handling data related operations.
+ * It extends the Controller class.
+ */
 class DataController extends Controller
 {
     /**
@@ -23,9 +30,9 @@ class DataController extends Controller
     {
         // Query the project
         $project = Project::where(function ($query) {
-            return $query->where('owner_id', auth()->user()->id)
+            return $query->where('owner_id', Auth::user()->id)
                 ->orWhereHas('users', function ($query) {
-                    return $query->where('users.id', auth()->user()->id);
+                    return $query->where('users.id', Auth::user()->id);
                 });
         })->where('id', $project->id)->first();
         if (!$project) {

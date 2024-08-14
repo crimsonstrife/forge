@@ -27,6 +27,12 @@ use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 
+/**
+ * Configures the application and returns an instance of the Application class.
+ *
+ * @param string $basePath The base path of the application.
+ * @return Application The configured application instance.
+ */
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',

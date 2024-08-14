@@ -12,6 +12,16 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
+/**
+ *
+ * Class IssueCreated
+ *
+ * This class represents a notification that is sent when a new issue is created.
+ * It extends the base Notification class and implements the ShouldQueue interface.
+ * The notification can be queued for asynchronous processing.
+ *
+ * @package App\Notifications
+ */
 class IssueCreated extends Notification implements ShouldQueue
 {
     use Queueable;

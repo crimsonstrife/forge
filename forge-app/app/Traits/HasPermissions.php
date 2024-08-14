@@ -14,6 +14,15 @@ trait HasPermissions
 {
     use SpatieHasPermissions;
 
+    /**
+     * Get all permissions attribute.
+     *
+     * This method retrieves all permissions associated with the current model instance.
+     * It includes permissions directly assigned to the model, as well as permissions
+     * inherited through permission groups and roles.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function getAllPermissionsAttribute()
     {
         $permissions = $this->permissions;
@@ -35,6 +44,13 @@ trait HasPermissions
         return $permissions->unique('id');
     }
 
+    /**
+     * Check if the user has a specific permission.
+     *
+     * @param string $permission The name of the permission to check.
+     * @param string|null $guardName The name of the guard to use (optional).
+     * @return bool Returns true if the user has the permission, false otherwise.
+     */
     public function hasPermissionTo($permission, $guardName = null): bool
     {
         return $this->getAllPermissionsAttribute()->contains('name', $permission);

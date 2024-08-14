@@ -22,6 +22,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Ramsey\Uuid\Uuid;
 use ProtoneMedia\LaravelVerifyNewEmail\MustVerifyNewEmail;
 
+/**
+ * User Model
+ *
+ * Represents a user in the application.
+ * @property int $id
+ * @property string $first-name
+ * @property string $last-name
+ * @property string $username
+ * @package App\Models
+ */
 class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
     use SanctumApiTokens;

@@ -8,6 +8,14 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Laravel\Passport\PassportServiceProvider;
 use Laravel\Sanctum\Sanctum;
 
+/**
+ * AuthServerProvider class.
+ *
+ * This class is responsible for providing authentication server functionality.
+ * It extends the ServiceProvider class and registers services required for authentication.
+ * It also sets the expiration time for access tokens and refresh tokens using Passport.
+ * Additionally, it enables the implicit grant and sets the personal access token model using Sanctum.
+ */
 class AuthServerProvider extends ServiceProvider
 {
     /**

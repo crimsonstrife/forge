@@ -6,6 +6,11 @@ use App\Actions\Jetstream\DeleteUser;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Jetstream\Jetstream;
 
+/**
+ * JetstreamServiceProvider class.
+ *
+ * This class is responsible for registering and bootstrapping Jetstream application services.
+ */
 class JetstreamServiceProvider extends ServiceProvider
 {
     /**

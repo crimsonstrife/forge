@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Class Epic
+ * Model for the Epic table
+ * @package App\Models
+ */
 class Epic extends Model
 {
     use HasFactory;

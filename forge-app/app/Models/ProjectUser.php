@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * ProjectUser Model
+ *
+ * Represents the relationship between a project, a user, and a role.
+ */
 class ProjectUser extends Model
 {
     use HasFactory;
@@ -16,13 +21,9 @@ class ProjectUser extends Model
         'role_id'
     ];
 
-    public function project(): BelongsTo
-    {
-        return $this->belongsTo(Project::class, 'project_id', 'id')->withTrashed();
-    }
-
     /**
-     * Get the user that owns Project
+     * Get the project associated with the ProjectUser.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user(): BelongsTo

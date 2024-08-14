@@ -7,6 +7,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
 
+/**
+ * UpdateUserPassword class.
+ *
+ * This class implements the UpdatesUserPasswords interface and is responsible for updating the user's password.
+ * It uses the PasswordValidationRules trait to validate the new password.
+ */
 class UpdateUserPassword implements UpdatesUserPasswords
 {
     use PasswordValidationRules;

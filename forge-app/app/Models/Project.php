@@ -13,6 +13,16 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
+/**
+ * Class Project
+ * Model for the Project table
+ * @property string name
+ * @property string description
+ * @property int status_id
+ * @property int owner_id
+ * @property string issue_prefix
+ * @package App\Models
+ */
 class Project extends Model implements HasMedia
 {
     use HasFactory;

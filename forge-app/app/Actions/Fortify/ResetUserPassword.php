@@ -7,6 +7,13 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\ResetsUserPasswords;
 
+/**
+ * ResetUserPassword class.
+ *
+ * This class implements the ResetsUserPasswords interface and is responsible for resetting user passwords.
+ *
+ * @package App\Actions\Fortify
+ */
 class ResetUserPassword implements ResetsUserPasswords
 {
     use PasswordValidationRules;

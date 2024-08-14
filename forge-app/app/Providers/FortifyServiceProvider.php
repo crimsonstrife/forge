@@ -13,6 +13,11 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
 
+/**
+ * The FortifyServiceProvider class.
+ *
+ * This class is responsible for registering and bootstrapping any application services related to Fortify.
+ */
 class FortifyServiceProvider extends ServiceProvider
 {
     /**

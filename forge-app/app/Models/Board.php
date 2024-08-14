@@ -5,6 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class Board
+ * Model for the Board table
+ * @package App\Models
+ */
 class Board extends Model
 {
     use HasFactory;

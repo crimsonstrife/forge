@@ -12,6 +12,12 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
+/**
+ * IssueCommented Notification
+ * Represents a notification sent when a new comment is added to an issue.
+ *
+ * @package App\Notifications
+ */
 class IssueCommented extends Notification implements ShouldQueue
 {
     use Queueable;

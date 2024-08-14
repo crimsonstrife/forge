@@ -5,6 +5,12 @@ namespace App\Policies;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ *
+ * Class UserPolicy
+ *
+ * This class defines the authorization policies for the User model.
+ */
 class UserPolicy
 {
     use HandlesAuthorization;

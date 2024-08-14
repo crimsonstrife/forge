@@ -7,6 +7,11 @@ use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\Telescope;
 use Laravel\Telescope\TelescopeApplicationServiceProvider;
 
+/**
+ * TelescopeServiceProvider class.
+ *
+ * This class is responsible for registering application services and defining the Telescope gate.
+ */
 class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 {
     /**
@@ -21,12 +26,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
         $isLocal = $this->app->environment('local');
 
         Telescope::filter(function (IncomingEntry $entry) use ($isLocal) {
-            return $isLocal ||
-                   $entry->isReportableException() ||
-                   $entry->isFailedRequest() ||
-                   $entry->isFailedJob() ||
-                   $entry->isScheduledTask() ||
-                   $entry->hasMonitoredTag();
+            return $isLocal || $entry->isReportableException() || $entry->isFailedRequest() || $entry->isFailedJob() || $entry->isScheduledTask() || $entry->hasMonitoredTag();
         });
     }
 

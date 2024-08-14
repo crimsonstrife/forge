@@ -8,6 +8,15 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
+/**
+ * UserCreatedNotification class.
+ *
+ * This class represents a notification that is sent when a user is created.
+ * It extends the Notification class and implements the ShouldQueue interface.
+ * The notification is queued for delivery using the Queueable trait.
+ *
+ * @package App\Notifications
+ */
 class UserCreatedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
