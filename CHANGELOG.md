@@ -62,6 +62,9 @@ All notable changes to this project will be documented in this file.
 - Add tinymce dependency to package.json
 - Update base controller to extend from BaseController
 - Update middleware configuration in app.php
+- Update Changelog
+- Update functions to add missing documentation
+- Add copyright information to settings.json and documentation to model files.
 
 ### Fix
 
