@@ -43,7 +43,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(ValidatePostSize::class);
         $middleware->append(TrimStrings::class);
         $middleware->append(ConvertEmptyStringsToNull::class);
-        $middleware->append('web', [
+        $middleware->appendToGroup('web', [
             Cookies::class,
             AddQueuedCookiesToResponse::class,
             StartSession::class,
@@ -51,7 +51,7 @@ return Application::configure(basePath: dirname(__DIR__))
             CsrfVerification::class,
             SubstituteBindings::class,
         ]);
-        $middleware->append('api', [
+        $middleware->appendToGroup('api', [
             'throttle:api',
             SubstituteBindings::class,
         ]);
