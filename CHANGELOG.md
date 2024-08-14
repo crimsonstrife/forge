@@ -25,7 +25,8 @@ All notable changes to this project will be documented in this file.
 - Add Filament resource pages for creating and editing roles, users, issues, projects, activities, and permissions
 - Add Cliff to generate ongoing changlogs.
 - Add @meursyphus/flitter npm dependency
-- Add Filament resource pages for creating and editing roles, users, issues, projects, activities, and permissions
+- Add Filament resource page for viewing user details
+- Media-library config
 
 ### 🚜 Refactor
 
