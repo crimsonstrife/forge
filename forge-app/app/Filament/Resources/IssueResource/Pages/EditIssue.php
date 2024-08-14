@@ -6,6 +6,11 @@ use App\Filament\Resources\IssueResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
+/**
+ * Class EditIssue
+ *
+ * This class represents an edit issue page.
+ */
 class EditIssue extends EditRecord
 {
     protected static string $resource = IssueResource::class;

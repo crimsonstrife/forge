@@ -6,6 +6,11 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Illuminate\Filesystem\Filesystem;
 
+/**
+ * Class MakeService
+ *
+ * This class represents a make service command.
+ */
 class MakeService extends Command
 {
     protected $signature = 'make:service {name}';

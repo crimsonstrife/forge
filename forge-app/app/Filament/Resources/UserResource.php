@@ -15,6 +15,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\Pages\CreateRecord;
 
+/**
+ * UserResource class represents a resource for managing users.
+ *
+ * @package Filament\Resources
+ */
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
@@ -23,21 +28,42 @@ class UserResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    /**
+     * Returns the navigation label for the UserResource.
+     *
+     * @return string The navigation label.
+     */
     public static function getNavigationLabel(): string
     {
         return __('Users');
     }
 
+    /**
+     * Get the plural label for the resource.
+     *
+     * @return string|null The plural label for the resource, or null if not available.
+     */
     public static function getPluralLabel(): ?string
     {
         return static::getNavigationLabel();
     }
 
+    /**
+     * Get the navigation group for the user resource.
+     *
+     * @return string|null The navigation group for the user resource.
+     */
     public static function getNavigationGroup(): ?string
     {
         return __('Permissions');
     }
 
+    /**
+     * Define the form structure for the User resource.
+     *
+     * @param  Form  $form  The form instance.
+     * @return Form  The updated form instance.
+     */
     public static function form(Form $form): Form
     {
         return $form
@@ -73,6 +99,12 @@ class UserResource extends Resource
             ]);
     }
 
+    /**
+     * Define the table structure and configuration for the User resource.
+     *
+     * @param Table $table The table instance.
+     * @return Table The configured table instance.
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -119,6 +151,11 @@ class UserResource extends Resource
             ]);
     }
 
+    /**
+     * Retrieve the relations for the UserResource.
+     *
+     * @return array The relations for the UserResource.
+     */
     public static function getRelations(): array
     {
         return [
@@ -126,6 +163,11 @@ class UserResource extends Resource
         ];
     }
 
+    /**
+     * Retrieves an array of pages for the UserResource.
+     *
+     * @return array An array of pages with their corresponding routes.
+     */
     public static function getPages(): array
     {
         return [

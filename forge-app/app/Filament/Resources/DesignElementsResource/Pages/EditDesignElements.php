@@ -6,6 +6,11 @@ use App\Filament\Resources\DesignElementsResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
+/**
+ * Class EditDesignElements
+ *
+ * This class represents an edit design elements page.
+ */
 class EditDesignElements extends EditRecord
 {
     protected static string $resource = DesignElementsResource::class;

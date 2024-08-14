@@ -13,12 +13,23 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+/**
+ * Class CalendarResource
+ *
+ * This class represents a calendar resource.
+ */
 class CalendarResource extends Resource
 {
     protected static ?string $model = Calendar::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    /**
+     * Generate a form for the CalendarResource.
+     *
+     * @param  Form  $form The form instance.
+     * @return Form       The updated form instance.
+     */
     public static function form(Form $form): Form
     {
         return $form
@@ -27,6 +38,12 @@ class CalendarResource extends Resource
             ]);
     }
 
+    /**
+     * Define the table for the CalendarResource.
+     *
+     * @param Table $table The table instance.
+     * @return Table The modified table instance.
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -46,6 +63,11 @@ class CalendarResource extends Resource
             ]);
     }
 
+    /**
+     * Get the relations for the CalendarResource.
+     *
+     * @return array
+     */
     public static function getRelations(): array
     {
         return [
@@ -53,6 +75,11 @@ class CalendarResource extends Resource
         ];
     }
 
+    /**
+     * Returns an array of pages for the CalendarResource.
+     *
+     * @return array The array of pages.
+     */
     public static function getPages(): array
     {
         return [

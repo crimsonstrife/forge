@@ -6,8 +6,22 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use Exception;
 
+/**
+ * Renders the custom exception and returns a response.
+ *
+ * @param  \Illuminate\Http\Request  $request
+ * @param  \Throwable  $exception
+ * @return \Illuminate\Http\Response
+ */
 class Handler extends ExceptionHandler
 {
+    /**
+     * Renders the exception and returns a response.
+     *
+     * @param \Illuminate\Http\Request $request The request instance.
+     * @param \Throwable $exception The exception instance.
+     * @return \Illuminate\Http\Response The response instance.
+     */
     public function render($request, Throwable $exception)
     {
         $customError = $this->handleCustomException($exception);
@@ -18,6 +32,12 @@ class Handler extends ExceptionHandler
         ], $customError['status']);
     }
 
+    /**
+     * Handles the custom exception and returns the error code, message, and status.
+     *
+     * @param \Exception $exception The exception instance.
+     * @return array The error code, message, and status.
+     */
     protected function handleCustomException(Exception $exception)
     {
         // Define your custom error codes and messages

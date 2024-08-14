@@ -7,6 +7,12 @@ use App\Models\IssueHour;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
+/**
+ * Class IssueHoursExport
+ *
+ * This class represents an export of issue hours data.
+ * It implements the FromCollection and WithHeadings interfaces.
+ */
 class IssueHoursExport implements FromCollection, WithHeadings
 {
     public Issue $issue;

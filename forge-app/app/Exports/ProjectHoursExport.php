@@ -9,6 +9,14 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
+/**
+ * Class ProjectHoursExport
+ *
+ * This class represents an export of project hours data.
+ * It implements the FromCollection and WithHeadings interfaces.
+ *
+ * @package App\Exports
+ */
 class ProjectHoursExport implements FromCollection, WithHeadings
 {
     public Project $project;

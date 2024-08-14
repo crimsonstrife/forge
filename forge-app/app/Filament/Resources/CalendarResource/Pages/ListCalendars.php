@@ -6,6 +6,11 @@ use App\Filament\Resources\CalendarResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
+/**
+ * Class ListCalendars
+ *
+ * This class represents a list calendars page.
+ */
 class ListCalendars extends ListRecords
 {
     protected static string $resource = CalendarResource::class;

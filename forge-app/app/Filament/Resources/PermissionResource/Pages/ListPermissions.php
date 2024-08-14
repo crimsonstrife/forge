@@ -6,6 +6,11 @@ use App\Filament\Resources\PermissionResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
+/**
+ * Class ListPermissions
+ *
+ * This class represents a list permissions page.
+ */
 class ListPermissions extends ListRecords
 {
     protected static string $resource = PermissionResource::class;

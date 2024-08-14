@@ -5,10 +5,19 @@ namespace App\Exports;
 use App\Models\Project;
 use App\Models\Issue;
 use App\Models\IssueHour;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
+/**
+ * Class TimesheetExport
+ *
+ * This class represents a timesheet export. It implements the FromCollection and WithHeadings interfaces.
+ * The TimesheetExport class is responsible for generating a collection of data and defining the headings for the exported timesheet.
+ *
+ * @package App\Exports
+ */
 class TimesheetExport implements FromCollection, WithHeadings
 {
     protected array $params;
@@ -18,6 +27,11 @@ class TimesheetExport implements FromCollection, WithHeadings
         $this->params = $params;
     }
 
+    /**
+     * Returns an array of headings for the TimesheetExport class.
+     *
+     * @return array The array of headings.
+     */
     public function headings(): array
     {
         return [
@@ -39,8 +53,7 @@ class TimesheetExport implements FromCollection, WithHeadings
     public function collection(): Collection
     {
         $collection = collect();
-
-        $hours = IssueHour::where('user_id', auth()->user()->id)
+        $hours = IssueHour::where('user_id', Auth::user()->id)
             ->whereBetween('created_at', [$this->params['start_date'], $this->params['end_date']])
             ->get();
 

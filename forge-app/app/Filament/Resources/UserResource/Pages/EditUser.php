@@ -6,6 +6,11 @@ use App\Filament\Resources\UserResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
+/**
+ * Class EditUser
+ *
+ * This class represents an edit user page.
+ */
 class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;

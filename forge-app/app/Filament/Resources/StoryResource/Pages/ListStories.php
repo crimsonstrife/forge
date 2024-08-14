@@ -6,6 +6,11 @@ use App\Filament\Resources\StoryResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
+/**
+ * Class ListStories
+ *
+ * This class represents a list stories page.
+ */
 class ListStories extends ListRecords
 {
     protected static string $resource = StoryResource::class;

@@ -5,6 +5,11 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
+/**
+ * Class Kernel
+ *
+ * This class is the console kernel that extends the Laravel console kernel. It is used to schedule commands and register commands for the application.
+ */
 class Kernel extends ConsoleKernel
 {
     /**

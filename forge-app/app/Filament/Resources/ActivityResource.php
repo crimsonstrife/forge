@@ -13,6 +13,11 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+/**
+ * Class ActivityResource
+ *
+ * This class represents the activity resource.
+ */
 class ActivityResource extends Resource
 {
     protected static ?string $model = Activity::class;
@@ -21,21 +26,42 @@ class ActivityResource extends Resource
 
     protected static ?int $priority = 1;
 
+    /**
+     * Retrieve the navigation label for the ActivityResource.
+     *
+     * @return string The navigation label.
+     */
     public static function getNavigationLabel(): string
     {
         return __('Activities');
     }
 
+    /**
+     * Get the plural label for the activity resource.
+     *
+     * @return string|null The plural label for the activity resource, or null if not available.
+     */
     public static function getPluralLabel(): ?string
     {
         return static::getNavigationLabel();
     }
 
+    /**
+     * Get the navigation group for the activity resource.
+     *
+     * @return string|null The navigation group.
+     */
     public static function getNavigationGroup(): ?string
     {
         return __('Referential');
     }
 
+    /**
+     * Generates a form for the ActivityResource.
+     *
+     * @param Form $form The form instance.
+     * @return Form The updated form instance.
+     */
     public static function form(Form $form): Form
     {
         return $form
@@ -59,6 +85,12 @@ class ActivityResource extends Resource
             ]);
     }
 
+    /**
+     * Define the table for the ActivityResource.
+     *
+     * @param Table $table The table instance.
+     * @return Table The modified table instance.
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -87,6 +119,11 @@ class ActivityResource extends Resource
             ->defaultSort('id');
     }
 
+    /**
+     * Get the relations for the ActivityResource.
+     *
+     * @return array
+     */
     public static function getRelations(): array
     {
         return [
@@ -94,6 +131,11 @@ class ActivityResource extends Resource
         ];
     }
 
+    /**
+     * Returns an array of pages for the ActivityResource.
+     *
+     * @return array An array of pages with their corresponding routes.
+     */
     public static function getPages(): array
     {
         return [

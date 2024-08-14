@@ -6,6 +6,11 @@ use App\Filament\Resources\CalendarResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
+/**
+ * Class EditCalendar
+ *
+ * This class represents an edit calendar page.
+ */
 class EditCalendar extends EditRecord
 {
     protected static string $resource = CalendarResource::class;
