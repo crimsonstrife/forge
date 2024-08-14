@@ -19,6 +19,12 @@ class IssueTypeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    /**
+     * Generate the form for the IssueTypeResource.
+     *
+     * @param  Form  $form The form instance.
+     * @return Form The updated form instance.
+     */
     public static function form(Form $form): Form
     {
         return $form
@@ -27,6 +33,12 @@ class IssueTypeResource extends Resource
             ]);
     }
 
+    /**
+     * Define the table for the IssueTypeResource.
+     *
+     * @param  Table  $table
+     * @return Table
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -46,6 +58,11 @@ class IssueTypeResource extends Resource
             ]);
     }
 
+    /**
+     * Retrieve the relations for the IssueTypeResource.
+     *
+     * @return array The relations for the IssueTypeResource.
+     */
     public static function getRelations(): array
     {
         return [
@@ -53,6 +70,11 @@ class IssueTypeResource extends Resource
         ];
     }
 
+    /**
+     * Returns an array of pages for the IssueTypeResource.
+     *
+     * @return array An array of pages with their corresponding routes.
+     */
     public static function getPages(): array
     {
         return [

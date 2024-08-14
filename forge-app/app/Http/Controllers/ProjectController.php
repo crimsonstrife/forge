@@ -6,15 +6,30 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Http\Controllers\Controller;
 
+/**
+ * Class ProjectController
+ *
+ * The ProjectController class is responsible for handling HTTP requests related to projects.
+ */
 class ProjectController extends Controller
 {
-    // Get list of all projects
+
+    /**
+     * Retrieve all projects.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
         return response()->json(Project::all());
     }
 
-    // Create a new project
+    /**
+     * Store a newly created project.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -30,7 +45,12 @@ class ProjectController extends Controller
         return response()->json($project, 201);
     }
 
-    // Get details of a specific project
+    /**
+     * Show the details of a project.
+     *
+     * @param int $id The ID of the project.
+     * @return \Illuminate\Http\JsonResponse The JSON response containing the project details.
+     */
     public function show($id)
     {
         //get the project
@@ -42,7 +62,13 @@ class ProjectController extends Controller
         return response()->json($project);
     }
 
-    // Update a specific project
+    /**
+     * Update a project.
+     *
+     * @param \Illuminate\Http\Request $request The request object.
+     * @param int $id The ID of the project to update.
+     * @return \Illuminate\Http\JsonResponse The JSON response containing the updated project.
+     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -59,7 +85,12 @@ class ProjectController extends Controller
         return response()->json($project);
     }
 
-    // Delete a specific project
+    /**
+     * Delete a project.
+     *
+     * @param int $id The ID of the project to be deleted.
+     * @return \Illuminate\Http\JsonResponse The JSON response indicating the success of the deletion.
+     */
     public function destroy($id)
     {
         $project = Project::findOrFail($id);

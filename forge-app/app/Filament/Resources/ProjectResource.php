@@ -13,12 +13,23 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+/**
+ * Class ProjectResource
+ *
+ * This class represents a resource for managing projects in the application.
+ */
 class ProjectResource extends Resource
 {
     protected static ?string $model = Project::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    /**
+     * Define the form for the ProjectResource.
+     *
+     * @param Form $form The form instance.
+     * @return Form The updated form instance.
+     */
     public static function form(Form $form): Form
     {
         return $form
@@ -27,6 +38,12 @@ class ProjectResource extends Resource
             ]);
     }
 
+    /**
+     * Define the table configuration for the ProjectResource.
+     *
+     * @param  Table  $table  The table instance.
+     * @return Table  The modified table instance.
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -46,6 +63,11 @@ class ProjectResource extends Resource
             ]);
     }
 
+    /**
+     * Retrieve the relations for the ProjectResource.
+     *
+     * @return array The relations for the ProjectResource.
+     */
     public static function getRelations(): array
     {
         return [
@@ -53,6 +75,11 @@ class ProjectResource extends Resource
         ];
     }
 
+    /**
+     * Retrieve the pages for the ProjectResource.
+     *
+     * @return array The array of pages with their corresponding routes.
+     */
     public static function getPages(): array
     {
         return [

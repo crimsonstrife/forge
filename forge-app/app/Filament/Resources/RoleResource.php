@@ -13,12 +13,23 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+/**
+ * RoleResource class.
+ *
+ * This class represents a resource for managing roles.
+ */
 class RoleResource extends Resource
 {
     protected static ?string $model = Role::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    /**
+     * Define the form for the RoleResource.
+     *
+     * @param  Form  $form
+     * @return Form
+     */
     public static function form(Form $form): Form
     {
         return $form
@@ -27,6 +38,12 @@ class RoleResource extends Resource
             ]);
     }
 
+    /**
+     * Define the table configuration for the Role resource.
+     *
+     * @param  Table  $table
+     * @return Table
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -46,6 +63,11 @@ class RoleResource extends Resource
             ]);
     }
 
+    /**
+     * Retrieve the relations for the RoleResource.
+     *
+     * @return array The relations for the RoleResource.
+     */
     public static function getRelations(): array
     {
         return [
@@ -53,6 +75,11 @@ class RoleResource extends Resource
         ];
     }
 
+    /**
+     * Retrieve an array of pages for the RoleResource.
+     *
+     * @return array An array of pages with their corresponding routes.
+     */
     public static function getPages(): array
     {
         return [

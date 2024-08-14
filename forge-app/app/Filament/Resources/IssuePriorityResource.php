@@ -13,12 +13,25 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+/**
+ * Represents a resource for Issue Priority.
+ *
+ * This class extends the Resource class and is used to handle operations related to Issue Priority resources.
+ *
+ * @package Filament\Resources
+ */
 class IssuePriorityResource extends Resource
 {
     protected static ?string $model = IssuePriority::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    /**
+     * Generate a form for the IssuePriorityResource.
+     *
+     * @param  Form  $form The form instance.
+     * @return Form       The updated form instance.
+     */
     public static function form(Form $form): Form
     {
         return $form
@@ -27,6 +40,12 @@ class IssuePriorityResource extends Resource
             ]);
     }
 
+    /**
+     * Define the table configuration for the IssuePriorityResource.
+     *
+     * @param  Table  $table  The table instance.
+     * @return Table  The modified table instance.
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -46,6 +65,11 @@ class IssuePriorityResource extends Resource
             ]);
     }
 
+    /**
+     * Retrieve the relations for the IssuePriorityResource.
+     *
+     * @return array The relations for the IssuePriorityResource.
+     */
     public static function getRelations(): array
     {
         return [
@@ -53,6 +77,11 @@ class IssuePriorityResource extends Resource
         ];
     }
 
+    /**
+     * Returns an array of pages for managing issue priorities.
+     *
+     * @return array An array of pages with their corresponding routes.
+     */
     public static function getPages(): array
     {
         return [
