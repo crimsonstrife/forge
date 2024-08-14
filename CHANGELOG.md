@@ -25,8 +25,12 @@ All notable changes to this project will be documented in this file.
 - Add Filament resource pages for creating and editing roles, users, issues, projects, activities, and permissions
 - Add Cliff to generate ongoing changlogs.
 - Add @meursyphus/flitter npm dependency
+- Add Filament resource pages for creating and editing roles, users, issues, projects, activities, and permissions
+- Add Cliff to generate ongoing changelogs.
 - Add Filament resource page for viewing user details
 - Media-library config
+- Update ActivityResource with navigation label, icon, and priority
+- Update PermissionResource with navigation label, icon, and sort order
 
 ### 🚜 Refactor
 
@@ -57,6 +61,7 @@ All notable changes to this project will be documented in this file.
 - Update CrucibleService to handle disabled or misconfigured Crucible connection
 - Add tinymce dependency to package.json
 - Update base controller to extend from BaseController
+- Update middleware configuration in app.php
 
 ### Fix
 
