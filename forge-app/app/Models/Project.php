@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Xetaio\Mentions\Models\Traits\HasMentionsTrait as HasMentions;
 
 /**
  * Class Project
@@ -28,6 +29,7 @@ class Project extends Model implements HasMedia
     use HasFactory;
     use SoftDeletes;
     use InteractsWithMedia;
+    use HasMentions;
 
     protected $fillable = [
         'name',

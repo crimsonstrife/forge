@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Xetaio\Mentions\Models\Traits\HasMentionsTrait as HasMentions;
 
 /**
  * Represents a Story model.
@@ -13,4 +14,5 @@ use Illuminate\Database\Eloquent\Model;
 class Story extends Model
 {
     use HasFactory;
+    use HasMentions;
 }

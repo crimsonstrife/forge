@@ -24,4 +24,5 @@ return [
     App\Providers\JetstreamServiceProvider::class,
     App\Providers\RouteServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
+    Xetaio\Mentions\Providers\MentionServiceProvider::class,
 ];

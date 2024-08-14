@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use WpOrg\Requests\Auth as WpOrgAuth;
+use Xetaio\Mentions\Models\Traits\HasMentionsTrait as HasMentions;
 
 /**
  * Class Issue
@@ -29,6 +30,7 @@ class Issue extends Model implements HasMedia
     use HasFactory;
     use SoftDeletes;
     use InteractsWithMedia;
+    use HasMentions;
 
     protected $fillable = [
         'title',

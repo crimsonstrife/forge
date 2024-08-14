@@ -47,7 +47,8 @@
         "symfony/mime": "^7.1",
         "symfony/polyfill-php83": "^1.30",
         "symfony/uid": "^7.1",
-        "webcreate/vcs": "^1.1"
+        "webcreate/vcs": "^1.1",
+        "xetaio/xetaravel-mentions": "^11.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

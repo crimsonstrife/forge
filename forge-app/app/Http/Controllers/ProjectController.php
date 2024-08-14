@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Http\Controllers\Controller;
+use Xetaio\Mentions\Parser\MentionParser;
 
 /**
  * Class ProjectController
@@ -40,7 +41,16 @@ class ProjectController extends Controller
             'type_id' => 'required|exists:project_types,id',
         ]);
 
+        // Create a new project
         $project = Project::create($request->only(['name', 'description', 'owner_id', 'status_id', 'type_id']));
+
+        // Register a new Parser and parse the content.
+        $parser = new MentionParser($project);
+        $content = $parser->parse($project->description);
+
+        // Re-assign the parsed content and save it.
+        $project->description = $content;
+        $project->save();
 
         return response()->json($project, 201);
     }

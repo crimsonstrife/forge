@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Xetaio\Mentions\Models\Traits\HasMentionsTrait as HasMentions;
 
 /**
  * Class Epic
@@ -18,6 +19,7 @@ class Epic extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use HasMentions;
 
     protected $fillable = [
         'name',
