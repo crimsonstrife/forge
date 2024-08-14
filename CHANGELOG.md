@@ -31,6 +31,11 @@ All notable changes to this project will be documented in this file.
 - Media-library config
 - Update ActivityResource with navigation label, icon, and priority
 - Update PermissionResource with navigation label, icon, and sort order
+- Add header actions to Filament resource pages
+- Add Timesheet model
+- Add form and table configuration to Filament resource classes
+- Add general settings migration for Forge application
+- Add Xetaio Mentions package and update models with HasMentionsTrait
 
 ### 🚜 Refactor
 
@@ -65,6 +70,7 @@ All notable changes to this project will be documented in this file.
 - Update Changelog
 - Update functions to add missing documentation
 - Add copyright information to settings.json and documentation to model files.
+- Update Changelog
 
 ### Fix
 
