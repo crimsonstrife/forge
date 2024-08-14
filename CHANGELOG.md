@@ -23,6 +23,9 @@ All notable changes to this project will be documented in this file.
 - Add middleware classes for cookies, maintenance, and trim strings
 - Add RouteServiceProvider and related middleware classes
 - Add Filament resource pages for creating and editing roles, users, issues, projects, activities, and permissions
+- Add Cliff to generate ongoing changlogs.
+- Add @meursyphus/flitter npm dependency
+- Add Filament resource pages for creating and editing roles, users, issues, projects, activities, and permissions
 
 ### 🚜 Refactor
 
