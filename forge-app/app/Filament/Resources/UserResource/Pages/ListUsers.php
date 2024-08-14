@@ -15,6 +15,11 @@ class ListUsers extends ListRecords
 {
     protected static string $resource = UserResource::class;
 
+    /**
+     * Get the header actions for the ListUsers page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

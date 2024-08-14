@@ -15,6 +15,11 @@ class EditDesignElements extends EditRecord
 {
     protected static string $resource = DesignElementsResource::class;
 
+    /**
+     * Retrieves the header actions for the EditDesignElements page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

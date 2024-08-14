@@ -15,6 +15,11 @@ class EditIssuePriority extends EditRecord
 {
     protected static string $resource = IssuePriorityResource::class;
 
+    /**
+     * Returns an array of header actions for the EditIssuePriority page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

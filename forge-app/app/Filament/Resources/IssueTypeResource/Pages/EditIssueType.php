@@ -15,6 +15,11 @@ class EditIssueType extends EditRecord
 {
     protected static string $resource = IssueTypeResource::class;
 
+    /**
+     * Returns an array of header actions for the EditIssueType page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

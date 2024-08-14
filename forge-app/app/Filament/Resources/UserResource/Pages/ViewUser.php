@@ -15,6 +15,11 @@ class ViewUser extends ViewRecord
 {
     protected static string $resource = UserResource::class;
 
+    /**
+     * Retrieves the actions available for the user resource page.
+     *
+     * @return array The array of actions available for the user resource page.
+     */
     protected function getActions(): array
     {
         return [

@@ -15,6 +15,11 @@ class EditCalendar extends EditRecord
 {
     protected static string $resource = CalendarResource::class;
 
+    /**
+     * Returns an array of header actions for the EditCalendar page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

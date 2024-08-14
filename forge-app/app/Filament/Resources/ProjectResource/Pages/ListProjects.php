@@ -15,6 +15,11 @@ class ListProjects extends ListRecords
 {
     protected static string $resource = ProjectResource::class;
 
+    /**
+     * Returns an array of header actions for the ListProjects page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

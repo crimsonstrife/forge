@@ -15,6 +15,11 @@ class ListIssuePriorities extends ListRecords
 {
     protected static string $resource = IssuePriorityResource::class;
 
+    /**
+     * Retrieves the header actions for the ListIssuePriorities page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

@@ -15,6 +15,11 @@ class ListIssueStatuses extends ListRecords
 {
     protected static string $resource = IssueStatusResource::class;
 
+    /**
+     * Retrieve the header actions for the ListIssueStatuses page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

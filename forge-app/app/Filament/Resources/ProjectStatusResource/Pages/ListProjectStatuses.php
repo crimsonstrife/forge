@@ -15,6 +15,11 @@ class ListProjectStatuses extends ListRecords
 {
     protected static string $resource = ProjectStatusResource::class;
 
+    /**
+     * Retrieves the header actions for the ListProjectStatuses page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

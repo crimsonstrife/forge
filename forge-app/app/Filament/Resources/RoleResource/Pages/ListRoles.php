@@ -15,6 +15,11 @@ class ListRoles extends ListRecords
 {
     protected static string $resource = RoleResource::class;
 
+    /**
+     * Returns an array of header actions for the ListRoles page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

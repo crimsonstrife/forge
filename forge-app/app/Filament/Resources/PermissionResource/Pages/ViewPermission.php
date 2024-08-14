@@ -16,6 +16,11 @@ class ViewPermission extends ViewRecord
 {
     protected static string $resource = PermissionResource::class;
 
+    /**
+     * Retrieves the actions available for this permission resource page.
+     *
+     * @return array The array of actions available.
+     */
     protected function getActions(): array
     {
         return [

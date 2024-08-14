@@ -15,6 +15,11 @@ class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;
 
+    /**
+     * Retrieve the header actions for the EditUser page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

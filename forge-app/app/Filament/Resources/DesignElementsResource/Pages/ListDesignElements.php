@@ -15,6 +15,11 @@ class ListDesignElements extends ListRecords
 {
     protected static string $resource = DesignElementsResource::class;
 
+    /**
+     * Retrieves the header actions for the ListDesignElements page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

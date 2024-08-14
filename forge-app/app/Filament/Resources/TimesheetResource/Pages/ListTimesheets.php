@@ -15,6 +15,11 @@ class ListTimesheets extends ListRecords
 {
     protected static string $resource = TimesheetResource::class;
 
+    /**
+     * Returns an array of header actions for the ListTimesheets page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

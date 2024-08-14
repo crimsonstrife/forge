@@ -15,6 +15,11 @@ class ViewActivity extends ViewRecord
 {
     protected static string $resource = ActivityResource::class;
 
+    /**
+     * Retrieve the actions available for the activity resource page.
+     *
+     * @return array The actions available for the activity resource page.
+     */
     protected function getActions(): array
     {
         return [

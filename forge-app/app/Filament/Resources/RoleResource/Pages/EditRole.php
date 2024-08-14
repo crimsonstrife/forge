@@ -15,6 +15,11 @@ class EditRole extends EditRecord
 {
     protected static string $resource = RoleResource::class;
 
+    /**
+     * Retrieves the header actions for the EditRole page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

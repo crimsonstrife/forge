@@ -15,6 +15,11 @@ class ListCalendars extends ListRecords
 {
     protected static string $resource = CalendarResource::class;
 
+    /**
+     * Retrieves the header actions for the ListCalendars page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

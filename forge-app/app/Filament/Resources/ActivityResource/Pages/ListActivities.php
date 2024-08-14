@@ -15,6 +15,11 @@ class ListActivities extends ListRecords
 {
     protected static string $resource = ActivityResource::class;
 
+    /**
+     * Retrieve the header actions for the ListActivities page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

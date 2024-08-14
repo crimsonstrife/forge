@@ -15,6 +15,11 @@ class EditTimesheet extends EditRecord
 {
     protected static string $resource = TimesheetResource::class;
 
+    /**
+     * Retrieve the header actions for the EditTimesheet page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

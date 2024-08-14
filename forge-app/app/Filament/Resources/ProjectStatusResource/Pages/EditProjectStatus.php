@@ -15,6 +15,11 @@ class EditProjectStatus extends EditRecord
 {
     protected static string $resource = ProjectStatusResource::class;
 
+    /**
+     * Retrieves the header actions for the EditProjectStatus page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

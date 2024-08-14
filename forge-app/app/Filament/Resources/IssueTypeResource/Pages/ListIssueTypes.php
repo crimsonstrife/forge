@@ -15,6 +15,11 @@ class ListIssueTypes extends ListRecords
 {
     protected static string $resource = IssueTypeResource::class;
 
+    /**
+     * Retrieve the header actions for the ListIssueTypes page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

@@ -15,6 +15,11 @@ class ListPermissions extends ListRecords
 {
     protected static string $resource = PermissionResource::class;
 
+    /**
+     * Returns an array of header actions for the ListPermissions page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [

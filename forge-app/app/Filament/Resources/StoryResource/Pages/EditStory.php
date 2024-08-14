@@ -15,6 +15,11 @@ class EditStory extends EditRecord
 {
     protected static string $resource = StoryResource::class;
 
+    /**
+     * Retrieves the header actions for the EditStory page.
+     *
+     * @return array The array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         return [
