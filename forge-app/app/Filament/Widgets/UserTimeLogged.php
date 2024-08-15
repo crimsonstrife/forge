@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\User;
 use App\Models\Issue;
+use Illuminate\Support\Facades\Auth;
 use Filament\Widgets\ChartWidget;
 
 /**
@@ -21,13 +22,19 @@ class UserTimeLogged extends ChartWidget
     ];
 
     /**
-     * Determine if the authenticated user can view the list of tickets.
+     * Determine if the authenticated user can view the list of issues.
      *
-     * @return bool Returns true if the user has the 'List tickets' permission, otherwise false.
+     * @return bool Returns true if the user has the 'List Issues' permission, otherwise false.
      */
     public static function canView(): bool
     {
-        return auth()->user()->can('List tickets');
+        // Get the authenticated user and check if they have the 'List Issues' permission.
+        $user = Auth::user();
+        $permission = 'List Issues';
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission);
+        }
+        return false;
     }
 
     /**
