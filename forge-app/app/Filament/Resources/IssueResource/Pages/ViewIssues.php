@@ -46,10 +46,10 @@ class ViewIssue extends ViewRecord implements HasForms
     /**
      * Mounts the ViewIssues page.
      *
-     * @param mixed $record The record to be mounted.
+     * @param int | string $record The record to be mounted.
      * @return void
      */
-    public function mount($record): void
+    public function mount(int | string $record): void
     {
         parent::mount($record);
         $this->form->fill();
@@ -77,7 +77,7 @@ class ViewIssue extends ViewRecord implements HasForms
                         'danger'
                         : 'success'
                 )
-                ->icon('heroicon-o-bell')
+                ->icon('fas fa-bell')
                 ->button()
                 ->action(function () {
                     if (
@@ -107,7 +107,7 @@ class ViewIssue extends ViewRecord implements HasForms
             EditAction::make(),
             Action::make('logHours')
                 ->label(__('Log time'))
-                ->icon('heroicon-o-clock')
+                ->icon('fas fa-stopwatch')
                 ->color('warning')
                 ->modalWidth('sm')
                 ->modalHeading(__('Log worked time'))
@@ -149,7 +149,7 @@ class ViewIssue extends ViewRecord implements HasForms
             ActionGroup::make([
                 Action::make('exportLogHours')
                     ->label(__('Export time logged'))
-                    ->icon('heroicon-o-document-download')
+                    ->icon('fas fa-download')
                     ->color('warning')
                     ->visible(
                         fn() => $this->record->watchers->where('id', auth::user()->id)->count()
@@ -302,5 +302,15 @@ class ViewIssue extends ViewRecord implements HasForms
     {
         $this->form->fill();
         $this->selectedCommentId = null;
+    }
+
+    /**
+     * Overrides the getFormStatePath method to set its access level to public.
+     *
+     * @return string
+     */
+    public function getFormStatePath(): string
+    {
+        return 'form';
     }
 }
