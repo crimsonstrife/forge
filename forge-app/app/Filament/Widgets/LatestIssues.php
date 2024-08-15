@@ -93,7 +93,7 @@ class LatestIssues extends BaseWidget
         return [
             TextColumn::make('name')
                 ->label(__('Issue'))
-                ->formatStateUsing(fn($record) => new HtmlString('
+                ->formatStateUsing(fn ($record) => new HtmlString('
                     <div class="flex flex-col gap-1">
                         <span class="text-gray-400 font-medium text-xs">
                             ' . $record->project->name . '
@@ -118,7 +118,7 @@ class LatestIssues extends BaseWidget
 
             TextColumn::make('status.name')
                 ->label(__('Status'))
-                ->formatStateUsing(fn($record) => new HtmlString('
+                ->formatStateUsing(fn ($record) => new HtmlString('
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="filament-tables-color-column relative flex h-6 w-6 rounded-md"
                                     style="background-color: ' . $record->status->color . '"
@@ -128,11 +128,11 @@ class LatestIssues extends BaseWidget
 
             TextColumn::make('type.name')
                 ->label(__('Type'))
-                ->formatStateUsing(fn($record) => view('components.issue-type', ['type' => $record->type])),
+                ->formatStateUsing(fn ($record) => view('components.issue-type', ['type' => $record->type])),
 
             TextColumn::make('priority.name')
                 ->label(__('Priority'))
-                ->formatStateUsing(fn($record) => new HtmlString('
+                ->formatStateUsing(fn ($record) => new HtmlString('
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="filament-tables-color-column relative flex h-6 w-6 rounded-md"
                                     style="background-color: ' . $record->priority->color . '"
