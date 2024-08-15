@@ -20,7 +20,7 @@ class ViewActivity extends ViewRecord
      *
      * @return array The actions available for the activity resource page.
      */
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             EditAction::make(),

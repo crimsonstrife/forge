@@ -63,7 +63,7 @@ class ViewIssue extends ViewRecord implements HasForms
      *
      * @return array The array of actions available for the current issue record.
      */
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Action::make('toggleSubscribe')

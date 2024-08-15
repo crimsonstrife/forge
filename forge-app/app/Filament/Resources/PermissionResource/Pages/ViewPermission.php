@@ -21,7 +21,7 @@ class ViewPermission extends ViewRecord
      *
      * @return array The array of actions available.
      */
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             EditAction::make(),

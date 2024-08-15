@@ -32,7 +32,7 @@ class ListIssues extends ListRecords
      *
      * @return array The array of actions.
      */
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\CreateAction::make(),

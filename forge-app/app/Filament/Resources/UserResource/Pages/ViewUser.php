@@ -20,7 +20,7 @@ class ViewUser extends ViewRecord
      *
      * @return array The array of actions available for the user resource page.
      */
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             EditAction::make(),

@@ -3,27 +3,26 @@
 namespace App\Filament\Resources\ProjectResource\Pages;
 
 use App\Filament\Resources\ProjectResource;
-use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 
 /**
- * Class EditProject
- *
- * This class represents an edit project page.
+ * Handles the viewing of a project record within the Filament resource interface.
  */
-class EditProject extends EditRecord
+class ViewProject extends ViewRecord
 {
     protected static string $resource = ProjectResource::class;
 
     /**
-     * Retrieves a list of actions available for the current context.
+     * Retrieves a list of actions with their respective properties and configurations.
      *
-     * @return array An array of action objects.
+     * @return array An array of actions with specified labels, icons, colors, and URLs.
      */
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('kanban')
+            Action::make('kanban')
                 ->label(
                     fn ()
                     => ($this->record->type === 'scrum' ? __('Scrum board') : __('Kanban board'))
@@ -38,8 +37,7 @@ class EditProject extends EditRecord
                     }
                 }),
 
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            EditAction::make(),
         ];
     }
 }

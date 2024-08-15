@@ -21,7 +21,7 @@ class EditIssuePriority extends EditRecord
      *
      * @return array The array of available actions.
      */
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             Actions\ViewAction::make(),

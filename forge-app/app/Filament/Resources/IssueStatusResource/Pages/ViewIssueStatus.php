@@ -23,7 +23,7 @@ class ViewIssueStatus extends ViewRecord
      *
      * @return array The array of available actions.
      */
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             EditAction::make(),
