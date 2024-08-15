@@ -89,7 +89,7 @@ class LatestProjects extends BaseWidget
         return [
             TextColumn::make('name')
                 ->label(__('Project name'))
-                ->formatStateUsing(fn($record) => new HtmlString('
+                ->formatStateUsing(fn ($record) => new HtmlString('
                             <div class="w-full flex items-center gap-2">
                                 <div style=\'background-image: url("' . $record->cover . '")\'
                                  class="w-8 h-8 bg-cover bg-center bg-no-repeat"></div>
@@ -102,7 +102,7 @@ class LatestProjects extends BaseWidget
 
             TextColumn::make('status.name')
                 ->label(__('Project status'))
-                ->formatStateUsing(fn($record) => new HtmlString('
+                ->formatStateUsing(fn ($record) => new HtmlString('
                             <div class="flex items-center gap-2">
                                 <span class="filament-tables-color-column relative flex h-6 w-6 rounded-md"
                                     style="background-color: ' . $record->status->color . '"></span>
