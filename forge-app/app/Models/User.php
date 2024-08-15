@@ -222,4 +222,13 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
             }
         );
     }
+
+    /**
+     * Get the user ID.
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
 }
