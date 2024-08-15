@@ -2,19 +2,19 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\IssueType;
+use App\Models\IssuePriority;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Filament\Widgets\ChartWidget;
 
 /**
- * Represents a widget that displays issues by type in a chart.
+ * Represents a widget that displays issues by priority in a chart.
  *
- * This class extends the ChartWidget class and provides functionality to display issues by type in a chart.
+ * @package Filament\Widgets
  */
-class IssuesByType extends ChartWidget
+class IssuesByPriority extends ChartWidget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
     protected static ?string $heading = 'Chart';
     protected static ?string $maxHeight = '300px';
     protected int|string|array $columnSpan = [
@@ -40,27 +40,27 @@ class IssuesByType extends ChartWidget
     }
 
     /**
-     * Retrieves the heading for the IssuesByType widget.
+     * Retrieves the heading for the IssuesByPriority widget.
      *
      * @return string The heading for the widget.
      */
     public function getHeading(): string
     {
-        return __('Issues by types');
+        return __('Issues by priorities');
     }
 
     /**
-     * Retrieve the data for the IssuesByType widget.
+     * Retrieve the data for the IssuesByPriority widget.
      *
      * @return array The data for the widget.
      */
     protected function getData(): array
     {
-        $data = IssueType::withCount('issues')->get();
+        $data = IssuePriority::withCount('issues')->get();
         return [
             'datasets' => [
                 [
-                    'label' => __('Issues by types'),
+                    'label' => __('Issues by priorities'),
                     'data' => $data->pluck('issues_count')->toArray(),
                     'backgroundColor' => [
                         'rgba(255, 99, 132, .6)',
@@ -80,9 +80,9 @@ class IssuesByType extends ChartWidget
     }
 
     /**
-     * Returns the type of the item.
+     * Get the type of the widget.
      *
-     * @return string The type of the item.
+     * @return string The type of the widget.
      */
     protected function getType(): string
     {
