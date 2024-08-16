@@ -6,7 +6,6 @@ use App\Filament\Resources\PermissionResource;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
-
 /**
  * Class ViewPermission
  *

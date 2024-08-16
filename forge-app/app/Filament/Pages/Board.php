@@ -88,7 +88,7 @@ class Board extends Page implements HasForms
                                 ->reactive()
                                 ->afterStateUpdated(fn () => $this->search())
                                 ->helperText(__("Choose a project to show its board"))
-                                ->options(fn() => Project::where('owner_id', Auth::user()->id)
+                                ->options(fn () => Project::where('owner_id', Auth::user()->id)
                                     ->orWhereHas('users', function ($query) {
                                         return $query->where('users.id', Auth::user()->id);
                                     })->pluck('name', 'id')->toArray()),
