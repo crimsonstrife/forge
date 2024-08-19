@@ -8,7 +8,7 @@
     "devDependencies": {
         "autoprefixer": "^10.4.20",
         "postcss": "^8.4.41",
-        "qunit": "^2.21.1"
+        "qunit": "^2.22.0"
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.6.0",
