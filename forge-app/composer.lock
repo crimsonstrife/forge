@@ -3901,16 +3901,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.5.1",
+            "version": "2.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "ac815920de0eff6de947eac0a6a94e5ed0fb147c"
+                "reference": "b650144166dfa7703e62a22e493b853b58d874b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/ac815920de0eff6de947eac0a6a94e5ed0fb147c",
-                "reference": "ac815920de0eff6de947eac0a6a94e5ed0fb147c",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/b650144166dfa7703e62a22e493b853b58d874b0",
+                "reference": "b650144166dfa7703e62a22e493b853b58d874b0",
                 "shasum": ""
             },
             "require": {
@@ -3923,8 +3923,8 @@
             },
             "require-dev": {
                 "cebe/markdown": "^1.0",
-                "commonmark/cmark": "0.31.0",
-                "commonmark/commonmark.js": "0.31.0",
+                "commonmark/cmark": "0.31.1",
+                "commonmark/commonmark.js": "0.31.1",
                 "composer/package-versions-deprecated": "^1.8",
                 "embed/embed": "^4.4",
                 "erusev/parsedown": "^1.0",
@@ -4003,7 +4003,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-07-24T12:52:09+00:00"
+            "time": "2024-08-16T11:46:16+00:00"
         },
         {
             "name": "league/config",
@@ -8963,16 +8963,16 @@
         },
         {
             "name": "spatie/laravel-settings",
-            "version": "3.3.2",
+            "version": "3.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-settings.git",
-                "reference": "395066797823856638a0a2feb243b396a94e22e5"
+                "reference": "9c6e6c0d2ce8d8e4685a4b842cbc9d2119272e8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-settings/zipball/395066797823856638a0a2feb243b396a94e22e5",
-                "reference": "395066797823856638a0a2feb243b396a94e22e5",
+                "url": "https://api.github.com/repos/spatie/laravel-settings/zipball/9c6e6c0d2ce8d8e4685a4b842cbc9d2119272e8a",
+                "reference": "9c6e6c0d2ce8d8e4685a4b842cbc9d2119272e8a",
                 "shasum": ""
             },
             "require": {
@@ -9034,7 +9034,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-settings/issues",
-                "source": "https://github.com/spatie/laravel-settings/tree/3.3.2"
+                "source": "https://github.com/spatie/laravel-settings/tree/3.3.3"
             },
             "funding": [
                 {
@@ -9046,7 +9046,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-03-22T07:50:04+00:00"
+            "time": "2024-08-13T13:21:16+00:00"
         },
         {
             "name": "spatie/temporary-directory",
@@ -15384,5 +15384,5 @@
         "php": "^8.2"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
