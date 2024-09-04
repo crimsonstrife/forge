@@ -19,7 +19,7 @@
         "@meursyphus/flitter": "^2.0.2",
         "@primer/octicons": "^19.11.0",
         "@angular/core": "^18.2.2",
-        "@tailwindcss/forms": "^0.5.7",
+        "@tailwindcss/forms": "^0.5.8",
         "@tailwindcss/typography": "^0.5.14",
         "bootstrap": "^5.3.3",
         "dotenv": "^16.4.5",
