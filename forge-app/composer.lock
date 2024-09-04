@@ -12696,16 +12696,16 @@
         },
         {
             "name": "fidry/cpu-core-counter",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/theofidry/cpu-core-counter.git",
-                "reference": "f92996c4d5c1a696a6a970e20f7c4216200fcc42"
+                "reference": "8520451a140d3f46ac33042715115e290cf5785f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theofidry/cpu-core-counter/zipball/f92996c4d5c1a696a6a970e20f7c4216200fcc42",
-                "reference": "f92996c4d5c1a696a6a970e20f7c4216200fcc42",
+                "url": "https://api.github.com/repos/theofidry/cpu-core-counter/zipball/8520451a140d3f46ac33042715115e290cf5785f",
+                "reference": "8520451a140d3f46ac33042715115e290cf5785f",
                 "shasum": ""
             },
             "require": {
@@ -12745,7 +12745,7 @@
             ],
             "support": {
                 "issues": "https://github.com/theofidry/cpu-core-counter/issues",
-                "source": "https://github.com/theofidry/cpu-core-counter/tree/1.1.0"
+                "source": "https://github.com/theofidry/cpu-core-counter/tree/1.2.0"
             },
             "funding": [
                 {
@@ -12753,7 +12753,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-02-07T09:43:46+00:00"
+            "time": "2024-08-06T10:04:20+00:00"
         },
         {
             "name": "filp/whoops",
@@ -12828,16 +12828,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.62.0",
+            "version": "v3.64.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "627692f794d35c43483f34b01d94740df2a73507"
+                "reference": "58dd9c931c785a79739310aef5178928305ffa67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/627692f794d35c43483f34b01d94740df2a73507",
-                "reference": "627692f794d35c43483f34b01d94740df2a73507",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/58dd9c931c785a79739310aef5178928305ffa67",
+                "reference": "58dd9c931c785a79739310aef5178928305ffa67",
                 "shasum": ""
             },
             "require": {
@@ -12919,7 +12919,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.62.0"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.64.0"
             },
             "funding": [
                 {
@@ -12927,7 +12927,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-08-07T17:03:09+00:00"
+            "time": "2024-08-30T23:09:38+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",
