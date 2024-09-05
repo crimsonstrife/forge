@@ -20,7 +20,7 @@
         "@primer/octicons": "^19.11.0",
         "@angular/core": "^18.2.2",
         "@tailwindcss/forms": "^0.5.8",
-        "@tailwindcss/typography": "^0.5.14",
+        "@tailwindcss/typography": "^0.5.15",
         "bootstrap": "^5.3.3",
         "dotenv": "^16.4.5",
         "jquery": "^3.7.1",
