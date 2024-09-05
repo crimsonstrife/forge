@@ -68,12 +68,12 @@ class ViewIssue extends ViewRecord implements HasForms
         return [
             Action::make('toggleSubscribe')
                 ->label(
-                    fn() => $this->record->subscribers()->where('users.id', auth::user()->id)->count() ?
+                    fn () => $this->record->subscribers()->where('users.id', auth::user()->id)->count() ?
                         __('Unsubscribe')
                         : __('Subscribe')
                 )
                 ->color(
-                    fn() => $this->record->subscribers()->where('users.id', auth::user()->id)->count() ?
+                    fn () => $this->record->subscribers()->where('users.id', auth::user()->id)->count() ?
                         'danger'
                         : 'success'
                 )
@@ -101,7 +101,7 @@ class ViewIssue extends ViewRecord implements HasForms
                 ->color('secondary')
                 ->button()
                 ->icon('heroicon-o-share')
-                ->action(fn() => $this->dispatchBrowserEvent('shareIssue', [
+                ->action(fn () => $this->dispatchBrowserEvent('shareIssue', [
                     'url' => route('filament.resources.issues.share', $this->record->code)
                 ])),
             EditAction::make(),
@@ -113,7 +113,7 @@ class ViewIssue extends ViewRecord implements HasForms
                 ->modalHeading(__('Log worked time'))
                 ->modalDescription(__('Use the following form to add your worked time in this issue.'))
                 ->modalSubmitActionLabel(__('Log'))
-                ->visible(fn() => in_array(
+                ->visible(fn () => in_array(
                     auth::user()->id,
                     [$this->record->owner_id, $this->record->responsible_id]
                 ))
@@ -152,23 +152,23 @@ class ViewIssue extends ViewRecord implements HasForms
                     ->icon('fas fa-download')
                     ->color('warning')
                     ->visible(
-                        fn() => $this->record->watchers->where('id', auth::user()->id)->count()
+                        fn () => $this->record->watchers->where('id', auth::user()->id)->count()
                             && $this->record->hours()->count()
                     )
-                    ->action(fn() => Excel::download(
+                    ->action(fn () => Excel::download(
                         new IssueHoursExport($this->record),
                         'time_' . str_replace('-', '_', $this->record->code) . '.csv',
                         \Maatwebsite\Excel\Excel::CSV,
                         ['Content-Type' => 'text/csv']
                     )),
             ])
-                ->visible(fn() => (in_array(
-                        auth::user()->id,
-                        [$this->record->owner_id, $this->record->responsible_id]
-                    )) || (
-                        $this->record->watchers->where('id', auth::user()->id)->count()
-                        && $this->record->hours()->count()
-                    ))
+                ->visible(fn () => (in_array(
+                    auth::user()->id,
+                    [$this->record->owner_id, $this->record->responsible_id]
+                )) || (
+                    $this->record->watchers->where('id', auth::user()->id)->count()
+                    && $this->record->hours()->count()
+                ))
                 ->color('secondary'),
         ];
     }
@@ -271,7 +271,7 @@ class ViewIssue extends ViewRecord implements HasForms
                     ->color('danger')
                     ->button()
                     ->close()
-                    ->dispatch(fn() => $this->emit('doDeleteComment', $commentId)),
+                    ->dispatch(fn () => $this->emit('doDeleteComment', $commentId)),
                 Action::make('cancel')
                     ->label(__('Cancel'))
                     ->close()
