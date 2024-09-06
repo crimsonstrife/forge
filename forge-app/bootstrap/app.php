@@ -26,6 +26,7 @@ use App\Http\Middleware\SignatureValidation;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
+use App\Http\Middleware\PermissionSet;
 
 /**
  * Configures the application and returns an instance of the Application class.
@@ -56,10 +57,12 @@ return Application::configure(basePath: dirname(__DIR__))
             ShareErrorsFromSession::class,
             CsrfVerification::class,
             SubstituteBindings::class,
+            PermissionSet::class,
         ]);
         $middleware->appendToGroup('api', [
             'throttle:api',
             SubstituteBindings::class,
+            PermissionSet::class,
         ]);
         $middleware->alias([
             'auth' => Authenticate::class,
@@ -72,6 +75,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'signed' => SignatureValidation::class,
             'throttle' => ThrottleRequests::class,
             'verified' => EnsureEmailIsVerified::class,
+            'auth.permissionSet' => PermissionSet::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
