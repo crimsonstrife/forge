@@ -11,9 +11,10 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens as SanctumApiTokens;
 use Laravel\Passport\HasApiTokens as PassportApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 use App\Models\PermissionGroup;
-use App\Traits\HasPermissions;
+use App\Traits\HasRoles;
+use App\Traits\IsPermissable;
+use App\Traits\HasPermissions as HasPermissions;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Ramsey\Uuid\Uuid;
 use ProtoneMedia\LaravelVerifyNewEmail\MustVerifyNewEmail;
+use Spatie\Permission\Exceptions\PermissionDoesNotExist;
 
 /**
  * User Model
@@ -41,6 +43,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     use Notifiable;
     use TwoFactorAuthenticatable;
     use HasRoles;
+    use IsPermissable;
     use HasPermissions;
     use MustVerifyNewEmail;
     use SoftDeletes;
@@ -92,7 +95,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         return [
             'email_verified_at' => 'datetime',
             // file deepcode ignore HardcodedPassword: <this is not a hardcoded password, it's a cast to a hashed value.>
-            //'password' => 'hashed',
+            'password' => 'hashed',
         ];
     }
 
@@ -230,5 +233,51 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * Check if the user has permission to perform the given action.
+     *
+     * @param string $ability
+     * @param mixed|null $guard
+     * @return bool|null
+     * @throws PermissionDoesNotExist
+     */
+    public function checkPermissionTo(string $ability, mixed $guard = null): ?bool
+    {
+        try {
+            return HasPermissions::hasPermissionTo($ability, $guard);
+        } catch (PermissionDoesNotExist $e) {
+            // Log the error
+            // Log::error($e->getMessage());
+
+            return null;
+        }
+    }
+
+    /**
+     * Give the user permission to perform the given action.
+     *
+     * @param string $ability
+     * @param mixed|null $guard
+     * @return bool|null
+     * @throws PermissionDoesNotExist
+     */
+    public function providePermissionTo(string $ability, mixed $guard = null): ?bool
+    {
+        try {
+            // Check if the user already has the permission
+            if ($this->checkPermissionTo($ability, $guard)) {
+                return true;
+            }
+
+            // Assign the permission to the user
+            return HasPermissions::givePermissionTo($ability, $guard);
+        } catch (PermissionDoesNotExist $e) {
+            // Log the error
+            // Log::error($e->getMessage());
+
+            return null;
+        }
     }
 }
