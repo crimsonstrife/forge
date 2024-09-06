@@ -1,0 +1,11 @@
+<?php
+
+namespace App\Utilities;
+
+class DummyUtility extends Utility
+{
+    public function generate()
+    {
+        // TODO: add code..
+    }
+}
