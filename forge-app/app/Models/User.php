@@ -62,6 +62,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         'creation_token',
         'type',
         'email_verified_at',
+        'discord_id',
+        'discord_roles',
     ];
 
     /**
@@ -96,6 +98,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
             'email_verified_at' => 'datetime',
             // file deepcode ignore HardcodedPassword: <this is not a hardcoded password, it's a cast to a hashed value.>
             'password' => 'hashed',
+            'discord_roles' => 'array',
         ];
     }
 
