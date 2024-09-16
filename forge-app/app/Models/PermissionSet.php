@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use Spatie\Permission\Guard;
 use Laravel\Jetstream\Team;
+use Spatie\Permission\Models\Permission;
 
 /**
  * PermissionSet Model
@@ -63,7 +64,7 @@ class PermissionSet extends Model
      */
     public function permissions()
     {
-        return $this->belongsToMany(Permission::class, 'permission_set_permissions')->withPivot('muted')->withTimestamps();
+        return $this->belongsToMany(Permission::class, 'perm_set_has_permissions')->withPivot('muted')->withTimestamps();
     }
 
     /**
@@ -72,7 +73,7 @@ class PermissionSet extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_permission_sets')->withTimestamps();
+        return $this->belongsToMany(User::class, 'permission_set_user')->withTimestamps();
     }
 
     /**
@@ -81,7 +82,7 @@ class PermissionSet extends Model
      */
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'role_permission_sets')->withTimestamps();
+        return $this->belongsToMany(Role::class, 'permission_set_role')->withTimestamps();
     }
 
     /**
@@ -92,7 +93,7 @@ class PermissionSet extends Model
     {
         //check if teams are enabled
         if (config('permission.teams.enabled')) {
-            return $this->belongsToMany(Team::class, 'team_permission_sets')->withTimestamps();
+            return $this->belongsToMany(Team::class, 'permission_set_team')->withTimestamps();
         } else {
             return null;
         }

@@ -11,7 +11,7 @@ use App\Http\Controllers\RepositoryController;
  *
  * This route returns the authenticated user using the `Request` object.
  * The user is retrieved by calling the `user()` method on the `Request` object.
- * The route is protected by the `auth:sanctum` middleware.
+ * The route is protected by the `auth:api` middleware.
  *
  * @param \Illuminate\Http\Request $request The request object.
  *
@@ -19,7 +19,7 @@ use App\Http\Controllers\RepositoryController;
  */
 Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
+})->middleware('auth:api');
 
 
 /**
@@ -30,6 +30,20 @@ Route::get('/user', function (Request $request) {
  */
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+// Routes using Passport for authentication
+Route::middleware('passport-api')->group(function () {
+    Route::get('/passport-protected', function (Request $request) {
+        return response()->json(['message' => 'This route uses Passport']);
+    });
+});
+
+// Routes using Sanctum for authentication
+Route::middleware('sanctum-api')->group(function () {
+    Route::get('/sanctum-protected', function (Request $request) {
+        return response()->json(['message' => 'This route uses Sanctum']);
+    });
 });
 
 /**
