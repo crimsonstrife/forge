@@ -138,7 +138,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function canAccessFilament(): bool
     {
-        return true; // return true if the user can access Filament TODO: implement this
+        // Check if the user has the 'access-filament' permission
+        return $this->hasPermissionTo('access-filament');
     }
 
     /**
@@ -149,7 +150,13 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
-        return true; // return true if the user can access the panel TODO: implement this
+        // Check if the user has the 'access-filament' permission
+        if ($this->canAccessFilament()) {
+            // Check if the user has the 'access-panel' permission for the given panel
+            return true; // TODO: Implement logic to check if the user has access to a specific panel
+        }
+
+        return false;
     }
 
     /**
@@ -298,5 +305,14 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         }
 
         return $this;
+    }
+
+    /**
+     * Check if the user is an admin.
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
     }
 }
