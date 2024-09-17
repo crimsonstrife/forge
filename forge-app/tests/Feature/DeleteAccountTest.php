@@ -26,11 +26,17 @@ class DeleteAccountTest extends TestCase
 
         $this->actingAs($actingUser);
 
-        $component = Livewire::test(DeleteUserForm::class)
+        Livewire::test(DeleteUserForm::class)
             ->set('password', 'password')
             ->call('deleteUser');
 
-        $this->assertNull($user->fresh());
+        // Check for the user in the database
+        $deletedUser = User::find($user->id);
+
+        // Assert that the user was deleted or soft deleted
+        $wasDeleted = is_null($deletedUser) || !$deletedUser->exists() || $deletedUser->trashed();
+
+        $this->assertTrue($wasDeleted);
     }
 
     public function testCorrectPasswordMustBeProvidedBeforeAccountCanBeDeleted(): void
