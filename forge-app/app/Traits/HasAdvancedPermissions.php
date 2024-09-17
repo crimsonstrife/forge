@@ -110,6 +110,9 @@ trait HasAdvancedPermissions
                 return true;
             }
         }
+
+        // If the permission is not found in the roles, PermissionSets or PermissionGroups, deny access
+        return false;
     }
 
     /**
