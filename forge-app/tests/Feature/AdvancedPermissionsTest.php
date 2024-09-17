@@ -65,14 +65,14 @@ class AdvancedPermissionsTest extends TestCase
         // Get the permission
         $permission = Permission::where('name', 'edit posts')->first();
 
+        // Give the role a permission
+        $role->givePermissionTo('edit posts');
+
         // Verify role-permission relationship exists in the database
         $this->assertDatabaseHas('role_has_permissions', [
             'role_id' => $role->id,
             'permission_id' => $permission->id,
         ]);
-
-        // Give the role a permission
-        $role->givePermissionTo('edit posts');
 
         // Save the role to the database
         $role->save();
@@ -84,19 +84,20 @@ class AdvancedPermissionsTest extends TestCase
         // Save the user to the database
         $user->save();
 
-        // Verify the role is assigned to the user in the database
+        // Verify user-role relationship exists in the database
         $this->assertDatabaseHas('model_has_roles', [
-            'model_id' => $user->id,
             'role_id' => $role->id,
-            'model_type' => User::class,
+            'model_id' => $user->id,
+            'model_type' => 'App\Models\User',
         ]);
 
         // Eager load the user's roles and permissions
         $user->load('roles', 'permissions');
 
-        // Debug roles and permissions assigned to the user
-        dump($user->roles->pluck('name')->toArray());  // Should list 'admin'
-        dump($user->permissions->pluck('name')->toArray());  // Should list any direct permissions
+        // Log the user's roles and permissions
+        info('User roles: ' . $user->roles);
+        info('User permissions: ' . $user->permissions);
+        info('The Roles permissions: ' . $user->roles->first()->permissions);
 
         // Assert that the user has the permission via their role
         $this->assertTrue($user->hasPermissionTo('edit posts'));

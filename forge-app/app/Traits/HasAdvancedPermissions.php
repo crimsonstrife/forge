@@ -22,6 +22,7 @@ trait HasAdvancedPermissions
 
         // Check if any PermissionSet has the given permission and it is not muted
         $mutedPermissions = $this->getMutedPermissions();
+
         // If there are muted permissions, log them
         if ($mutedPermissions->isNotEmpty()) {
             logger()->info('Muted permissions: ' . $mutedPermissions->implode(', '));
@@ -38,6 +39,13 @@ trait HasAdvancedPermissions
         if ($this->permissions->contains('name', $permission)) {
             // Log the permission
             logger()->info('Permission found: ' . $permission . ' (directly)');
+            return true;
+        }
+
+        // Check if the user has the permission via their roles
+        if ($this->hasPermissionViaRoles($permission)) {
+            // Log the permission
+            logger()->info('Permission found: ' . $permission . ' (via roles)');
             return true;
         }
 
@@ -67,6 +75,41 @@ trait HasAdvancedPermissions
 
         // Merge the muted permissions from PermissionSets and PermissionGroups, and return the unique values
         return $mutedPermissions->merge($mutedPermissionsFromGroupSets)->unique();
+    }
+
+    /**
+     * Check if the user has a permission via their roles
+     *
+     * @param string|int|\Spatie\Permission\Models\Permission $permission
+     * @return bool
+     */
+    public function hasPermissionViaRoles($permission)
+    {
+        // Get the roles associated with the user
+        $roles = $this->roles;
+
+        // For each role, check for the permission, as well as under related PermissionSets and PermissionGroups, and ensure it is not muted in any of them
+        foreach ($roles as $role) {
+            // Check if the role has the permission
+            if ($role->permissions->contains('name', $permission)) {
+                return true;
+            }
+
+            // Check if the permission is in the PermissionSets and ensure it is not muted
+            if ($role->permissionSets->flatMap->permissions->where('name', $permission)->where('pivot.muted', false)->isNotEmpty()) {
+                return true;
+            }
+
+            // Check if the permission is in the PermissionGroups
+            if ($role->permissionGroups->flatMap->permissions->contains('name', $permission)) {
+                return true;
+            }
+
+            // Check if the permission is in the PermissionSets in the PermissionGroups and ensure it is not muted
+            if ($role->permissionGroups->flatMap->permissionSets->flatMap->permissions->where('name', $permission)->where('pivot.muted', false)->isNotEmpty()) {
+                return true;
+            }
+        }
     }
 
     /**
