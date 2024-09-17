@@ -54,20 +54,20 @@
         <!-- Name (First, Last) -->
         <div class="col-span-6 sm:col-span-3">
             <x-label for="first_name" value="{{ __('First Name') }}" />
-            <x-input id="first_name" type="text" class="mt-1 block w-full" wire:model.defer="state.first_name" autocomplete="given-name" />
-            <x-input-error for="name" class="mt-2" />
+            <x-input id="first_name" type="text" class="mt-1 block w-full" wire:model="state.first_name" required autocomplete="given-name" />
+            <x-input-error for="first_name" class="mt-2" />
         </div>
 
         <div class="col-span-6 sm:col-span-3">
             <x-label for="last_name" value="{{ __('Last Name') }}" />
-            <x-input id="last_name" type="text" class="mt-1 block w-full" wire:model.defer="state.last_name" autocomplete="family-name" />
+            <x-input id="last_name" type="text" class="mt-1 block w-full" wire:model="state.last_name" required autocomplete="family-name" />
             <x-input-error for="last_name" class="mt-2" />
         </div>
 
         <!-- Username -->
         <div class="col-span-6 sm:col-span-4">
             <x-label for="username" value="{{ __('Username') }}" />
-            <x-input id="username" type="text" class="mt-1 block w-full" wire:model.defer="state.username" autocomplete="username" />
+            <x-input id="username" type="text" class="mt-1 block w-full" wire:model="state.username" required autocomplete="username" />
             <x-input-error for="username" class="mt-2" />
         </div>
 
