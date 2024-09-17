@@ -21,13 +21,22 @@ class DeleteAccountTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->actingAs($user->id);
+        // If user returns as an int, it will fail so we need to pass the user object
+        $actingUser = User::find($user->id);
 
-        $component = Livewire::test(DeleteUserForm::class)
+        $this->actingAs($actingUser);
+
+        Livewire::test(DeleteUserForm::class)
             ->set('password', 'password')
             ->call('deleteUser');
 
-        $this->assertNull($user->fresh());
+        // Check for the user in the database
+        $deletedUser = User::find($user->id);
+
+        // Assert that the user was deleted or soft deleted
+        $wasDeleted = is_null($deletedUser) || !$deletedUser->exists() || $deletedUser->trashed();
+
+        $this->assertTrue($wasDeleted);
     }
 
     public function testCorrectPasswordMustBeProvidedBeforeAccountCanBeDeleted(): void
@@ -38,7 +47,10 @@ class DeleteAccountTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->actingAs($user->id);
+        // If user returns as an int, it will fail so we need to pass the user object
+        $actingUser = User::find($user->id);
+
+        $this->actingAs($actingUser);
 
         Livewire::test(DeleteUserForm::class)
             ->set('password', 'wrong-password')

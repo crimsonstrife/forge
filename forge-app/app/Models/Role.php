@@ -12,8 +12,9 @@ use Spatie\Permission\Exceptions\RoleAlreadyExists;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use Spatie\Permission\Guard;
 use App\Models\PermissionRegistrar as PermissionRegistrar;
+use App\Traits\HasAdvancedPermissions;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Traits\RefreshesPermissionCache;
-use App\Traits\HasPermissions;
 
 /**
  * @property ?\Illuminate\Support\Carbon $created_at
@@ -22,7 +23,7 @@ use App\Traits\HasPermissions;
 class Role extends SpatieRole implements RoleContract
 {
     use IsPermissable;
-    use HasPermissions;
+    use HasAdvancedPermissions;
     use RefreshesPermissionCache;
 
     protected $guarded = [];
@@ -90,22 +91,6 @@ class Role extends SpatieRole implements RoleContract
             app(PermissionRegistrar::class)->pivotRole,
             config('permission.column_names.model_morph_key')
         );
-    }
-
-    /**
-     * A role may be given various permission sets.
-     */
-    public function permissionSets(): BelongsToMany
-    {
-        return $this->belongsToMany(PermissionSet::class, 'role_permission_sets', 'role_id', 'permission_set_id')->withTimestamps();
-    }
-
-    /**
-     * A role may be given various permission set groups.
-     */
-    public function PermissionGroups(): BelongsToMany
-    {
-        return $this->belongsToMany(PermissionGroup::class, 'role_permission_set_groups', 'role_id', 'group_id')->withTimestamps();
     }
 
     /**
@@ -219,30 +204,5 @@ class Role extends SpatieRole implements RoleContract
         return $this->permissionSets()->whereHas('permissions', function ($query) use ($permission) {
             $query->where('id', $permission->id);
         })->exists();
-    }
-
-    /**
-     * Determine if the role may perform the given permission.
-     *
-     * @param  string|int|\App\Contracts\Permission|\BackedEnum  $permission
-     *
-     * @throws PermissionDoesNotExist|GuardDoesNotMatch
-     */
-    public function hasPermissionTo($permission, $guardName = null): bool
-    {
-        // if ($this->getWildcardClass()) {
-        //     return $this->hasWildcardPermission($permission, $guardName);
-        // }
-
-        // $permission = $this->filterPermission($permission, $guardName);
-
-        // Check if the permission is in the role's permissions or in the role's permission sets or in the role's permission set groups
-        return $this->hasDirectPermission($permission) || $this->hasPermissionThroughSet($permission) || $this->hasPermissionThroughGroup($permission);
-
-        // if (!$this->getGuardNames()->contains($permission->guard_name)) {
-        //     throw GuardDoesNotMatch::create($permission->guard_name, $guardName ?? $this->getGuardNames());
-        // }
-
-        // return $this->permissions()->contains($permission->getKeyName(), $permission->getKey());
     }
 }

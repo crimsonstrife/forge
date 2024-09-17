@@ -11,7 +11,7 @@ use Illuminate\Contracts\Cache\Store;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\PermissionRegistrar as SpatiePermissionRegistrar;
-use App\Models\Permission as Permission;
+use Spatie\Permission\Models\Permission;
 use App\Models\Role as Role;
 
 class PermissionRegistrar extends SpatiePermissionRegistrar
