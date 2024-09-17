@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Illuminate\Container\Attributes\Log;
 use Spatie\Permission\Traits\HasRoles;
 
 trait HasAdvancedPermissions
@@ -21,19 +22,34 @@ trait HasAdvancedPermissions
 
         // Check if any PermissionSet has the given permission and it is not muted
         $mutedPermissions = $this->getMutedPermissions();
+        // If there are muted permissions, log them
+        if ($mutedPermissions->isNotEmpty()) {
+            logger()->info('Muted permissions: ' . $mutedPermissions->implode(', '));
+        }
 
         // If permission is muted for the user, deny access
         if ($mutedPermissions->contains($permission)) {
+            // Log the muted permission
+            logger()->info('Permission is muted: ' . $permission);
             return false;
         }
 
         // Check if user has permission directly
         if ($this->permissions->contains('name', $permission)) {
+            // Log the permission
+            logger()->info('Permission found: ' . $permission . ' (directly)');
             return true;
         }
 
         // Check if permission exists in PermissionSets or PermissionGroups
-        return $this->hasPermissionViaSetsOrGroups($permission);
+        if($this->hasPermissionViaSetsOrGroups($permission)) {
+            // Log the permission
+            logger()->info('Permission found: ' . $permission . ' (via PermissionSets or PermissionGroups)');
+            return true;
+        }
+
+        // If the permission is not found in Permissions, PermissionSets or PermissionGroups, deny access
+        return false;
     }
 
     /**
