@@ -45,6 +45,10 @@ class PasswordConfirmationTest extends TestCase
             'password' => 'wrong-password',
         ]);
 
-        $response->assertSessionHasErrors();
+        // Assert that the response is a redirect
+        $response->assertRedirect();
+
+        // Assert that the session has errors
+        $response->assertSessionHasErrors('password');
     }
 }
