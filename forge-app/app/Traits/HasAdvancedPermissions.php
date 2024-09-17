@@ -16,6 +16,9 @@ trait HasAdvancedPermissions
      */
     public function hasPermissionTo($permission)
     {
+        // Eager load the Permission objects/relations before checking
+        $this->load('permissions', 'permissionSets.permissions', 'permissionGroups.permissions', 'permissionGroups.permissions');
+
         // Check if any PermissionSet has the given permission and it is not muted
         $mutedPermissions = $this->getMutedPermissions();
 
@@ -25,7 +28,7 @@ trait HasAdvancedPermissions
         }
 
         // Check if user has permission directly
-        if (parent::hasPermissionTo($permission)) {
+        if ($this->permissions->contains('name', $permission)) {
             return true;
         }
 
@@ -75,6 +78,9 @@ trait HasAdvancedPermissions
         if ($permissionFromGroupSets) {
             return true;
         }
+
+        // If the permission is not found in Permissions, PermissionSets or PermissionGroups, deny access
+        return false;
     }
 
     /**
