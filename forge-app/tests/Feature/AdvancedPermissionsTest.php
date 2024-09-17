@@ -44,6 +44,11 @@ class AdvancedPermissionsTest extends TestCase
     #[Test]
     public function user_inherits_permissions_from_role()
     {
+        // If the permission doesn't exist, create it
+        if (!Permission::where('name', 'edit posts')->exists()) {
+            Permission::create(['name' => 'edit posts']);
+        }
+
         // Declare a role placeholder
         $role = null;
 
@@ -54,11 +59,44 @@ class AdvancedPermissionsTest extends TestCase
             $role = Role::where('name', 'admin')->first();
         }
 
+        // Verify permission exists in the database
+        $this->assertDatabaseHas('permissions', ['name' => 'edit posts']);
+
+        // Get the permission
+        $permission = Permission::where('name', 'edit posts')->first();
+
+        // Verify role-permission relationship exists in the database
+        $this->assertDatabaseHas('role_has_permissions', [
+            'role_id' => $role->id,
+            'permission_id' => $permission->id,
+        ]);
+
+        // Give the role a permission
         $role->givePermissionTo('edit posts');
+
+        // Save the role to the database
+        $role->save();
 
         // Create a user and assign the role
         $user = User::factory()->create();
-        $user->assignRole($role);
+        $user->assignRole($role->name);
+
+        // Save the user to the database
+        $user->save();
+
+        // Verify the role is assigned to the user in the database
+        $this->assertDatabaseHas('model_has_roles', [
+            'model_id' => $user->id,
+            'role_id' => $role->id,
+            'model_type' => User::class,
+        ]);
+
+        // Eager load the user's roles and permissions
+        $user->load('roles', 'permissions');
+
+        // Debug roles and permissions assigned to the user
+        dump($user->roles->pluck('name')->toArray());  // Should list 'admin'
+        dump($user->permissions->pluck('name')->toArray());  // Should list any direct permissions
 
         // Assert that the user has the permission via their role
         $this->assertTrue($user->hasPermissionTo('edit posts'));
