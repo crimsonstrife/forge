@@ -10,7 +10,7 @@ use Spatie\Permission\Models\Role;
 use App\Models\User;
 use App\Models\PermissionSet;
 use App\Models\PermissionGroup;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class AdvancedPermissionsTest extends TestCase
 {
@@ -21,17 +21,39 @@ class AdvancedPermissionsTest extends TestCase
     {
         parent::setUp();
 
+        // Reset permissions cache before every test
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
         // Seed the database with test data
-        Permission::create(['name' => 'edit posts']);
-        Permission::create(['name' => 'delete posts']);
-        Permission::create(['name' => 'delete users']);
+        if (!Permission::where('name', 'edit posts')->exists()) {
+            Permission::create(['name' => 'edit posts']);
+        }
+        if (!Permission::where('name', 'delete posts')->exists()) {
+            Permission::create(['name' => 'delete posts']);
+        }
+        if (!Permission::where('name', 'delete users')->exists()) {
+            Permission::create(['name' => 'delete users']);
+        }
+
+        // Assert that the permissions were created
+        $this->assertTrue(Permission::where('name', 'edit posts')->exists());
+        $this->assertTrue(Permission::where('name', 'delete posts')->exists());
+        $this->assertTrue(Permission::where('name', 'delete users')->exists());
     }
 
     #[Test]
     public function user_inherits_permissions_from_role()
     {
-        // Create a role and assign a permission to it
-        $role = Role::create(['name' => 'admin']);
+        // Declare a role placeholder
+        $role = null;
+
+        // Check if the role exists, and create it if it doesn't
+        if (!Role::where('name', 'admin')->exists()) {
+            $role = Role::create(['name' => 'admin']);
+        } else {
+            $role = Role::where('name', 'admin')->first();
+        }
+
         $role->givePermissionTo('edit posts');
 
         // Create a user and assign the role
