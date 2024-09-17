@@ -21,7 +21,10 @@ class DeleteAccountTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->actingAs($user->id);
+        // If user returns as an int, it will fail so we need to pass the user object
+        $actingUser = User::find($user->id);
+
+        $this->actingAs($actingUser);
 
         $component = Livewire::test(DeleteUserForm::class)
             ->set('password', 'password')
@@ -38,7 +41,10 @@ class DeleteAccountTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->actingAs($user->id);
+        // If user returns as an int, it will fail so we need to pass the user object
+        $actingUser = User::find($user->id);
+
+        $this->actingAs($actingUser);
 
         Livewire::test(DeleteUserForm::class)
             ->set('password', 'wrong-password')
