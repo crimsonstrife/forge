@@ -17,7 +17,7 @@ trait HasAdvancedPermissions
      * @param string|null $guardName
      * @return bool
      */
-    public function hasPermissionTo($permission, ?string $guardName = null) : bool
+    public function hasPermissionTo($permission, ?string $guardName = null): bool
     {
         // Eager load the Permission objects/relations before checking
         $this->load('permissions', 'permissionSets.permissions', 'permissionGroups.permissions', 'permissionGroups.permissions');
@@ -61,7 +61,7 @@ trait HasAdvancedPermissions
         }
 
         // Check if permission exists in PermissionSets or PermissionGroups
-        if($this->hasPermissionViaSetsOrGroups($permission)) {
+        if ($this->hasPermissionViaSetsOrGroups($permission)) {
             // Log the permission
             logger()->info('Permission found: ' . $permission . ' (via PermissionSets or PermissionGroups)');
             return true;
@@ -106,19 +106,38 @@ trait HasAdvancedPermissions
                 return true;
             }
 
-            // Check if the permission is in the PermissionSets and ensure it is not muted
-            if ($role->permissionSets->flatMap->permissions->where('name', $permission)->where('pivot.muted', false)->isNotEmpty()) {
-                return true;
+            // Get PermissionSets for the role
+            $permissionSets = $role->permissionSets;
+
+            // If there are PermissionSets, check if the permission is found in the PermissionSets
+            if ($permissionSets !== null) {
+                // Check if the permission is found in the PermissionSets
+                foreach ($permissionSets as $permissionSet) {
+                    if ($permissionSet->permissions->contains('name', $permission) && !$permissionSet->permissions->where('name', $permission)->first()->pivot->muted) {
+                        return true;
+                    }
+                }
             }
 
-            // Check if the permission is in the PermissionGroups
-            if ($role->permissionGroups->flatMap->permissions->contains('name', $permission)) {
-                return true;
-            }
+            // Get PermissionGroups for the role
+            $permissionGroups = $role->permissionGroups;
 
-            // Check if the permission is in the PermissionSets in the PermissionGroups and ensure it is not muted
-            if ($role->permissionGroups->flatMap->permissionSets->flatMap->permissions->where('name', $permission)->where('pivot.muted', false)->isNotEmpty()) {
-                return true;
+            // If there are PermissionGroups, check if the permission is found in the PermissionGroups
+            if ($permissionGroups !== null) {
+                // Check if the permission is found in the PermissionGroups
+                foreach ($permissionGroups as $permissionGroup) {
+                    if ($permissionGroup->permissions->contains('name', $permission)) {
+                        return true;
+                    }
+
+                    // Check PermissionSets in the PermissionGroups
+                    $permissionSets = $permissionGroup->permissionSets;
+                    foreach ($permissionSets as $permissionSet) {
+                        if ($permissionSet->permissions->contains('name', $permission) && !$permissionSet->permissions->where('name', $permission)->first()->pivot->muted) {
+                            return true;
+                        }
+                    }
+                }
             }
         }
 
@@ -174,5 +193,15 @@ trait HasAdvancedPermissions
     public function permissionGroups()
     {
         return $this->belongsToMany(\App\Models\Auth\PermissionGroup::class, 'permission_group_user');
+    }
+
+    /**
+     * Define relationship with Permissions.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'user_has_permissions');
     }
 }
