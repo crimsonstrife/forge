@@ -53,25 +53,25 @@ trait KanbanScrumHelper
                         ->label('Owners / Assignees')
                         ->multiple()
                         ->options(User::all()->pluck('name', 'id')->toArray())
-                        ->on('change', fn() => $this->emit('userSelected', $this->user_id)),
+                        ->on('change', fn () => $this->emit('userSelected', $this->user_id)),
                     Select::make('types')
                         ->label('Issue Types')
                         ->multiple()
                         ->options(IssueType::all()->pluck('name', 'id')->toArray())
-                        ->on('change', fn() => $this->emit('typeSelected', $this->type_id)),
+                        ->on('change', fn () => $this->emit('typeSelected', $this->type_id)),
                     Select::make('priorities')
                         ->label('Issue Priorities')
                         ->multiple()
                         ->options(IssuePriority::all()->pluck('name', 'id')->toArray())
-                        ->on('change', fn() => $this->emit('prioritySelected', $this->priority_id)),
+                        ->on('change', fn () => $this->emit('prioritySelected', $this->priority_id)),
                     Select::make('statuses')
                         ->label('Issue Statuses')
                         ->multiple()
                         ->options(IssueStatus::all()->pluck('name', 'id')->toArray())
-                        ->on('change', fn() => $this->emit('statusSelected', $this->status_id)),
+                        ->on('change', fn () => $this->emit('statusSelected', $this->status_id)),
                     Toggle::make('includeNotAffectedIssues')
                         ->label('Show Only Affected Issues')
-                        ->on('change', fn() => $this->emit('includeNotAffectedIssuesSelected', $this->includeNotAffectedIssues))
+                        ->on('change', fn () => $this->emit('includeNotAffectedIssuesSelected', $this->includeNotAffectedIssues))
                         ->columnSpan(2),
                     Placeholder::make('search')->label(new HtmlString('&nbsp;'))->content(
                         new HtmlString('
@@ -351,9 +351,11 @@ trait KanbanScrumHelper
                     . '<span class="text-xs text-gray-400">'
                     . __('Started at:') . ' ' . $this->project->currentSprint->started_at->format(__('Y-m-d')) . ' - '
                     . __('Ends at:') . ' ' . $this->project->currentSprint->ends_at->format(__('Y-m-d')) . ' - '
-                    . ($this->project->currentSprint->remaining ?
+                    . (
+                        $this->project->currentSprint->remaining ?
                         (
-                            __('Remaining:') . ' ' . $this->project->currentSprint->remaining . ' ' . __('days'))
+                            __('Remaining:') . ' ' . $this->project->currentSprint->remaining . ' ' . __('days')
+                        )
                         : ''
                     )
                     . '</span>'
