@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Projects;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,12 +24,12 @@ use Illuminate\Support\Facades\Log;
  * @property int $project_id The ID of the associated project
  * @property array $metadata The metadata of the repository
  * @property array $history The history of the repository
- * @property \App\Models\Project $project The associated project
+ * @property \App\Models\Projects\Project $project The associated project
  *
  * @method bool verifyAndFetchMetadata() Verify the repository URL, and fetch the metadata if the connection is successful
  * @method bool updateMetadata() Update the metadata of the repository
  *
- * @package App\Models
+ * @package App\Models\Projects
  */
 class ProjectRepository extends Model
 {

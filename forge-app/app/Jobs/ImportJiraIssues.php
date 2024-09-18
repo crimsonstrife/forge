@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Models\Project;
-use App\Models\ProjectStatus;
-use App\Models\ProjectUser;
+use App\Models\Projects\Project;
+use App\Models\Projects\ProjectStatus;
+use App\Models\Projects\ProjectUser;
 use App\Models\Issues\Issue;
 use App\Models\Issues\IssuePriority;
 use App\Models\Issues\IssueStatus;

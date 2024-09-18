@@ -19,7 +19,7 @@ use App\Models\Issues\Issue;
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  * @property-read \App\Models\User $user
- * @property-read \App\Models\Issues\Issues\Issue $issue
+ * @property-read \App\Models\Issues\Issue $issue
  */
 class IssueSubscriber extends Model
 {

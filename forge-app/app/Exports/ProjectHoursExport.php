@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Project;
+use App\Models\Projects\Project;
 use App\Models\Issues\Issue;
 use App\Models\Issues\IssueHour;
 use Illuminate\Support\Collection;
@@ -23,7 +23,7 @@ class ProjectHoursExport implements FromCollection, WithHeadings
 
     /**
      * Constructor
-     * @param \App\Models\Project $project
+     * @param \App\Models\Projects\Project $project
      */
     public function __construct(Project $project)
     {

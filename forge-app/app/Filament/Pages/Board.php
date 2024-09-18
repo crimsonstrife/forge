@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\Project;
+use App\Models\Projects\Project;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;

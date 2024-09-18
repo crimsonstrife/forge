@@ -6,7 +6,7 @@ use App\Notifications\IssueCreated;
 use App\Notifications\IssueStatusUpdated;
 use Carbon\Carbon;
 use App\Models\User;
-use App\Models\Project;
+use App\Models\Projects\Project;
 use App\Models\Comment;
 use App\Models\Tags;
 use App\Models\DesignElements;

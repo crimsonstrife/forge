@@ -25,7 +25,7 @@ use App\Models\Activity;
  * @property \Illuminate\Support\Carbon $updated_at
  *
  * @property-read \App\Models\User $user
- * @property-read \App\Models\Issues\Issues\Issue $issue
+ * @property-read \App\Models\Issues\Issue $issue
  * @property-read \App\Models\Activity $activity
  * @property-read \Illuminate\Support\CarbonInterval $forHumans
  */

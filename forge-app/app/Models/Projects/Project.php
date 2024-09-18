@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Projects;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +13,11 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Xetaio\Mentions\Models\Traits\HasMentionsTrait as HasMentions;
+use App\Models\User;
+use App\Models\Issues\Issue;
+use App\Models\Story;
+use App\Models\Epic;
+use App\Models\Sprint;
 
 /**
  * Class Project
@@ -22,7 +27,7 @@ use Xetaio\Mentions\Models\Traits\HasMentionsTrait as HasMentions;
  * @property int status_id
  * @property int owner_id
  * @property string issue_prefix
- * @package App\Models
+ * @package App\Models\Projects
  */
 class Project extends Model implements HasMedia
 {

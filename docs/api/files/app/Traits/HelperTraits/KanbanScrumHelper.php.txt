@@ -3,7 +3,7 @@
 namespace App\Traits\HelperTraits;
 
 use App\Models\User;
-use App\Models\Project;
+use App\Models\Projects\Project;
 use App\Models\Issues\Issue;
 use App\Models\Issues\IssueType;
 use App\Models\Issues\IssueStatus;

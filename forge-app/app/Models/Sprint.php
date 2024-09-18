@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use App\Models\Issues\Issue;
+use App\Models\Projects\Project;
 
 /**
  * Sprint Model
@@ -27,7 +28,7 @@ use App\Models\Issues\Issue;
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Project $project
+ * @property-read \App\Models\Projects\Project $project
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Issues\Issue[] $issues
  * @property-read int|null $issues_count
  * @property-read \App\Models\Epic $epic
