@@ -22,6 +22,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Ramsey\Uuid\Uuid;
 use ProtoneMedia\LaravelVerifyNewEmail\MustVerifyNewEmail;
 use Spatie\Permission\Exceptions\PermissionDoesNotExist;
+use Spatie\Permission\Models\Permission;
+use App\Models\Auth\PermissionSet;
+use App\Models\Auth\PermissionGroup;
+use App\Models\Projects\Project;
+use App\Models\Issues\Issue;
+use App\Models\Issues\IssueHour;
 
 /**
  * User Model
@@ -312,6 +318,41 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function isAdmin(): bool
     {
-        return $this->hasRole('admin');
+        // Check if the user has the 'is-admin' permission
+        return $this->hasPermissionTo('is-admin');
+    }
+
+    /**
+     * Check if the user is a super admin.
+     * @return bool
+     */
+    public function isSuperAdmin(): bool
+    {
+        // Check if the user has the 'is-super-admin' permission
+        return $this->hasPermissionTo('is-super-admin');
+    }
+
+    /**
+     * A user may be given various permissions.
+     */
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'user_has_permissions', 'user_id', 'permission_id');
+    }
+
+    /**
+     * A user may be assigned to various permission sets.
+     */
+    public function permissionSets(): BelongsToMany
+    {
+        return $this->belongsToMany(PermissionSet::class, 'permission_set_user', 'user_id', 'permission_set_id');
+    }
+
+    /**
+     * A user may be assigned to various permission groups.
+     */
+    public function permissionGroups(): BelongsToMany
+    {
+        return $this->belongsToMany(PermissionGroup::class, 'permission_group_user', 'user_id', 'permission_group_id');
     }
 }
