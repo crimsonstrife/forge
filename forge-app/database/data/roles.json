@@ -1,0 +1,47 @@
+{
+    "roles": [
+        {
+            "name": "super-admin",
+            "groups": [
+                "Super Admin Group",
+                "Admin Group",
+                "Project Group",
+                "Timesheet Group",
+                "Comment Group"
+            ],
+            "sets": [
+            ],
+            "permissions": [
+                "manage-settings",
+                "view-analytics",
+                "access-filament",
+                "is-super-admin"
+            ]
+        },
+        {
+            "name": "admin",
+            "groups": [
+                "Admin Group"
+            ],
+            "sets": [
+                "Project Management",
+                "Issue Management"
+            ],
+            "permissions": [
+                "manage-settings",
+                "view-analytics",
+                "access-filament"
+            ]
+        },
+        {
+            "name": "project-manager",
+            "groups": [
+                "Project Group",
+                "Comment Group",
+                "Timesheet Group"
+            ],
+            "sets": ["Project Management"],
+            "permissions": []
+        }
+    ]
+}
