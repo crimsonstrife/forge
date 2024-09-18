@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Schema;
  * i.e. "relates to", "duplicates", "is duplicated by", "blocks", "is blocked by", "clones", "is cloned by", "is subtask of", "relies on", etc.
  * This can be referenced by other relation tables to define many-to-many relationships between models, such as how an issue can be related to multiple other issues.
  */
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
