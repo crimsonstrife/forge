@@ -17,7 +17,7 @@ trait HasAdvancedPermissions
      * @param string|null $guardName
      * @return bool
      */
-    public function hasPermissionTo($permission, ?string $guardName = null) : bool
+    public function hasPermissionTo($permission, ?string $guardName = null): bool
     {
         // Eager load the Permission objects/relations before checking
         $this->load('permissions', 'permissionSets.permissions', 'permissionGroups.permissions', 'permissionGroups.permissions');
