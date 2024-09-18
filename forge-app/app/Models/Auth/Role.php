@@ -24,7 +24,23 @@ class Role extends SpatieRole implements RoleContract
     use HasAdvancedPermissions;
     use RefreshesPermissionCache;
 
+    protected $fillable = ['name', 'protected'];
+
     protected $guarded = [];
+
+    /**
+     * Prevent deletion of the role if it is protected.
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($role) {
+            if ($role->protected) {
+                throw new \Exception("The {$role->name} role cannot be deleted for security reasons.");
+            }
+        });
+    }
 
     public function __construct(array $attributes = [])
     {
@@ -75,6 +91,22 @@ class Role extends SpatieRole implements RoleContract
     public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class, 'role_has_permissions', 'role_id', 'permission_id');
+    }
+
+    /**
+     * A role may be assigned to various permission sets.
+     */
+    public function permissionSets(): BelongsToMany
+    {
+        return $this->belongsToMany(PermissionSet::class, 'permission_set_role', 'role_id', 'permission_set_id');
+    }
+
+    /**
+     * A role may be assigned to various permission groups.
+     */
+    public function permissionGroups(): BelongsToMany
+    {
+        return $this->belongsToMany(PermissionGroup::class, 'permission_group_role', 'role_id', 'permission_group_id');
     }
 
     /**
