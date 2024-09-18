@@ -2,8 +2,8 @@
 
 namespace App\Exports;
 
-use App\Models\Issue;
-use App\Models\IssueHour;
+use App\Models\Issues\Issue;
+use App\Models\Issues\IssueHour;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
@@ -19,7 +19,7 @@ class IssueHoursExport implements FromCollection, WithHeadings
 
     /**
      * Constructor
-     * @param \App\Models\Issue $issue
+     * @param \App\Models\Issues\Issue $issue
      */
     public function __construct(Issue $issue)
     {

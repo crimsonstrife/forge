@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Auth;
 
 use App\Traits\IsPermissable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

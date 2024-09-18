@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Projects;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  *
- * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Project[] $projects
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Projects\Project[] $projects
  *
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectType newQuery()

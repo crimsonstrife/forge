@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Auth;
 
 use App\Models\User;
 use Illuminate\Cache\CacheManager;
-use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Cache\Store;
@@ -12,7 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\PermissionRegistrar as SpatiePermissionRegistrar;
 use Spatie\Permission\Models\Permission;
-use App\Models\Role as Role;
+use App\Models\Auth\Role as Role;
 
 class PermissionRegistrar extends SpatiePermissionRegistrar
 {

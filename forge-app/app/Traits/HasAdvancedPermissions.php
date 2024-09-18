@@ -152,7 +152,7 @@ trait HasAdvancedPermissions
      */
     public function permissionSets()
     {
-        return $this->belongsToMany(\App\Models\PermissionSet::class, 'permission_set_user');
+        return $this->belongsToMany(\App\Models\Auth\PermissionSet::class, 'permission_set_user');
     }
 
     /**
@@ -162,6 +162,6 @@ trait HasAdvancedPermissions
      */
     public function permissionGroups()
     {
-        return $this->belongsToMany(\App\Models\PermissionGroup::class, 'permission_group_user');
+        return $this->belongsToMany(\App\Models\Auth\PermissionGroup::class, 'permission_group_user');
     }
 }

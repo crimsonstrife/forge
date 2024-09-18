@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Issues;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Issues\IssueStatus;
+use App\Models\User;
 
 /**
  * Class IssueActivity
  *
  * This class represents the IssueActivity model, which is responsible for storing and retrieving issue activity data.
  *
- * @package App\Models
+ * @package App\Models\Issues\Issues
  */
 class IssueActivity extends Model
 {

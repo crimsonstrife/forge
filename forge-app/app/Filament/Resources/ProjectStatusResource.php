@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProjectStatusResource\Pages;
 use App\Filament\Resources\ProjectStatusResource\RelationManagers;
-use App\Models\ProjectStatus;
+use App\Models\Projects\ProjectStatus;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

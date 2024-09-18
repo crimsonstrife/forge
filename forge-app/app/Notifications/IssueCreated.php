@@ -3,7 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\User;
-use App\Models\Issue;
+use App\Models\Issues\Issue;
 use Illuminate\Bus\Queueable;
 use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification as FilamentNotification;

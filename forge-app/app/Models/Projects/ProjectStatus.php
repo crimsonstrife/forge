@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Projects;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Projects\Project;
 
 /**
  * Class ProjectStatus
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * This class represents the model for project statuses in the application.
  * It extends the base Model class and uses the HasFactory and SoftDeletes traits.
  *
- * @package App\Models
+ * @package App\Models\Projects
  */
 class ProjectStatus extends Model
 {

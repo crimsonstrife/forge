@@ -7,7 +7,7 @@ use App\Filament\Resources\TimesheetResource\RelationManagers;
 use App\Models\Activity;
 use App\Models\Timesheet;
 use App\Models\User;
-use App\Models\IssueHour;
+use App\Models\Issues\IssueHour;
 use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\ViewAction;

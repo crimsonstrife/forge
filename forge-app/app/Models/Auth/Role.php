@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Auth;
 
 use App\Traits\IsPermissable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Permission\Models\Role as SpatieRole;
 use App\Contracts\Role as RoleContract;
-use Spatie\Permission\Exceptions\GuardDoesNotMatch;
-use Spatie\Permission\Exceptions\PermissionDoesNotExist;
 use Spatie\Permission\Exceptions\RoleAlreadyExists;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use Spatie\Permission\Guard;
-use App\Models\PermissionRegistrar as PermissionRegistrar;
+use App\Models\Auth\PermissionRegistrar as PermissionRegistrar;
 use App\Traits\HasAdvancedPermissions;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Traits\RefreshesPermissionCache;

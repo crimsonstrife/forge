@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Issues;
 
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
+use App\Models\Activity;
 
 /**
  * Class IssueHour
@@ -23,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon $updated_at
  *
  * @property-read \App\Models\User $user
- * @property-read \App\Models\Issue $issue
+ * @property-read \App\Models\Issues\Issue $issue
  * @property-read \App\Models\Activity $activity
  * @property-read \Illuminate\Support\CarbonInterval $forHumans
  */

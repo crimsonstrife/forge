@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Issues;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * This class represents the IssuePriority model in the application.
  * It extends the base Model class and uses the HasFactory and SoftDeletes traits.
  *
- * @package App\Models
+ * @package App\Models\Issues\Issues
  */
 class IssuePriority extends Model
 {

@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\IssuePriorityResource\Pages;
 use App\Filament\Resources\IssuePriorityResource\RelationManagers;
-use App\Models\IssuePriority;
+use App\Models\Issues\IssuePriority;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

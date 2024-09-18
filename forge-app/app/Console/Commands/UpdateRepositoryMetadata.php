@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\ProjectRepository;
+use App\Models\Projects\ProjectRepository;
 use App\Services\CrucibleService;
 use Illuminate\Support\Facades\Log;
 

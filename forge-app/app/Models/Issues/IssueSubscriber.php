@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Issues;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
+use App\Models\Issues\Issue;
 
 /**
  * IssueSubscriber Model
@@ -17,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  * @property-read \App\Models\User $user
- * @property-read \App\Models\Issue $issue
+ * @property-read \App\Models\Issues\Issue $issue
  */
 class IssueSubscriber extends Model
 {

@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Issues;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Projects\Project;
 
 /**
  *
@@ -44,7 +45,7 @@ class IssueStatus extends Model
          * It also updates the "order" property of other IssueStatus models that have a higher or equal order
          * to the current model, incrementing their order by 1.
          *
-         * @param \App\Models\IssueStatus $item The saved IssueStatus model instance.
+         * @param \App\Models\Issues\IssueStatus $item The saved IssueStatus model instance.
          * @return void
          */
         static::saved(function (IssueStatus $item) {
