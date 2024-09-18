@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use Illuminate\Container\Attributes\Log;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Models\Permission;
 
 trait HasAdvancedPermissions
 {
@@ -12,10 +13,11 @@ trait HasAdvancedPermissions
     /**
      * Override the hasPermissionTo method to handle advanced permission logic.
      *
-     * @param string|int|\Spatie\Permission\Models\Permission $permission
+     * @param string|int|Permission $permission
+     * @param string|null $guardName
      * @return bool
      */
-    public function hasPermissionTo($permission)
+    public function hasPermissionTo($permission, ?string $guardName = null) : bool
     {
         // Eager load the Permission objects/relations before checking
         $this->load('permissions', 'permissionSets.permissions', 'permissionGroups.permissions', 'permissionGroups.permissions');
@@ -26,6 +28,15 @@ trait HasAdvancedPermissions
         // If there are muted permissions, log them
         if ($mutedPermissions->isNotEmpty()) {
             logger()->info('Muted permissions: ' . $mutedPermissions->implode(', '));
+        }
+
+        // Check if the provided permission is a string, or an integer, if so, find the permission object instead
+        if (is_string($permission) || is_int($permission)) {
+            if (is_string($permission)) {
+                $permission = Permission::findByName($permission, $guardName);
+            } else {
+                $permission = Permission::find($permission);
+            }
         }
 
         // If permission is muted for the user, deny access
@@ -80,7 +91,7 @@ trait HasAdvancedPermissions
     /**
      * Check if the user has a permission via their roles
      *
-     * @param string|int|\Spatie\Permission\Models\Permission $permission
+     * @param string|int|Permission $permission
      * @return bool
      */
     public function hasPermissionViaRoles($permission)
@@ -118,7 +129,7 @@ trait HasAdvancedPermissions
     /**
      * Check if the user has a permission via their PermissionSets or PermissionGroups.
      *
-     * @param string|int|\Spatie\Permission\Models\Permission $permission
+     * @param string|int|Permission $permission
      * @return bool
      */
     public function hasPermissionViaSetsOrGroups($permission)
