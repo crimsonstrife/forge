@@ -15,6 +15,7 @@ use App\Models\Epic;
 use App\Models\Issues\IssueType;
 use App\Models\Issues\IssueStatus;
 use App\Models\Issues\IssuePriority;
+use App\Traits\IsPermissable;
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -40,6 +41,7 @@ class Issue extends Model implements HasMedia
     use SoftDeletes;
     use InteractsWithMedia;
     use HasMentions;
+    use IsPermissable;
 
     protected $fillable = [
         'title',

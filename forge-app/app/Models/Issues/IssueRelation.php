@@ -5,6 +5,7 @@ namespace App\Models\Issues;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\IsPermissable;
 
 /**
  * Class IssueRelation
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class IssueRelation extends Model
 {
     use HasFactory;
+    use IsPermissable;
 
     protected $fillable = [
         'issue_id',

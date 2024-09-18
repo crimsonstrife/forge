@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Projects\Project;
+use App\Traits\IsPermissable;
 
 /**
  *
@@ -17,6 +18,7 @@ class IssueStatus extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use IsPermissable;
 
     protected $fillable = [
         'name',
