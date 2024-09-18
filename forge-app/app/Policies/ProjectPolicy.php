@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Project;
+use App\Models\Projects\Project;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -30,7 +30,7 @@ class ProjectPolicy
      * Determine whether the user can view the model.
      *
      * @param \App\Models\User $user
-     * @param \App\Models\Project $project
+     * @param \App\Models\Projects\Project $project
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function view(User $user, Project $project)
@@ -58,7 +58,7 @@ class ProjectPolicy
      * Determine whether the user can update the model.
      *
      * @param \App\Models\User $user
-     * @param \App\Models\Project $project
+     * @param \App\Models\Projects\Project $project
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function update(User $user, Project $project)
@@ -77,7 +77,7 @@ class ProjectPolicy
      * Determine whether the user can delete the model.
      *
      * @param \App\Models\User $user
-     * @param \App\Models\Project $project
+     * @param \App\Models\Projects\Project $project
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function delete(User $user, Project $project)

@@ -6,7 +6,7 @@ namespace App\Filament\Widgets\Timesheet;
 
 use App\Models\Timesheet;
 use App\Models\User;
-use App\Models\IssueHour;
+use App\Models\Issues\IssueHour;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;

@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\IssueTypeResource\Pages;
 
 use App\Filament\Resources\IssueTypeResource;
-use App\Models\IssueType;
+use App\Models\Issues\IssueType;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 

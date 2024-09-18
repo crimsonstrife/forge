@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 //use App\Http\Controllers\Controller;
-//use App\Models\Project as ProjectModel;
+//use App\Models\Projects\Project as ProjectModel;
 
 /**
  * Class Project

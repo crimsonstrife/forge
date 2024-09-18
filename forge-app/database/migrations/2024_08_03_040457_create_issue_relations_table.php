@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('issue_id')->unsigned();
             $table->bigInteger('related_issue_id')->unsigned();
-            $table->string('issue_relation_type');
+            $table->bigInteger('issue_relation_type')->unsigned();
             $table->integer('issue_sort')->default(1);
             $table->timestamps();
         });

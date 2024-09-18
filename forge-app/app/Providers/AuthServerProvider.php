@@ -6,7 +6,9 @@ use Laravel\Passport\Passport;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 //use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\PassportServiceProvider;
+use Laravel\Sanctum\SanctumServiceProvider;
 use Laravel\Sanctum\Sanctum;
+use App\Models\PersonalAccessToken;
 
 /**
  * AuthServerProvider class.
@@ -33,7 +35,7 @@ class AuthServerProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->register(PassportServiceProvider::class);
-        $this->app->register(\Laravel\Sanctum\SanctumServiceProvider::class);
+        $this->app->register(SanctumServiceProvider::class);
     }
 
     /**
@@ -42,10 +44,11 @@ class AuthServerProvider extends ServiceProvider
     public function boot(): void
     {
         $this->register();
+        //Passport::routes();
         Passport::tokensExpireIn(now()->addDays(15));
         Passport::refreshTokensExpireIn(now()->addDays(30));
         Passport::personalAccessTokensExpireIn(now()->addMonths(6));
         Passport::enableImplicitGrant();
-        Sanctum::usePersonalAccessTokenModel(\App\Models\PersonalAccessToken::class);
+        Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Project;
+use App\Models\Projects\Project;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Columns\TextColumn;
