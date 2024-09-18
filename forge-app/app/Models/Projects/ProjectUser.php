@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
+use App\Traits\IsPermissable;
+
 
 /**
  * ProjectUser Model
@@ -15,6 +17,7 @@ use App\Models\User;
 class ProjectUser extends Model
 {
     use HasFactory;
+    use IsPermissable;
 
     protected $fillable = [
         'project_id',

@@ -5,6 +5,8 @@ namespace App\Models\Projects;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Projects\Project;
+use App\Traits\IsPermissable;
 
 /**
  * ProjectType Model
@@ -41,6 +43,7 @@ class ProjectType extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use IsPermissable;
 
     protected $fillable = [
         'name',
