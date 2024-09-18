@@ -11,7 +11,6 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens as SanctumApiTokens;
 use Laravel\Passport\HasApiTokens as PassportApiTokens;
-use App\Models\PermissionGroup;
 use App\Traits\IsPermissable;
 use App\Traits\HasAdvancedPermissions;
 use Spatie\Permission\Traits\HasRoles;

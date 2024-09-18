@@ -3,7 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Project;
-use App\Models\Issue;
+use App\Models\Issues\Issue;
 use App\Models\Comment;
 use App\Models\User;
 use Closure;

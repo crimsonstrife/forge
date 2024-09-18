@@ -8,8 +8,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use App\Models\User;
-use App\Models\PermissionSet;
-use App\Models\PermissionGroup;
+use App\Models\Auth\PermissionSet;
+use App\Models\Auth\PermissionGroup;
 use Tests\TestCase;
 
 class AdvancedPermissionsTest extends TestCase

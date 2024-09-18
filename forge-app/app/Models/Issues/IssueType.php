@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Issues;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Issues\Issue;
 
 /**
  * Class IssueType
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Issue[] $issues
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Issues\Issue[] $issues
  * @property int|null $issues_count
  * @method static \Illuminate\Database\Eloquent\Builder|IssueType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|IssueType newQuery()

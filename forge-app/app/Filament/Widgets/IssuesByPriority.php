@@ -2,7 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\IssuePriority;
+use App\Models\Issues\IssuePriority;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Filament\Widgets\ChartWidget;

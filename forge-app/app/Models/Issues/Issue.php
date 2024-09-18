@@ -1,11 +1,20 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Issues;
 
 use App\Notifications\IssueCreated;
 use App\Notifications\IssueStatusUpdated;
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Project;
+use App\Models\Comment;
+use App\Models\Tags;
+use App\Models\DesignElements;
+use App\Models\Sprint;
+use App\Models\Epic;
+use App\Models\Issues\IssueType;
+use App\Models\Issues\IssueStatus;
+use App\Models\Issues\IssuePriority;
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,7 +32,7 @@ use Xetaio\Mentions\Models\Traits\HasMentionsTrait as HasMentions;
 /**
  * Class Issue
  * Model for the Issue table
- * @package App\Models
+ * @package App\Models\Issues\Issues
  */
 class Issue extends Model implements HasMedia
 {

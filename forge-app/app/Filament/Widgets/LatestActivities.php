@@ -3,9 +3,9 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Project;
-use App\Models\Issue;
+use App\Models\Issues\Issue;
 use App\Models\Comment;
-use App\Models\IssueActivity;
+use App\Models\Issues\IssueActivity;
 use App\Models\User;
 use Closure;
 use Filament\Forms\Components\RichEditor;

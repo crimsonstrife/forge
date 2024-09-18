@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Auth;
 
 use App\Traits\IsPermissable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
-use mysql_xdevapi\Collection;
 use Spatie\Permission\Guard;
 use Laravel\Jetstream\Team;
 use Spatie\Permission\Models\Permission;
