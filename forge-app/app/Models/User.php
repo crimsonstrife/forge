@@ -144,7 +144,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function canAccessFilament(): bool
     {
         // Check if the user has the 'access-filament' permission
-        return $this->hasPermissionTo('access-filament');
+        return $this->hasPermissionTo('access-filament') || $this->isSuperAdmin();
     }
 
     /**
