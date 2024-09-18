@@ -2,125 +2,67 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Str;
-use Illuminate\Filesystem\Filesystem;
+use Illuminate\Console\GeneratorCommand;
 
-/**
- * Class MakeService
- *
- * This class represents a make service command.
- */
-class MakeService extends Command
+class MakeService extends GeneratorCommand
 {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
     protected $signature = 'make:service {name}';
-    protected $description = 'Create a new service class';
-
-    protected $files;
 
     /**
-     * Summary of __construct
-     * @param \Illuminate\Filesystem\Filesystem $files
+     * The console command description.
+     *
+     * @var string
      */
-    public function __construct(Filesystem $files)
+    protected $description = 'Create a new service class';
+
+    /**
+     * Get the stub file for the generator.
+     *
+     * @return string
+     */
+    protected function getStub()
     {
-        parent::__construct();
-        $this->files = $files;
+        return app_path('Console/Commands/stubs/make-service.stub');
     }
 
     /**
-     * Summary of handle
-     * @return bool
+     * Get the default namespace for the class.
+     *
+     * @param string $rootNamespace
+     * @return string
+     */
+    protected function getDefaultNamespace($rootNamespace)
+    {
+        return $rootNamespace . '\Services';
+    }
+
+    /**
+     * replace the class name in the stub
+     * @param string $stub
+     * @param string $name
+     * @return string
+     */
+    protected function replaceClass($stub, $name)
+    {
+        $stub = parent::replaceClass($stub, $name);
+
+        $name = class_basename($name);
+
+        return str_replace('{{ class }}', $name, $stub);
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
      */
     public function handle()
     {
-        $name = $this->argument('name');
-        $serviceClass = $this->qualifyClass($name);
-
-        $path = $this->getPath($serviceClass);
-
-        if ($this->files->exists($path)) {
-            $this->error('Service class already exists!');
-            return false;
-        }
-
-        $this->makeDirectory($path);
-
-        $this->files->put($path, $this->buildClass($serviceClass));
-
-        $this->info('Service class created successfully.');
-
-        return true;
-    }
-
-    /**
-     * Summary of qualifyClass
-     * @param string $name
-     * @return string
-     */
-    protected function qualifyClass($name)
-    {
-        $name = ltrim($name, '\\/');
-        $name = str_replace('/', '\\', $name);
-
-        return $name;
-    }
-
-    /**
-     * Summary of getPath
-     * @param string $name
-     * @return string
-     */
-    protected function getPath($name)
-    {
-        $name = Str::replaceFirst($this->rootNamespace(), '', $name);
-
-        return base_path('app/Services') . '/' . str_replace('\\', '/', $name) . '.php';
-    }
-
-    /**
-     * Summary of makeDirectory
-     * @param string $path
-     */
-    protected function makeDirectory($path)
-    {
-        if (!$this->files->isDirectory(dirname($path))) {
-            $this->files->makeDirectory(dirname($path), 0777, true, true);
-        }
-    }
-
-    /**
-     * Summary of buildClass
-     * @param string $name
-     * @return string
-     */
-    protected function buildClass($name)
-    {
-        $stub = $this->files->get(base_path('stubs/service.stub'));
-
-        return str_replace(
-            ['{{ namespace }}', '{{ class }}'],
-            [$this->getNamespace($name), class_basename($name)],
-            $stub
-        );
-    }
-
-    /**
-     * Summary of getNamespace
-     * @param string $name
-     * @return string
-     */
-    protected function getNamespace($name)
-    {
-        return 'App\\Services' . (dirname($name) !== '.' ? '\\' . dirname($name) : '');
-    }
-
-    /**
-     * Summary of rootNamespace
-     * @return string
-     */
-    protected function rootNamespace()
-    {
-        return 'App\\';
+        parent::handle();
     }
 }
