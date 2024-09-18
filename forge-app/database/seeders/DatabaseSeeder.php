@@ -28,5 +28,7 @@ class DatabaseSeeder extends Seeder
 
         //Seed the permissions
         $this->call(PermissionSeeder::class);
+        //Seed the permission sets
+        $this->call(PermissionSetSeeder::class);
     }
 }
