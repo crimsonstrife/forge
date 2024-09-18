@@ -1,0 +1,59 @@
+{
+    "groups": [
+        {
+            "name": "Super Admin Group",
+            "sets": [
+                "Project Management",
+                "Issue Management",
+                "Timesheet Management",
+                "Comment Management",
+                "Permission Set Management",
+                "Permission Group Management",
+                "User Management"
+            ],
+            "permissions": [
+                "manage-settings",
+                "view-analytics",
+                "access-filament",
+                "access-jetstream",
+                "access-horizon",
+                "is-super-admin",
+                "is-admin"
+            ]
+        },
+        {
+            "name": "Admin Group",
+            "sets": [
+                "Project Management",
+                "Issue Management",
+                "Timesheet Management",
+                "Comment Management",
+                "User Management"
+            ],
+            "permissions": [
+                "manage-settings",
+                "view-analytics",
+                "access-jetstream",
+                "is-admin"
+            ]
+        },
+        {
+            "name": "Project Group",
+            "sets": [
+                "Project Management",
+                "Issue Management"
+            ],
+            "permissions": []
+        },
+        {
+            "name": "Timesheet Group",
+            "sets": ["Timesheet Management"],
+            "permissions": []
+        },
+        {
+            "name": "Comment Group",
+            "sets": ["Comment Management"],
+            "permissions": []
+        }
+    ]
+}

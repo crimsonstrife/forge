@@ -30,5 +30,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PermissionSeeder::class);
         //Seed the permission sets
         $this->call(PermissionSetSeeder::class);
+        //Seed the permission groups
+        $this->call(PermissionGroupSeeder::class);
     }
 }
