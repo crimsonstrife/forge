@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use App\Models\Issues\Issue;
 use App\Models\Projects\Project;
+use App\Models\Epic;
+use App\Traits\IsPermissable;
 
 /**
  * Sprint Model
@@ -55,6 +57,7 @@ class Sprint extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use IsPermissable;
 
     protected $fillable = [
         'name',

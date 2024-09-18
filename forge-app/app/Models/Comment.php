@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Xetaio\Mentions\Models\Traits\HasMentionsTrait as HasMentions;
+use App\Traits\IsPermissable;
 
 /**
  * Class Comment
@@ -15,4 +16,5 @@ class Comment extends Model
 {
     use HasFactory;
     use HasMentions;
+    use IsPermissable;
 }
