@@ -1,0 +1,16 @@
+<?php
+
+return [
+	/*
+	|--------------------------------------------------------------------------
+	| Name of this DummyConfig
+	|--------------------------------------------------------------------------
+	|
+	| Explanation of what this config file does, where it is expected
+	| to be used, as well as any quirks or details worth noting.
+	|
+	*/
+
+	{{lines}}
+
+];

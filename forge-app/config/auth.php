@@ -41,7 +41,12 @@ return [
             'provider' => 'users',
         ],
         'api' => [
-            'driver' => 'passport',
+            'driver' => 'passport', // Prioritize Passport as the default API guard
+            'provider' => 'users',
+        ],
+        // Fallback Sanctum guard for other non-OAuth API routes
+        'sanctum' => [
+            'driver' => 'sanctum',
             'provider' => 'users',
         ],
     ],

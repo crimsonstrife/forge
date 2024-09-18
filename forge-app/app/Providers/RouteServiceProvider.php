@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
  */
 class RouteServiceProvider extends ServiceProvider
 {
-/**
+    /**
      * The path to the "home" route for your application.
      *
      * Typically, users are redirected here after authentication.
@@ -38,6 +38,16 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
+
+            Route::middlewareGroup('passport-api', [
+                \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
+                'auth:api',  // Use Passport's 'api' guard by default
+            ]);
+
+            Route::middlewareGroup('sanctum-api', [
+                \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+                'auth:sanctum',  // Sanctum's guard
+            ]);
         });
     }
 

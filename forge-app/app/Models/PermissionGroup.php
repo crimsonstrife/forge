@@ -9,6 +9,7 @@ use App\Models\User;
 use mysql_xdevapi\Collection;
 use Spatie\Permission\Guard;
 use Laravel\Jetstream\Team;
+use Spatie\Permission\Models\Permission;
 
 /**
  * PermissionGroup Model
@@ -45,7 +46,7 @@ class PermissionGroup extends Model
         parent::__construct($attributes);
 
         $this->guarded[] = $this->primaryKey;
-        $this->table = 'permission_set_groups';
+        $this->table = 'permission_groups';
     }
 
     /**
@@ -65,7 +66,7 @@ class PermissionGroup extends Model
      */
     public function permissionSets()
     {
-        return $this->belongsToMany(PermissionSet::class, 'permission_set_group_permission_sets', 'group_id', 'set_id')->withTimestamps();
+        return $this->belongsToMany(PermissionSet::class, 'perm_group_has_perm_sets')->withTimestamps();
     }
 
     /**
@@ -74,7 +75,7 @@ class PermissionGroup extends Model
      */
     public function permissions()
     {
-        return $this->belongsToMany(Permission::class, 'permission_set_group_permissions')->withTimestamps();
+        return $this->belongsToMany(Permission::class, 'perm_group_has_permissions')->withTimestamps();
     }
 
     /**
@@ -83,7 +84,7 @@ class PermissionGroup extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_permission_set_groups')->withTimestamps();
+        return $this->belongsToMany(User::class, 'permission_group_user')->withTimestamps();
     }
 
     /**
@@ -92,7 +93,7 @@ class PermissionGroup extends Model
      */
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'role_permission_set_groups')->withTimestamps();
+        return $this->belongsToMany(Role::class, 'permission_group_role')->withTimestamps();
     }
 
     /**
@@ -103,7 +104,7 @@ class PermissionGroup extends Model
     {
         //check if teams are enabled
         if (config('permission.teams.enabled')) {
-            return $this->belongsToMany(Team::class, 'team_permission_set_groups')->withTimestamps();
+            return $this->belongsToMany(Team::class, 'permission_group_team')->withTimestamps();
         } else {
             return null;
         }
