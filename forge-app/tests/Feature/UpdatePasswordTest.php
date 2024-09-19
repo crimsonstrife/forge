@@ -17,7 +17,10 @@ class UpdatePasswordTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->actingAs($user->id);
+        // If user returns as an int, it will fail so we need to pass the user object
+        $actingUser = User::find($user->id);
+
+        $this->actingAs($actingUser);
 
         Livewire::test(UpdatePasswordForm::class)
             ->set('state', [
@@ -27,14 +30,17 @@ class UpdatePasswordTest extends TestCase
             ])
             ->call('updatePassword');
 
-        $this->assertTrue(Hash::check('new-password', $user->fresh()->password));
+        $this->assertTrue(Hash::check('new-password', $actingUser->fresh()->password));
     }
 
     public function testCurrentPasswordMustBeCorrect(): void
     {
         $user = User::factory()->create();
 
-        $this->actingAs($user->id);
+        // If user returns as an int, it will fail so we need to pass the user object
+        $actingUser = User::find($user->id);
+
+        $this->actingAs($actingUser);
 
         Livewire::test(UpdatePasswordForm::class)
             ->set('state', [
@@ -45,14 +51,17 @@ class UpdatePasswordTest extends TestCase
             ->call('updatePassword')
             ->assertHasErrors(['current_password']);
 
-        $this->assertTrue(Hash::check('password', $user->fresh()->password));
+        $this->assertTrue(Hash::check('password', $actingUser->fresh()->password));
     }
 
     public function testNewPasswordsMustMatch(): void
     {
         $user = User::factory()->create();
 
-        $this->actingAs($user->id);
+        // If user returns as an int, it will fail so we need to pass the user object
+        $actingUser = User::find($user->id);
+
+        $this->actingAs($actingUser);
 
         Livewire::test(UpdatePasswordForm::class)
             ->set('state', [
@@ -63,6 +72,6 @@ class UpdatePasswordTest extends TestCase
             ->call('updatePassword')
             ->assertHasErrors(['password']);
 
-        $this->assertTrue(Hash::check('password', $user->fresh()->password));
+        $this->assertTrue(Hash::check('password', $actingUser->fresh()->password));
     }
 }

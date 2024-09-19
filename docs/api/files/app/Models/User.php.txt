@@ -12,7 +12,7 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens as SanctumApiTokens;
 use Laravel\Passport\HasApiTokens as PassportApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use App\Models\PermissionGroup;
+use App\Models\Auth\PermissionGroup;
 use App\Traits\HasPermissions;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\SoftDeletes;

@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Spatie\Permission\PermissionRegistrar;
+use Illuminate\Support\Facades\Auth;
 
 class PermissionSet
 {
@@ -20,15 +21,33 @@ class PermissionSet
         // It also determines if any permissions are being muted for the User by a permissionSet.
         $registrar = app(PermissionRegistrar::class);
 
-        // Get the current User if they are logged in, set the permissions for the User.
-        if (!empty($user = auth()->user)) {
-            //TODO: Set the permissions for the User.
+        // Get the user from the request.
+        $user = Auth::user();
 
-            //When the permissions are set, return the request.
+        // If the user is logged in (make sure $user is not null)
+        if ($user) {
+            // Ensure the user is an instance of the User model and load the necessary relationships
+            if ($user instanceof \App\Models\User) {
+                // Eager load the user's permissions, permission sets, and permission groups
+                $user->load('permissions', 'permissionSets.permissions', 'permissionGroups.permissions');
+
+                // Check if the user has any muted permissions
+                $mutedPermissions = $user->getMutedPermissions();
+
+                // Log the muted permissions, if any
+                if ($mutedPermissions->isNotEmpty()) {
+                    logger()->info('Muted permissions: ' . $mutedPermissions->implode(', '));
+                }
+            } else {
+                // Log the error
+                logger()->error('User is not an instance of \App\Models\User');
+            }
+
+            // Continue the request
             return $next($request);
         }
 
-        // If the User is not logged in, return the request.
+        // If the user is not authenticated, continue the request
         return $next($request);
     }
 }

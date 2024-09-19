@@ -3,7 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Comment;
-use App\Models\Issue;
+use App\Models\Issues\Issue;
 use App\Models\User;
 use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification as FilamentNotification;

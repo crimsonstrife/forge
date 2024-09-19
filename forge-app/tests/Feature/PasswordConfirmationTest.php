@@ -23,7 +23,10 @@ class PasswordConfirmationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user->id)->post('/user/confirm-password', [
+        // If user returns as an int, it will fail so we need to pass the user object
+        $actingUser = User::find($user->id);
+
+        $response = $this->actingAs($actingUser)->post('/user/confirm-password', [
             'password' => 'password',
         ]);
 
@@ -35,10 +38,17 @@ class PasswordConfirmationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user->id)->post('/user/confirm-password', [
+        // If user returns as an int, it will fail so we need to pass the user object
+        $actingUser = User::find($user->id);
+
+        $response = $this->actingAs($actingUser)->post('/user/confirm-password', [
             'password' => 'wrong-password',
         ]);
 
-        $response->assertSessionHasErrors();
+        // Assert that the response is a redirect
+        $response->assertRedirect();
+
+        // Assert that the session has errors
+        $response->assertSessionHasErrors('password');
     }
 }

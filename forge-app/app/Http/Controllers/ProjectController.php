@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Project;
+use App\Models\Projects\Project;
 use App\Http\Controllers\Controller;
 use Xetaio\Mentions\Parser\MentionParser;
 

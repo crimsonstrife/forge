@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\IsPermissable;
 
 /**
  * Timesheet Model
@@ -14,4 +15,5 @@ use Illuminate\Database\Eloquent\Model;
 class Timesheet extends Model
 {
     use HasFactory;
+    use IsPermissable;
 }
