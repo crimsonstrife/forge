@@ -165,6 +165,37 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     }
 
     /**
+     * This method is required by Filament to return the user's display name.
+     *
+     * @return string
+     */
+    public function getFilamentName(): string
+    {
+        // Ensure this returns a valid string, like the user's username, full name, or email address
+        return $this->username ?? $this->email ?? $this->full_name;
+    }
+
+    /**
+     * This method is required by some vendors to return the user's email address.
+     *
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * This method is required by some vendors to return the user's username.
+     *
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    /**
      * Get the projects that the user has created.
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -354,5 +385,59 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function permissionGroups(): BelongsToMany
     {
         return $this->belongsToMany(PermissionGroup::class, 'permission_group_user', 'user_id', 'permission_group_id');
+    }
+
+    /**
+     * Get the full name of the user.
+     * @return string
+     */
+    public function getFullNameAttribute(): string
+    {
+        return ($this->attributes['first_name'] ?? '') . ' ' . ($this->attributes['last_name'] ?? '') ? 'private' : 'public';
+    }
+
+    /**
+     * Get the first name of the user.
+     * @return string
+     */
+    public function getFirstNameAttribute(): string
+    {
+        return ($this->attributes['first_name'] ?? '') ? 'private' : 'public';
+    }
+
+    /**
+     * Get the last name of the user.
+     * @return string
+     */
+    public function getLastNameAttribute(): string
+    {
+        return ($this->attributes['last_name'] ?? '') ? 'private' : 'public';
+    }
+
+    /**
+     * Get the user's username.
+     * @return string
+     */
+    public function getUsernameAttribute(): string
+    {
+        return ($this->attributes['username'] ?? '') ? 'private' : 'public';
+    }
+
+    /**
+     * Get the user's email address.
+     * @return string
+     */
+    public function getEmailAttribute(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * Get the name attribute, used by some vendors.
+     * @return string
+     */
+    public function getNameAttribute(): string
+    {
+        return ($this->attributes['username'] ?? '') ? 'private' : 'public';
     }
 }

@@ -13,6 +13,7 @@ class PermissionSeeder extends Seeder
     use WithoutModelEvents;
 
     private $crudActions = ['create', 'read', 'update', 'delete'];
+    private $advancedActions = ['list', 'restore', 'force-delete', 'export', 'import'];
     private $specialPermissions = [
         'access-filament',
         'access-jetstream',
@@ -92,6 +93,9 @@ class PermissionSeeder extends Seeder
 
                 // Create CRUD permissions for the model
                 $this->createCrudPermissions($modelName);
+
+                // Create advanced permissions for the model
+                $this->createAdvancedPermissions($modelName);
             }
 
             return true;
@@ -113,6 +117,31 @@ class PermissionSeeder extends Seeder
     {
         // Loop through each CRUD action and create a permission for it
         foreach ($this->crudActions as $action) {
+            $permissionName = "{$action}-{$object}";
+
+            // Use firstOrCreate to ensure permissions are only created if they don't exist
+            $permission = Permission::firstOrCreate(['name' => $permissionName, 'guard_name' => 'web']);
+
+            // Log whether the permission was created or already existed
+            if ($permission->wasRecentlyCreated) {
+                $this->command->info("Permission created: {$permissionName}");
+            } else {
+                $this->command->comment("Permission already exists: {$permissionName}, skipping");
+            }
+        }
+    }
+
+    /**
+     * Create advanced permissions for each object.
+     *
+     * @param string $object
+     * @return void
+     * @example $this->createAdvancedPermissions('user');
+     */
+    private function createAdvancedPermissions(string $object): void
+    {
+        // Loop through each advanced action and create a permission for it
+        foreach ($this->advancedActions as $action) {
             $permissionName = "{$action}-{$object}";
 
             // Use firstOrCreate to ensure permissions are only created if they don't exist
