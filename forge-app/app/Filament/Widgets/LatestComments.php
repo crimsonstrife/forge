@@ -122,7 +122,7 @@ class LatestComments extends BaseWidget
 
             TextColumn::make('user.name')
                 ->label(__('Owner'))
-                ->formatStateUsing(fn($record) => view('components.user-avatar', ['user' => $record->user])),
+                ->formatStateUsing(fn ($record) => view('components.user-avatar', ['user' => $record->user])),
 
             TextColumn::make('created_at')
                 ->label(__('Commented at'))
@@ -147,11 +147,11 @@ class LatestComments extends BaseWidget
                 ->form([
                     RichEditor::make('content')
                         ->label(__('Content'))
-                        ->default(fn($record) => $record->content)
+                        ->default(fn ($record) => $record->content)
                         ->disabled()
                 ])
                 ->action(
-                    fn($record) =>
+                    fn ($record) =>
                         redirect()->to(route('filament.resources.issues.share', $record->issue->code))
                 )
         ];
