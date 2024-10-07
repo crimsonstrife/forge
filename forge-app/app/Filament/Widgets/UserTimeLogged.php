@@ -24,13 +24,13 @@ class UserTimeLogged extends ChartWidget
     /**
      * Determine if the authenticated user can view the list of issues.
      *
-     * @return bool Returns true if the user has the 'List Issues' permission, otherwise false.
+     * @return bool Returns true if the user has the 'list-issue' permission, otherwise false.
      */
     public static function canView(): bool
     {
-        // Get the authenticated user and check if they have the 'List Issues' permission.
+        // Get the authenticated user and check if they have the 'list-issue' permission.
         $user = Auth::user();
-        $permission = 'List Issues';
+        $permission = 'list-issue';
         if ($user instanceof User) {
             return $user->hasPermissionTo($permission);
         }
