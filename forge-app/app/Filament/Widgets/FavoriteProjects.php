@@ -37,13 +37,13 @@ class FavoriteProjects extends BaseWidget
     /**
      * Determine if the authenticated user can view the list of projects.
      *
-     * @return bool Returns true if the user has the 'List Projects' permission, otherwise false.
+     * @return bool Returns true if the user has the 'list-project' permission, otherwise false.
      */
     public static function canView(): bool
     {
-        // Get the authenticated user and check if they have the 'List Projects' permission.
+        // Get the authenticated user and check if they have the 'list-project' permission.
         $user = Auth::user();
-        $permission = 'List Projects';
+        $permission = 'list-project';
         if ($user instanceof User) {
             return $user->hasPermissionTo($permission);
         }
