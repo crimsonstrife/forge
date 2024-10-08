@@ -4,6 +4,30 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Filament Authentication
+    |--------------------------------------------------------------------------
+    |
+    | This configuration option allows you to specify the authentication guard
+    | that will be used to authenticate users when they log in to Filament.
+    |
+    | By default, Filament will use the default guard specified in your
+    | `config/auth.php` configuration file.
+    |
+    */
+
+    'auth' => [
+        'guard' => 'web',
+        'middleware' => ['sanctum'],
+        'pages' => [
+            'login' => 'login',
+            'password_request' => 'forgot-password',
+            'password_reset' => 'reset-password',
+            'two_factor_challenge' => 'two-factor-challenge',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Broadcasting
     |--------------------------------------------------------------------------
     |

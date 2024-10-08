@@ -47,13 +47,13 @@ class LatestComments extends BaseWidget
     /**
      * Determine if the authenticated user can view the list of issues.
      *
-     * @return bool Returns true if the user has the 'List Issues' permission, otherwise false.
+     * @return bool Returns true if the user has the 'list-issue' permission, otherwise false.
      */
     public static function canView(): bool
     {
-        // Get the authenticated user and check if they have the 'List Issues' permission.
+        // Get the authenticated user and check if they have the 'list-issue' permission.
         $user = Auth::user();
-        $permission = 'List Issues';
+        $permission = 'list-issue';
         if ($user instanceof User) {
             return $user->hasPermissionTo($permission);
         }
@@ -122,7 +122,7 @@ class LatestComments extends BaseWidget
 
             TextColumn::make('user.name')
                 ->label(__('Owner'))
-                ->formatStateUsing(fn($record) => view('components.user-avatar', ['user' => $record->user])),
+                ->formatStateUsing(fn ($record) => view('components.user-avatar', ['user' => $record->user])),
 
             TextColumn::make('created_at')
                 ->label(__('Commented at'))
@@ -147,11 +147,11 @@ class LatestComments extends BaseWidget
                 ->form([
                     RichEditor::make('content')
                         ->label(__('Content'))
-                        ->default(fn($record) => $record->content)
+                        ->default(fn ($record) => $record->content)
                         ->disabled()
                 ])
                 ->action(
-                    fn($record) =>
+                    fn ($record) =>
                         redirect()->to(route('filament.resources.issues.share', $record->issue->code))
                 )
         ];

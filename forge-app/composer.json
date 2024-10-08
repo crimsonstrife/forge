@@ -52,7 +52,7 @@
         "symfony/uid": "^7.1",
         "webcreate/vcs": "^1.1",
         "xetaio/xetaravel-mentions": "^11.0",
-        "phpoffice/phpspreadsheet": "^2.1.0"
+        "phpoffice/phpspreadsheet": "^2.3.0"
     },
     "provide": {
         "phpoffice/phpspreadsheet": "1.29"
@@ -105,7 +105,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "laravel/telescope"
+            ]
         }
     },
     "config": {
