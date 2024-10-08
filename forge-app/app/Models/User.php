@@ -393,7 +393,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function getFullNameAttribute(): string
     {
-        return ($this->attributes['first_name'] ?? '') . ' ' . ($this->attributes['last_name'] ?? '') ? 'private' : 'public';
+        return ($this->getFirstNameAttribute()) . ' ' . ($this->getLastNameAttribute());
     }
 
     /**
@@ -402,7 +402,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function getFirstNameAttribute(): string
     {
-        return ($this->attributes['first_name'] ?? '') ? 'private' : 'public';
+        return ($this->attributes['first_name']);
     }
 
     /**
@@ -411,7 +411,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function getLastNameAttribute(): string
     {
-        return ($this->attributes['last_name'] ?? '') ? 'private' : 'public';
+        return ($this->attributes['last_name']);
     }
 
     /**
@@ -420,7 +420,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function getUsernameAttribute(): string
     {
-        return ($this->attributes['username'] ?? '') ? 'private' : 'public';
+        return ($this->attributes['username']);
     }
 
     /**
@@ -438,6 +438,6 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function getNameAttribute(): string
     {
-        return ($this->attributes['username'] ?? '') ? 'private' : 'public';
+        return $this->getFullNameAttribute() ?? $this->getUsernameAttribute() ?? $this->getEmailAttribute();
     }
 }
