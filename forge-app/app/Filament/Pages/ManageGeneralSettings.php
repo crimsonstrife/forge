@@ -23,6 +23,10 @@ class ManageGeneralSettings extends SettingsPage
 
     protected static string $settings = GeneralSettings::class;
 
+    protected static ?string $slug = 'general-settings';
+
+    protected ?string $heading = 'Manage General Settings';
+
     public static function shouldRegisterNavigation(): bool
     {
         // Get the authenticated user and check if they have the 'manage-general-settings' permission.
@@ -90,8 +94,7 @@ class ManageGeneralSettings extends SettingsPage
                                     Select::make('site_language')
                                         ->label(__('Site language'))
                                         ->helperText(__('The language used by the platform.'))
-                                        ->searchable()
-                                        ->options($this->getLanguages()),
+                                        ->searchable(),
 
                                     Select::make('default_role')
                                         ->label(__('Default role'))
@@ -102,17 +105,5 @@ class ManageGeneralSettings extends SettingsPage
                         ]),
                 ]),
         ];
-    }
-
-    public function getSaveFormAction(): Action
-    {
-        return parent::getSaveFormAction()->label(__('Save'));
-    }
-
-    private function getLanguages(): array
-    {
-        $languages = config('system.locales.list');
-        asort($languages);
-        return $languages;
     }
 }

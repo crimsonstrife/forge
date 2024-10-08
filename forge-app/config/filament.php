@@ -110,4 +110,111 @@ return [
 
     'livewire_loading_delay' => 'default',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Pages
+    |--------------------------------------------------------------------------
+    |
+    | This is the namespace and directory that Filament will automatically
+    | register pages from. You may also register pages here.
+    |
+    */
+
+    'pages' => [
+        'namespace' => 'App\\Filament\\Pages',
+        'path' => app_path('Filament/Pages'),
+        'register' => [
+            Pages\Dashboard::class,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Resources
+    |--------------------------------------------------------------------------
+    |
+    | This is the namespace and directory that Filament will automatically
+    | register resources from. You may also register resources here.
+    |
+    */
+
+    'resources' => [
+        'namespace' => 'App\\Filament\\Resources',
+        'path' => app_path('Filament/Resources'),
+        'register' => [],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Widgets
+    |--------------------------------------------------------------------------
+    |
+    | This is the namespace and directory that Filament will automatically
+    | register dashboard widgets from. You may also register widgets here.
+    |
+    */
+
+    'widgets' => [
+        'namespace' => 'App\\Filament\\Widgets',
+        'path' => app_path('Filament/Widgets'),
+        'register' => [
+            // Widgets\AccountWidget::class,
+            // Widgets\FilamentInfoWidget::class,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Layout
+    |--------------------------------------------------------------------------
+    |
+    | This is the configuration for the general layout of the admin panel.
+    |
+    | You may configure the max content width from `xl` to `7xl`, or `full`
+    | for no max width.
+    |
+    */
+
+    'layout' => [
+        'actions' => [
+            'modal' => [
+                'actions' => [
+                    'alignment' => 'left',
+                ],
+            ],
+        ],
+        'forms' => [
+            'actions' => [
+                'alignment' => 'left',
+            ],
+            'have_inline_labels' => false,
+        ],
+        'footer' => [
+            'should_show_logo' => false,
+        ],
+        'max_content_width' => 'full',
+        'notifications' => [
+            'vertical_alignment' => 'bottom',
+            'alignment' => 'right',
+        ],
+        'sidebar' => [
+            'is_collapsible_on_desktop' => true,
+            'groups' => [
+                'are_collapsible' => true,
+            ],
+            'width' => null,
+            'collapsed_width' => null,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Favicon
+    |--------------------------------------------------------------------------
+    |
+    | This is the path to the favicon used for pages in the admin panel.
+    |
+    */
+
+    'favicon' => null,
 ];
