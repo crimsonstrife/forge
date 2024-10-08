@@ -38,23 +38,6 @@ class AppServiceProvider extends ServiceProvider
     {
         // Configure application
         $this->configureApp();
-
-        // Register scripts
-        try {
-            Filament::registerScripts([
-                app(Vite::class)('resources/js/filament.js'),
-            ]);
-        } catch (\Exception $e) {
-            // Manifest not built yet!
-        }
-
-        // Register navigation groups
-        Filament::registerNavigationGroups([
-            __('Management'),
-            __('Referential'),
-            __('Security'),
-            __('Settings'),
-        ]);
     }
 
     private function configureApp(): void

@@ -16,8 +16,8 @@ return [
     */
 
     'auth' => [
-        'guard' => 'web',
-        'middleware' => ['sanctum'],
+        'guard' => env('FILAMENT_AUTH_GUARD', 'web'),
+        //'middleware' => ['sanctum'],
         'pages' => [
             'login' => 'login',
             'password_request' => 'forgot-password',
@@ -112,6 +112,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Livewire
+    |--------------------------------------------------------------------------
+    |
+    | This is the namespace and directory that Filament will automatically
+    | register Livewire components inside.
+    |
+    */
+
+    'livewire' => [
+        'namespace' => 'App\\Filament',
+        'path' => app_path('Filament'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Pages
     |--------------------------------------------------------------------------
     |
@@ -124,7 +139,7 @@ return [
         'namespace' => 'App\\Filament\\Pages',
         'path' => app_path('Filament/Pages'),
         'register' => [
-            Pages\Dashboard::class,
+            //...
         ],
     ],
 

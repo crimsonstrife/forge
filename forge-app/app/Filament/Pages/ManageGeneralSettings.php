@@ -19,6 +19,8 @@ use Illuminate\Contracts\Support\Htmlable;
 
 class ManageGeneralSettings extends SettingsPage
 {
+    protected static bool $shouldRegisterNavigation = true;
+
     protected static ?string $navigationIcon = 'heroicon-o-cog';
 
     protected static string $settings = GeneralSettings::class;
@@ -27,29 +29,20 @@ class ManageGeneralSettings extends SettingsPage
 
     protected ?string $heading = 'Manage General Settings';
 
+    protected ?string $subheading = 'Configure the general settings of the platform.';
+
+    protected static ?string $navigationGroup = 'Settings';
+
+    protected static ?string $navigationLabel = 'General';
+
     public static function shouldRegisterNavigation(): bool
     {
         // Get the authenticated user and check if they have the 'manage-general-settings' permission.
         $user = Auth::user();
         $permission = 'manage-general-settings';
         if ($user instanceof User) {
-            return $user->hasPermissionTo($permission);
+            return $user->hasPermissionTo($permission, 'web');
         }
-    }
-
-    public function getHeading(): string|Htmlable
-    {
-        return __('Manage General Settings');
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return __('General');
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __('Settings');
     }
 
     protected function getFormSchema(): array

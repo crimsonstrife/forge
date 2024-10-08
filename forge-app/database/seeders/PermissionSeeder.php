@@ -22,6 +22,7 @@ class PermissionSeeder extends Seeder
         'manage-settings',
         'manage-general-settings',
         'view-analytics',
+        'view-settings',
         'is-admin',
         'is-super-admin'
     ];
