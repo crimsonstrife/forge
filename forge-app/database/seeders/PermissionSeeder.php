@@ -20,6 +20,7 @@ class PermissionSeeder extends Seeder
         'access-horizon',
         'access-telescope',
         'manage-settings',
+        'manage-general-settings',
         'view-analytics',
         'is-admin',
         'is-super-admin'
