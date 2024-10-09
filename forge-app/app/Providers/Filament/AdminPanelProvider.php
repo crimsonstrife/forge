@@ -68,9 +68,6 @@ class AdminPanelProvider extends PanelProvider
                 ->label('Analytics')
                 ->icon('heroicon-o-chart-bar'),
                 NavigationGroup::make()
-                ->label('Users')
-                ->icon('heroicon-o-users'),
-                NavigationGroup::make()
                 ->label('Settings')
                 ->icon('heroicon-o-cog'),
             ])
@@ -81,12 +78,6 @@ class AdminPanelProvider extends PanelProvider
                 ->url(fn () => Dashboard::getUrl())
                 ->sort(0)
                 ->isActiveWhen(fn () => request()->routeIs('filament.admin.pages.dashboard')),
-                NavigationItem::make()
-                ->label(fn (): string => __('Manage Users'))
-                ->url(fn () => 'admin/users')
-                ->sort(0)
-                ->isActiveWhen(fn () => request()->routeIs('filament.admin.pages.users'))
-                ->group('Users'),
                 NavigationItem::make()
                 ->label(fn (): string => ManageGeneralSettings::getNavigationLabel())
                 ->url(fn () => ManageGeneralSettings::getUrl())
@@ -110,27 +101,5 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class => 'web',
             ])
             ->authGuard('sanctum');
-    }
-
-    /**
-     * Check if the authenticated user has the specified permission for the panel.
-     *
-     * @param string $permission The permission to check.
-     *
-     * @return bool True if the user has the permission, false otherwise.
-     */
-    private function hasPermission(string $permission): bool
-    {
-        // Get the authenticated user
-        $user = Auth::user();
-
-        // Confirm the user is an instance of the User model
-        if ($user instanceof User) {
-            // Check if the user has the specified permission
-            return $user->hasPermissionTo($permission, 'web');
-        }
-
-        // Return false if the user is not an instance of the User model
-        return false;
     }
 }

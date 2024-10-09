@@ -7,13 +7,11 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Settings\GeneralSettings;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Pages\Actions\Action;
 use Filament\Pages\SettingsPage;
 use Illuminate\Contracts\Support\Htmlable;
 
@@ -67,6 +65,11 @@ class ManageGeneralSettings extends SettingsPage
                                         ->helperText(__('This is the platform name'))
                                         ->default(fn () => config('app.name'))
                                         ->required(),
+
+                                    TextInput::make('site_description')
+                                        ->label(__('Site description'))
+                                        ->helperText(__('This is the platform description'))
+                                        ->default(fn () => config('app.description')),
 
                                     Toggle::make('enable_registration')
                                         ->label(__('Enable registration?'))
