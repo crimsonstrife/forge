@@ -65,7 +65,7 @@ class ManageGeneralSettings extends SettingsPage
                                     TextInput::make('site_name')
                                         ->label(__('Site name'))
                                         ->helperText(__('This is the platform name'))
-                                        ->default(fn() => config('app.name'))
+                                        ->default(fn () => config('app.name'))
                                         ->required(),
 
                                     Toggle::make('enable_registration')
