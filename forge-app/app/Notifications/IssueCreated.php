@@ -58,7 +58,7 @@ class IssueCreated extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->line(__('A new issue has just been created.'))
             ->line('- ' . __('Issue name:') . ' ' . $this->issue->name)
             ->line('- ' . __('Project:') . ' ' . $this->issue->project->name)
@@ -82,12 +82,12 @@ class IssueCreated extends Notification implements ShouldQueue
         return FilamentNotification::make()
             ->title(__('New issue created'))
             ->icon('octicon-issue-opened')
-            ->body(fn() => $this->issue->name)
+            ->body(fn () => $this->issue->name)
             ->actions([
                 Action::make('view')
                     ->link()
                     ->icon('octicon-eye')
-                    ->url(fn() => route('filament.resources.issues.share', $this->issue->slug)),
+                    ->url(fn () => route('filament.resources.issues.share', $this->issue->slug)),
             ])
             ->getDatabaseMessage();
     }

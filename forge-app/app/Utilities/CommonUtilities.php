@@ -170,11 +170,11 @@ trait CommonUtilities
                     return $target[$variable] === $value;
                 }
                 return false;
-            // Check if the target is a string
+                // Check if the target is a string
             case is_string($target):
                 // Check if the string contains the value
                 return strpos($target, $value) !== false;
-            // Check if the target is an object
+                // Check if the target is an object
             case is_object($target):
                 // Check if the object has the key
                 if (property_exists($target, $variable)) {
@@ -182,7 +182,7 @@ trait CommonUtilities
                     return $target->$variable === $value;
                 }
                 return false;
-            // Check if the target is a collection
+                // Check if the target is a collection
             case $target instanceof \Illuminate\Support\Collection:
                 // Check if the collection contains the key
                 if ($target->has($variable)) {
@@ -190,7 +190,7 @@ trait CommonUtilities
                     return $target->get($variable) === $value;
                 }
                 return false;
-            // Check if the target is a model
+                // Check if the target is a model
             case $target instanceof \Illuminate\Database\Eloquent\Model:
                 // Check if the model has the key
                 if ($target->has($variable)) {
@@ -198,7 +198,7 @@ trait CommonUtilities
                     return $target->get($variable) === $value;
                 }
                 return false;
-            // Check if the target is a collection of models
+                // Check if the target is a collection of models
             case $target instanceof \Illuminate\Database\Eloquent\Collection:
                 // Check if the collection contains the key
                 if ($target->has($variable)) {
@@ -206,27 +206,27 @@ trait CommonUtilities
                     return $target->get($variable) === $value;
                 }
                 return false;
-            // Check if the target is a number
+                // Check if the target is a number
             case is_numeric($target):
                 // Check if the number matches the value
                 return $target === $value;
-            // Check if the target is a boolean
+                // Check if the target is a boolean
             case is_bool($target):
                 // Check if the boolean matches the value
                 return $target === $value;
-            // Check if the target is null
+                // Check if the target is null
             case is_null($target):
                 // Check if the target is null
                 return false;
-            // Check if the target is a resource
+                // Check if the target is a resource
             case is_resource($target):
                 // Check if the resource matches the value
                 return $target === $value;
-            // Check if the target is a callable
+                // Check if the target is a callable
             case is_callable($target):
                 // Check if the callable matches the value
                 return $target === $value;
-            // Check if the target is an unknown type
+                // Check if the target is an unknown type
             default:
                 return false;
 

@@ -83,7 +83,7 @@ class MakeConfig extends Command
         if (!preg_match('/^\w[\w\-]+$/', $file)) {
             $this->error("Only alphanumeric characters, _ and - are allowed for the file name.");
             return;
-        } else if (preg_match('/\.php$/i', $file)) {
+        } elseif (preg_match('/\.php$/i', $file)) {
             $this->error("The file name must not end in .php.");
             return;
         }

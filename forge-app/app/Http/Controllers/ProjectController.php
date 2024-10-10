@@ -14,7 +14,6 @@ use Xetaio\Mentions\Parser\MentionParser;
  */
 class ProjectController extends Controller
 {
-
     /**
      * Retrieve all projects.
      *
