@@ -154,7 +154,7 @@ trait HasAdvancedPermissions
             }
         }
 
-    return false;
+        return false;
     }
 
     /**
@@ -169,10 +169,10 @@ trait HasAdvancedPermissions
     {
         $permissions = $permissionSet->permissions->where('pivot.muted', false)->pluck('name');
 
-    // Normalize both the permission to check and the permissions in the set
-    $normalizedPermission = is_string($permission) ? strtolower(trim($permission)) : strtolower($permission->name);
+        // Normalize both the permission to check and the permissions in the set
+        $normalizedPermission = is_string($permission) ? strtolower(trim($permission)) : strtolower($permission->name);
 
-    return $permissions->map(fn($perm) => strtolower(trim($perm)))->contains($normalizedPermission);
+        return $permissions->map(fn ($perm) => strtolower(trim($perm)))->contains($normalizedPermission);
     }
 
     /**
@@ -182,50 +182,50 @@ trait HasAdvancedPermissions
      * @return bool
      */
     private function hasPermissionViaRolePermissionSets($role, $permission): bool
-{
-    foreach ($role->permissionSets as $permissionSet) {
-        $normalizedPermission = is_string($permission) ? strtolower(trim($permission)) : strtolower($permission->name);
+    {
+        foreach ($role->permissionSets as $permissionSet) {
+            $normalizedPermission = is_string($permission) ? strtolower(trim($permission)) : strtolower($permission->name);
 
-        logger()->info("Checking permission via PermissionSet for role: {$role->name}, PermissionSet: {$permissionSet->name}");
-        if ($permissionSet->permissions->contains('name', $normalizedPermission) && !$permissionSet->permissions->where('name', $normalizedPermission)->first()->pivot->muted) {
-            logger()->info("Permission found in PermissionSet: {$permissionSet->name}");
-            return true;
-        }
-    }
-
-    return false;
-}
-
-/**
- * Helper method to check if a role has a permission via a PermissionGroup.
- * @param mixed $role
- * @param mixed $permission
- * @return bool
- */
-private function hasPermissionViaRolePermissionGroups($role, $permission): bool
-{
-    $normalizedPermission = is_string($permission) ? strtolower(trim($permission)) : strtolower($permission->name);
-
-    foreach ($role->permissionGroups as $permissionGroup) {
-        logger()->info("Checking permission via PermissionGroup for role: {$role->name}, PermissionGroup: {$permissionGroup->name}");
-        // Check if the permission is directly in the PermissionGroup
-        if ($permissionGroup->permissions->contains('name', $normalizedPermission)) {
-            logger()->info("Permission found in PermissionGroup: {$permissionGroup->name}");
-            return true;
-        }
-
-        // Check if the permission is in the PermissionSets within the PermissionGroup
-        foreach ($permissionGroup->permissionSets as $permissionSet) {
-            logger()->info("Checking permission via PermissionSet in PermissionGroup: {$permissionGroup->name}, PermissionSet: {$permissionSet->name}");
+            logger()->info("Checking permission via PermissionSet for role: {$role->name}, PermissionSet: {$permissionSet->name}");
             if ($permissionSet->permissions->contains('name', $normalizedPermission) && !$permissionSet->permissions->where('name', $normalizedPermission)->first()->pivot->muted) {
                 logger()->info("Permission found in PermissionSet: {$permissionSet->name}");
                 return true;
             }
         }
+
+        return false;
     }
 
-    return false;
-}
+    /**
+     * Helper method to check if a role has a permission via a PermissionGroup.
+     * @param mixed $role
+     * @param mixed $permission
+     * @return bool
+     */
+    private function hasPermissionViaRolePermissionGroups($role, $permission): bool
+    {
+        $normalizedPermission = is_string($permission) ? strtolower(trim($permission)) : strtolower($permission->name);
+
+        foreach ($role->permissionGroups as $permissionGroup) {
+            logger()->info("Checking permission via PermissionGroup for role: {$role->name}, PermissionGroup: {$permissionGroup->name}");
+            // Check if the permission is directly in the PermissionGroup
+            if ($permissionGroup->permissions->contains('name', $normalizedPermission)) {
+                logger()->info("Permission found in PermissionGroup: {$permissionGroup->name}");
+                return true;
+            }
+
+            // Check if the permission is in the PermissionSets within the PermissionGroup
+            foreach ($permissionGroup->permissionSets as $permissionSet) {
+                logger()->info("Checking permission via PermissionSet in PermissionGroup: {$permissionGroup->name}, PermissionSet: {$permissionSet->name}");
+                if ($permissionSet->permissions->contains('name', $normalizedPermission) && !$permissionSet->permissions->where('name', $normalizedPermission)->first()->pivot->muted) {
+                    logger()->info("Permission found in PermissionSet: {$permissionSet->name}");
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     /**
      * Define relationship with PermissionSets.

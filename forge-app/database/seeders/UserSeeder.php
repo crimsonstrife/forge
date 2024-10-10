@@ -40,7 +40,7 @@ class UserSeeder extends Seeder
             $superAdmin = User::where('email', 'admin@forge.app')->first();
 
             if ($superAdmin) {
-            $superAdmin->assignRole('super-admin');
+                $superAdmin->assignRole('super-admin');
             }
         }
     }
