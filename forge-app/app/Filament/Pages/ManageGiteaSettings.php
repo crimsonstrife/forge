@@ -17,7 +17,7 @@ use Illuminate\Contracts\Support\Htmlable;
 
 class ManageGiteaSettings extends SettingsPage
 {
-    protected static bool $shouldRegisterNavigation = true;
+    //protected static bool $shouldRegisterNavigation = true;
 
     protected static ?string $navigationIcon = 'heroicon-o-link';
 
@@ -32,6 +32,15 @@ class ManageGiteaSettings extends SettingsPage
     protected static ?string $navigationGroup = 'Modules';
 
     protected static ?string $navigationLabel = 'Gitea';
+
+    /**
+     * Only show the Gitea settings page if the module is enabled in the module settings.
+     */
+    public static function shouldRegisterNavigation(): bool
+    {
+        $moduleSettings = new \App\Settings\ModuleSettings();
+        return $moduleSettings->gitea_enabled;
+    }
 
     /* public static function shouldRegisterNavigation(): bool
     {
