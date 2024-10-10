@@ -7,9 +7,11 @@
                 "Issue Management",
                 "Timesheet Management",
                 "Comment Management",
+                "Permission Management",
                 "Permission Set Management",
                 "Permission Group Management",
-                "User Management"
+                "User Management",
+                "Role Management"
             ],
             "permissions": [
                 "manage-settings",
@@ -28,7 +30,10 @@
                 "Issue Management",
                 "Timesheet Management",
                 "Comment Management",
-                "User Management"
+                "Permission Set Management",
+                "Permission Group Management",
+                "User Management",
+                "Role Management"
             ],
             "permissions": [
                 "manage-settings",
