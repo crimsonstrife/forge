@@ -12,8 +12,9 @@ class PermissionSeeder extends Seeder
 {
     use WithoutModelEvents;
 
+    private $basicActions = ['viewAny'];
     private $crudActions = ['create', 'read', 'update', 'delete'];
-    private $advancedActions = ['list', 'restore', 'force-delete', 'export', 'import'];
+    private $advancedActions = ['list', 'restore', 'force-delete', 'export', 'import', 'reorder'];
     private $specialPermissions = [
         'access-filament',
         'access-jetstream',
@@ -35,6 +36,9 @@ class PermissionSeeder extends Seeder
         // Reset cached roles and permissions
         app()['cache']->forget('spatie.permission.cache');
 
+        // Create basic permissions
+        $this->createBasicPermissions();
+
         // Create specialty permissions
         $this->createSpecialPermissions();
 
@@ -43,6 +47,25 @@ class PermissionSeeder extends Seeder
 
         // Re-cache permissions
         app()->make(PermissionRegistrar::class)->forgetCachedPermissions();
+    }
+
+    /**
+     * Create basic permissions.
+     */
+    private function createBasicPermissions(): void
+    {
+        // Loop through each basic action and create a permission for it
+        foreach ($this->basicActions as $action) {
+            // Use firstOrCreate to ensure permissions are only created if they don't exist
+            $createdPermission = Permission::firstOrCreate(['name' => $action, 'guard_name' => 'web']);
+
+            // Log whether the permission was created or already existed
+            if ($createdPermission->wasRecentlyCreated) {
+                $this->command->info("Basic permission created: {$action}");
+            } else {
+                $this->command->comment("Basic permission already exists: {$action}, skipping");
+            }
+        }
     }
 
     /**
@@ -99,6 +122,12 @@ class PermissionSeeder extends Seeder
                 // Create advanced permissions for the model
                 $this->createAdvancedPermissions($modelName);
             }
+
+            // Create permissions for the permissions model
+            $this->createCrudPermissions('permission');
+
+            // Create advanced permissions for the permissions model
+            $this->createAdvancedPermissions('permission');
 
             return true;
         } catch (\Exception $e) {

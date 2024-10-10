@@ -2,13 +2,27 @@
 
 namespace App\Providers;
 
+use App\Models\Activity;
+use App\Models\Auth\PermissionGroup;
+use App\Models\Auth\PermissionSet;
+use App\Models\Auth\Role;
 use Laravel\Passport\Passport;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-//use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\PassportServiceProvider;
 use Laravel\Sanctum\SanctumServiceProvider;
 use Laravel\Sanctum\Sanctum;
 use App\Models\PersonalAccessToken;
+use App\Models\Projects\Project;
+use App\Models\User;
+use App\Policies\ActivityPolicy;
+use App\Policies\PermissionPolicy;
+use App\Policies\PermissionSetPolicy;
+use App\Policies\PermissionGroupPolicy;
+use App\Policies\ProjectPolicy;
+use App\Policies\UserPolicy;
+use App\Policies\RolePolicy;
+use Spatie\Permission\Models\Permission;
 
 /**
  * AuthServerProvider class.
@@ -27,6 +41,13 @@ class AuthServerProvider extends ServiceProvider
      */
     protected $policies = [
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
+        User::class => UserPolicy::class,
+        Role::class => RolePolicy::class,
+        Permission::class => PermissionPolicy::class,
+        PermissionSet::class => PermissionSetPolicy::class,
+        PermissionGroup::class => PermissionGroupPolicy::class,
+        Project::class => ProjectPolicy::class,
+        Activity::class => ActivityPolicy::class,
     ];
 
     /**
@@ -44,6 +65,8 @@ class AuthServerProvider extends ServiceProvider
     public function boot(): void
     {
         $this->register();
+        $this->registerPolicies();
+
         //Passport::routes();
         Passport::tokensExpireIn(now()->addDays(15));
         Passport::refreshTokensExpireIn(now()->addDays(30));
