@@ -2,8 +2,8 @@
 
 namespace App\Notifications;
 
-use App\Models\Issue;
-use App\Models\IssueActivity;
+use App\Models\Issues\Issue;
+use App\Models\Issues\IssueActivity;
 use App\Models\User;
 use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification as FilamentNotification;

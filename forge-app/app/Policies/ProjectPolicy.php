@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Project;
+use App\Models\Projects\Project;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -23,19 +23,19 @@ class ProjectPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->can('List projects');
+        return $user->can('list-project');
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param \App\Models\User $user
-     * @param \App\Models\Project $project
+     * @param \App\Models\Projects\Project $project
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function view(User $user, Project $project)
     {
-        return $user->can('View project')
+        return $user->can('read-project')
             && (
                 $project->owner_id === $user->id
                 ||
@@ -51,19 +51,19 @@ class ProjectPolicy
      */
     public function create(User $user)
     {
-        return $user->can('Create project');
+        return $user->can('create-project');
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param \App\Models\User $user
-     * @param \App\Models\Project $project
+     * @param \App\Models\Projects\Project $project
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function update(User $user, Project $project)
     {
-        return $user->can('Update project')
+        return $user->can('update-project')
             && (
                 $project->owner_id === $user->id
                 ||
@@ -77,11 +77,11 @@ class ProjectPolicy
      * Determine whether the user can delete the model.
      *
      * @param \App\Models\User $user
-     * @param \App\Models\Project $project
+     * @param \App\Models\Projects\Project $project
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function delete(User $user, Project $project)
     {
-        return $user->can('Delete project');
+        return $user->can('delete-project');
     }
 }

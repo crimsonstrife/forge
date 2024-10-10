@@ -8,6 +8,10 @@ return [
      */
     'settings' => [
         App\Settings\GeneralSettings::class,
+        App\Settings\ModuleSettings::class,
+        App\Settings\CrucibleSettings::class,
+        App\Settings\JiraSettings::class,
+        App\Settings\GiteaSettings::class,
     ],
 
     /*
