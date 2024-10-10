@@ -56,34 +56,11 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Dashboard::class,
-                ManageGeneralSettings::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
-            ])
-            ->navigationGroups([
-                NavigationGroup::make()
-                ->label('Analytics')
-                ->icon('heroicon-o-chart-bar'),
-                NavigationGroup::make()
-                ->label('Settings')
-                ->icon('heroicon-o-cog'),
-            ])
-            ->navigationItems([
-                NavigationItem::make()
-                ->label(fn (): string => __('filament-panels::pages/dashboard.title'))
-                ->icon('heroicon-o-home')
-                ->url(fn () => Dashboard::getUrl())
-                ->sort(0)
-                ->isActiveWhen(fn () => request()->routeIs('filament.admin.pages.dashboard')),
-                NavigationItem::make()
-                ->label(fn (): string => ManageGeneralSettings::getNavigationLabel())
-                ->url(fn () => ManageGeneralSettings::getUrl())
-                ->sort(0)
-                ->isActiveWhen(fn () => request()->routeIs('filament.admin.pages.general-settings'))
-                ->group('Settings'),
             ])
             ->middleware([
                 EncryptCookies::class,

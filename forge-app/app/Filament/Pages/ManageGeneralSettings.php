@@ -19,9 +19,9 @@ class ManageGeneralSettings extends SettingsPage
 {
     protected static bool $shouldRegisterNavigation = true;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cog';
-
     protected static string $settings = GeneralSettings::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-cog';
 
     protected static ?string $slug = 'general-settings';
 
@@ -33,7 +33,7 @@ class ManageGeneralSettings extends SettingsPage
 
     protected static ?string $navigationLabel = 'General';
 
-    public static function shouldRegisterNavigation(): bool
+    /* public static function shouldRegisterNavigation(): bool
     {
         // Get the authenticated user and check if they have the 'manage-general-settings' permission.
         $user = Auth::user();
@@ -41,7 +41,7 @@ class ManageGeneralSettings extends SettingsPage
         if ($user instanceof User) {
             return $user->hasPermissionTo($permission, 'web');
         }
-    }
+    } */
 
     protected function getFormSchema(): array
     {
