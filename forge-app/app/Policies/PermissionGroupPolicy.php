@@ -3,15 +3,16 @@
 namespace App\Policies;
 
 use App\Models\User;
+use App\Models\Auth\PermissionGroup;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**
  *
- * Class UserPolicy
+ * Class PermissionGroupPolicy
  *
- * This class defines the authorization policies for the User model.
+ * This class defines the authorization policies for permission groups.
  */
-class UserPolicy
+class PermissionGroupPolicy
 {
     use HandlesAuthorization;
 
@@ -23,19 +24,19 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->can('list-user');
+        return $user->can('list-permission-set');
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\Auth\PermissionGroup $permissionGroup
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, User $model)
+    public function view(User $user, PermissionGroup $permissionGroup)
     {
-        return $user->can('read-user', $model);
+        return $user->can('read-permission-set', $permissionGroup);
     }
 
     /**
@@ -46,30 +47,30 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        return $user->can('create-user');
+        return $user->can('create-permission-set');
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\Auth\PermissionGroup  $permissionGroup
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, User $model)
+    public function update(User $user, PermissionGroup $permissionGroup)
     {
-        return $user->can('update-user');
+        return $user->can('update-permission-set', $permissionGroup);
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\Auth\PermissionGroup  $permissionGroup
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, User $model)
+    public function delete(User $user, PermissionGroup $permissionGroup)
     {
-        return $user->can('delete-user');
+        return $user->can('delete-permission-set', $permissionGroup);
     }
 }

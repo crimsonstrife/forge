@@ -42,6 +42,48 @@
             ],
             "sets": ["Project Management"],
             "permissions": []
+        },
+        {
+            "name": "developer",
+            "groups": [
+                "Project Group",
+                "Comment Group",
+                "Timesheet Group"
+            ],
+            "sets": ["Issue Management"],
+            "permissions": []
+        },
+        {
+            "name": "timesheet-manager",
+            "groups": [
+                "Project Group",
+                "Comment Group",
+                "Timesheet Group"
+            ],
+            "sets": ["Timesheet Management"],
+            "permissions": []
+        },
+        {
+            "name": "comment-manager",
+            "groups": [
+                "Project Group",
+                "Comment Group",
+                "Timesheet Group"
+            ],
+            "sets": ["Comment Management"],
+            "permissions": []
+        },
+        {
+            "name": "user",
+            "groups": [
+                "Project Group",
+                "Comment Group",
+                "Timesheet Group"
+            ],
+            "sets": ["User Management"],
+            "permissions": [
+                "viewAny"
+            ]
         }
     ]
 }
