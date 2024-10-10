@@ -28,6 +28,8 @@ use App\Models\Auth\PermissionGroup;
 use App\Models\Projects\Project;
 use App\Models\Issues\Issue;
 use App\Models\Issues\IssueHour;
+use Illuminate\Log\Logger;
+use Illuminate\Support\Facades\Log;
 
 /**
  * User Model
@@ -135,6 +137,30 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
                 $item->notify(new UserCreatedNotification($item));
             }
         });
+    }
+
+    /**
+     * Check if the user can do something.
+     * Override the method from the Authorizable trait.
+     *
+     * @param string $ability
+     * @param array<mixed> $arguments
+     * @return bool
+     */
+    public function can($ability, $arguments = []): bool
+    {
+        // Check if the user has the 'is-super-admin' permission
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        // check the supplied arguments
+        if (empty($arguments)) {
+            return $this->checkPermissionTo($ability, 'web');
+        } else {
+            // we have arguments, so we need to check the permission with the arguments
+            return $this->checkPermissionTo($ability); // TODO: Implement logic to check if the user has the permission with the supplied arguments
+        }
     }
 
     /**
@@ -284,8 +310,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         try {
             return $this->hasPermissionTo($ability, $guard);
         } catch (PermissionDoesNotExist $e) {
-            // Log the error
-            // Log::error($e->getMessage());
+            //Log the error
+            Log::error('Permission does not exist: ' . $e->getMessage());
 
             return null;
         }
@@ -429,7 +455,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function getEmailAttribute(): string
     {
-        return $this->email;
+        return ($this->attributes['email']);
     }
 
     /**

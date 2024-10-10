@@ -35,7 +35,7 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project)
     {
-        return $user->can('View project')
+        return $user->can('read-project')
             && (
                 $project->owner_id === $user->id
                 ||
