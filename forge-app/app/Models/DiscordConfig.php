@@ -10,7 +10,7 @@ class DiscordConfig extends Model
     use HasFactory;
 
     protected $fillable = [
-        'instance_id',
+        'guild_id',
         'client_id',
         'client_secret',
         'bot_token',

@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Auth\Role;
-use App\Models\DiscordConfig as Discord;
 
 /**
  * Class DiscordAuthController
