@@ -26,6 +26,8 @@ class DiscordConfigResource extends Resource
 
     protected ?string $heading = 'Manage Discord Settings';
 
+    protected static ?string $model = "DiscordConfig";
+
     protected ?string $subheading = 'Configure the Discord settings of the platform.';
 
     protected static ?string $navigationGroup = 'Modules';
@@ -98,5 +100,15 @@ class DiscordConfigResource extends Resource
             //'create' => Pages\CreateDiscordConfig::route('/create'),
             'edit' => Pages\EditDiscordConfig::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModel(): string
+    {
+        return DiscordConfig::class;
+    }
+
+    public static function getDiscordConfig()
+    {
+        return self::getModel()::first();
     }
 }

@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\IsPermissable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class DiscordConfig extends Model
 {
     use HasFactory;
+    use IsPermissable;
+
+    // Specify the table name
+    protected $table = 'discord_config';
 
     protected $fillable = [
         'guild_id',
@@ -57,5 +62,10 @@ class DiscordConfig extends Model
         } else {
             self::create($data);
         }
+    }
+
+    public static function count()
+    {
+        return self::getDiscordConfig() ? 1 : 0;
     }
 }
