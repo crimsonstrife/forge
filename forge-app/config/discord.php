@@ -38,5 +38,4 @@ return [
     */
 
     'key2' => 'sample value',
-
 ];

@@ -235,4 +235,17 @@ class Role extends SpatieRole implements RoleContract
             $query->where('id', $permission->id);
         })->exists();
     }
+
+    /**
+     * See if the role has a permission through a permission group.
+     *
+     * @param \App\Models\UserAuth\Permission $permission
+     * @return bool
+     */
+    public function hasPermissionThroughGroup($permission): bool
+    {
+        return $this->permissionGroups()->whereHas('permissions', function ($query) use ($permission) {
+            $query->where('id', $permission->id);
+        })->exists();
+    }
 }

@@ -5,176 +5,237 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
+use App\Models\Auth\Role;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Auth;
 
-/**
- * UserResource class represents a resource for managing users.
- *
- * @package Filament\Resources
- */
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'fas fa-users';
+    protected static ?string $navigationIcon = 'heroicon-o-user';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?string $slug = 'users';
 
-    /**
-     * Returns the navigation label for the UserResource.
-     *
-     * @return string The navigation label.
-     */
-    public static function getNavigationLabel(): string
+    protected ?string $heading = 'Manage Users';
+
+    protected ?string $subheading = 'Users are the people who use the application.';
+
+    protected static ?string $navigationGroup = 'Access Control';
+
+    protected static ?string $navigationLabel = 'Users';
+
+    /* public static function shouldRegisterNavigation(): bool
     {
-        return __('Users');
-    }
+        // Get the authenticated user and check if they have the 'list-user' permission.
+        $user = Auth::user();
+        $permission = 'list-user';
+        if ($user instanceof User) {
+            $canDo = $user->hasPermissionTo($permission, 'web');
 
-    /**
-     * Get the plural label for the resource.
-     *
-     * @return string|null The plural label for the resource, or null if not available.
-     */
-    public static function getPluralLabel(): ?string
-    {
-        return static::getNavigationLabel();
-    }
+            if ($canDo) {
+                return true;
+            }
 
-    /**
-     * Get the navigation group for the user resource.
-     *
-     * @return string|null The navigation group for the user resource.
-     */
-    public static function getNavigationGroup(): ?string
-    {
-        return __('Permissions');
-    }
+            return false;
+        }
 
-    /**
-     * Define the form structure for the User resource.
-     *
-     * @param  Form  $form  The form instance.
-     * @return Form  The updated form instance.
-     */
-    public static function form(Form $form): Form
+        return false;
+    } */
+
+    public static function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
-
-                Forms\Components\Section::make()
-                    ->schema([
-                        Forms\Components\Grid::make()
-                            ->schema([
-                                Forms\Components\TextInput::make('name')
-                                    ->label(__('Full name'))
-                                    ->required()
-                                    ->maxLength(255),
-
-                                Forms\Components\TextInput::make('email')
-                                    ->label(__('Email address'))
-                                    ->email()
-                                    ->required()
-                                    ->rule(
-                                        fn($record) => 'unique:users,email,'
-                                            . ($record ? $record->id : 'NULL')
-                                            . ',id,deleted_at,NULL'
-                                    )
-                                    ->maxLength(255),
-
-                                Forms\Components\CheckboxList::make('roles')
-                                    ->label(__('Permission roles'))
-                                    ->required()
-                                    ->columns(3)
-                                    ->relationship('roles', 'name'),
-                            ]),
-                    ])
+                TextInput::make('username')->required()->maxLength(255)->unique(),
+                TextInput::make('email')->required()->email()->maxLength(255)->unique(),
+                TextInput::make('first_name')->required()->maxLength(255),
+                TextInput::make('last_name')->required()->maxLength(255),
+                Select::make('roles')
+                    ->multiple()
+                    ->relationship('roles', 'name')
+                    ->options(Role::all()->pluck('name', 'id'))
+                    ->preload(),
             ]);
     }
 
-    /**
-     * Define the table structure and configuration for the User resource.
-     *
-     * @param Table $table The table instance.
-     * @return Table The configured table instance.
-     */
-    public static function table(Table $table): Table
+    public static function table(Tables\Table $table): Tables\Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label(__('Full name'))
-                    ->sortable()
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('email')
-                    ->label(__('Email address'))
-                    ->sortable()
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('roles.name')
-                    ->label(__('Roles'))
-                    ->limit(2),
-
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->label(__('Email verified at'))
-                    ->dateTime()
-                    ->sortable()
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('socials')
-                    ->label(__('Linked social networks'))
-                    ->view('partials.filament.resources.social-icon'),
-
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label(__('Created at'))
-                    ->dateTime()
-                    ->sortable()
-                    ->searchable(),
+                TextColumn::make('username')->sortable()->searchable(),
+                TextColumn::make('email')->sortable()->searchable(),
+                TextColumn::make('roles.name')->label('Roles')->sortable(),
             ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]);
+            ->filters([]);
     }
 
-    /**
-     * Retrieve the relations for the UserResource.
-     *
-     * @return array The relations for the UserResource.
-     */
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
-    /**
-     * Retrieves an array of pages for the UserResource.
-     *
-     * @return array An array of pages with their corresponding routes.
-     */
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
-            'view' => Pages\ViewUser::route('/{record}'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+
+    public static function canAccess(): bool
+    {
+        // Get the authenticated user and check if they have the 'list-user' permission.
+        $user = Auth::user();
+        $permission = 'list-user';
+        if ($user instanceof User) {
+            $canDo = $user->hasPermissionTo($permission, 'web');
+
+            if ($canDo) {
+                return true;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    public static function canViewAny(): bool
+    {
+        // Get the authenticated user and check if they have the 'list-user' permission.
+        $user = Auth::user();
+        $permission = 'list-user';
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canView(Model $record): bool
+    {
+        // Get the authenticated user and check if they have the 'read-user' permission.
+        $authUser = Auth::user();
+        $permission = 'read-user';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+            // TODO: Check if the authenticated user has the 'read-user' permission for the given record.
+        }
+
+        return false;
+    }
+
+    public static function canCreate(): bool
+    {
+        // Get the authenticated user and check if they have the 'create-user' permission.
+        $user = Auth::user();
+        $permission = 'create-user';
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        // alias for canUpdate
+        return static::canUpdate($record);
+    }
+
+    public static function canUpdate(Model $record): bool
+    {
+        // Get the authenticated user and check if they have the 'update-user' permission.
+        $authUser = Auth::user();
+        $permission = 'update-user';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        // Get the authenticated user and check if they have the 'delete-user' permission.
+        $authUser = Auth::user();
+        $permission = 'delete-user';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canRestore(Model $record): bool
+    {
+        // Get the authenticated user and check if they have the 'restore-user' permission.
+        $authUser = Auth::user();
+        $permission = 'restore-user';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canForceDelete(Model $record): bool
+    {
+        // Get the authenticated user and check if they have the 'force-delete-user' permission.
+        $authUser = Auth::user();
+        $permission = 'force-delete-user';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canRestoreMultiple(): bool
+    {
+        // Get the authenticated user and check if they have the 'restore-user' permission.
+        $authUser = Auth::user();
+        $permission = 'restore-user';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canForceDeleteMultiple(): bool
+    {
+        // Get the authenticated user and check if they have the 'force-delete-user' permission.
+        $authUser = Auth::user();
+        $permission = 'force-delete-user';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canReorder(): bool
+    {
+        // Get the authenticated user and check if they have the 'reorder-user' permission.
+        $authUser = Auth::user();
+        $permission = 'reorder-user';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
     }
 }

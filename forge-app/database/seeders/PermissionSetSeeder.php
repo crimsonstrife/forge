@@ -12,6 +12,8 @@ class PermissionSetSeeder extends Seeder
 {
     use WithoutModelEvents;
 
+    private $modelsWithoutIsPermissable = ['permission'];
+
     /**
      * Run the database seeds.
      */
@@ -35,6 +37,10 @@ class PermissionSetSeeder extends Seeder
         // Get all models that use the IsPermissable trait
         $models = ModelUtility::getModelsByTrait('App\Traits\IsPermissable');
 
+        // Add additional models as needed that don't use the IsPermissable trait
+        $models = array_merge($models, $this->modelsWithoutIsPermissable);
+
+        // Loop through each model and create a PermissionSet for it
         foreach ($models as $model) {
             // Format the model name for the permission
             $modelName = ModelUtility::getNameForPermission($model);
@@ -46,7 +52,13 @@ class PermissionSetSeeder extends Seeder
                 "create-{$modelName}",
                 "read-{$modelName}",
                 "update-{$modelName}",
-                "delete-{$modelName}"
+                "delete-{$modelName}",
+                "list-{$modelName}",
+                "restore-{$modelName}",
+                "force-delete-{$modelName}",
+                "export-{$modelName}",
+                "import-{$modelName}",
+                "reorder-{$modelName}",
             ];
 
             // Create or update the PermissionSet for this model

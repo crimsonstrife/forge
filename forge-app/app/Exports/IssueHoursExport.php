@@ -51,7 +51,7 @@ class IssueHoursExport implements FromCollection, WithHeadings
     public function collection()
     {
         return $this->issue->hours
-            ->map(fn(IssueHour $item) => [
+            ->map(fn (IssueHour $item) => [
                 '#' => $item->ticket->code,
                 'ticket' => $item->ticket->name,
                 'user' => $item->user->name,

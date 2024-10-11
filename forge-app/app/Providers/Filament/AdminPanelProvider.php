@@ -3,10 +3,16 @@
 namespace App\Providers\Filament;
 
 use App\Contracts\Role;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Filament\Pages\Dashboard;
+use App\Filament\Pages\ManageGeneralSettings;
 use App\Http\Middleware\RoleMiddleware;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -19,6 +25,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 /**
  * Class AdminPanelProvider
@@ -35,6 +42,8 @@ class AdminPanelProvider extends PanelProvider
      */
     public function panel(Panel $panel): Panel
     {
+
+        // Return the panel configuration.
         return $panel
             ->default()
             ->id('admin')
@@ -46,7 +55,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -63,9 +72,11 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                EnsureFrontendRequestsAreStateful::class,
             ])
             ->authMiddleware([
-                Authenticate::class,
-            ]);
+                Authenticate::class => 'web',
+            ])
+            ->authGuard('sanctum');
     }
 }
