@@ -33,4 +33,125 @@ class ModuleSettings extends Settings
     {
         return 'modules';
     }
+
+    /**
+     * Creates a new instance of ModuleSettings with default values.
+     *
+     * @return ModuleSettings The newly created instance.
+     */
+    public static function makeDefault(): self
+    {
+        return new self([
+            'crucible_enabled' => false,
+            'jira_enabled' => false,
+            'gitea_enabled' => false,
+            'slack_enabled' => false,
+            'discord_enabled' => false,
+        ]);
+    }
+
+    /**
+     * Check if the Crucible module is enabled.
+     *
+     * @return bool Returns true if the Crucible module is enabled, false otherwise.
+     */
+    public function isCrucibleEnabled(): bool
+    {
+        return $this->crucible_enabled;
+    }
+
+    /**
+     * Set the enabled status of the Crucible module.
+     *
+     * @param bool $enabled The enabled status to set.
+     * @return void
+     */
+    public function setCrucibleEnabled(bool $enabled): void
+    {
+        $this->crucible_enabled = $enabled;
+    }
+
+    /**
+     * Check if the Jira module is enabled.
+     *
+     * @return bool Returns true if the Jira module is enabled, false otherwise.
+     */
+    public function isJiraEnabled(): bool
+    {
+        return $this->jira_enabled;
+    }
+
+    /**
+     * Set the enabled status of the Jira module.
+     *
+     * @param bool $enabled The enabled status to set.
+     * @return void
+     */
+    public function setJiraEnabled(bool $enabled): void
+    {
+        $this->jira_enabled = $enabled;
+    }
+
+    /**
+     * Check if the Gitea module is enabled.
+     *
+     * @return bool Returns true if the Gitea module is enabled, false otherwise.
+     */
+    public function isGiteaEnabled(): bool
+    {
+        return $this->gitea_enabled;
+    }
+
+    /**
+     * Set the enabled status of the Gitea module.
+     *
+     * @param bool $enabled The enabled status to set.
+     * @return void
+     */
+    public function setGiteaEnabled(bool $enabled): void
+    {
+        $this->gitea_enabled = $enabled;
+    }
+
+    /**
+     * Check if the Slack module is enabled.
+     *
+     * @return bool Returns true if the Slack module is enabled, false otherwise.
+     */
+    public function isSlackEnabled(): bool
+    {
+        return $this->slack_enabled;
+    }
+
+    /**
+     * Set the enabled status of the Slack module.
+     *
+     * @param bool $enabled The enabled status to set.
+     * @return void
+     */
+    public function setSlackEnabled(bool $enabled): void
+    {
+        $this->slack_enabled = $enabled;
+    }
+
+    /**
+     * Check if the Discord module is enabled.
+     *
+     * @return bool Returns true if the Discord module is enabled, false otherwise.
+     */
+    public function isDiscordEnabled(): bool
+    {
+        return $this->discord_enabled;
+    }
+
+    /**
+     * Set the enabled status of the Discord module.
+     *
+     * @param bool $enabled The enabled status to set.
+     * @return void
+     */
+    public function setDiscordEnabled(bool $enabled): void
+    {
+        $this->discord_enabled = $enabled;
+    }
 }
