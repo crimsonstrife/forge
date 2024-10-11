@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\IsPermissable;
 
 /**
  * Class DesignElements
@@ -13,4 +14,5 @@ use Illuminate\Database\Eloquent\Model;
 class DesignElements extends Model
 {
     use HasFactory;
+    use IsPermissable;
 }

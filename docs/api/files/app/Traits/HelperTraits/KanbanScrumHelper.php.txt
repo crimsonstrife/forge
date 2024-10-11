@@ -3,11 +3,11 @@
 namespace App\Traits\HelperTraits;
 
 use App\Models\User;
-use App\Models\Project;
-use App\Models\Issue;
-use App\Models\IssueType;
-use App\Models\IssueStatus;
-use App\Models\IssuePriority;
+use App\Models\Projects\Project;
+use App\Models\Issues\Issue;
+use App\Models\Issues\IssueType;
+use App\Models\Issues\IssueStatus;
+use App\Models\Issues\IssuePriority;
 use App\Models\Board;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Grid;

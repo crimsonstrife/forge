@@ -4,140 +4,229 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PermissionResource\Pages;
 use App\Filament\Resources\PermissionResource\RelationManagers;
-use App\Models\Permission;
+use App\Models\User;
+use Spatie\Permission\Models\Permission;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
-/**
- * PermissionResource class represents a resource for managing permissions.
- *
- * @package Filament\Resources
- */
 class PermissionResource extends Resource
 {
     protected static ?string $model = Permission::class;
 
-    protected static ?string $navigationIcon = 'fas fa-clipboard-check';
+    protected static ?string $navigationIcon = 'heroicon-o-key';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?string $slug = 'permissions';
 
-    /**
-     * Returns the navigation label for the PermissionResource.
-     *
-     * @return string The navigation label.
-     */
-    public static function getNavigationLabel(): string
+    protected ?string $heading = 'Manage Permissions';
+
+    protected ?string $subheading = 'Permissions are used to control access to certain parts of the application.';
+
+    protected static ?string $navigationGroup = 'Access Control';
+
+    protected static ?string $navigationLabel = 'Permissions';
+
+    /* public static function shouldRegisterNavigation(): bool
     {
-        return __('Permissions');
-    }
+        // Get the authenticated user and check if they have the 'list-permission' permission.
+        $user = Auth::user();
+        $permission = 'list-permission';
+        if ($user instanceof User) {
+            $canDo = $user->hasPermissionTo($permission, 'web');
 
-    /**
-     * Get the plural label for the resource.
-     *
-     * @return string|null The plural label for the resource, or null if not available.
-     */
-    public static function getPluralLabel(): ?string
-    {
-        return static::getNavigationLabel();
-    }
+            if ($canDo) {
+                return true;
+            }
 
-    /**
-     * Returns the navigation group for the permission resource.
-     *
-     * @return string|null The navigation group for the permission resource.
-     */
-    public static function getNavigationGroup(): ?string
-    {
-        return static::getPluralLabel();
-    }
+            return false;
+        }
 
-    /**
-     * Define the form structure for the PermissionResource.
-     *
-     * @param Form $form The form instance.
-     * @return Form The modified form instance.
-     */
-    public static function form(Form $form): Form
+        return false;
+    } */
+
+    public static function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make()
-                    ->schema([
-                        Forms\Components\Grid::make()
-                            ->schema([
-                                Forms\Components\TextInput::make('name')
-                                    ->label(__('Permission name'))
-                                    ->unique(table: Permission::class, column: 'name')
-                                    ->maxLength(255)
-                                    ->required()
-                                    ->columnSpan(1),
-                            ]),
+                TextInput::make('name')->required()->maxLength(255),
+                Select::make('guard_name')
+                    ->options([
+                        'web' => 'Web',
+                        'api' => 'API',
                     ])
+                    ->required(),
             ]);
     }
 
-    /**
-     * Define the table for the PermissionResource.
-     *
-     * @param  Table  $table  The table instance.
-     * @return Table  The modified table instance.
-     */
-    public static function table(Table $table): Table
+    public static function table(Tables\Table $table): Tables\Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label(__('Permission name'))
-                    ->sortable()
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label(__('Created at'))
-                    ->dateTime()
-                    ->sortable()
-                    ->searchable(),
+                TextColumn::make('name')->sortable()->searchable(),
+                TextColumn::make('guard_name')->sortable()->badge(),
             ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]);
+            ->filters([]);
     }
 
-    /**
-     * Get the relations for the PermissionResource.
-     *
-     * @return array
-     */
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
-    /**
-     * Returns an array of pages for the PermissionResource.
-     *
-     * @return array An array of pages with their corresponding routes.
-     */
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListPermissions::route('/'),
             'create' => Pages\CreatePermission::route('/create'),
-            'view' => Pages\ViewPermission::route('/{record}'),
             'edit' => Pages\EditPermission::route('/{record}/edit'),
         ];
+    }
+
+    public static function canAccess(): bool
+    {
+        // Get the authenticated user and check if they have the 'list-permission' permission.
+        $user = Auth::user();
+        $permission = 'list-permission';
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canViewAny(): bool
+    {
+        // Get the authenticated user and check if they have the 'list-permission' permission.
+        $user = Auth::user();
+        $permission = 'list-permission';
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canView(Model $record): bool
+    {
+        // Get the authenticated user and check if they have the 'read-permission' permission.
+        $authUser = Auth::user();
+        $permission = 'read-permission';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+            // TODO: Check if the authenticated user has the 'read-permission' permission for the given record.
+        }
+
+        return false;
+    }
+
+    public static function canCreate(): bool
+    {
+        // Get the authenticated user and check if they have the 'create-permission' permission.
+        $user = Auth::user();
+        $permission = 'create-permission';
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        // alias for canUpdate
+        return static::canUpdate($record);
+    }
+
+    public static function canUpdate(Model $record): bool
+    {
+        // Get the authenticated user and check if they have the 'update-permission' permission.
+        $authUser = Auth::user();
+        $permission = 'update-permission';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        // Get the authenticated user and check if they have the 'delete-permission' permission.
+        $authUser = Auth::user();
+        $permission = 'delete-permission';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canRestore(Model $record): bool
+    {
+        // Get the authenticated user and check if they have the 'restore-permission' permission.
+        $authUser = Auth::user();
+        $permission = 'restore-permission';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canForceDelete(Model $record): bool
+    {
+        // Get the authenticated user and check if they have the 'force-delete-permission' permission.
+        $authUser = Auth::user();
+        $permission = 'force-delete-permission';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canRestoreMultiple(): bool
+    {
+        // Get the authenticated user and check if they have the 'restore-permission' permission.
+        $authUser = Auth::user();
+        $permission = 'restore-permission';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canForceDeleteMultiple(): bool
+    {
+        // Get the authenticated user and check if they have the 'force-delete-permission' permission.
+        $authUser = Auth::user();
+        $permission = 'force-delete-permission';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
+    }
+
+    public static function canReorder(): bool
+    {
+        // Get the authenticated user and check if they have the 'reorder-permission' permission.
+        $authUser = Auth::user();
+        $permission = 'reorder-permission';
+        if ($authUser instanceof User) {
+            return $authUser->hasPermissionTo($permission, 'web');
+        }
+
+        return false;
     }
 }

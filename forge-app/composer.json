@@ -37,7 +37,7 @@
         "livewire/livewire": "^3.0",
         "maatwebsite/excel": "^3.1.56",
         "nesbot/carbon": "^3.7",
-        "phpoffice/phpspreadsheet": "^2.1.0",
+        "phpoffice/phpspreadsheet": "^2.3.0",
         "protonemedia/laravel-verify-new-email": "^1.10",
         "psr/simple-cache": "^3.0",
         "ramsey/uuid": "^4.7",
@@ -59,6 +59,8 @@
         "phpoffice/phpspreadsheet": "1.29"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.13",
+        "barryvdh/laravel-ide-helper": "^3.1",
         "fakerphp/faker": "^1.23",
         "friendsofphp/php-cs-fixer": "^3.62.0",
         "laravel/pint": "^1.17",
@@ -67,7 +69,9 @@
         "laravel/telescope": "^5.1",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
-        "phpunit/phpunit": "^11.0.1"
+        "orchestra/testbench": "^9.4",
+        "phpunit/phpunit": "^11.0.1",
+        "itsgoingd/clockwork": "^5.2"
     },
     "autoload": {
         "psr-4": {
@@ -102,7 +106,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "laravel/telescope"
+            ]
         }
     },
     "config": {

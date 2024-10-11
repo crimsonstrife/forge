@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
+use App\Models\Issues\Issue;
+use App\Models\Projects\Project;
+use App\Models\Epic;
+use App\Traits\IsPermissable;
 
 /**
  * Sprint Model
@@ -26,8 +30,8 @@ use Carbon\Carbon;
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Project $project
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Issue[] $issues
+ * @property-read \App\Models\Projects\Project $project
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Issues\Issue[] $issues
  * @property-read int|null $issues_count
  * @property-read \App\Models\Epic $epic
  * @property-read \Illuminate\Support\Carbon|null $remaining
@@ -53,6 +57,7 @@ class Sprint extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use IsPermissable;
 
     protected $fillable = [
         'name',

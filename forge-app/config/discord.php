@@ -1,42 +1,14 @@
 <?php
 
 return [
-	/*
-	|--------------------------------------------------------------------------
-	| Name of this DummyConfig
-	|--------------------------------------------------------------------------
-	|
-	| Explanation of what this config file does, where it is expected
-	| to be used, as well as any quirks or details worth noting.
-	|
-	*/
-
-
-	/*
-	|--------------------------------------------------------------------------
-	| Name of this config option
-	|--------------------------------------------------------------------------
-	|
-	| Explanation of what this config option does, where it is expected
-	| to be used, as well as any quirks or details worth noting.
-	|
-	*/
-
-	'key1' => [
-		'subkey1' => 'sample value',
-		'subkey2' => 'sample value',
-	],
-
-	/*
-	|--------------------------------------------------------------------------
-	| Name of this config option
-	|--------------------------------------------------------------------------
-	|
-	| Explanation of what this config option does, where it is expected
-	| to be used, as well as any quirks or details worth noting.
-	|
-	*/
-
-	'key2' => 'sample value',
-
+    /**
+     * Discord OAuth2 Configurationß
+     */
+    'client_id' => env('DISCORD_CLIENT_ID', ''),
+    'client_secret' => env('DISCORD_CLIENT_SECRET', ''),
+    'bot_token' => env('DISCORD_BOT_TOKEN', ''),
+    'guild_id' => env('DISCORD_GUILD_ID', ''),  // Add the guild (server) ID to limit it to one server
+    'redirect_uri' => env('DISCORD_REDIRECT_URI', ''),
+    'role_mappings' => [], // Default role mappings, which can be overridden in the UI
+    'channel_mappings' => [], // Default channel mappings, which can be overridden in the UI
 ];

@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Spatie\Permission\Models\Permission;
 
 /**
  *
@@ -24,19 +24,19 @@ class PermissionPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->can('List permissions');
+        return $user->can('list-permission');
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Permission  $permission
+     * @param  \Spatie\Permission\Models\Permission $permission
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function view(User $user, Permission $permission)
     {
-        return $user->can('View permission');
+        return $user->can('read-permission', $permission);
     }
 
     /**
@@ -47,30 +47,30 @@ class PermissionPolicy
      */
     public function create(User $user)
     {
-        return $user->can('Create permission');
+        return $user->can('create-permission');
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Permission  $permission
+     * @param  \Spatie\Permission\Models\Permission  $permission
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function update(User $user, Permission $permission)
     {
-        return $user->can('Update permission');
+        return $user->can('update-permission', $permission);
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Permission  $permission
+     * @param  \Spatie\Permission\Models\Permission  $permission
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function delete(User $user, Permission $permission)
     {
-        return $user->can('Delete permission');
+        return $user->can('delete-permission', $permission);
     }
 }

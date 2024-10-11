@@ -11,10 +11,9 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens as SanctumApiTokens;
 use Laravel\Passport\HasApiTokens as PassportApiTokens;
-use App\Models\PermissionGroup;
-use App\Traits\HasRoles;
 use App\Traits\IsPermissable;
-use App\Traits\HasPermissions as HasPermissions;
+use App\Traits\HasAdvancedPermissions;
+use Spatie\Permission\Traits\HasRoles;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -23,6 +22,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Ramsey\Uuid\Uuid;
 use ProtoneMedia\LaravelVerifyNewEmail\MustVerifyNewEmail;
 use Spatie\Permission\Exceptions\PermissionDoesNotExist;
+use Spatie\Permission\Models\Permission;
+use App\Models\Auth\PermissionSet;
+use App\Models\Auth\PermissionGroup;
+use App\Models\Projects\Project;
+use App\Models\Issues\Issue;
+use App\Models\Issues\IssueHour;
+use Illuminate\Log\Logger;
+use Illuminate\Support\Facades\Log;
 
 /**
  * User Model
@@ -36,15 +43,26 @@ use Spatie\Permission\Exceptions\PermissionDoesNotExist;
  */
 class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
-    use SanctumApiTokens;
-    use PassportApiTokens;
+    // Resolve the trait collision by aliasing methods
+    use SanctumApiTokens, PassportApiTokens {
+        // Alias conflicting methods from the Sanctum trait
+        SanctumApiTokens::tokens as sanctumTokens;
+        PassportApiTokens::tokens as passportTokens;
+        SanctumApiTokens::tokenCan as sanctumTokenCan;
+        PassportApiTokens::tokenCan as passportTokenCan;
+        SanctumApiTokens::CreateToken as sanctumCreateToken;
+        PassportApiTokens::CreateToken as passportCreateToken;
+        SanctumApiTokens::withAccessToken as sanctumWithAccessToken;
+        PassportApiTokens::withAccessToken as passportWithAccessToken;
+    }
     use HasFactory;
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
-    use HasRoles;
+    use HasAdvancedPermissions, HasRoles {
+        HasAdvancedPermissions::hasPermissionTo insteadof HasRoles;
+    }
     use IsPermissable;
-    use HasPermissions;
     use MustVerifyNewEmail;
     use SoftDeletes;
 
@@ -54,8 +72,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      * @var array<int, string>
      */
     protected $fillable = [
-        'first-name',
-        'last-name',
+        'first_name',
+        'last_name',
         'username',
         'email',
         'password',
@@ -125,12 +143,37 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     }
 
     /**
+     * Check if the user can do something.
+     * Override the method from the Authorizable trait.
+     *
+     * @param string $ability
+     * @param array<mixed> $arguments
+     * @return bool
+     */
+    public function can($ability, $arguments = []): bool
+    {
+        // Check if the user has the 'is-super-admin' permission
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        // check the supplied arguments
+        if (empty($arguments)) {
+            return $this->checkPermissionTo($ability, 'web');
+        } else {
+            // we have arguments, so we need to check the permission with the arguments
+            return $this->checkPermissionTo($ability); // TODO: Implement logic to check if the user has the permission with the supplied arguments
+        }
+    }
+
+    /**
      * Check if the user can access Filament.
      * @return bool
      */
     public function canAccessFilament(): bool
     {
-        return true; // return true if the user can access Filament TODO: implement this
+        // Check if the user has the 'access-filament' permission
+        return $this->hasPermissionTo('access-filament') || $this->isSuperAdmin();
     }
 
     /**
@@ -141,25 +184,44 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
-        return true; // return true if the user can access the panel TODO: implement this
+        // Check if the user has the 'access-filament' permission
+        if ($this->canAccessFilament()) {
+            // Check if the user has the 'access-panel' permission for the given panel
+            return true; // TODO: Implement logic to check if the user has access to a specific panel
+        }
+
+        return false;
     }
 
     /**
-     * Get the permission groups that the user belongs to.
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * This method is required by Filament to return the user's display name.
+     *
+     * @return string
      */
-    public function permissionGroups()
+    public function getFilamentName(): string
     {
-        return $this->belongsToMany(PermissionGroup::class, 'user_permission_group');
+        // Ensure this returns a valid string, like the user's username, full name, or email address
+        return $this->username ?? $this->email ?? $this->full_name;
     }
 
     /**
-     * Get the permissions that the user has.
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * This method is required by some vendors to return the user's email address.
+     *
+     * @return string
      */
-    public function permissions()
+    public function getEmail(): string
     {
-        return $this->belongsToMany(Permission::class, 'user_has_permission');
+        return $this->email;
+    }
+
+    /**
+     * This method is required by some vendors to return the user's username.
+     *
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->username;
     }
 
     /**
@@ -249,38 +311,199 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function checkPermissionTo(string $ability, mixed $guard = null): ?bool
     {
         try {
-            return HasPermissions::hasPermissionTo($ability, $guard);
+            return $this->hasPermissionTo($ability, $guard);
         } catch (PermissionDoesNotExist $e) {
-            // Log the error
-            // Log::error($e->getMessage());
+            //Log the error
+            Log::error('Permission does not exist: ' . $e->getMessage());
 
             return null;
         }
     }
 
-    /**
-     * Give the user permission to perform the given action.
-     *
-     * @param string $ability
-     * @param mixed|null $guard
-     * @return bool|null
-     * @throws PermissionDoesNotExist
-     */
-    public function providePermissionTo(string $ability, mixed $guard = null): ?bool
+    public function tokens()
     {
-        try {
-            // Check if the user already has the permission
-            if ($this->checkPermissionTo($ability, $guard)) {
-                return true;
-            }
+        // Try to get the tokens from Passport first
+        $tokens = $this->passportTokens();
 
-            // Assign the permission to the user
-            return HasPermissions::givePermissionTo($ability, $guard);
-        } catch (PermissionDoesNotExist $e) {
-            // Log the error
-            // Log::error($e->getMessage());
-
-            return null;
+        // If there are no tokens found, or there is an error, try to get the tokens from Sanctum
+        if (empty($tokens)) {
+            $tokens = $this->sanctumTokens();
         }
+
+        return $tokens;
+    }
+
+    public function tokenCan($ability)
+    {
+        // Try to check the token ability with Passport first
+        $can = $this->passportTokenCan($ability);
+
+        // If there is an error, or the token does not have the ability, try to check the token ability with Sanctum
+        if (!$can) {
+            $can = $this->sanctumTokenCan($ability);
+        }
+
+        return $can;
+    }
+
+    public function createToken($name, array $abilities = [])
+    {
+        // Try to create a token with Passport first
+        $token = $this->passportCreateToken($name, $abilities);
+
+        // If there is an error, or the token is not created, try to create a token with Sanctum
+        if (empty($token)) {
+            $token = $this->sanctumCreateToken($name, $abilities);
+        }
+
+        return $token;
+    }
+
+    public function withAccessToken($accessToken)
+    {
+        // Try to set the access token with Passport first
+        $this->passportWithAccessToken($accessToken);
+
+        // If there is an error, or the access token is not set, try to set the access token with Sanctum
+        if (empty($this->accessToken)) {
+            $this->sanctumWithAccessToken($accessToken);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Check if the user is an admin.
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        // Check if the user has the 'is-admin' permission
+        return $this->hasPermissionTo('is-admin');
+    }
+
+    /**
+     * Check if the user is a super admin.
+     * @return bool
+     */
+    public function isSuperAdmin(): bool
+    {
+        // Check if the user has the 'is-super-admin' permission
+        return $this->hasPermissionTo('is-super-admin');
+    }
+
+    /**
+     * A user may be given various permissions.
+     */
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'user_has_permissions', 'user_id', 'permission_id');
+    }
+
+    /**
+     * A user may be assigned to various permission sets.
+     */
+    public function permissionSets(): BelongsToMany
+    {
+        return $this->belongsToMany(PermissionSet::class, 'permission_set_user', 'user_id', 'permission_set_id');
+    }
+
+    /**
+     * A user may be assigned to various permission groups.
+     */
+    public function permissionGroups(): BelongsToMany
+    {
+        return $this->belongsToMany(PermissionGroup::class, 'permission_group_user', 'user_id', 'permission_group_id');
+    }
+
+    /**
+     * Get the full name of the user.
+     * @return string
+     */
+    public function getFullNameAttribute(): string
+    {
+        return ($this->getFirstNameAttribute()) . ' ' . ($this->getLastNameAttribute());
+    }
+
+    /**
+     * Get the first name of the user.
+     * @return string
+     */
+    public function getFirstNameAttribute(): string
+    {
+        return ($this->attributes['first_name']);
+    }
+
+    /**
+     * Get the last name of the user.
+     * @return string
+     */
+    public function getLastNameAttribute(): string
+    {
+        return ($this->attributes['last_name']);
+    }
+
+    /**
+     * Get the user's username.
+     * @return string
+     */
+    public function getUsernameAttribute(): string
+    {
+        return ($this->attributes['username']);
+    }
+
+    /**
+     * Get the user's email address.
+     * @return string
+     */
+    public function getEmailAttribute(): string
+    {
+        return ($this->attributes['email']);
+    }
+
+    /**
+     * Get the name attribute, used by some vendors.
+     * @return string
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->getFullNameAttribute() ?? $this->getUsernameAttribute() ?? $this->getEmailAttribute();
+    }
+
+    /**
+     * Save the model to the database.
+     *
+     * @param  array  $options
+     * @return bool
+     */
+    public function save(array $options = [])
+    {
+        // Check if the user is being created
+        if ($this->isCreating()) {
+            // Check if the user is being created with a password
+            if ($this->isCreatingWithPassword()) {
+                // password should be hashed already, this is for additional tasks that need to be done before saving
+            }
+        }
+
+        return parent::save($options);
+    }
+
+    /**
+     * Check if the user is being created.
+     * @return bool
+     */
+    public function isCreating(): bool
+    {
+        return $this->exists === false;
+    }
+
+    /**
+     * Check if the user is being created with a password.
+     * @return bool
+     */
+    public function isCreatingWithPassword(): bool
+    {
+        return $this->isCreating() && !empty($this->password);
     }
 }

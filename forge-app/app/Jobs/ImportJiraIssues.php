@@ -2,13 +2,13 @@
 
 namespace App\Jobs;
 
-use App\Models\Project;
-use App\Models\ProjectStatus;
-use App\Models\ProjectUser;
-use App\Models\Issue;
-use App\Models\IssuePriority;
-use App\Models\IssueStatus;
-use App\Models\IssueType;
+use App\Models\Projects\Project;
+use App\Models\Projects\ProjectStatus;
+use App\Models\Projects\ProjectUser;
+use App\Models\Issues\Issue;
+use App\Models\Issues\IssuePriority;
+use App\Models\Issues\IssueStatus;
+use App\Models\Issues\IssueType;
 use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification as FilamentNotification;
 use Illuminate\Bus\Queueable;

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('discord_config', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('instance_id'); // Reference to the Forge instance
+            $table->string('guild_id');  // Ensure only one Discord server is allowed
             $table->string('client_id');
             $table->string('client_secret');
             $table->string('bot_token');
