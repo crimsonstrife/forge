@@ -489,4 +489,22 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 
         return parent::save($options);
     }
+
+    /**
+     * Check if the user is being created.
+     * @return bool
+     */
+    public function isCreating(): bool
+    {
+        return $this->exists === false;
+    }
+
+    /**
+     * Check if the user is being created with a password.
+     * @return bool
+     */
+    public function isCreatingWithPassword(): bool
+    {
+        return $this->isCreating() && !empty($this->password);
+    }
 }
