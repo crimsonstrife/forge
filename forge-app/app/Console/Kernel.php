@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         // Add your scheduled tasks here.
         // $schedule->command('repositories:update-metadata')->daily();  TODO: Uncomment this line when the command is ready to be scheduled
+        // $schedule->command('discord:run')->everyMinute(); TODO: Uncomment this line when the command is ready to be scheduled
     }
 
     /**
