@@ -482,8 +482,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         if ($this->isCreating()) {
             // Check if the user is being created with a password
             if ($this->isCreatingWithPassword()) {
-                // Hash the password
-                $this->password = bcrypt($this->password);
+                // password should be hashed already, this is for additional tasks that need to be done before saving
             }
         }
 
