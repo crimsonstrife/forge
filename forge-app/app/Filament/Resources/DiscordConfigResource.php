@@ -38,39 +38,53 @@ class DiscordConfigResource extends Resource
     {
         return $form
             ->schema([
+                // Add the enabled toggle, required fields must be filled in before enabling
+                Forms\Components\Toggle::make('enabled')
+                    ->label('Enable Discord Connectivity')
+                    ->default(false)
+                    ->helperText('Enable or disable the Discord connectivity feature.'),
+
+                // Add the fields to the form
                 Forms\Components\TextInput::make('client_id')
                     ->label('Client ID')
-                    ->required(),
+                    ->required()
+                    ->helperText('The Client ID of the Discord application.'),
 
                 Forms\Components\TextInput::make('client_secret')
                     ->label('Client Secret')
                     ->password()  // Hide the value as a password field
                     ->dehydrated()  // Ensure it's saved as encrypted
-                    ->required(),
+                    ->required()
+                    ->helperText('The Client Secret of the Discord application.'),
 
                 Forms\Components\TextInput::make('bot_token')
                     ->label('Bot Token')
                     ->password()  // Hide the value as a password field
                     ->dehydrated()  // Ensure it's saved as encrypted
-                    ->required(),
+                    ->required()
+                    ->helperText('The Bot Token of the Discord application.'),
 
                 Forms\Components\TextInput::make('guild_id')
                     ->label('Guild ID (Server ID)')
-                    ->required(),
+                    ->required()
+                    ->helperText('The Guild ID of the Discord server.'),
 
                 Forms\Components\TextInput::make('redirect_uri')
                     ->label('Redirect URI')
-                    ->required(),
+                    ->required()
+                    ->helperText('The Redirect URI of the Discord application.'),
 
                 Forms\Components\Textarea::make('role_mappings')
                     ->label('Role Mappings')
                     ->json()
-                    ->rows(5),
+                    ->rows(5)
+                    ->helperText('The mappings of roles between the platform and Discord.'),
 
                 Forms\Components\Textarea::make('channel_mappings')
                     ->label('Channel Mappings')
                     ->json()
-                    ->rows(5),
+                    ->rows(5)
+                    ->helperText('The mappings of channels between the platform and Discord.'),
             ]);
     }
 
