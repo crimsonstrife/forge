@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
 use App\Traits\IsPermissable;
 
-
 /**
  * ProjectUser Model
  *

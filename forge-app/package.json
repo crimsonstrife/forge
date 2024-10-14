@@ -11,7 +11,7 @@
         "qunit": "^2.22.0"
     },
     "dependencies": {
-        "@angular/core": "^18.2.7",
+        "@angular/core": "^18.2.8",
         "@fortawesome/fontawesome-free": "^6.6.0",
         "@fortawesome/fontawesome-svg-core": "^6.6.0",
         "@fortawesome/free-brands-svg-icons": "^6.6.0",
@@ -36,7 +36,7 @@
         "tailwindcss": "^3.4.13",
         "three": "^0.169.0",
         "threepipe": "^0.0.33",
-        "tinymce": "^7.3.0",
+        "tinymce": "^7.4.1",
         "vite": "^5.4.8",
         "vue-fluid-dnd": "^0.7.0"
     }

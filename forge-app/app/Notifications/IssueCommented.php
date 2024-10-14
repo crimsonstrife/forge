@@ -56,7 +56,7 @@ class IssueCommented extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->line(
                 __(
                     'A new comment has been added to the issue :issue by :name.',
@@ -92,12 +92,12 @@ class IssueCommented extends Notification implements ShouldQueue
                 )
             )
             ->icon('octicon-comment')
-            ->body(fn() => __('by :name', ['name' => $this->comment->user->name]))
+            ->body(fn () => __('by :name', ['name' => $this->comment->user->name]))
             ->actions([
                 Action::make('view')
                     ->link()
                     ->icon('octicon-eye')
-                    ->url(fn() => route('filament.resources.issues.share', $this->comment->issue->code)),
+                    ->url(fn () => route('filament.resources.issues.share', $this->comment->issue->code)),
             ])
             ->getDatabaseMessage();
     }

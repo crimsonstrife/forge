@@ -58,7 +58,7 @@ class IssueStatusUpdated extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->line(__('The status of issue :issue has been updated.', ['issue' => $this->issue->name]))
             ->line('- ' . __('Old status:') . ' ' . $this->activity->oldStatus->name)
             ->line('- ' . __('New status:') . ' ' . $this->activity->newStatus->name)
@@ -78,7 +78,7 @@ class IssueStatusUpdated extends Notification implements ShouldQueue
             ->title(__('Issue status updated'))
             ->icon('octicon-issue-tracks')
             ->body(
-                fn() => __('Old status: :oldStatus - New status: :newStatus', [
+                fn () => __('Old status: :oldStatus - New status: :newStatus', [
                     'oldStatus' => $this->activity->oldStatus->name,
                     'newStatus' => $this->activity->newStatus->name,
                 ]),
@@ -87,7 +87,7 @@ class IssueStatusUpdated extends Notification implements ShouldQueue
                 Action::make('view')
                     ->link()
                     ->icon('octicon-eye')
-                    ->url(fn() => route('filament.resources.issues.share', $this->issue->slug)),
+                    ->url(fn () => route('filament.resources.issues.share', $this->issue->slug)),
             ])
             ->getDatabaseMessage();
     }

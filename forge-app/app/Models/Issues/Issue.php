@@ -376,7 +376,7 @@ class Issue extends Model implements HasMedia
     public function completedPercentage(): Attribute
     {
         return new Attribute(
-            get: fn() => $this->estimationProgress
+            get: fn () => $this->estimationProgress
         );
     }
 
