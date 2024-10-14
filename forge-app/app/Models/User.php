@@ -469,4 +469,41 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     {
         return $this->getFullNameAttribute() ?? $this->getUsernameAttribute() ?? $this->getEmailAttribute();
     }
+
+    /**
+     * Save the model to the database.
+     *
+     * @param  array  $options
+     * @return bool
+     */
+    public function save(array $options = [])
+    {
+        // Check if the user is being created
+        if ($this->isCreating()) {
+            // Check if the user is being created with a password
+            if ($this->isCreatingWithPassword()) {
+                // password should be hashed already, this is for additional tasks that need to be done before saving
+            }
+        }
+
+        return parent::save($options);
+    }
+
+    /**
+     * Check if the user is being created.
+     * @return bool
+     */
+    public function isCreating(): bool
+    {
+        return $this->exists === false;
+    }
+
+    /**
+     * Check if the user is being created with a password.
+     * @return bool
+     */
+    public function isCreatingWithPassword(): bool
+    {
+        return $this->isCreating() && !empty($this->password);
+    }
 }

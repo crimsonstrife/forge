@@ -15,9 +15,9 @@
  * @return array
  */
 return [
-    /*
-    * Laravel Framework Service Providers...
-    */
+    /**
+     * Laravel Framework Service Providers...
+     */
     Illuminate\Auth\AuthServiceProvider::class,
     Illuminate\Broadcasting\BroadcastServiceProvider::class,
     Illuminate\Bus\BusServiceProvider::class,
@@ -44,9 +44,9 @@ return [
     Laravel\Fortify\FortifyServiceProvider::class,
     Laravel\Sanctum\SanctumServiceProvider::class,
 
-    /*
-    * Application Service Providers...
-    */
+    /**
+     * Application Service Providers...
+     */
     App\Providers\AppServiceProvider::class,
     App\Providers\AuthServerProvider::class,
     App\Providers\ConfigProvider::class,
@@ -57,13 +57,18 @@ return [
     App\Providers\RouteServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
 
-    /*
-    * Package Service Providers...
-    */
+    /**
+     * Custom Module Service Providers...
+     */
+    App\Providers\DiscordConfigServiceProvider::class,
+
+    /**
+     * Package Service Providers...
+     */
     Xetaio\Mentions\Providers\MentionServiceProvider::class,
 
-    /*
-    * Spatie Permissions Provider...
-    */
+    /**
+     * Spatie Permissions Provider...
+     */
     Spatie\Permission\PermissionServiceProvider::class,
 ];

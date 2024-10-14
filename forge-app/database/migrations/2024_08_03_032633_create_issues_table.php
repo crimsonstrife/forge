@@ -16,11 +16,12 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->longText('content');
-            $table->bigInteger('owner_id')->unsigned();
+            $table->bigInteger('owner_id')->unsigned()->nullable();
             $table->bigInteger('responsible_id')->unsigned()->nullable();
             $table->bigInteger('project_id')->unsigned();
             $table->bigInteger('issue_type_id')->unsigned();
             $table->bigInteger('issue_status_id')->unsigned();
+            $table->string('created_by')->nullable(); // For tracking the user who submitted the issue (e.g., Discord user)
             $table->softDeletes();
             $table->timestamps();
         });
