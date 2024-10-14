@@ -23,7 +23,7 @@ class SyncForgeRolesToDiscord
      */
     public function handle(object $event): void
     {
-        $discordController = new DiscordAuthController;
+        $discordController = new DiscordAuthController();
 
         $discordController->syncForgeRolesToDiscord($event->user->id);
     }
