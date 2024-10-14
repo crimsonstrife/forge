@@ -26,6 +26,7 @@ class ListDiscordConfig extends ListRecords
                 ->modal('create-discord-config')
                 ->icon('heroicon-o-plus-circle')
                 ->button()
+                ->createAnother(false)
                 ->visible(fn () => DiscordConfig::count() === 0 && $isEnabled),
         ];
     }
