@@ -73,6 +73,8 @@ class IssueTypeResource extends Resource
                 Tables\Columns\IconColumn::make('is_default')
                     ->label('Default')
                     ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
                     ->sortable(),
             ]);
     }
