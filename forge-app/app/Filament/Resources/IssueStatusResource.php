@@ -73,28 +73,30 @@ class IssueStatusResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-        ->columns([
-            Tables\Columns\TextColumn::make('name')
-                ->label('Status Name')
-                ->sortable()
-                ->searchable(),
+            ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Status Name')
+                    ->sortable()
+                    ->searchable(),
 
-            Tables\Columns\ColorColumn::make('color')
-                ->label('Color'),
+                Tables\Columns\ColorColumn::make('color')
+                    ->label('Color'),
 
-            Tables\Columns\TextColumn::make('order')
-                ->label('Order')
-                ->sortable(),
+                Tables\Columns\TextColumn::make('order')
+                    ->label('Order')
+                    ->sortable(),
 
-            Tables\Columns\IconColumn::make('is_default')
-                ->label('Default')
-                ->boolean()
-                ->sortable(),
+                Tables\Columns\IconColumn::make('is_default')
+                    ->label('Default')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->sortable(),
 
-            Tables\Columns\TextColumn::make('project.name')
-                ->label('Project')
-                ->placeholder('Global Status'), // Display "Global Status" if project_id is null
-        ]);
+                Tables\Columns\TextColumn::make('project.name')
+                    ->label('Project')
+                    ->placeholder('Global Status'), // Display "Global Status" if project_id is null
+            ]);
     }
 
     public static function getRelations(): array

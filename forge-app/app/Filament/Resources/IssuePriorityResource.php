@@ -47,7 +47,8 @@ class IssuePriorityResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Priority Name'),
                 Tables\Columns\TextColumn::make('color')->label('Priority Color'),
-                Tables\Columns\IconColumn::make('is_default')->label('Default Priority')->boolean(),
+                Tables\Columns\IconColumn::make('is_default')->label('Default Priority')->boolean()->trueIcon('heroicon-o-check-circle')
+                ->falseIcon('heroicon-o-x-circle'),
             ]);
     }
 
