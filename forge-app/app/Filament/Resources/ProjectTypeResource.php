@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProjectTypeResource\Pages;
 use App\Filament\Resources\ProjectTypeResource\RelationManagers;
-use App\Models\ProjectType;
+use App\Models\Projects\ProjectType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -17,13 +17,35 @@ class ProjectTypeResource extends Resource
 {
     protected static ?string $model = ProjectType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->label('Type Name'),
+
+                Forms\Components\ColorPicker::make('color')
+                    ->required()
+                    ->label('Type Color'),
+
+                Forms\Components\Textarea::make('description')
+                    ->label('Description')
+                    ->nullable(),
+
+                Forms\Components\Toggle::make('is_default')
+                    ->label('Set as Default')
+                    ->reactive()
+                    ->helperText('If selected, this type will be the default for new projects globally.')
+                    ->afterStateUpdated(function ($state, callable $set, $get) {
+                        // Ensure only one type is set as the global default
+                        if ($state) {
+                            ProjectType::where('id', '<>', $get('id'))
+                                ->update(['is_default' => false]);
+                        }
+                    }),
             ]);
     }
 
@@ -31,18 +53,24 @@ class ProjectTypeResource extends Resource
     {
         return $table
             ->columns([
-                //
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Type Name')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\ColorColumn::make('color')
+                    ->label('Color'),
+
+                Tables\Columns\TextColumn::make('description')
+                    ->label('Description'),
+
+                // Using IconColumn for the "is_default" field
+                Tables\Columns\IconColumn::make('is_default')
+                    ->label('Default')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->sortable(),
             ]);
     }
 
