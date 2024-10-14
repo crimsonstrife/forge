@@ -64,4 +64,14 @@ class IssueType extends Model
     {
         return $this->hasMany(Issue::class, 'type_id', 'id')->withTrashed();
     }
+
+    /**
+     * Get the default issue type.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|IssueType
+     */
+    public static function getDefault()
+    {
+        return self::where('is_default', true)->first();
+    }
 }

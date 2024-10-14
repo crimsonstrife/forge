@@ -17,7 +17,7 @@ class IssueTypeResource extends Resource
 {
     protected static ?string $model = IssueType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-list';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function form(Form $form): Form
     {
@@ -29,9 +29,7 @@ class IssueTypeResource extends Resource
 
                 Forms\Components\TextInput::make('description')
                     ->label('Type Description')
-                    ->multiline()
-                    ->rows(3)
-                    ->maxRows(6)
+                    ->multipleOf(3)
                     ->nullable()
                     ->placeholder('A brief description of the issue type'),
 
@@ -46,7 +44,7 @@ class IssueTypeResource extends Resource
                 Forms\Components\Toggle::make('is_default')
                     ->label('Set as Default')
                     ->reactive()
-                    ->help('If selected, this type will be the default for new issues globally.')
+                    ->helperText('If selected, this type will be the default for new issues globally.')
                     ->afterStateUpdated(function ($state, callable $set, $get) {
                         // When "is_default" is toggled to true, update other types to ensure only one default type
                         if ($state) {
