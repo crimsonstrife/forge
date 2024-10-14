@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Forms\Components\IconPicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -37,9 +38,12 @@ class IssueTypeResource extends Resource
                     ->required()
                     ->label('Type Color'),
 
-                Forms\Components\TextInput::make('icon')
+                /* Forms\Components\TextInput::make('icon')
                     ->required()
-                    ->label('Type Icon'),
+                    ->label('Type Icon'), */
+                IconPicker::make('icon')
+                    ->label('Type Icon')
+                    ->required(),
 
                 Forms\Components\Toggle::make('is_default')
                     ->label('Set as Default')
