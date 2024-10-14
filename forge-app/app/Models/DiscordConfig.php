@@ -15,6 +15,7 @@ class DiscordConfig extends Model
     protected $table = 'discord_config';
 
     protected $fillable = [
+        'enabled',
         'guild_id',
         'client_id',
         'client_secret',
@@ -67,5 +68,27 @@ class DiscordConfig extends Model
     public static function count()
     {
         return self::getDiscordConfig() ? 1 : 0;
+    }
+
+    // Encrypt client_secret and bot_token automatically when saving to the database
+    public function setClientSecretAttribute($value)
+    {
+        $this->attributes['client_secret'] = encrypt($value);
+    }
+
+    public function setBotTokenAttribute($value)
+    {
+        $this->attributes['bot_token'] = encrypt($value);
+    }
+
+    // Decrypt client_secret and bot_token automatically when retrieving from the database
+    public function getClientSecretAttribute($value)
+    {
+        return decrypt($value);
+    }
+
+    public function getBotTokenAttribute($value)
+    {
+        return decrypt($value);
     }
 }
