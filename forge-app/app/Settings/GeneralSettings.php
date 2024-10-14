@@ -32,4 +32,24 @@ class GeneralSettings extends Settings
     {
         return 'general';
     }
+
+    /**
+     * Provides the default values for the general settings.
+     *
+     * @return array The default values.
+     */
+    public static function defaults(): array
+    {
+        return [
+            'site_name' => 'Forge',
+            'site_active' => true,
+            'enable_registration' => true,
+            'site_description' => null,
+            'site_logo' => null,
+            'site_favicon' => null,
+            'default_role' => 'user',
+            'enable_login_form' => true,
+            'enable_registration_form' => true,
+        ];
+    }
 }

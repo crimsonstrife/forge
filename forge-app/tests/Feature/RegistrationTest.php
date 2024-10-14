@@ -4,12 +4,14 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Fortify\Features;
+use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Jetstream\Jetstream;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
+    use WithFaker;
 
     public function testRegistrationScreenCanBeRendered(): void
     {
@@ -39,15 +41,20 @@ class RegistrationTest extends TestCase
             $this->markTestSkipped('Registration support is not enabled.');
         }
 
+        // Create a new user
+        $username = $this->faker->userName;
+        $email = $this->faker->safeEmail;
+        $password = $this->faker->password;
+
         $response = $this->post('/register', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'username' => $username,
+            'email' => $email,
+            'password' => $password,
+            'password_confirmation' => $password,
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
         ]);
 
-        $this->assertAuthenticated();
+        $this->assertAuthenticated('web');
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 }
