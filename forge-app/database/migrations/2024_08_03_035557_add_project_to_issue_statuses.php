@@ -12,11 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('issue_statuses', function (Blueprint $table) {
-            $table->bigInteger('project_id')->unsigned();
+            $table->bigInteger('project_id')->unsigned()->nullable();
         });
 
         Schema::table('issue_statuses', function (Blueprint $table) {
             $table->foreign('project_id')->references('id')->on('projects');
+        });
+
+        // Ensure that is_default is unique per project_id.  This will allow us to have a default status per project, with NULL being a global default.
+        Schema::table('issue_statuses', function (Blueprint $table) {
+            $table->unique(['project_id', 'is_default']);
         });
     }
 

@@ -1,0 +1,97 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\IssueTypeResource\Pages;
+use App\Filament\Resources\IssueTypeResource\RelationManagers;
+use App\Models\Issues\IssueType;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class IssueTypeResource extends Resource
+{
+    protected static ?string $model = IssueType::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-list';
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->label('Type Name'),
+
+                Forms\Components\TextInput::make('description')
+                    ->label('Type Description')
+                    ->multiline()
+                    ->rows(3)
+                    ->maxRows(6)
+                    ->nullable()
+                    ->placeholder('A brief description of the issue type'),
+
+                Forms\Components\ColorPicker::make('color')
+                    ->required()
+                    ->label('Type Color'),
+
+                Forms\Components\TextInput::make('icon')
+                    ->required()
+                    ->label('Type Icon'),
+
+                Forms\Components\Toggle::make('is_default')
+                    ->label('Set as Default')
+                    ->reactive()
+                    ->help('If selected, this type will be the default for new issues globally.')
+                    ->afterStateUpdated(function ($state, callable $set, $get) {
+                        // When "is_default" is toggled to true, update other types to ensure only one default type
+                        if ($state) {
+                            IssueType::where('id', '<>', $get('id'))
+                                ->update(['is_default' => false]);
+                        }
+                    }),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Type Name')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\ColorColumn::make('color')
+                    ->label('Color'),
+
+                Tables\Columns\TextColumn::make('icon')
+                    ->label('Icon'),
+
+                Tables\Columns\IconColumn::make('is_default')
+                    ->label('Default')
+                    ->boolean()
+                    ->sortable(),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListIssueTypes::route('/'),
+            'create' => Pages\CreateIssueType::route('/create'),
+            'edit' => Pages\EditIssueType::route('/{record}/edit'),
+        ];
+    }
+}
