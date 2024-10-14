@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('issue_types', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('icon');
+            $table->bigInteger('icon')->unsigned()->nullable();
             $table->string('color')->default('#cecece');
             $table->string('description')->nullable();
             $table->boolean('is_default')->default(false);
