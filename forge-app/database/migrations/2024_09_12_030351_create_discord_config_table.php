@@ -11,7 +11,7 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::create('discord_config', function (Blueprint $table) {
-            $table->id()->default(1); // Force the primary key to always be 1
+            $table->integer('id', false, true)->default(1); // Force the primary key to always be 1
             $table->boolean('enabled')->default(false); // Enable or disable the Discord connectivity feature
             $table->string('guild_id')->unique();  // Ensure only one Discord server is allowed
             $table->string('client_id')->unique();

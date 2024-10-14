@@ -21,12 +21,20 @@ class DiscordConfigServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Check if the Discord module is enabled from the ModuleSettings
-        $isEnabled = app(ModuleSettings::class)->discord_enabled;
+        // Check if the database is available and the settings table exists
+        if (app()->runningInConsole() || !app()->bound('db') || !app()->make('db')->connection()->getSchemaBuilder()->hasTable('settings')) {
+            // Check if the Discord module is enabled from the ModuleSettings
+            try {
+                $isEnabled = app(ModuleSettings::class)->isModuleEnabled('discord');
+            } catch (\Exception $e) {
+                // If the ModuleSettings class is not found, the Discord module is disabled
+                $isEnabled = false;
+            }
 
-        // If the Discord module is enabled, load the DiscordSettings
-        if ($isEnabled) {
-            $this->load();
+            // If the Discord module is enabled, load the DiscordSettings
+            if ($isEnabled) {
+                $this->load();
+            }
         }
     }
 

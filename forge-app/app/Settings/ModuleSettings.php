@@ -154,4 +154,28 @@ class ModuleSettings extends Settings
     {
         $this->discord_enabled = $enabled;
     }
+
+    /**
+     * Check if a module is enabled.
+     *
+     * @param string $module The module name.
+     * @return bool Returns true if the module is enabled, false otherwise.
+     */
+    public function isModuleEnabled(string $module): bool
+    {
+        switch ($module) {
+            case 'crucible':
+                return $this->isCrucibleEnabled();
+            case 'jira':
+                return $this->isJiraEnabled();
+            case 'gitea':
+                return $this->isGiteaEnabled();
+            case 'slack':
+                return $this->isSlackEnabled();
+            case 'discord':
+                return $this->isDiscordEnabled();
+            default:
+                return false;
+        }
+    }
 }
