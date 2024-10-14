@@ -47,7 +47,7 @@ class IconResource extends Resource
                         // Fetch existing custom icon types, excluding heroicon and font awesome
                         return Icon::whereNotIn('type', ['heroicon', 'fontawesome'])
                             ->pluck('type', 'type')
-                            ->mapWithKeys(fn($type) => [Str::slug($type, '-') => $type]);
+                            ->mapWithKeys(fn ($type) => [Str::slug($type, '-') => $type]);
                     })
                     ->reactive()
                     ->searchable()
