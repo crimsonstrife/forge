@@ -1,0 +1,1599 @@
+{
+    "icon-sets": [
+        {
+            "name": "heroicons",
+            "icons": [
+                {
+                    "name" : "academic-cap",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "adjustments-horizontal",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "adjustments-vertical",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "archive-box-arrow-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "archive-box-x-mark",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "archive-box",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-down-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-down-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-down-on-square-stack",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-down-on-square",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-down-right",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-down-tray",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-left-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-left-end-on-rectangle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-left-start-on-rectangle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-long-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-long-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-long-right",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-long-up",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-path-rounded-square",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-path",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-right-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-right-end-on-rectangle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-right-start-on-rectangle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-right",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-top-right-on-square",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-trending-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-trending-up",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-turn-down-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-turn-down-right",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-turn-left-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-turn-left-up",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-turn-right-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-turn-right-up",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-turn-up-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-turn-up-right",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-up-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-up-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-up-on-square-stack",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-up-on-square",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-up-right",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-up-tray",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-up",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-uturn-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-uturn-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-uturn-right",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrow-uturn-up",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrows-pointing-in",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrows-pointing-out",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrows-right-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "arrows-up-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "at-symbol",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "backspace",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "backward",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "banknotes",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bars-2",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bars-3-bottom-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bars-3-bottom-right",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bars-3-center-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bars-3",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bars-4",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bars-arrow-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bars-arrow-up",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "battery-0",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "battery-100",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "battery-50",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "beaker",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bell-alert",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bell-slash",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bell-snooze",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bell",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bold",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bolt-slash",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bolt",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "book-open",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bookmark-slash",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bookmark-square",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bookmark",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "briefcase",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "bug-ant",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "building-library",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "building-office-2",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "building-office",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "building-storefront",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "cake",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "calculator",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "calendar-date-range",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "calendar-days",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "calendar",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "camera",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chart-bar-square",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chart-bar",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chart-pie",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chat-bubble-bottom-center-text",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chat-bubble-bottom-center",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chat-bubble-left-ellipsis",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chat-bubble-left-right",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chat-bubble-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chat-bubble-oval-left-ellipsis",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chat-bubble-oval-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "check-badge",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "check-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "check",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chevron-double-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chevron-double-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chevron-double-right",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chevron-double-up",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chevron-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chevron-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chevron-right",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chevron-up-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "chevron-up",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "circle-stack",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "clipboard-document-check",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "clipboard-document-list",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "clipboard-document",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "clipboard",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "clock",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "cloud-arrow-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "cloud-arrow-up",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "cloud",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "code-bracket-square",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "code-bracket",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "cog-6-tooth",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "cog-8-tooth",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "cog",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "command-line",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "computer-desktop",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "cpu-chip",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "credit-card",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "cube-transparent",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "cube",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "currency-bangladeshi",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "currency-dollar",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "currency-euro",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "currency-pound",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "currency-rupee",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "currency-yen",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "cursor-arrow-rays",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "cursor-arrow-ripple",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "device-phone-mobile",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "device-tablet",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "divide",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-arrow-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-arrow-up",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-chart-bar",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-check",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-currency-bangladeshi",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-currency-dollar",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-currency-euro",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-currency-pound",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-currency-rupee",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-currency-yen",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-duplicate",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-magnifying-glass",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-minus",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-plus",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document-text",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "document",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "ellipsis-horizontal-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "ellipsis-horizontal",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "ellipsis-vertical",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "envelope-open",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "envelope",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "equals",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "exclamation-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "exclamation-triangle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "eye-dropper",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "eye-slash",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "eye",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "face-frown",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "face-smile",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "film",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "finger-print",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "fire",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "flag",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "folder-arrow-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "folder-minus",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "folder-open",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "folder-plus",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "folder",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "forward",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "funnel",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "gif",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "gift-top",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "gift",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "globe-alt",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "globe-americas",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "globe-asia-australia",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "globe-europe-africa",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "h1",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "h2",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "h3",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "hand-raised",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "hand-thumb-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "hand-thumb-up",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "hashtag",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "heart",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "home-modern",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "home",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "identification",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "inbox-arrow-down",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "inbox-stack",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "inbox",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "information-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "italic",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "key",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "language",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "lifebuoy",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "light-bulb",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "link-slash",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "link",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "list-bullet",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "lock-closed",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "lock-open",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "magnifying-glass-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "magnifying-glass-minus",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "magnifying-glass-plus",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "magnifying-glass",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "map-pin",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "map",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "megaphone",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "microphone",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "minus-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "minus",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "moon",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "musical-note",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "newspaper",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "no-symbol",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "numbered-list",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "paint-brush",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "paper-airplane",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "paper-clip",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "pause-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "pause",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "pencil-square",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "pencil",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "percentage-badge",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "phone-arrow-down-left",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "phone-arrow-up-right",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "phone-x-mark",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "phone",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "photo",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "play-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "play-pause",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "play",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "plus-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "plus",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "power",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "presentation-chart-bar",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "presentation-chart-line",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "printer",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "puzzle-piece",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "qr-code",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "question-mark-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "queue-list",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "radio",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "receipt-percent",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "receipt-refund",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "rectangle-group",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "rectangle-stack",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "rocket-launch",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "rss",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "scale",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "scissors",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "server-stack",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "server",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "share",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "shield-check",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "shield-exclamation",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "shopping-bag",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "shopping-cart",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "signal-slash",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "signal",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "slash",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "sparkles",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "speaker-wave",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "speaker-x-mark",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "square-2-stack",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "square-3-stack-3d",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "squares-2x2",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "squares-plus",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "star",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "stop-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "stop",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "strikethrough",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "sun",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "swatch",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "table-cells",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "tag",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "ticket",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "trash",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "trophy",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "truck",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "tv",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "underline",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "user-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "user-group",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "user-minus",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "user-plus",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "user",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "users",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "variable",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "video-camera-slash",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "video-camera",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "view-columns",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "viewfinder-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "wallet",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "wifi",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "window",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "wrench-screwdriver",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "wrench",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "x-circle",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                },
+                {
+                    "name" : "x-mark",
+                    "type" : "heroicon",
+                    "style" : "outline"
+                }
+            ]
+        },
+        {
+            "name": "fontawesome",
+            "icons": [
+                {
+                    "name" : "clipboard-check",
+                    "type" : "fontawesome",
+                    "style" : "regular"
+                }
+            ]
+        }
+    ]
+}
