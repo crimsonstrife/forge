@@ -101,47 +101,22 @@ trait HasAdvancedPermissions
 
         // For each role, check for the permission, as well as under related PermissionSets and PermissionGroups, and ensure it is not muted in any of them
         foreach ($roles as $role) {
-            // Check if the role has the permission
+            // Check if the role has the permission directly
             if ($role->permissions->contains('name', $permission)) {
                 return true;
             }
 
-            // Get PermissionSets for the role
-            $permissionSets = $role->permissionSets;
-
-            // If there are PermissionSets, check if the permission is found in the PermissionSets
-            if ($permissionSets !== null) {
-                // Check if the permission is found in the PermissionSets
-                foreach ($permissionSets as $permissionSet) {
-                    if ($permissionSet->permissions->contains('name', $permission) && !$permissionSet->permissions->where('name', $permission)->first()->pivot->muted) {
-                        return true;
-                    }
-                }
+            // Check if the role has the permission through its PermissionSets
+            if ($this->hasPermissionViaRolePermissionSets($role, $permission)) {
+                return true;
             }
 
-            // Get PermissionGroups for the role
-            $permissionGroups = $role->permissionGroups;
-
-            // If there are PermissionGroups, check if the permission is found in the PermissionGroups
-            if ($permissionGroups !== null) {
-                // Check if the permission is found in the PermissionGroups
-                foreach ($permissionGroups as $permissionGroup) {
-                    if ($permissionGroup->permissions->contains('name', $permission)) {
-                        return true;
-                    }
-
-                    // Check PermissionSets in the PermissionGroups
-                    $permissionSets = $permissionGroup->permissionSets;
-                    foreach ($permissionSets as $permissionSet) {
-                        if ($permissionSet->permissions->contains('name', $permission) && !$permissionSet->permissions->where('name', $permission)->first()->pivot->muted) {
-                            return true;
-                        }
-                    }
-                }
+            // Check if the role has the permission through its PermissionGroups
+            if ($this->hasPermissionViaRolePermissionGroups($role, $permission)) {
+                return true;
             }
         }
 
-        // If the permission is not found in the roles, PermissionSets or PermissionGroups, deny access
         return false;
     }
 
@@ -153,25 +128,90 @@ trait HasAdvancedPermissions
      */
     public function hasPermissionViaSetsOrGroups($permission)
     {
-        // Check if user has the permission via PermissionSets
-        $permissionFromSet = $this->permissionSets->flatMap->permissions->pluck('name')->contains($permission);
-        if ($permissionFromSet) {
-            return true;
+        // Check if the permission is in PermissionSets (excluding muted)
+        foreach ($this->permissionSets as $permissionSet) {
+            if ($this->checkPermissionInSet($permissionSet, $permission)) {
+                return true;
+            }
         }
 
-        // Check if user has the permission via PermissionGroups
-        $permissionFromGroup = $this->permissionGroups->flatMap->permissions->pluck('name')->contains($permission);
-        if ($permissionFromGroup) {
-            return true;
+        // Check if the permission is in PermissionGroups (including sets within groups)
+        foreach ($this->permissionGroups as $permissionGroup) {
+            foreach ($permissionGroup->permissionSets as $permissionSet) {
+                if ($this->checkPermissionInSet($permissionSet, $permission)) {
+                    return true;
+                }
+            }
+
+            if ($permissionGroup->permissions->contains('name', $permission)) {
+                return true;
+            }
         }
 
-        // Check PermissionSets in the PermissionGroups
-        $permissionFromGroupSets = $this->permissionGroups->flatMap->permissionSets->flatMap->permissions->pluck('name')->contains($permission);
-        if ($permissionFromGroupSets) {
-            return true;
+        return false;
+    }
+
+    /**
+    * Helper method to check if a permission exists in a permission set.
+    * Excludes muted permissions.
+    *
+    * @param \App\Models\Auth\PermissionSet $permissionSet
+    * @param string|int|Permission $permission
+    * @return bool
+    */
+    private function checkPermissionInSet($permissionSet, $permission)
+    {
+        $permissions = $permissionSet->permissions->where('pivot.muted', false)->pluck('name');
+
+        // Normalize both the permission to check and the permissions in the set
+        $normalizedPermission = is_string($permission) ? strtolower(trim($permission)) : strtolower($permission->name);
+
+        return $permissions->map(fn ($perm) => strtolower(trim($perm)))->contains($normalizedPermission);
+    }
+
+    /**
+     * Helper method to check if a role has a permission via a PermissionSet.
+     * @param mixed $role
+     * @param mixed $permission
+     * @return bool
+     */
+    private function hasPermissionViaRolePermissionSets($role, $permission): bool
+    {
+        foreach ($role->permissionSets as $permissionSet) {
+            $normalizedPermission = is_string($permission) ? strtolower(trim($permission)) : strtolower($permission->name);
+
+            if ($permissionSet->permissions->contains('name', $normalizedPermission) && !$permissionSet->permissions->where('name', $normalizedPermission)->first()->pivot->muted) {
+                return true;
+            }
         }
 
-        // If the permission is not found in Permissions, PermissionSets or PermissionGroups, deny access
+        return false;
+    }
+
+    /**
+     * Helper method to check if a role has a permission via a PermissionGroup.
+     * @param mixed $role
+     * @param mixed $permission
+     * @return bool
+     */
+    private function hasPermissionViaRolePermissionGroups($role, $permission): bool
+    {
+        $normalizedPermission = is_string($permission) ? strtolower(trim($permission)) : strtolower($permission->name);
+
+        foreach ($role->permissionGroups as $permissionGroup) {
+            // Check if the permission is directly in the PermissionGroup
+            if ($permissionGroup->permissions->contains('name', $normalizedPermission)) {
+                return true;
+            }
+
+            // Check if the permission is in the PermissionSets within the PermissionGroup
+            foreach ($permissionGroup->permissionSets as $permissionSet) {
+                if ($permissionSet->permissions->contains('name', $normalizedPermission) && !$permissionSet->permissions->where('name', $normalizedPermission)->first()->pivot->muted) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
@@ -182,7 +222,17 @@ trait HasAdvancedPermissions
      */
     public function permissionSets()
     {
-        return $this->belongsToMany(\App\Models\Auth\PermissionSet::class, 'permission_set_user');
+        // Get the model name for the model this trait is called from
+        $model = get_class($this);
+
+        // Get the name of the model without the namespace, lowercase
+        $modelName = strtolower(class_basename($model));
+
+        // Set the table name for the relationship table, based on the model name and the relationship, i.e. permission_set_user for User model
+        $tableName = "permission_set_{$modelName}";
+
+        // Return the relationship
+        return $this->belongsToMany(\App\Models\Auth\PermissionSet::class, $tableName);
     }
 
     /**
@@ -192,7 +242,17 @@ trait HasAdvancedPermissions
      */
     public function permissionGroups()
     {
-        return $this->belongsToMany(\App\Models\Auth\PermissionGroup::class, 'permission_group_user');
+        // Get the model name for the model this trait is called from
+        $model = get_class($this);
+
+        // Get the name of the model without the namespace, lowercase
+        $modelName = strtolower(class_basename($model));
+
+        // Set the table name for the relationship table, based on the model name and the relationship, i.e. permission_group_user for User model
+        $tableName = "permission_group_{$modelName}";
+
+        // Return the relationship
+        return $this->belongsToMany(\App\Models\Auth\PermissionGroup::class, $tableName);
     }
 
     /**
@@ -202,6 +262,16 @@ trait HasAdvancedPermissions
      */
     public function permissions()
     {
-        return $this->belongsToMany(Permission::class, 'user_has_permissions');
+        // Get the model name for the model this trait is called from
+        $model = get_class($this);
+
+        // Get the name of the model without the namespace, lowercase
+        $modelName = strtolower(class_basename($model));
+
+        // Set the table name for the relationship table, based on the model name and the relationship, i.e. user_has_permissions for User model
+        $tableName = "{$modelName}_has_permissions";
+
+        // Return the relationship
+        return $this->belongsToMany(Permission::class, $tableName);
     }
 }

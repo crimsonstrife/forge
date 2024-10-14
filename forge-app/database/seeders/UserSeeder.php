@@ -16,23 +16,32 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Check if there is already a super admin user, i.e., at least one user with the super-admin role
+        $superAdmin = User::role('super-admin')->first();
+
+        if ($superAdmin) {
+            return;
+        }
+
         // Generate a password using faker
         $password = $this->generatePassword();
 
-        // Create a super admin user
-        User::factory()->create([
+        if (!$superAdmin) {
+            // Create a super admin user
+            User::factory()->create([
             'first_name' => 'Admin',
             'last_name' => 'User',
             'username' => 'admin',
             'email' => 'admin@forge.app',
             'password' => $password,
-        ]);
+            ]);
 
-        // Assign the super admin role to the admin user
-        $admin = User::where('email', 'admin@forge.app')->first();
+            // Assign the super admin role to the admin user
+            $superAdmin = User::where('email', 'admin@forge.app')->first();
 
-        if ($admin) {
-            $admin->assignRole('super-admin');
+            if ($superAdmin) {
+                $superAdmin->assignRole('super-admin');
+            }
         }
     }
 
@@ -45,7 +54,7 @@ class UserSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        $password = $faker->password;
+        $password = $faker->password(8, 20);
 
         // Since the password will be unknown, and ideally temporary, log it to the console for the user
         $this->command->info('Admin password: ' . $password . ' (This password will be used to log in as the super admin user, you should change it.)');

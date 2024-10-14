@@ -13,7 +13,8 @@ class MakeConfig extends Command
      */
     protected $signature = 'make:config
                             {file : The config file to be created, without the .php extension}
-                            {--keys=* : A list of keys to be added to the generated file}';
+                            {--keys=* : A list of keys to be added to the generated file}
+                            {--force : Overwrite the config file if it already exists}';
 
     /**
      * The console command description.
@@ -32,13 +33,18 @@ class MakeConfig extends Command
         parent::__construct();
     }
 
+    /**
+     * Generate the contents of the config file.
+     *
+     * @param iterable $keys
+     * @return string
+     */
     protected static function generateContents(iterable $keys = []): string
     {
         $lines = [];
 
-        $lines[] = '<' . '?' . 'p' . 'h' . 'p';
-        $lines[] = '';
-        $lines[] = 'return [';
+        // Get the stub file contents
+        $contents = file_get_contents(app_path('Console/Commands/stubs/make-config.stub'));
 
         if (count($keys) == 0) {
             $keys = ['key1', 'key2'];
@@ -67,9 +73,10 @@ class MakeConfig extends Command
             $lines[] = "\t";
         }
 
-        $lines[] = '];';
+        // Replace the placeholder in the contents with the generated lines
+        $contents = str_replace('{{lines}}', implode("\n", $lines), $contents);
 
-        return implode("\n", $lines) . "\n";
+        return $contents;
     }
 
     /**
@@ -83,13 +90,13 @@ class MakeConfig extends Command
         if (!preg_match('/^\w[\w\-]+$/', $file)) {
             $this->error("Only alphanumeric characters, _ and - are allowed for the file name.");
             return;
-        } else if (preg_match('/\.php$/i', $file)) {
+        } elseif (preg_match('/\.php$/i', $file)) {
             $this->error("The file name must not end in .php.");
             return;
         }
         $path = config_path($file . '.php');
-        if (file_exists($path)) {
-            $this->error("The file already exists: config/" . $file . ".php");
+        if (file_exists($path) && !$this->option('force')) {
+            $this->error("The file already exists: config/" . $file . ".php, use the --force option to overwrite it.");
             return;
         }
 
@@ -99,6 +106,11 @@ class MakeConfig extends Command
                 $this->error("Only alphanumeric characters are allowed for the keys.");
                 return;
             }
+        }
+
+        // Check if the config file already exists, and if the user wants to overwrite it
+        if (file_exists($path) && $this->option('force')) {
+            $this->info("The config file already exists. Overwriting it...");
         }
 
         $ret = file_put_contents($path, self::generateContents($keys));

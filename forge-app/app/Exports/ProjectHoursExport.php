@@ -54,11 +54,11 @@ class ProjectHoursExport implements FromCollection, WithHeadings
     {
         $collection = collect();
         $this->project->issues
-            ->filter(fn($issue) => $issue->hours()->count())
+            ->filter(fn ($issue) => $issue->hours()->count())
             ->each(
-                fn($issue) =>
+                fn ($issue) =>
                 $issue->hours
-                    ->each(fn(IssueHour $item) => $collection->push([
+                    ->each(fn (IssueHour $item) => $collection->push([
                         '#' => $item->issue->code,
                         'issue' => $item->issue->name,
                         'user' => $item->user->name,

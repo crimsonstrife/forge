@@ -26,7 +26,7 @@ class ActivityPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->can('List activities');
+        return $user->can('list-activity');
     }
 
     /**
@@ -38,7 +38,7 @@ class ActivityPolicy
      */
     public function view(User $user, Activity $activity)
     {
-        return $user->can('View activity');
+        return $user->can('read-activity', $activity);
     }
 
     /**
@@ -49,7 +49,7 @@ class ActivityPolicy
      */
     public function create(User $user)
     {
-        return $user->can('Create activity');
+        return $user->can('create-activity');
     }
 
     /**
@@ -61,7 +61,7 @@ class ActivityPolicy
      */
     public function update(User $user, Activity $activity)
     {
-        return $user->can('Update activity');
+        return $user->can('update-activity');
     }
 
     /**
@@ -73,7 +73,7 @@ class ActivityPolicy
      */
     public function delete(User $user, Activity $activity)
     {
-        return $user->can('Delete activity');
+        return $user->can('delete-activity');
     }
 
     /**
