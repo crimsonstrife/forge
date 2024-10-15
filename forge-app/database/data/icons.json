@@ -864,6 +864,101 @@
                     "style": "outline"
                 },
                 {
+                    "name": "feed-discussion",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-forked",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-heart",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-issue-closed",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-issue-draft",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-issue-open",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-issue-reopen",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-merged",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-person",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-plus",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-public",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-pull-request-closed",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-pull-request-draft",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-pull-request-open",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-repo",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-rocket",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-star",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-tag",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "feed-trophy",
+                    "type": "heroicon",
+                    "style": "solid"
+                },
+                {
                     "name": "face-frown",
                     "type": "heroicon",
                     "style": "outline"
@@ -2930,6 +3025,181 @@
                 },
                 {
                     "name": "tasklist",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "telescope",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "telescope-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "terminal",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "three-bars",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "thumbsdown",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "thumbsup",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "tools",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "tracked-by-closed-completed",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "tracked-by-closed-not-planned",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "trash",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "triangle-down",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "triangle-left",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "triangle-right",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "triangle-up",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "trophy",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "typography",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "undo",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "unfold",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "unlink",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "unlock",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "unmute",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "unread",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "unverified",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "upload",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "verified",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "versions",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "video",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "webhook",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "workflow",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "x",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "x-circle",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "x-circle-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "zap",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "zoom-in",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "zoom-out",
                     "type": "octicon",
                     "style": "outline"
                 }
