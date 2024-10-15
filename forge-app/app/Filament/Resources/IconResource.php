@@ -44,8 +44,8 @@ class IconResource extends Resource
                 Forms\Components\Select::make('type')
                     ->label('Icon Type')
                     ->options(function () {
-                        // Fetch existing custom icon types, excluding heroicon and font awesome
-                        return Icon::whereNotIn('type', ['heroicon', 'fontawesome'])
+                        // Fetch existing custom icon types, excluding heroicon, octicons, and font awesome
+                        return Icon::whereNotIn('type', ['heroicon', 'fontawesome', 'octicons'])
                             ->pluck('type', 'type')
                             ->mapWithKeys(fn ($type) => [Str::slug($type, '-') => $type]);
                     })
@@ -90,6 +90,8 @@ class IconResource extends Resource
                     ->helperText('Paste the SVG code here for custom icons.')
                     ->visible(fn ($get) => $get('type') === 'custom' && !$get('svg_file_path'))
                     ->dehydrated(fn ($get, $state) => $get('type') === 'custom' && !empty($state))
+                    // Required if no SVG file is uploaded and the icon type is custom
+                    ->rules(['required_if:type,custom', 'required_if:svg_file_path,null'])
                     ->afterStateUpdated(function ($state, callable $set) {
                         $sanitizer = app(SvgSanitizerService::class);
 
