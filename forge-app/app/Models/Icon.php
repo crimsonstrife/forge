@@ -28,7 +28,7 @@ class Icon extends Model
         // Custom icons are those that have an SVG file path or inline SVG code, and are not Heroicons or Font Awesome icons.
         // If the result would be null, it will be cast to false always.
         if ($this->svg_file_path || $this->svg_code) {
-            return !$this->isHeroicon() && !$this->isFontAwesome();
+            return !$this->isHeroicon() && !$this->isFontAwesome() && !$this->isOcticon();
         } else {
             return false;
         }
@@ -48,6 +48,14 @@ class Icon extends Model
     public function isHeroicon(): bool
     {
         return $this->type === 'heroicon';
+    }
+
+    /**
+     * Determin if the icon is a Octicon.
+     */
+    public function isOcticon(): bool
+    {
+        return $this->type === 'octicons';
     }
 
     /**
@@ -92,5 +100,45 @@ class Icon extends Model
     public function getUrl(): string
     {
         return route('icons.show', $this);
+    }
+
+    /**
+     * Get the icon's edit URL.
+     *
+     * @return string
+     */
+    public function getEditUrl(): string
+    {
+        return route('icons.edit', $this);
+    }
+
+    /**
+     * Get the icon's delete URL.
+     *
+     * @return string
+     */
+    public function getDeleteUrl(): string
+    {
+        return route('icons.delete', $this);
+    }
+
+    /**
+     * Get the icon's restore URL.
+     *
+     * @return string
+     */
+    public function getRestoreUrl(): string
+    {
+        return route('icons.restore', $this);
+    }
+
+    /**
+     * Get the icon's force delete URL.
+     *
+     * @return string
+     */
+    public function getForceDeleteUrl(): string
+    {
+        return route('icons.force-delete', $this);
     }
 }
