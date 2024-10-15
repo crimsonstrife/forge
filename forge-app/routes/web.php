@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Horizon\Http\Controllers\HomeController;
 use App\Http\Controllers\DiscordController;
 use App\Http\Controllers\Auth\DiscordAuthController;
+use Illuminate\Support\Facades\File;
 
 /**
  * Define the route for the home page.
@@ -115,3 +116,24 @@ Route::get('/email/verify/send', function () {
 Route::get('/email/verify/complete', function () {
     return view('auth.verify-email');
 })->middleware(['auth:sanctum', config('jetstream.auth_session')])->name('verification.complete');
+
+/**
+ * Route to serve icon files from the resource directory.
+ * This route is accessible via the 'resource/icons/{type}/{style}/{file}' URL.
+ *
+ * @param string $type
+ * @param string $style
+ * @param string $file
+ *
+ * @return \Illuminate\Http\Response
+ */
+Route::get('/icons/builtin/{type}/{style}/{file}', function ($type, $style, $file) {
+    $path = resource_path("icons/builtin/{$type}/{$style}/{$file}");
+
+    if (!File::exists($path)) {
+        logger()->error("File not found: " . $path); // Log the path for debugging
+        abort(404, "File not found: " . $path); // Show the full file path in the 404 message
+    }
+
+    return response()->file($path);
+})->name('icon.builtin');
