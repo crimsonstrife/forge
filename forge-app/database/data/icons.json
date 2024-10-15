@@ -1991,7 +1991,7 @@
                 {
                     "name": "copilot",
                     "type": "octicon",
-                    "style": "brand"
+                    "style": "brands"
                 },
                 {
                     "name": "copy",
@@ -2506,12 +2506,12 @@
                 {
                     "name": "logo-gist",
                     "type": "octicon",
-                    "style": "brand"
+                    "style": "brands"
                 },
                 {
                     "name": "logo-github",
                     "type": "octicon",
-                    "style": "brand"
+                    "style": "brands"
                 },
                 {
                     "name": "mail",
@@ -2521,12 +2521,12 @@
                 {
                     "name": "mark-github",
                     "type": "octicon",
-                    "style": "brand"
+                    "style": "brands"
                 },
                 {
                     "name": "markdown",
                     "type": "octicon",
-                    "style": "brand"
+                    "style": "brands"
                 },
                 {
                     "name": "megaphone",
