@@ -4,1584 +4,2934 @@
             "name": "heroicons",
             "icons": [
                 {
-                    "name" : "academic-cap",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "academic-cap",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "adjustments-horizontal",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "adjustments-horizontal",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "adjustments-vertical",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "adjustments-vertical",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "archive-box-arrow-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "archive-box-arrow-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "archive-box-x-mark",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "archive-box-x-mark",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "archive-box",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "archive-box",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-down-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-down-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-down-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-down-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-down-on-square-stack",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-down-on-square-stack",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-down-on-square",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-down-on-square",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-down-right",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-down-right",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-down-tray",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-down-tray",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-left-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-left-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-left-end-on-rectangle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-left-end-on-rectangle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-left-start-on-rectangle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-left-start-on-rectangle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-long-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-long-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-long-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-long-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-long-right",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-long-right",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-long-up",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-long-up",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-path-rounded-square",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-path-rounded-square",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-path",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-path",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-right-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-right-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-right-end-on-rectangle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-right-end-on-rectangle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-right-start-on-rectangle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-right-start-on-rectangle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-right",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-right",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-top-right-on-square",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-top-right-on-square",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-trending-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-trending-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-trending-up",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-trending-up",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-turn-down-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-turn-down-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-turn-down-right",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-turn-down-right",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-turn-left-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-turn-left-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-turn-left-up",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-turn-left-up",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-turn-right-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-turn-right-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-turn-right-up",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-turn-right-up",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-turn-up-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-turn-up-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-turn-up-right",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-turn-up-right",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-up-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-up-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-up-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-up-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-up-on-square-stack",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-up-on-square-stack",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-up-on-square",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-up-on-square",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-up-right",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-up-right",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-up-tray",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-up-tray",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-up",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-up",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-uturn-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-uturn-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-uturn-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-uturn-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-uturn-right",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-uturn-right",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrow-uturn-up",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrow-uturn-up",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrows-pointing-in",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrows-pointing-in",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrows-pointing-out",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrows-pointing-out",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrows-right-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrows-right-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "arrows-up-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "arrows-up-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "at-symbol",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "at-symbol",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "backspace",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "backspace",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "backward",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "backward",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "banknotes",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "banknotes",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bars-2",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bars-2",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bars-3-bottom-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bars-3-bottom-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bars-3-bottom-right",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bars-3-bottom-right",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bars-3-center-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bars-3-center-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bars-3",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bars-3",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bars-4",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bars-4",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bars-arrow-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bars-arrow-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bars-arrow-up",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bars-arrow-up",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "battery-0",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "battery-0",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "battery-100",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "battery-100",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "battery-50",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "battery-50",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "beaker",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "beaker",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bell-alert",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bell-alert",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bell-slash",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bell-slash",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bell-snooze",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bell-snooze",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bell",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bell",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bold",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bold",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bolt-slash",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bolt-slash",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bolt",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bolt",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "book-open",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "book-open",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bookmark-slash",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bookmark-slash",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bookmark-square",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bookmark-square",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bookmark",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bookmark",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "briefcase",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "briefcase",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "bug-ant",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "bug-ant",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "building-library",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "building-library",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "building-office-2",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "building-office-2",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "building-office",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "building-office",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "building-storefront",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "building-storefront",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "cake",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "cake",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "calculator",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "calculator",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "calendar-date-range",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "calendar-date-range",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "calendar-days",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "calendar-days",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "calendar",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "calendar",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "camera",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "camera",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chart-bar-square",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chart-bar-square",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chart-bar",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chart-bar",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chart-pie",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chart-pie",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chat-bubble-bottom-center-text",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chat-bubble-bottom-center-text",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chat-bubble-bottom-center",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chat-bubble-bottom-center",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chat-bubble-left-ellipsis",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chat-bubble-left-ellipsis",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chat-bubble-left-right",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chat-bubble-left-right",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chat-bubble-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chat-bubble-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chat-bubble-oval-left-ellipsis",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chat-bubble-oval-left-ellipsis",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chat-bubble-oval-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chat-bubble-oval-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "check-badge",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "check-badge",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "check-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "check-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "check",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "check",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chevron-double-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chevron-double-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chevron-double-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chevron-double-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chevron-double-right",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chevron-double-right",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chevron-double-up",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chevron-double-up",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chevron-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chevron-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chevron-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chevron-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chevron-right",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chevron-right",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chevron-up-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chevron-up-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "chevron-up",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "chevron-up",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "circle-stack",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "circle-stack",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "clipboard-document-check",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "clipboard-document-check",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "clipboard-document-list",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "clipboard-document-list",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "clipboard-document",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "clipboard-document",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "clipboard",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "clipboard",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "clock",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "clock",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "cloud-arrow-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "cloud-arrow-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "cloud-arrow-up",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "cloud-arrow-up",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "cloud",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "cloud",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "code-bracket-square",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "code-bracket-square",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "code-bracket",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "code-bracket",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "cog-6-tooth",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "cog-6-tooth",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "cog-8-tooth",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "cog-8-tooth",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "cog",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "cog",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "command-line",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "command-line",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "computer-desktop",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "computer-desktop",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "cpu-chip",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "cpu-chip",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "credit-card",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "credit-card",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "cube-transparent",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "cube-transparent",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "cube",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "cube",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "currency-bangladeshi",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "currency-bangladeshi",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "currency-dollar",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "currency-dollar",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "currency-euro",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "currency-euro",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "currency-pound",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "currency-pound",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "currency-rupee",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "currency-rupee",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "currency-yen",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "currency-yen",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "cursor-arrow-rays",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "cursor-arrow-rays",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "cursor-arrow-ripple",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "cursor-arrow-ripple",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "device-phone-mobile",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "device-phone-mobile",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "device-tablet",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "device-tablet",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "divide",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "divide",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-arrow-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-arrow-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-arrow-up",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-arrow-up",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-chart-bar",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-chart-bar",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-check",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-check",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-currency-bangladeshi",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-currency-bangladeshi",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-currency-dollar",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-currency-dollar",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-currency-euro",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-currency-euro",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-currency-pound",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-currency-pound",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-currency-rupee",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-currency-rupee",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-currency-yen",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-currency-yen",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-duplicate",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-duplicate",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-magnifying-glass",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-magnifying-glass",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-minus",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-minus",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-plus",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-plus",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document-text",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document-text",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "document",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "document",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "ellipsis-horizontal-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "ellipsis-horizontal-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "ellipsis-horizontal",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "ellipsis-horizontal",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "ellipsis-vertical",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "ellipsis-vertical",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "envelope-open",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "envelope-open",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "envelope",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "envelope",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "equals",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "equals",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "exclamation-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "exclamation-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "exclamation-triangle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "exclamation-triangle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "eye-dropper",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "eye-dropper",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "eye-slash",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "eye-slash",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "eye",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "eye",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "face-frown",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "face-frown",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "face-smile",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "face-smile",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "film",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "film",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "finger-print",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "finger-print",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "fire",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "fire",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "flag",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "flag",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "folder-arrow-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "folder-arrow-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "folder-minus",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "folder-minus",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "folder-open",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "folder-open",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "folder-plus",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "folder-plus",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "folder",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "folder",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "forward",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "forward",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "funnel",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "funnel",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "gif",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "gif",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "gift-top",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "gift-top",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "gift",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "gift",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "globe-alt",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "globe-alt",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "globe-americas",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "globe-americas",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "globe-asia-australia",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "globe-asia-australia",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "globe-europe-africa",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "globe-europe-africa",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "h1",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "h1",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "h2",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "h2",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "h3",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "h3",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "hand-raised",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "hand-raised",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "hand-thumb-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "hand-thumb-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "hand-thumb-up",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "hand-thumb-up",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "hashtag",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "hashtag",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "heart",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "heart",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "home-modern",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "home-modern",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "home",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "home",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "identification",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "identification",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "inbox-arrow-down",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "inbox-arrow-down",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "inbox-stack",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "inbox-stack",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "inbox",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "inbox",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "information-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "information-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "italic",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "italic",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "key",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "key",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "language",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "language",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "lifebuoy",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "lifebuoy",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "light-bulb",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "light-bulb",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "link-slash",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "link-slash",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "link",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "link",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "list-bullet",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "list-bullet",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "lock-closed",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "lock-closed",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "lock-open",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "lock-open",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "magnifying-glass-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "magnifying-glass-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "magnifying-glass-minus",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "magnifying-glass-minus",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "magnifying-glass-plus",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "magnifying-glass-plus",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "magnifying-glass",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "magnifying-glass",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "map-pin",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "map-pin",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "map",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "map",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "megaphone",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "megaphone",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "microphone",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "microphone",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "minus-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "minus-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "minus",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "minus",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "moon",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "moon",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "musical-note",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "musical-note",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "newspaper",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "newspaper",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "no-symbol",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "no-symbol",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "numbered-list",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "numbered-list",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "paint-brush",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "paint-brush",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "paper-airplane",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "paper-airplane",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "paper-clip",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "paper-clip",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "pause-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "pause-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "pause",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "pause",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "pencil-square",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "pencil-square",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "pencil",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "pencil",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "percentage-badge",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "percentage-badge",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "phone-arrow-down-left",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "phone-arrow-down-left",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "phone-arrow-up-right",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "phone-arrow-up-right",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "phone-x-mark",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "phone-x-mark",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "phone",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "phone",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "photo",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "photo",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "play-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "play-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "play-pause",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "play-pause",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "play",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "play",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "plus-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "plus-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "plus",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "plus",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "power",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "power",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "presentation-chart-bar",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "presentation-chart-bar",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "presentation-chart-line",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "presentation-chart-line",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "printer",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "printer",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "puzzle-piece",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "puzzle-piece",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "qr-code",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "qr-code",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "question-mark-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "question-mark-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "queue-list",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "queue-list",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "radio",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "radio",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "receipt-percent",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "receipt-percent",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "receipt-refund",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "receipt-refund",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "rectangle-group",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "rectangle-group",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "rectangle-stack",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "rectangle-stack",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "rocket-launch",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "rocket-launch",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "rss",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "rss",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "scale",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "scale",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "scissors",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "scissors",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "server-stack",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "server-stack",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "server",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "server",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "share",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "share",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "shield-check",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "shield-check",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "shield-exclamation",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "shield-exclamation",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "shopping-bag",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "shopping-bag",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "shopping-cart",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "shopping-cart",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "signal-slash",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "signal-slash",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "signal",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "signal",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "slash",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "slash",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "sparkles",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "sparkles",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "speaker-wave",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "speaker-wave",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "speaker-x-mark",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "speaker-x-mark",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "square-2-stack",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "square-2-stack",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "square-3-stack-3d",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "square-3-stack-3d",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "squares-2x2",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "squares-2x2",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "squares-plus",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "squares-plus",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "star",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "star",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "stop-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "stop-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "stop",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "stop",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "strikethrough",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "strikethrough",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "sun",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "sun",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "swatch",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "swatch",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "table-cells",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "table-cells",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "tag",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "tag",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "ticket",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "ticket",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "trash",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "trash",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "trophy",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "trophy",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "truck",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "truck",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "tv",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "tv",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "underline",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "underline",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "user-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "user-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "user-group",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "user-group",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "user-minus",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "user-minus",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "user-plus",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "user-plus",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "user",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "user",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "users",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "users",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "variable",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "variable",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "video-camera-slash",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "video-camera-slash",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "video-camera",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "video-camera",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "view-columns",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "view-columns",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "viewfinder-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "viewfinder-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "wallet",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "wallet",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "wifi",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "wifi",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "window",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "window",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "wrench-screwdriver",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "wrench-screwdriver",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "wrench",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "wrench",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "x-circle",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "x-circle",
+                    "type": "heroicon",
+                    "style": "outline"
                 },
                 {
-                    "name" : "x-mark",
-                    "type" : "heroicon",
-                    "style" : "outline"
+                    "name": "x-mark",
+                    "type": "heroicon",
+                    "style": "outline"
+                }
+            ]
+        },
+        {
+            "name": "octicons",
+            "icons": [
+                {
+                    "name": "accessibility",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "accessibility-inset",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "ai-model",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "alert",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "alert-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "apps",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "archive",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "arrow-both",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "arrow-down",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "arrow-down-left",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "arrow-down-right",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "arrow-left",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "arrow-right",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "arrow-switch",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "arrow-up",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "arrow-up-left",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "arrow-up-right",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "beaker",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "bell",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "bell-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "bell-slash",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "blocked",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "bold",
+                    "type": "octicon",
+                    "style": "regular"
+                },
+                {
+                    "name": "book",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "bookmark",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "bookmark-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "bookmark-slash",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "bookmark-slash-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "briefcase",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "broadcast",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "browser",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "bug",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "cache",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "calendar",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "check",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "check-circle",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "check-circle-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "checkbox",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "checklist",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "chevron-down",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "chevron-left",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "chevron-right",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "chevron-up",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "circle",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "circle-slash",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "clock",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "clock-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "cloud",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "cloud-offline",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "code",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "code-of-conduct",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "code-review",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "code-square",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "codescan",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "codescan-checkmark",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "codespaces",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "columns",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "command-palette",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "comment",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "comment-discussion",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "container",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "copilot",
+                    "type": "octicon",
+                    "style": "brand"
+                },
+                {
+                    "name": "copy",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "cpu",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "credit-card",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "cross-reference",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "dash",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "database",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "dependabot",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "desktop-download",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "device-camera",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "device-camera-video",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "device-desktop",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "device-mobile",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "devices",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "diamond",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "diff",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "diff-added",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "diff-ignored",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "diff-modified",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "diff-removed",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "diff-renamed",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "discussion-closed",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "discussion-duplicate",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "discussion-outdated",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "dot",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "dot-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "download",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "duplicate",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "ellipsis",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "eye",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "eye-closed",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "file",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "file-added",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "file-badge",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "file-binary",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "file-code",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "file-diff",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "file-directory",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "file-directory-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "file-directory-open-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "file-directory-symlink",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "file-media",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "file-moved",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "file-removed",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "file-submodule",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "file-symlink-file",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "file-zip",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "filter",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "filter-remove",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "fiscal-host",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "flame",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "fold",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "fold-down",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "fold-up",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "gear",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "gift",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "git-branch",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "git-commit",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "git-compare",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "git-merge",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "git-merge-queue",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "git-pull-request",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "git-pull-request-closed",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "git-pull-request-draft",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "globe",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "goal",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "grabber",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "graph",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "hash",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "heading",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "heart",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "heart-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "history",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "home",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "home-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "horizontal-rule",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "hourglass",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "hubot",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "id-badge",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "image",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "inbox",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "infinity",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "info",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "issue-closed",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "issue-draft",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "issue-opened",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "issue-reopened",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "issue-tracked-by",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "issue-tracks",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "italic",
+                    "type": "octicon",
+                    "style": "regular"
+                },
+                {
+                    "name": "iterations",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "kebab-horizontal",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "key",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "key-asterisk",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "law",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "light-bulb",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "link",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "link-external",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "list-ordered",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "list-unordered",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "location",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "lock",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "log",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "logo-gist",
+                    "type": "octicon",
+                    "style": "brand"
+                },
+                {
+                    "name": "logo-github",
+                    "type": "octicon",
+                    "style": "brand"
+                },
+                {
+                    "name": "mail",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "mark-github",
+                    "type": "octicon",
+                    "style": "brand"
+                },
+                {
+                    "name": "markdown",
+                    "type": "octicon",
+                    "style": "brand"
+                },
+                {
+                    "name": "megaphone",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "mention",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "meter",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "milestone",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "mirror",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "moon",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "mortar-board",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "move-to-bottom",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "move-to-end",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "move-to-start",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "move-to-top",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "multi-select",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "mute",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "no-entry",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "north-star",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "note",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "number",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "organization",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "package",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "package-dependencies",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "package-dependents",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "paintbrush",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "paper-airplane",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "paperclip",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "passkey-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "paste",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "pencil",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "people",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "person",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "person-add",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "person-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "pin",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "pin-slash",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "pivot-column",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "play",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "plug",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "plus",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "plus-circle",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "project",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "project-roadmap",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "project-symlink",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "project-template",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "pulse",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "question",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "quote",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "read",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "redo",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "rel-file-path",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "reply",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "repo",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "repo-clone",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "repo-delete",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "repo-forked",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "repo-locked",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "repo-pull",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "repo-push",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "repo-template",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "report",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "rocket",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "rows",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "rss",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "ruby",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "screen-full",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "screen-normal",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "search",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "server",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "share",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "share-android",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "shield",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "shield-check",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "shield-lock",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "shield-slash",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "shield-x",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "sidebar-collapse",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "sidebar-expand",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "sign-in",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "sign-out",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "single-select",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "skip",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "skip-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "smiley",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "sort-asc",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "sort-desc",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "sparkle-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "sponser-tiers",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "square",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "square-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "squirrel",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "star",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "star-fill",
+                    "type": "octicon",
+                    "style": "solid"
+                },
+                {
+                    "name": "stop",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "stopwatch",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "strikethrough",
+                    "type": "octicon",
+                    "style": "regular"
+                },
+                {
+                    "name": "sun",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "sync",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "tab",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "tab-external",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "table",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "tag",
+                    "type": "octicon",
+                    "style": "outline"
+                },
+                {
+                    "name": "tasklist",
+                    "type": "octicon",
+                    "style": "outline"
                 }
             ]
         },
@@ -1589,9 +2939,9 @@
             "name": "fontawesome",
             "icons": [
                 {
-                    "name" : "clipboard-check",
-                    "type" : "fontawesome",
-                    "style" : "regular"
+                    "name": "clipboard-check",
+                    "type": "fontawesome",
+                    "style": "regular"
                 }
             ]
         }
