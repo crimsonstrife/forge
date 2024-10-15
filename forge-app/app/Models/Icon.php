@@ -6,6 +6,8 @@ use App\Traits\IsPermissable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use App\Services\SvgSanitizerService;
 
 class Icon extends Model
 {
@@ -18,6 +20,7 @@ class Icon extends Model
         'style',
         'svg_code',
         'svg_file_path',
+        'is_builtin',
     ];
 
     /**
@@ -59,15 +62,37 @@ class Icon extends Model
     }
 
     /**
-     * Get the SVG content, either from the stored file or inline code.
+     * Get if the icon is built-in or user-uploaded.
+     *
+     * @return bool
      */
-    public function getSvgContent(): string
+    public function isBuiltIn(): bool
     {
-        if ($this->svg_file_path) {
-            return Storage::disk('public')->get($this->svg_file_path);
+        //if the icon is built-in, it will have a value of true, otherwise false. If the value is null, it will be cast to false.
+        $isBuiltIn = $this->is_builtin;
+
+        if ($isBuiltIn === null) {
+            return false;
         }
 
-        return $this->svg_code ?? '';
+        return $isBuiltIn;
+    }
+
+    /**
+     * Load all icons from the {type}/{style} sub-directories.
+     */
+    public function loadAllIcons()
+    {
+        /* // Load built-in icons from resources/icons/builtin/{type}/{style}
+        $builtinIcons = $this->loadIconsFromDirectory(resource_path('icons/builtin'));
+
+        // Load user-uploaded icons from public/icons/{type}/{style}
+        $userIcons = $this->loadIconsFromDirectory(storage_path('app/public/icons'));
+
+        return $builtinIcons->merge($userIcons); */
+
+        // Load all icons from the database
+        return self::all();
     }
 
     /**
@@ -93,52 +118,137 @@ class Icon extends Model
     }
 
     /**
-     * Get the icon's URL.
+     * Helper function to load icons from a base directory with sub-directories {type}/{style}
      *
-     * @return string
+     * @param string $baseDirectory
+     * @return \Illuminate\Support\Collection
      */
-    public function getUrl(): string
+    private function loadIconsFromDirectory(string $baseDirectory)
     {
-        return route('icons.show', $this);
+        if (!File::exists($baseDirectory)) {
+            return collect();
+        }
+
+        $icons = collect();
+
+        // Traverse the {type}/{style} directories and load icons
+        foreach (File::directories($baseDirectory) as $typeDir) {
+            foreach (File::directories($typeDir) as $styleDir) {
+                $type = basename($typeDir);
+                $style = basename($styleDir);
+
+                $files = File::files($styleDir);
+                foreach ($files as $file) {
+                    if (pathinfo($file, PATHINFO_EXTENSION) === 'svg') {
+                        $icons->push([
+                            'name' => pathinfo($file, PATHINFO_FILENAME),
+                            'path' => str_replace(base_path(), asset(''), $file),
+                            'type' => $type,
+                            'style' => $style,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return $icons;
     }
 
     /**
-     * Get the icon's edit URL.
+     * Ensure the file name is unique within the given directory.
      *
+     * @param string $directory
+     * @param string $fileName
+     * @param string $extension
      * @return string
      */
-    public function getEditUrl(): string
+    public static function ensureUniqueFileName(string $directory, string $fileName, string $extension)
     {
-        return route('icons.edit', $this);
+        $counter = 1;
+        $originalFileName = $fileName;
+
+        while (Storage::disk('public')->exists("{$directory}/{$fileName}.{$extension}")) {
+            $fileName = "{$originalFileName}-{$counter}";
+            $counter++;
+        }
+
+        return "{$fileName}.{$extension}";
     }
 
     /**
-     * Get the icon's delete URL.
+     * Save uploaded file to the appropriate directory.
      *
+     * @param \Illuminate\Http\UploadedFile $uploadedFile
+     * @param string $type
+     * @param string $style
      * @return string
      */
-    public function getDeleteUrl(): string
+    public static function saveIconFile($uploadedFile, string $type, string $style)
     {
-        return route('icons.delete', $this);
+        $directory = "icons/{$type}/{$style}";
+        $fileName = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
+        $extension = $uploadedFile->getClientOriginalExtension();
+
+        // Ensure the file name is unique within the directory
+        $uniqueFileName = self::ensureUniqueFileName($directory, $fileName, $extension);
+
+        // Validate the file as an SVG file, check for errors, etc.
+        $uploadedFile->validate([
+            'file' => 'required|file|mimes:svg',
+        ]);
+
+        // Sanitize the SVG code before saving
+        $sanitizer = app(SvgSanitizerService::class);
+
+        // Read the file contents and sanitize the SVG code
+        $svgCode = File::get($uploadedFile->getRealPath());
+
+        // Sanitize the SVG code before saving
+        $sanitized = $sanitizer->sanitize($svgCode);
+
+        if ($sanitized === null) {
+            // Return an error message if the SVG is invalid
+            return 'Invalid SVG code.';
+        }
+
+        // Save the sanitized SVG code to the file
+        Storage::disk('public')->put("{$directory}/{$uniqueFileName}", $sanitized);
+
+        return "{$directory}/{$uniqueFileName}";
     }
 
     /**
-     * Get the icon's restore URL.
-     *
-     * @return string
+     * Delete the icon file from storage.
      */
-    public function getRestoreUrl(): string
+    public function deleteIconFile()
     {
-        return route('icons.restore', $this);
+        if ($this->svg_file_path) {
+            Storage::disk('public')->delete($this->svg_file_path);
+        }
     }
 
     /**
-     * Get the icon's force delete URL.
-     *
-     * @return string
+     * Get the full URL for the icon's SVG file path.
      */
-    public function getForceDeleteUrl(): string
+    public function getSvgUrlAttribute()
     {
-        return route('icons.force-delete', $this);
+        if ($this->is_builtin) {
+            // Check if the svg_file_path is valid (not null and not empty)
+            if (!empty($this->svg_file_path)) {
+                // Generate the URL using the custom route that serves files from the resources folder
+                return route('icon.builtin', [
+                    'type' => $this->type,
+                    'style' => $this->style,
+                    'file' => basename($this->svg_file_path), // Extract the filename from the path
+                ]);
+            } else {
+                // If the icon has no valid file path, return an empty string and log a warning
+                logger()->warning("Built-in icon {$this->type}/{$this->style}/{$this->name} has no valid file path.");
+                return '';
+            }
+        } else {
+            // If it's a user-uploaded icon, use the storage path
+            return !empty($this->svg_file_path) ? Storage::url($this->svg_file_path) : '';
+        }
     }
 }
