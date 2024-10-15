@@ -3211,7 +3211,7 @@
                 {
                     "name": "clipboard-check",
                     "type": "fontawesome",
-                    "style": "regular"
+                    "style": "solid"
                 }
             ]
         }
