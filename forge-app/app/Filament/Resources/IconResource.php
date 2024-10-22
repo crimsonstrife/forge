@@ -44,10 +44,14 @@ class IconResource extends Resource
                 Forms\Components\Select::make('type')
                     ->label('Icon Type')
                     ->options(function () {
-                        // Fetch existing custom icon types, excluding heroicon and font awesome
-                        return Icon::whereNotIn('type', ['heroicon', 'fontawesome'])
-                            ->pluck('type', 'type')
-                            ->mapWithKeys(fn ($type) => [Str::slug($type, '-') => $type]);
+                        // Fetch existing custom icon types, excluding heroicon, octicons, and font awesome. If custom is not found, add it to the list.
+                        return Icon::query()
+                            ->select('type')
+                            ->whereNotIn('type', ['heroicon', 'octicon', 'fontawesome'])
+                            ->distinct()
+                            ->pluck('type')
+                            ->mapWithKeys(fn ($type) => [$type => Str::title($type)])
+                            ->prepend('Custom', 'custom');
                     })
                     ->reactive()
                     ->searchable()
@@ -63,17 +67,19 @@ class IconResource extends Resource
                 // A text input for entering a new icon type if no existing type is selected
                 Forms\Components\TextInput::make('new_type')
                     ->label('New Icon Type')
-                    ->visible(fn ($get) => $get('type') === null) // Only show if no existing type is selected
-                    ->required(fn ($get) => $get('type') === null) // Required if no existing type is selected
+                    ->visible(fn ($get) => $get('type') === null || !in_array($get('type'), ['fontawesome', 'heroicon', 'octicon', 'custom'])) // Only show if no existing type is selected, or if the type is a custom one i.e not an included one from the base app.
+                    ->required(fn ($get) => $get('type') === null || !in_array($get('type'), ['fontawesome', 'heroicon', 'octicon', 'custom'])) // Required if no existing type is selected
                     ->helperText('Enter a new type for the icon. This should be lowercase, with hyphens for spaces.')
                     ->unique(static function ($query, $type, $state) {
                         return $query->where('type', $type);
                     })
+                    ->placeholder('my-new-type')
+                    ->rules(['required_if:type,null', 'visible_if:type,null'])
                     ->afterStateUpdated(function ($state, callable $set) {
                         // Sanitize the new type to be lowercase and HTML-friendly
                         $set('type', Str::slug($state, '-'));
                     })
-                    ->dehydrated(true), // Save only if filled in
+                    ->dehydrated(), // Save only if filled in
 
                 // SVG file upload and code fields remain the same as before
                 Forms\Components\FileUpload::make('svg_file_path')
@@ -90,6 +96,8 @@ class IconResource extends Resource
                     ->helperText('Paste the SVG code here for custom icons.')
                     ->visible(fn ($get) => $get('type') === 'custom' && !$get('svg_file_path'))
                     ->dehydrated(fn ($get, $state) => $get('type') === 'custom' && !empty($state))
+                    // Required if no SVG file is uploaded and the icon type is custom
+                    ->rules(['required_if:type,custom', 'required_if:svg_file_path,null'])
                     ->afterStateUpdated(function ($state, callable $set) {
                         $sanitizer = app(SvgSanitizerService::class);
 

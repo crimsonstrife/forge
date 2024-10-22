@@ -42,7 +42,7 @@ class IssueTypeResource extends Resource
                     ->required()
                     ->label('Type Icon'), */
                 IconPicker::make('icon')
-                    ->label('Type Icon')
+                    ->label('Select Icon')
                     ->required(),
 
                 Forms\Components\Toggle::make('is_default')

@@ -92,6 +92,46 @@ class DiscordSettings extends Settings
     }
 
     /**
+     * Returns the client secret for Discord.
+     *
+     * @return string The client secret for Discord.
+     */
+    public function getClientSecret(): string
+    {
+        return $this->client_secret;
+    }
+
+    /**
+     * Returns the bot token for Discord.
+     *
+     * @return string The bot token for Discord.
+     */
+    public function getBotToken(): string
+    {
+        return $this->bot_token;
+    }
+
+    /**
+     * Returns the guild ID for Discord.
+     *
+     * @return string The guild ID for Discord.
+     */
+    public function getGuildId(): string
+    {
+        return $this->guild_id;
+    }
+
+    /**
+     * Returns the client ID for Discord.
+     *
+     * @return string The client ID for Discord.
+     */
+    public function getClientId(): string
+    {
+        return $this->client_id;
+    }
+
+    /**
      * Returns an array of encrypted settings.
      *
      * @return array The array of encrypted settings.

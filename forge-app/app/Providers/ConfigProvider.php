@@ -2,11 +2,12 @@
 
 namespace App\Providers;
 
-use App\Settings\CrucibleSettings;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use App\Models\DiscordConfig;
+//use App\Models\CrucibleConfig;
 use App\Settings\DiscordSettings;
+use App\Settings\CrucibleSettings;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
 
@@ -30,15 +31,29 @@ class ConfigProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Only load the Crucible settings if the database is available
-        if (Schema::hasTable('crucible_settings')) {
-            $this->loadCrucibleSettings();
+        /* // Only load the Crucible settings if the database is available
+        if (Schema::hasTable('settings')) {
+            // Check if the Crucible settings are enabled
+            if (config('services.crucible.enabled') === true) {
+                $this->loadCrucibleSettings();
+            } else {
+                Log::info('Crucible settings are not enabled');
+            }
+        } else {
+            Log::warning('Crucible settings are not loaded because the database is not available');
         }
 
         // Only load the Discord settings if the database is available
-        if (Schema::hasTable('discord_settings')) {
-            $this->loadDiscordSettings();
-        }
+        if (Schema::hasTable('settings')) {
+            // Check if the Discord settings are enabled
+            if (config('services.discord.enabled') === true) {
+                $this->loadDiscordSettings();
+            } else {
+                Log::info('Discord settings are not enabled');
+            }
+        } else {
+            Log::warning('Discord settings are not loaded because the database is not available');
+        } */
     }
 
     /**
