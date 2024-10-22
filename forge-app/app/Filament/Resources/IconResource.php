@@ -113,10 +113,35 @@ class IconResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Icon Name')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('type')->label('Type')->sortable(),
+                Tables\Columns\TextColumn::make('type')->label('Type')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('style')->label('Style')->sortable()->searchable(),
                 Tables\Columns\ViewColumn::make('preview')
                 ->label('Preview')
                 ->view('components.icon-preview'), // Reference to a Blade component that renders the icon preview
+            ])
+            ->filters([
+                // Filter by icon type and/or style - generated dynamically based on existing icons
+                Tables\Filters\SelectFilter::make('type')
+                    ->label('Type')
+                    ->options(function () {
+                        return Icon::query()
+                            ->select('type')
+                            ->distinct()
+                            ->pluck('type')
+                            ->mapWithKeys(fn ($type) => [$type => Str::title($type)]);
+                    })
+                    ->placeholder('All Types'),
+
+                Tables\Filters\SelectFilter::make('style')
+                    ->label('Style')
+                    ->options(function () {
+                        return Icon::query()
+                            ->select('style')
+                            ->distinct()
+                            ->pluck('style')
+                            ->mapWithKeys(fn ($style) => [$style => Str::title($style)]);
+                    })
+                    ->placeholder('All Styles'),
             ]);
     }
 

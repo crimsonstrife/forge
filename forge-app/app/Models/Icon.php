@@ -96,25 +96,52 @@ class Icon extends Model
     }
 
     /**
+     * Load all icon types from the database.
+     * Only return unique types, no duplicates.
+     */
+    public function loadTypes()
+    {
+        return self::select('type')
+            ->distinct()
+            ->pluck('type');
+    }
+
+    /**
+     * Load all icon styles from the database.
+     * Only return unique styles, no duplicates.
+     */
+    public function loadStyles()
+    {
+        return self::select('style')
+            ->distinct()
+            ->pluck('style');
+    }
+
+    /**
      * Get the style class for the icon.
      *
      * @return string
      */
-    public function getStyleClass(): string
+    public function getStyleClass(Icon $icon): string
     {
         // Create the style class based on the icon style, type, and name. The styles for Heroicons and Font Awesome icons are different.
-        if ($this->isHeroicon()) {
+        if ($icon->isHeroicon()) {
             // Heroicons style class starts with "heroicon-" followed by a prefix based on the icon style, e.g., "o" for "outline", "s" for "solid", etc.
-            return 'heroicon-' . substr($this->style, 0, 1) . '-' . $this->name;
+            return 'heroicon-' . substr($icon->style, 0, 1) . '-' . $icon->name;
         }
 
-        if ($this->isFontAwesome()) {
+        if ($icon->isFontAwesome()) {
             // Font Awesome style class starts with "fa" followed by the icon style, e.g., "fa-brands", "fa-solid", etc., and then "fa-" and the icon name.
-            return 'fa-' . $this->style . ' fa-' . $this->name;
+            return 'fa-' . $icon->style . '-' . $icon->name;
+        }
+
+        if ($icon->isOcticon()) {
+            // Octicons style class starts with "octicon" followed by the icon name.
+            return 'octicon-' . $icon->style . '-' . $icon->name;
         }
 
         // Custom icons will use a custom class name based on the type, style, and name.
-        return 'icon-' . $this->type . '-' . $this->style . '-' . $this->name;
+        return 'icon-' . $icon->type . '-' . $icon->style . '-' . $icon->name;
     }
 
     /**
@@ -249,6 +276,33 @@ class Icon extends Model
         } else {
             // If it's a user-uploaded icon, use the storage path
             return !empty($this->svg_file_path) ? Storage::url($this->svg_file_path) : '';
+        }
+    }
+
+    /**
+     * Get the SVG code for the icon.
+     */
+    public function getSvgCodeAttribute()
+    {
+        if ($this->is_builtin) {
+            // Check if the svg_code is valid (not null and not empty)
+            if (!empty($this->svg_code)) {
+                // Instantiate the SVG sanitizer service
+                $sanitizer = app(SvgSanitizerService::class);
+
+                // Sanitize the SVG code before returning it
+                return $sanitizer->sanitize($this->svg_code);
+            } else {
+                // If the icon has no valid SVG code, return an empty string and log a warning
+                logger()->warning("Built-in icon {$this->type}/{$this->style}/{$this->name} has no valid SVG code.");
+                return '';
+            }
+        } else {
+            // If it's a user-uploaded icon, sanitize the SVG code before returning it
+            $sanitizer = app(SvgSanitizerService::class);
+
+            // Sanitize the SVG code before returning it
+            return $sanitizer->sanitize($this->svg_code);
         }
     }
 }

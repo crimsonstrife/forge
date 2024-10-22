@@ -137,3 +137,29 @@ Route::get('/icons/builtin/{type}/{style}/{file}', function ($type, $style, $fil
 
     return response()->file($path);
 })->name('icon.builtin');
+
+/**
+ * Route for fetching icon svg files/code
+ * This route is accessible via the '/icon/{id}/svg' URL.
+ *
+ * @param int $id
+ *
+ */
+Route::get('/icon/{id}/svg', function ($id) {
+    $icon = \App\Models\Icon::findOrFail($id);
+
+    // Check if the svg_file_path is valid (not null and not empty)
+    if (!empty($icon->svg_file_path)) {
+        // prioritize the SVG file path
+        return response()->file(storage_path("app/public/{$icon->svg_file_path}"));
+    }
+
+    // Return the SVG code, sanitized
+    if (!empty($icon->svg_code)) {
+        $sanitizer = app(\App\Services\SvgSanitizerService::class);
+        return new \Illuminate\Http\Response($sanitizer->sanitize($icon->svg_code), 200, ['Content-Type' => 'image/svg+xml']);
+    }
+
+    // Return a 404 error if the icon does not have an SVG file path or SVG code
+    return response()->json(['svg' => ''], 404);
+})->name('icon.svg');

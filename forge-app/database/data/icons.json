@@ -3464,12 +3464,247 @@
                     "style": "solid"
                 },
                 {
-                    "name": "house",
+                    "name": "arrow-up-from-bracket",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-up-from-ground-water",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-up-from-water-pump",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-up-long",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-up-right-dots",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-up-right-from-square",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-up-short-wide",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-up-wide-short",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-up-z-a",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-up",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-down-to-line",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-down-to-people",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-left-right-to-line",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-left-right",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-rotate",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-spin",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-split-up-and-left",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-to-circle",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-to-dot",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-to-eye",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-turn-right",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-turn-to-dots",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-up-down-left-right",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-up-down",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrows-up-to-line",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "asterisk",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "at",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "atom",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "audio-description",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "austral-sign",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "award",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "baby-carriage",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "baby",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "backward-fast",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "backward-step",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "backward",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "bacon",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "bacteria",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "bacterium",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "bag-shopping",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "bahai",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "baht-sign",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "ban-smoking",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "ban",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "bandage",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "bangladeshi-taka-sign",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "barcode",
                     "type": "fontawesome",
                     "style": "solid"
                 },
                 {
                     "name": "clipboard-check",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "house",
                     "type": "fontawesome",
                     "style": "solid"
                 }
