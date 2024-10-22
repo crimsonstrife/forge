@@ -3209,6 +3209,266 @@
             "name": "fontawesome",
             "icons": [
                 {
+                    "name": "address-book",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "address-card",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "align-center",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "align-justify",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "align-left",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "align-right",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "anchor-circle-check",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "anchor-circle-exclamation",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "anchor-circle-xmark",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "anchor-lock",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "anchor",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "angle-down",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "angle-left",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "angle-right",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "angle-up",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "angles-down",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "angles-left",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "angles-right",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "angles-up",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "ankh",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "apple-whole",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "archway",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-down-1-9",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-down-9-1",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-down-a-z",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-down-long",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-down-short-wide",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-down-up-across-line",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-down-up-lock",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-down-wide-short",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-down-z-a",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-down",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-left-long",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-left",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-pointer",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-right-arrow-left",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-right-from-bracket",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-right-long",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-right-long",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-right-to-bracket",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-right-to-city",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-right",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-rotate-left",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-rotate-right",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-trend-down",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-trend-up",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-turn-down",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-turn-up",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-up-1-9",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-up-9-1",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "arrow-up-a-z",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
+                    "name": "house",
+                    "type": "fontawesome",
+                    "style": "solid"
+                },
+                {
                     "name": "clipboard-check",
                     "type": "fontawesome",
                     "style": "solid"
