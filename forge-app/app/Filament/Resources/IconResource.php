@@ -114,14 +114,9 @@ class IconResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Icon Name')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('type')->label('Type')->sortable(),
-                Tables\Columns\TextColumn::make('svg_file_path')
-                    ->label('Uploaded SVG')
-                    // Display the SVG file path if it exists and is accessible
-                    ->visible(fn ($record) => $record && $record->svg_file_path !== null),
-                Tables\Columns\TextColumn::make('svg_code')
-                    ->label('Custom SVG Code')
-                    ->limit(50)
-                    ->visible(fn ($record) => $record && $record->svg_code !== null),
+                Tables\Columns\ViewColumn::make('preview')
+                ->label('Preview')
+                ->view('components.icon-preview'), // Reference to a Blade component that renders the icon preview
             ]);
     }
 

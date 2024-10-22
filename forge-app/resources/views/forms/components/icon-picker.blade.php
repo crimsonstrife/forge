@@ -121,6 +121,12 @@
         /* Use the current text color */
     }
 
+    /* Set the SVG path fill color */
+    #icon-picker-modal svg path {
+        fill: currentColor;
+        /* Use the current text color */
+    }
+
     /* Hover state to change color */
     #icon-picker-modal svg:hover {
         fill: #3b82f6;
