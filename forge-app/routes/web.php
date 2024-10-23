@@ -142,24 +142,26 @@ Route::get('/icons/builtin/{type}/{style}/{file}', function ($type, $style, $fil
  * Route for fetching icon svg files/code
  * This route is accessible via the '/icon/{id}/svg' URL.
  *
- * @param int $id
+ * @param int|null $id
  *
+ * @return \Illuminate\Http\Response
  */
-Route::get('/icon/{id}/svg', function ($id) {
-    $icon = \App\Models\Icon::findOrFail($id);
+Route::get('/icon/{id}/svg', function (int|null $id) {
+    // Load the icon model
+    $iconModel = new \App\Models\Icon();
 
-    // Check if the svg_file_path is valid (not null and not empty)
-    if (!empty($icon->svg_file_path)) {
-        // prioritize the SVG file path
-        return response()->file(storage_path("app/public/{$icon->svg_file_path}"));
+    // Get the icon by id
+    $icon = $iconModel->find($id);
+
+    // Get the icon SVG
+    $svg = $iconModel->getSvg($icon);
+
+    // Check if the SVG is not empty
+    if (!empty($svg)) {
+        // Return the SVG
+        return response($svg, 200)->header('Content-Type', 'image/svg+xml');
     }
 
-    // Return the SVG code, sanitized
-    if (!empty($icon->svg_code)) {
-        $sanitizer = app(\App\Services\SvgSanitizerService::class);
-        return new \Illuminate\Http\Response($sanitizer->sanitize($icon->svg_code), 200, ['Content-Type' => 'image/svg+xml']);
-    }
-
-    // Return a 404 error if the icon does not have an SVG file path or SVG code
-    return response()->json(['svg' => ''], 404);
+    // Return a 404 error if the SVG is empty
+    return response('Icon not found', 404);
 })->name('icon.svg');
