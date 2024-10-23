@@ -118,50 +118,17 @@ Route::get('/email/verify/complete', function () {
 })->middleware(['auth:sanctum', config('jetstream.auth_session')])->name('verification.complete');
 
 /**
- * Route to serve icon files from the resource directory.
- * This route is accessible via the 'resource/icons/{type}/{style}/{file}' URL.
+ * Route to serve icon files from the public directory.
+ * This route is accessible via the 'public/$path' URL with path always starting with 'icons', i.e public/icons/builtin/outline/academic-cap.svg.
  *
- * @param string $type
- * @param string $style
- * @param string $file
+ * @param string $path
  *
  * @return \Illuminate\Http\Response
  */
-Route::get('/icons/builtin/{type}/{style}/{file}', function ($type, $style, $file) {
-    $path = resource_path("icons/builtin/{$type}/{$style}/{$file}");
-
-    if (!File::exists($path)) {
-        logger()->error("File not found: " . $path); // Log the path for debugging
-        abort(404, "File not found: " . $path); // Show the full file path in the 404 message
+Route::get('public/{path}', function ($path) {
+    $path = public_path($path);
+    if (File::exists($path)) {
+        return response()->file($path);
     }
-
-    return response()->file($path);
-})->name('icon.builtin');
-
-/**
- * Route for fetching icon svg files/code
- * This route is accessible via the '/icon/{id}/svg' URL.
- *
- * @param int|null $id
- *
- * @return \Illuminate\Http\Response
- */
-Route::get('/icon/{id}/svg', function (int|null $id) {
-    // Load the icon model
-    $iconModel = new \App\Models\Icon();
-
-    // Get the icon by id
-    $icon = $iconModel->find($id);
-
-    // Get the icon SVG
-    $svg = $iconModel->getSvg($icon);
-
-    // Check if the SVG is not empty
-    if (!empty($svg)) {
-        // Return the SVG
-        return response($svg, 200)->header('Content-Type', 'image/svg+xml');
-    }
-
-    // Return a 404 error if the SVG is empty
-    return response('Icon not found', 404);
-})->name('icon.svg');
+    return response()->json(['message' => 'File not found.'], 404);
+})->where('path', 'icons.*');

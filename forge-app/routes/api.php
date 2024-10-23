@@ -47,6 +47,34 @@ Route::middleware('sanctum-api')->group(function () {
 });
 
 /**
+ * Route for fetching icon svg files/code
+ * This route is accessible via the '/icon/{id}/svg' URL.
+ *
+ * @param int|null $id
+ *
+ * @return \Illuminate\Http\Response
+ */
+Route::get('/icon/{id}/svg', function (int|null $id) {
+    // Load the icon model
+    $iconModel = new \App\Models\Icon();
+
+    // Get the icon by id
+    $icon = $iconModel->find($id);
+
+    // Get the icon SVG
+    $svg = $iconModel->getSvg($icon);
+
+    // Check if the SVG is not empty
+    if (!empty($svg)) {
+        // Return the SVG
+        return response($svg, 200)->header('Content-Type', 'image/svg+xml');
+    }
+
+    // Return a 404 error if the SVG is empty
+    return response('Icon not found', 404);
+})->name('icon.svg');
+
+/**
  * API Routes for Projects and Project Repositories
  *
  * @middleware auth:api
