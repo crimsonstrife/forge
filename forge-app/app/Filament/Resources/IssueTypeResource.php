@@ -30,7 +30,6 @@ class IssueTypeResource extends Resource
 
                 Forms\Components\TextInput::make('description')
                     ->label('Type Description')
-                    ->multipleOf(3)
                     ->nullable()
                     ->placeholder('A brief description of the issue type'),
 
