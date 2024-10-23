@@ -1,10 +1,20 @@
 <div class="icon-preview flex items-center justify-center">
-    @if (!empty($getRecord()->svg_file_path) && file_exists(public_path($getRecord()->svg_file_path)))
-        <!-- Render the SVG file -->
-        {!! file_get_contents(public_path($getRecord()->svg_file_path)) !!}
-    @elseif (!empty($getRecord()->svg_code))
-        <!-- Render the SVG code from the database -->
-        {!! $getRecord()->svg_code !!}
+    @if (!empty($getRecord()->getSvg($getRecord()->id)))
+        @if ($getRecord()->isFile($getRecord()->id))
+            @php
+            $contextOptions = [];
+            if (app()->environment('local')) {
+                $contextOptions['ssl'] = [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                ];
+            }
+            $context = stream_context_create($contextOptions);
+            @endphp
+            {!! file_get_contents($getRecord()->getSvg($getRecord()->id), false, $context) !!}
+        @else
+            {!! $getRecord()->getSvg($getRecord()->id) !!}
+        @endif
     @else
         <p>No icon available</p>
     @endif

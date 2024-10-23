@@ -259,15 +259,23 @@ class Icon extends Model
      */
     public function getSvgUrlAttribute()
     {
+        $path = $this->svg_file_path;
+        $code = $this->svg_code;
+
         if ($this->is_builtin) {
             // Check if the svg_file_path is valid (not null and not empty)
-            if (!empty($this->svg_file_path)) {
-                // Generate the URL using the custom route that serves files from the public/icons directory
-                return route('icon.builtin', [
-                    'type' => $this->type,
-                    'style' => $this->style,
-                    'file' => basename(public_path($this->svg_file_path)),
-                ]);
+            if (!empty($path) && file_exists(public_path($path))) {
+                // Pre-append the public path to the file path
+                $fullPath = 'public/' . $path;
+
+                // Check if the file path exists, if so return the URL
+                if (File::exists($path)) {
+                    return asset($fullPath);
+                } else {
+                    // If the file path does not exist, return null and log a warning
+                    logger()->warning("Built-in icon {$this->type}/{$this->style}/{$this->name} has an invalid file path. Path: {$path}");
+                    return null;
+                }
             } else {
                 // If the icon has no valid file path, return an empty string and log a warning
                 logger()->warning("Built-in icon {$this->type}/{$this->style}/{$this->name} has no valid file path.");
@@ -275,7 +283,7 @@ class Icon extends Model
             }
         } else {
             // If it's a user-uploaded icon, use the storage path
-            return !empty($this->svg_file_path) ? Storage::url($this->svg_file_path) : '';
+            return !empty($path) ? Storage::url($path) : '';
         }
     }
 
@@ -363,5 +371,42 @@ class Icon extends Model
                 }
             }
         }
+    }
+
+    /**
+     * Should the svg file or code be used?
+     * Returns a boolean value based on if the icon is built-in or user-uploaded, and if the icon has an SVG file path or SVG code.
+     * It will prioritize the SVG file path over the SVG code.
+     *
+     * @param Icon|int $icon - The icon object or icon id.
+     *
+     * @return bool
+     */
+    public function isFile(Icon|int $icon): bool
+    {
+        // If the icon is an integer, assume it's an icon id and attempt to load the icon from the database
+        if (is_int($icon)) {
+            $icon = self::findOrFail($icon);
+        }
+
+        // Check if the icon is an instance of the Icon model
+        if (!$icon instanceof Icon) {
+            // Log a warning if the icon is not an instance of the Icon model
+            logger()->warning('The icon is not an instance of the Icon model.');
+            // Return false if the icon is not an instance of the Icon model
+            return false;
+        }
+
+        // Check if the icon is built-in
+        if ($icon->is_builtin) {
+            // Check if the icon has an SVG file path, if so return true, else return false
+            return !empty($icon->getSvgUrlAttribute());
+        } else {
+            // If it's a user-uploaded icon, return true if the SVG file path is not empty, else return false
+            return !empty($icon->getSvgUrlAttribute());
+        }
+
+        // Return false if the icon has no SVG file path or SVG code
+        return false;
     }
 }

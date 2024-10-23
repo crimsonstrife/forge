@@ -97,15 +97,13 @@ class IconPicker extends Field
 
         // Check if the SVG is not empty
         if (!empty($svg)) {
-            // Figure out if the SVG is a url or not (if it starts with http:// or https://, it's a url)
-            if (strpos($svg, 'http://') === 0 || strpos($svg, 'https://') === 0) {
-                // Return the SVG as an svg image string
-                $renderString = "<svg class='icon' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><use href='{$svg}'></use></svg>";
-
-                return new HtmlString($renderString);
-            } else {
-                // Return the SVG as code
+            // Check if the model priority is set to file
+            if ($icon->isFile($icon)) {
+                // Return the SVG file path
                 return new HtmlString($svg);
+            } else {
+                // Return the SVG code
+                return $svg;
             }
         }
 
@@ -142,5 +140,33 @@ class IconPicker extends Field
 
         // return null if the model has no icon attribute
         return null;
+    }
+
+    /**
+     * Is the current icon a file?
+     * Returns a boolean value indicating if the icon is a file.
+     *
+     * @param \App\Models\Icon|int $icon - The icon object or icon id.
+     *
+     * @return bool
+     */
+    public function isFile(\App\Models\Icon|int $icon)
+    {
+        // make sure that the icon is an instance of the Icon model
+        if ($icon instanceof \App\Models\Icon) {
+            return $icon->isFile($icon);
+        } elseif (is_int($icon)) {
+            // If the icon is an integer, assume it's an icon id and attempt to load the icon from the database
+            $iconModel = new \App\Models\Icon();
+            $icon = $iconModel->findOrFail($icon);
+
+            return $icon->isFile($icon);
+        }
+
+        // log an error if the icon is not an instance of the Icon model
+        Log::error('The icon is not an instance of the Icon model.');
+
+        // return false if the icon is not an instance of the Icon model
+        return false;
     }
 }
