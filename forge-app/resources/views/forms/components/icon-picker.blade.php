@@ -127,13 +127,19 @@
     }
 
     function updateCurrentIconPreview(iconId) {
+        // Reset the preview if no icon is selected
+        if (!iconId) {
+            document.getElementById('current-icon-preview').innerHTML = '<p>No icon selected</p>';
+            return;
+        }
+
         // Fetch the selected icon's SVG and update the preview
         fetch(`/icons/${iconId}/svg`)
         .then(response => response.json())
-        .then(data => {
+        .then(icon => {
             const preview = document.getElementById('current-icon-preview');
-            if (data.svg) {
-                preview.innerHTML = data.svg;
+            if (icon.svg) {
+                preview.innerHTML = icon.svg;
             } else {
                 preview.innerHTML = '<p>No icon selected</p>';
             }
