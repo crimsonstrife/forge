@@ -97,7 +97,7 @@ class IconPicker extends Field
                 // If it's a user-uploaded icon, use the storage path if the SVG file path is not empty, else return the SVG code
                 return !empty($icon->svg_file_path) ? $icon->svg_file_path : new HtmlString($sanitizer->sanitize($icon->svg_code));
             }
-        } else if (is_int($icon)) {
+        } elseif (is_int($icon)) {
             // If the icon is an integer, assume it's an icon id and attempt to load the icon from the database
             $iconModel = new \App\Models\Icon();
             $icon = $iconModel->find($icon);
