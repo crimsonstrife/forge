@@ -262,11 +262,11 @@ class Icon extends Model
         if ($this->is_builtin) {
             // Check if the svg_file_path is valid (not null and not empty)
             if (!empty($this->svg_file_path)) {
-                // Generate the URL using the custom route that serves files from the resources folder
+                // Generate the URL using the custom route that serves files from the public/icons directory
                 return route('icon.builtin', [
                     'type' => $this->type,
                     'style' => $this->style,
-                    'file' => basename($this->svg_file_path), // Extract the filename from the path
+                    'file' => basename(public_path($this->svg_file_path)),
                 ]);
             } else {
                 // If the icon has no valid file path, return an empty string and log a warning

@@ -79,41 +79,33 @@ class IconPicker extends Field
      */
     public function getIconSvg(\App\Models\Icon|int $icon)
     {
-        // Instantiate the SVG sanitizer service
-        $sanitizer = app(\App\Services\SvgSanitizerService::class);
+        // Initialize the SVG variable
+        $svg = null;
 
         // make sure that the icon is an instance of the Icon model
         if ($icon instanceof \App\Models\Icon) {
-            // Check if the icon is built-in
-            if ($icon->isBuiltIn()) {
-                // Check if the icon has an SVG file path, if so prioritize the SVG file path, else return the SVG code
-                if (!empty($icon->svg_file_path)) {
-                    return $icon->svg_file_path;
-                } else {
-                    // Sanitize the SVG code before returning
-                    return new HtmlString($sanitizer->sanitize($icon->svg_code));
-                }
-            } else {
-                // If it's a user-uploaded icon, use the storage path if the SVG file path is not empty, else return the SVG code
-                return !empty($icon->svg_file_path) ? $icon->svg_file_path : new HtmlString($sanitizer->sanitize($icon->svg_code));
-            }
+            // Get the icon SVG
+            $svg = $icon->getSvg($icon);
         } elseif (is_int($icon)) {
             // If the icon is an integer, assume it's an icon id and attempt to load the icon from the database
             $iconModel = new \App\Models\Icon();
-            $icon = $iconModel->find($icon);
+            $icon = $iconModel->findOrFail($icon);
 
-            // Check if the icon is built-in
-            if ($icon->isBuiltIn()) {
-                // Check if the icon has an SVG file path, if so prioritize the SVG file path, else return the SVG code
-                if (!empty($icon->svg_file_path)) {
-                    return $icon->svg_file_path;
-                } else {
-                    // Sanitize the SVG code before returning
-                    return new HtmlString($sanitizer->sanitize($icon->svg_code));
-                }
+            // Get the icon SVG
+            $svg = $icon->getSvg($icon);
+        }
+
+        // Check if the SVG is not empty
+        if (!empty($svg)) {
+            // Figure out if the SVG is a url or not (if it starts with http:// or https://, it's a url)
+            if (strpos($svg, 'http://') === 0 || strpos($svg, 'https://') === 0) {
+                // Return the SVG as an svg image string
+                $renderString = "<svg class='icon' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><use href='{$svg}'></use></svg>";
+
+                return new HtmlString($renderString);
             } else {
-                // If it's a user-uploaded icon, use the storage path if the SVG file path is not empty, else return the SVG code
-                return !empty($icon->svg_file_path) ? $icon->svg_file_path : new HtmlString($sanitizer->sanitize($icon->svg_code));
+                // Return the SVG as code
+                return new HtmlString($svg);
             }
         }
 

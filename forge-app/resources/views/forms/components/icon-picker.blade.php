@@ -8,12 +8,13 @@
                         $icon = App\Models\Icon::find($getState());
                     @endphp
                     @if ($icon)
-                        @if (!empty($icon->svg_file_path) && file_exists(public_path($icon->svg_file_path)))
-                            <!-- Load the SVG file as <svg> -->
-                            {!! file_get_contents(public_path($icon->svg_file_path)) !!}
-                        @elseif (!empty($icon->svg_code))
-                            <!-- Fall back to loading the raw SVG code from the database -->
-                            {!! $icon->svg_code !!}
+                        @if (!empty($getIconSvg($icon)))
+                            <!-- If the icon is a file path, render the SVG file -->
+                            @if (!empty($getIconSvg($icon)) && file_exists(public_path($getIconSvg($icon))))
+                                {!! file_get_contents(public_path($getIconSvg($icon))) !!}
+                            @else <!-- If the icon is a code, render the SVG code -->
+                                {!! $getIconSvg($icon) !!}
+                            @endif
                         @else
                             <p>No icon selected</p>
                         @endif
@@ -64,12 +65,9 @@
                                 @foreach ($getIcons() as $icon)
                                     <div onclick="selectIcon('{{ $icon->id }}')" data-type="{{ $icon->type }}" data-style="{{ $icon->style }}"
                                         class="cursor-pointer border p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 icon-picker-button">
-                                        @if (!empty($icon->svg_file_path) && file_exists(public_path($icon->svg_file_path)))
-                                            <!-- Load the SVG file as <svg> -->
-                                            {!! file_get_contents(public_path($icon->svg_file_path)) !!}
-                                        @elseif (!empty($icon->svg_code))
-                                            <!-- Fall back to loading the raw SVG code from the database -->
-                                            {!! $icon->svg_code !!}
+                                        @if (!empty($getIconSvg($icon)))
+                                            <!-- Render the SVG file -->
+                                            {!! $getIconSvg($icon) !!}
                                         @else
                                             <!-- Handle case when no file or code is available -->
                                             <p>No icon available</p>
