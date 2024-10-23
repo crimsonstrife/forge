@@ -305,4 +305,63 @@ class Icon extends Model
             return $sanitizer->sanitize($this->svg_code);
         }
     }
+
+    /**
+     * Get the icon SVG
+     * Returns the SVG file path, or the SVG code - else a null value. An alias for the getSvgUrlAttribute and getSvgCodeAttribute methods.
+     *
+     * @param Icon|int $icon - The icon object or icon id.
+     * @return string|null
+     *
+     * @see getSvgUrlAttribute
+     * @see getSvgCodeAttribute
+     */
+    public function getSvg(Icon|int $icon): string|null
+    {
+        // If the icon is an integer, assume it's an icon id and attempt to load the icon from the database
+        if (is_int($icon)) {
+            $icon = self::findOrFail($icon);
+        }
+
+        // Check if the icon is an instance of the Icon model
+        if (!$icon instanceof Icon) {
+            // Log a warning if the icon is not an instance of the Icon model
+            logger()->warning('The icon is not an instance of the Icon model.');
+            // Return a null value if the icon is not an instance of the Icon model
+            return null;
+        }
+
+        // Check if the icon is built-in
+        if ($icon->is_builtin) {
+            // Check if the icon has an SVG file path, if so prioritize the SVG file path, else return the SVG code
+            $svgFile = $icon->getSvgUrlAttribute();
+            if (!empty($svgFile)) {
+                return $svgFile;
+            } else {
+                // Get the SVG code if the SVG file path is empty
+                $svgCode = $icon->getSvgCodeAttribute();
+                if (!empty($svgCode)) {
+                    return $svgCode;
+                } else {
+                    // Return a null value if the icon has no SVG file path or SVG code
+                    return null;
+                }
+            }
+        } else {
+            // If it's a user-uploaded icon, use the storage path if the SVG file path is not empty, else return the SVG code
+            $svgFile = $icon->getSvgUrlAttribute();
+            if (!empty($svgFile)) {
+                return $svgFile;
+            } else {
+                // Get the SVG code if the SVG file path is empty
+                $svgCode = $icon->getSvgCodeAttribute();
+                if (!empty($svgCode)) {
+                    return $svgCode;
+                } else {
+                    // Return a null value if the icon has no SVG file path or SVG code
+                    return null;
+                }
+            }
+        }
+    }
 }
