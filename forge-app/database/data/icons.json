@@ -864,97 +864,27 @@
                     "style": "outline"
                 },
                 {
-                    "name": "feed-discussion",
+                    "name": "plus",
                     "type": "heroicon",
                     "style": "solid"
                 },
                 {
-                    "name": "feed-forked",
+                    "name": "rocket-launch",
                     "type": "heroicon",
                     "style": "solid"
                 },
                 {
-                    "name": "feed-heart",
+                    "name": "star",
                     "type": "heroicon",
                     "style": "solid"
                 },
                 {
-                    "name": "feed-issue-closed",
+                    "name": "tag",
                     "type": "heroicon",
                     "style": "solid"
                 },
                 {
-                    "name": "feed-issue-draft",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-issue-open",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-issue-reopen",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-merged",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-person",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-plus",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-public",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-pull-request-closed",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-pull-request-draft",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-pull-request-open",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-repo",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-rocket",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-star",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-tag",
-                    "type": "heroicon",
-                    "style": "solid"
-                },
-                {
-                    "name": "feed-trophy",
+                    "name": "trophy",
                     "type": "heroicon",
                     "style": "solid"
                 },
@@ -1294,7 +1224,7 @@
                     "style": "outline"
                 },
                 {
-                    "name": "percentage-badge",
+                    "name": "percent-badge",
                     "type": "heroicon",
                     "style": "outline"
                 },
@@ -2336,7 +2266,7 @@
                 {
                     "name": "heading",
                     "type": "octicon",
-                    "style": "outline"
+                    "style": "regular"
                 },
                 {
                     "name": "heart",
@@ -2949,7 +2879,7 @@
                     "style": "solid"
                 },
                 {
-                    "name": "sponser-tiers",
+                    "name": "sponsor-tiers",
                     "type": "octicon",
                     "style": "outline"
                 },
