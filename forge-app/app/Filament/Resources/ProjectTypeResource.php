@@ -16,12 +16,19 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Clusters\Projects;
 
 class ProjectTypeResource extends Resource
 {
     protected static ?string $model = ProjectType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
+    protected static ?string $navigationIcon = 'far-list-check';
+
+    protected static ?string $activeNavigationIcon = 'fas-list-check';
+
+    protected static ?string $navigationGroup = 'Projects';
+
+    protected static ?string $cluster = Projects::class;
 
     public static function form(Form $form): Form
     {

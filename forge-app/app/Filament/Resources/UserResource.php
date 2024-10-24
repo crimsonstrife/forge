@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use App\Filament\Clusters\Security;
 
 class UserResource extends Resource
 {
@@ -37,6 +38,8 @@ class UserResource extends Resource
     protected static ?string $navigationGroup = 'Access Control';
 
     protected static ?string $navigationLabel = 'Users';
+
+    protected static ?string $cluster = Security::class;
 
     /* public static function shouldRegisterNavigation(): bool
     {

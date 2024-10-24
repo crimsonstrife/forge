@@ -17,12 +17,19 @@ use Filament\Tables\Table;
 use App\Forms\Components\IconPicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Clusters\Issues;
 
 class IssueTypeResource extends Resource
 {
     protected static ?string $model = IssueType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $navigationIcon = 'far-clipboard-list-check';
+
+    protected static ?string $activeNavigationIcon = 'fas-clipboard-list-check';
+
+    protected static ?string $navigationGroup = 'Issues';
+
+    protected static ?string $cluster = Issues::class;
 
     public static function form(Form $form): Form
     {

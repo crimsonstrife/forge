@@ -16,12 +16,19 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Clusters\Issues;
 
 class IssuePriorityResource extends Resource
 {
     protected static ?string $model = IssuePriority::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-adjustments-horizontal';
+    protected static ?string $navigationIcon = 'far-arrow-down-short-wide';
+
+    protected static ?string $activeNavigationIcon = 'fas-arrow-down-short-wide';
+
+    protected static ?string $navigationGroup = 'Issues';
+
+    protected static ?string $cluster = Issues::class;
 
     public static function form(Form $form): Form
     {

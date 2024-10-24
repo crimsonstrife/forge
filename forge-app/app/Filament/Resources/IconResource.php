@@ -28,6 +28,8 @@ class IconResource extends Resource
 
     protected static ?string $activeNavigationIcon = 'fas-icons';
 
+    protected static ?string $navigationGroup = 'Application';
+
     public static function form(Form $form): Form
     {
         return $form
