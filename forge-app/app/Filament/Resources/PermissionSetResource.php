@@ -25,7 +25,9 @@ class PermissionSetResource extends Resource
 {
     protected static ?string $model = PermissionSet::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'far-layer-plus';
+
+    protected static ?string $activeNavigationIcon = 'fas-layer-plus';
 
     protected static ?string $slug = 'permission-sets';
 

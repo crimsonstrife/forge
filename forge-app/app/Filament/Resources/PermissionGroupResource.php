@@ -26,7 +26,9 @@ class PermissionGroupResource extends Resource
 {
     protected static ?string $model = PermissionGroup::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-group';
+    protected static ?string $navigationIcon = 'far-layer-group';
+
+    protected static ?string $activeNavigationIcon = 'fas-layer-group';
 
     protected static ?string $slug = 'permission-groups';
 
