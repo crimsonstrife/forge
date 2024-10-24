@@ -24,6 +24,26 @@ class Icon extends Model
     ];
 
     /**
+     * Boot the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Clear the cache when icons are saved or deleted
+        static::saved(function () {
+            cache()->forget('icons.all');
+        });
+
+        // Clear the cache when icons are saved or deleted
+        static::deleted(function () {
+            cache()->forget('icons.all');
+        });
+    }
+
+    /**
      * Determine if the icon is a custom uploaded SVG.
      */
     public function isCustom(): bool
@@ -91,8 +111,10 @@ class Icon extends Model
 
         return $builtinIcons->merge($userIcons); */
 
-        // Load all icons from the database
-        return self::all();
+        // Load all icons from the database, cache the results for 1 hour (60 minutes) before refreshing.
+        return cache()->remember('icons.all', 60 * 60, function () {
+            return self::all();
+        });
     }
 
     /**
