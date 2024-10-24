@@ -21,7 +21,9 @@ class ManageModuleSettings extends SettingsPage
 
     protected static string $settings = ModuleSettings::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-puzzle-piece';
+    protected static ?string $navigationIcon = 'far-gear-code';
+
+    protected static ?string $activeNavigationIcon = 'fas-gear-code';
 
     protected static ?string $slug = 'module-settings';
 

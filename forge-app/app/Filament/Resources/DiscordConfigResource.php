@@ -22,7 +22,7 @@ class DiscordConfigResource extends Resource
 {
     protected static bool $shouldRegisterNavigation = true;
 
-    protected static ?string $navigationIcon = 'heroicon-o-link';
+    protected static ?string $navigationIcon = 'fab-discord';
 
     protected static string $settings = DiscordSettings::class;
 

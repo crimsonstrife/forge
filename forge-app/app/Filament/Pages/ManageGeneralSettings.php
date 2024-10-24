@@ -21,7 +21,9 @@ class ManageGeneralSettings extends SettingsPage
 
     protected static string $settings = GeneralSettings::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cog';
+    protected static ?string $navigationIcon = 'far-gear';
+
+    protected static ?string $activeNavigationIcon = 'fas-gear';
 
     protected static ?string $slug = 'general-settings';
 
