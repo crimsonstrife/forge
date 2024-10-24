@@ -44,6 +44,11 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('json', function ($expression) {
             return new HtmlString('<?php echo json_encode(' . $expression . '); ?>');
         });
+
+        // Set the base URL if it is set in the environment
+        if ($baseUrl = env('APP_URL')) {
+            URL::forceRootUrl($baseUrl);
+        }
     }
 
     private function configureApp(): void
