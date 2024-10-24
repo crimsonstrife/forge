@@ -260,7 +260,6 @@ class Icon extends Model
     public function getSvgUrlAttribute()
     {
         $path = $this->svg_file_path;
-        $code = $this->svg_code;
 
         if ($this->is_builtin) {
             // Check if the svg_file_path is valid (not null and not empty)
@@ -299,13 +298,29 @@ class Icon extends Model
                 $sanitizer = app(SvgSanitizerService::class);
 
                 // Sanitize the SVG code before returning it
-                return $sanitizer->sanitize($this->svg_code);
+                $sanitizedSvg = $sanitizer->sanitize($this->svg_code);
+
+                // Return the sanitized SVG code if it's not empty
+                if (!empty($sanitizedSvg)) {
+                    return $sanitizedSvg;
+                } else {
+                    // If the sanitized SVG code is empty, return an empty string and log a warning
+                    logger()->warning("Built-in icon {$this->type}/{$this->style}/{$this->name} has invalid SVG code.");
+                    return '';
+                }
             } else {
                 // If the icon has no valid SVG code, return an empty string and log a warning
-                logger()->warning("Built-in icon {$this->type}/{$this->style}/{$this->name} has no valid SVG code.");
+                logger()->warning("Built-in icon {$this->type}/{$this->style}/{$this->name} has no SVG code.");
                 return '';
             }
         } else {
+            // If the svg_code is empty, return empty without sanitizing
+            if (empty($this->svg_code)) {
+                // If the icon has no SVG code, return an empty string and log a warning
+                logger()->warning("User-uploaded icon {$this->type}/{$this->style}/{$this->name} has no SVG code.");
+                return '';
+            }
+
             // If it's a user-uploaded icon, sanitize the SVG code before returning it
             $sanitizer = app(SvgSanitizerService::class);
 

@@ -14,6 +14,8 @@ class IconPicker extends Field
 
     public $selectedIcon = null; // This is the selected icon - null when no icon is selected
 
+    public $required = false; // This is the required state of the field
+
     // Optional: If you want to load all icons into the field
     public function getIcons()
     {
