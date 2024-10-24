@@ -20,6 +20,7 @@ use Filament\Support\Assets\Theme;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
 use Filament\Enums\ThemeMode;
+use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -36,6 +37,41 @@ use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
  */
 class AdminPanelProvider extends PanelProvider
 {
+    /**
+     * Boot the panel provider.
+     */
+    public function boot(): void
+    {
+        // Register the icon overrides for the Filament admin panel.
+        FilamentIcon::register([
+            'panels::global-search.field' => 'far-magnifying-glass',
+            'panels::global-search.clear' => 'far-circle-xmark',
+            'panels::pages.dashboard.actions.filter' => 'far-filter',
+            'panels::pages.dashboard.actions.sort' => 'far-sort',
+            'panels::pages.dashboard.actions.view' => 'far-eye',
+            'panels::pages.dashboard.filters.clear' => 'far-times',
+            'panels::pages.dashboard.filters.apply' => 'far-check',
+            'panels::user-menu.profile-item' => 'far-circle-user',
+            'panels::user-menu.account-item' => 'far-user-gear',
+            'panels::user-menu.logout-button' => 'far-left-to-bracket',
+            'panels::sidebar.group.collapse-button' => 'far-angle-up',
+            'forms::components.checkbox-list.search-field' => 'far-magnifying-glass',
+            'tables::search-field' => 'far-magnifying-glass',
+            'tables::actions.view' => 'far-eye',
+            'tables::actions.filter' => 'far-filter',
+            'tables::actions.sort' => 'far-sort',
+            'tables::header-cell.sort-asc-button' => 'far-sort-up',
+            'tables::header-cell.sort-desc-button' => 'far-sort-down',
+            'tables::columns.icon-column.false' => 'far-circle-xmark',
+            'tables::columns.icon-column.true' => 'far-circle-check',
+            'notifications::notification.danger' => 'far-triangle-exclamation',
+            'notifications::notification.info' => 'far-circle-info',
+            'notifications::notification.success' => 'far-circle-check',
+            'notifications::notification.warning' => 'far-circle-exclamation',
+            'notifications::notification.close-button' => 'far-circle-xmark',
+        ]);
+    }
+
     /**
      * Define the panel for the Filament admin panel.
      *

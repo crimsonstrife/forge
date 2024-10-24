@@ -34,8 +34,6 @@ class ManageGiteaSettings extends SettingsPage
 
     protected static ?string $navigationLabel = 'Gitea';
 
-    protected static ?string $cluster = Settings::class;
-
     /**
      * Only show the Gitea settings page if the module is enabled in the module settings.
      */
