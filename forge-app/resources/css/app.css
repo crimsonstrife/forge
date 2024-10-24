@@ -5,3 +5,7 @@
 [x-cloak] {
     display: none;
 }
+
+svg .icons.fa-icon-set.fas-icon {
+    fill: currentColor;
+}

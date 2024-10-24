@@ -52,19 +52,77 @@ class IconSeeder extends Seeder
 
             // Get each icon from the set
             foreach ($iconSet['icons'] as $iconData) {
-                // Create or update the Icon
-                $icon = Icon::firstOrCreate(['name' => $iconData['name']], [
-                    'type' => $iconData['type'],
-                    'style' => $iconData['style'] ?? 'regular',
-                    'svg_code' => $iconData['svg_code'] ?? null,
-                    'svg_file_path' => $iconData['svg_file_path'] ?? null,
-                ]);
+                // Find the SVG file path from the directory based on type, style, and name
+                $svgFilePath = $this->findSvgFilePath($iconData['type'], $iconData['style'], $iconData['name']);
 
-                // Output the icon name
-                $this->command->info("Icon created: {$icon->type} - {$icon->style} - {$icon->name}");
+                // Create or update the Icon in the database
+                $icon = Icon::updateOrCreate(
+                    ['name' => $iconData['name']], // Find by icon name
+                    [
+                        'type' => $iconData['type'],
+                        'style' => $iconData['style'] ?? 'regular',
+                        'svg_code' => $iconData['svg_code'] ?? null,
+                        'svg_file_path' => "icons/builtin/{$iconData['type']}/{$iconData['style']}/{$iconData['name']}.svg", // Store public path
+                        'is_builtin' => true,
+                    ]
+                );
+
+                // Save the icon details
+                $icon->save();
+
+                // Display the icon details, if created or updated - if the path did not exist, warn the user
+                if ($icon->wasRecentlyCreated) {
+                    $this->command->info("Icon created: {$icon->name}");
+                    // Notify the user if a file path was not found
+                    if ($svgFilePath === null) {
+                        $this->command->warn("Icon file path not found: {$icon->name}");
+                    }
+                } elseif ($icon->wasChanged()) {
+                    $this->command->info("Icon updated: {$icon->name}");
+                    // Notify the user if a file path was not found
+                    if ($svgFilePath === null) {
+                        $this->command->warn("Icon file path not found: {$icon->name}");
+                    }
+                } else {
+                    $this->command->error("Icon not created or updated: {$icon->name}");
+                }
+
+                // Clear the icon variable
+                unset($icon);
             }
         }
 
         $this->command->info('Icons seeded successfully.');
+    }
+
+    /**
+     * Find the SVG file path from the built-in icons directory based on type, style, and name.
+     *
+     * @param string $type
+     * @param string $style
+     * @param string $name
+     * @return string|null
+     */
+    private function findSvgFilePath(string $type, string $style, string $name): ?string
+    {
+        // Find the Icon in the database using the type/style/name, determine if it is built-in
+        $icon = Icon::where('type', $type)
+            ->where('style', $style)
+            ->where('name', $name)
+            ->first();
+
+        // Is the icon built-in?
+        $isBuiltIn = $icon && $icon->isBuiltIn();
+
+        // If the icon is built-in, build the file path using the resource directory
+        if ($isBuiltIn) {
+            $filePath = public_path("icons/builtin/{$type}/{$style}/{$name}.svg");
+            return File::exists($filePath) ? $filePath : null;
+        } elseif (!$isBuiltIn) {
+            $filePath = public_path("storage/icons/{$type}/{$style}/{$name}.svg");
+            return File::exists($filePath) ? $filePath : null;
+        }
+
+        return null;
     }
 }

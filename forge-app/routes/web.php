@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Horizon\Http\Controllers\HomeController;
 use App\Http\Controllers\DiscordController;
 use App\Http\Controllers\Auth\DiscordAuthController;
+use Illuminate\Support\Facades\File;
 
 /**
  * Define the route for the home page.
@@ -115,3 +116,19 @@ Route::get('/email/verify/send', function () {
 Route::get('/email/verify/complete', function () {
     return view('auth.verify-email');
 })->middleware(['auth:sanctum', config('jetstream.auth_session')])->name('verification.complete');
+
+/**
+ * Route to serve icon files from the public directory.
+ * This route is accessible via the 'public/$path' URL with path always starting with 'icons', i.e public/icons/builtin/outline/academic-cap.svg.
+ *
+ * @param string $path
+ *
+ * @return \Illuminate\Http\Response
+ */
+Route::get('public/{path}', function ($path) {
+    $path = public_path($path);
+    if (File::exists($path)) {
+        return response()->file($path);
+    }
+    return response()->json(['message' => 'File not found.'], 404);
+})->where('path', 'icons.*');

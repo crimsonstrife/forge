@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "calebporzio/sushi": "^2.5",
         "cocur/slugify": "^4.5",
         "czproject/git-php": "^4.2",
         "doctrine/dbal": "^4.0",
@@ -28,7 +29,7 @@
         "laravel/jetstream": "^5.1",
         "laravel/passport": "^12.2",
         "laravel/pennant": "^1.10",
-        "laravel/prompts": "^0.1.24",
+        "laravel/prompts": "^0.3.1",
         "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
         "laravel/scout": "^10.11",
@@ -94,7 +95,8 @@
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-            "@php artisan filament:upgrade"
+            "@php artisan filament:upgrade",
+            "@php artisan telescope:publish"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

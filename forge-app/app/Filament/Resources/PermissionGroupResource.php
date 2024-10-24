@@ -8,6 +8,7 @@ use Spatie\Permission\Models\Permission;
 use App\Models\Auth\PermissionGroup;
 use App\Models\Auth\PermissionSet;
 use App\Models\User;
+use App\Utilities\DynamicModelUtility as ModelUtility;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -20,12 +21,15 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use App\Filament\Clusters\Security;
 
 class PermissionGroupResource extends Resource
 {
     protected static ?string $model = PermissionGroup::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-group';
+    protected static ?string $navigationIcon = 'far-layer-group';
+
+    protected static ?string $activeNavigationIcon = 'fas-layer-group';
 
     protected static ?string $slug = 'permission-groups';
 
@@ -36,6 +40,8 @@ class PermissionGroupResource extends Resource
     protected static ?string $navigationGroup = 'Access Control';
 
     protected static ?string $navigationLabel = 'Permission Groups';
+
+    protected static ?string $cluster = Security::class;
 
     /* public static function shouldRegisterNavigation(): bool
     {
@@ -100,11 +106,25 @@ class PermissionGroupResource extends Resource
 
     public static function canAccess(): bool
     {
-        // Get the authenticated user and check if they have the 'list-permission-group' permission.
+        // Get an instance of the current model
+        $model = static::getModel();
+        // Format the model name for the permission
+        $modelName = ModelUtility::getNameForPermission($model);
+        $modelName = strtolower(str_replace(' ', '-', trim($modelName)));  // Normalize the model name
+        // Get the authenticated user and check if they have the relevant permission.
         $user = Auth::user();
-        $permission = 'list-permission-group';
+        // Create the permission name dynamically based on the model name
+        $permission = 'list-' . $modelName;
+
+        // Check if the user has the permission to access the resource
         if ($user instanceof User) {
-            return $user->hasPermissionTo($permission, 'web');
+            $canDo = $user->hasPermissionTo($permission, 'web');
+
+            if ($canDo) {
+                return true;
+            }
+
+            return false;
         }
 
         return false;
@@ -112,9 +132,17 @@ class PermissionGroupResource extends Resource
 
     public static function canViewAny(): bool
     {
-        // Get the authenticated user and check if they have the 'list-permission-group' permission.
+        // Get an instance of the current model
+        $model = static::getModel();
+        // Format the model name for the permission
+        $modelName = ModelUtility::getNameForPermission($model);
+        $modelName = strtolower(str_replace(' ', '-', trim($modelName)));  // Normalize the model name
+        // Get the authenticated user and check if they have the relevant permission.
         $user = Auth::user();
-        $permission = 'list-permission-group';
+        // Create the permission name dynamically based on the model name
+        $permission = 'list-' . $modelName;
+
+        // Check if the user has the permission to access the resource
         if ($user instanceof User) {
             return $user->hasPermissionTo($permission, 'web');
         }
@@ -124,12 +152,20 @@ class PermissionGroupResource extends Resource
 
     public static function canView(Model $record): bool
     {
-        // Get the authenticated user and check if they have the 'read-permission-group' permission.
-        $authUser = Auth::user();
-        $permission = 'read-permission-group';
-        if ($authUser instanceof User) {
-            return $authUser->hasPermissionTo($permission, 'web');
-            // TODO: Check if the authenticated user has the 'read-permission-group' permission for the given record.
+        // Get an instance of the current model
+        $model = static::getModel();
+        // Format the model name for the permission
+        $modelName = ModelUtility::getNameForPermission($model);
+        $modelName = strtolower(str_replace(' ', '-', trim($modelName)));  // Normalize the model name
+        // Get the authenticated user and check if they have the relevant permission.
+        $user = Auth::user();
+        // Create the permission name dynamically based on the model name
+        $permission = 'read-' . $modelName;
+
+        // Check if the user has the permission to access the resource
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission, 'web');
+            // TODO: Check if the authenticated user has the 'read' permission for the given record.
         }
 
         return false;
@@ -137,9 +173,17 @@ class PermissionGroupResource extends Resource
 
     public static function canCreate(): bool
     {
-        // Get the authenticated user and check if they have the 'create-permission-group' permission.
+        // Get an instance of the current model
+        $model = static::getModel();
+        // Format the model name for the permission
+        $modelName = ModelUtility::getNameForPermission($model);
+        $modelName = strtolower(str_replace(' ', '-', trim($modelName)));  // Normalize the model name
+        // Get the authenticated user and check if they have the relevant permission.
         $user = Auth::user();
-        $permission = 'create-permission-group';
+        // Create the permission name dynamically based on the model name
+        $permission = 'create-' . $modelName;
+
+        // Check if the user has the permission to access the resource
         if ($user instanceof User) {
             return $user->hasPermissionTo($permission, 'web');
         }
@@ -155,11 +199,19 @@ class PermissionGroupResource extends Resource
 
     public static function canUpdate(Model $record): bool
     {
-        // Get the authenticated user and check if they have the 'update-permission-group' permission.
-        $authUser = Auth::user();
-        $permission = 'update-permission-group';
-        if ($authUser instanceof User) {
-            return $authUser->hasPermissionTo($permission, 'web');
+        // Get an instance of the current model
+        $model = static::getModel();
+        // Format the model name for the permission
+        $modelName = ModelUtility::getNameForPermission($model);
+        $modelName = strtolower(str_replace(' ', '-', trim($modelName)));  // Normalize the model name
+        // Get the authenticated user and check if they have the relevant permission.
+        $user = Auth::user();
+        // Create the permission name dynamically based on the model name
+        $permission = 'update-' . $modelName;
+
+        // Check if the user has the permission to access the resource
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission, 'web');
         }
 
         return false;
@@ -167,11 +219,19 @@ class PermissionGroupResource extends Resource
 
     public static function canDelete(Model $record): bool
     {
-        // Get the authenticated user and check if they have the 'delete-permission-group' permission.
-        $authUser = Auth::user();
-        $permission = 'delete-permission-group';
-        if ($authUser instanceof User) {
-            return $authUser->hasPermissionTo($permission, 'web');
+        // Get an instance of the current model
+        $model = static::getModel();
+        // Format the model name for the permission
+        $modelName = ModelUtility::getNameForPermission($model);
+        $modelName = strtolower(str_replace(' ', '-', trim($modelName)));  // Normalize the model name
+        // Get the authenticated user and check if they have the relevant permission.
+        $user = Auth::user();
+        // Create the permission name dynamically based on the model name
+        $permission = 'delete-' . $modelName;
+
+        // Check if the user has the permission to access the resource
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission, 'web');
         }
 
         return false;
@@ -179,11 +239,19 @@ class PermissionGroupResource extends Resource
 
     public static function canRestore(Model $record): bool
     {
-        // Get the authenticated user and check if they have the 'restore-permission-group' permission.
-        $authUser = Auth::user();
-        $permission = 'restore-permission-group';
-        if ($authUser instanceof User) {
-            return $authUser->hasPermissionTo($permission, 'web');
+        // Get an instance of the current model
+        $model = static::getModel();
+        // Format the model name for the permission
+        $modelName = ModelUtility::getNameForPermission($model);
+        $modelName = strtolower(str_replace(' ', '-', trim($modelName)));  // Normalize the model name
+        // Get the authenticated user and check if they have the relevant permission.
+        $user = Auth::user();
+        // Create the permission name dynamically based on the model name
+        $permission = 'restore-' . $modelName;
+
+        // Check if the user has the permission to access the resource
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission, 'web');
         }
 
         return false;
@@ -191,11 +259,19 @@ class PermissionGroupResource extends Resource
 
     public static function canForceDelete(Model $record): bool
     {
-        // Get the authenticated user and check if they have the 'force-delete-permission-group' permission.
-        $authUser = Auth::user();
-        $permission = 'force-delete-permission-group';
-        if ($authUser instanceof User) {
-            return $authUser->hasPermissionTo($permission, 'web');
+        // Get an instance of the current model
+        $model = static::getModel();
+        // Format the model name for the permission
+        $modelName = ModelUtility::getNameForPermission($model);
+        $modelName = strtolower(str_replace(' ', '-', trim($modelName)));  // Normalize the model name
+        // Get the authenticated user and check if they have the relevant permission.
+        $user = Auth::user();
+        // Create the permission name dynamically based on the model name
+        $permission = 'force-delete-' . $modelName;
+
+        // Check if the user has the permission to access the resource
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission, 'web');
         }
 
         return false;
@@ -203,11 +279,19 @@ class PermissionGroupResource extends Resource
 
     public static function canRestoreMultiple(): bool
     {
-        // Get the authenticated user and check if they have the 'restore-permission-group' permission.
-        $authUser = Auth::user();
-        $permission = 'restore-permission-group';
-        if ($authUser instanceof User) {
-            return $authUser->hasPermissionTo($permission, 'web');
+        // Get an instance of the current model
+        $model = static::getModel();
+        // Format the model name for the permission
+        $modelName = ModelUtility::getNameForPermission($model);
+        $modelName = strtolower(str_replace(' ', '-', trim($modelName)));  // Normalize the model name
+        // Get the authenticated user and check if they have the relevant permission.
+        $user = Auth::user();
+        // Create the permission name dynamically based on the model name
+        $permission = 'restore-' . $modelName;
+
+        // Check if the user has the permission to access the resource
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission, 'web');
         }
 
         return false;
@@ -215,11 +299,19 @@ class PermissionGroupResource extends Resource
 
     public static function canForceDeleteMultiple(): bool
     {
-        // Get the authenticated user and check if they have the 'force-delete-permission-group' permission.
-        $authUser = Auth::user();
-        $permission = 'force-delete-permission-group';
-        if ($authUser instanceof User) {
-            return $authUser->hasPermissionTo($permission, 'web');
+        // Get an instance of the current model
+        $model = static::getModel();
+        // Format the model name for the permission
+        $modelName = ModelUtility::getNameForPermission($model);
+        $modelName = strtolower(str_replace(' ', '-', trim($modelName)));  // Normalize the model name
+        // Get the authenticated user and check if they have the relevant permission.
+        $user = Auth::user();
+        // Create the permission name dynamically based on the model name
+        $permission = 'force-delete-' . $modelName;
+
+        // Check if the user has the permission to access the resource
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission, 'web');
         }
 
         return false;
@@ -227,11 +319,19 @@ class PermissionGroupResource extends Resource
 
     public static function canReorder(): bool
     {
-        // Get the authenticated user and check if they have the 'reorder-permission-group' permission.
-        $authUser = Auth::user();
-        $permission = 'reorder-permission-group';
-        if ($authUser instanceof User) {
-            return $authUser->hasPermissionTo($permission, 'web');
+        // Get an instance of the current model
+        $model = static::getModel();
+        // Format the model name for the permission
+        $modelName = ModelUtility::getNameForPermission($model);
+        $modelName = strtolower(str_replace(' ', '-', trim($modelName)));  // Normalize the model name
+        // Get the authenticated user and check if they have the relevant permission.
+        $user = Auth::user();
+        // Create the permission name dynamically based on the model name
+        $permission = 'reorder-' . $modelName;
+
+        // Check if the user has the permission to access the resource
+        if ($user instanceof User) {
+            return $user->hasPermissionTo($permission, 'web');
         }
 
         return false;

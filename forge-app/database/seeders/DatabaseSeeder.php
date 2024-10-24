@@ -36,5 +36,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
         //Seed the users
         $this->call(UserSeeder::class);
+        //Seed the icons
+        $this->call(IconSeeder::class);
     }
 }

@@ -6,6 +6,7 @@ use App\Settings\GeneralSettings;
 use Filament\Facades\Filament;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Vite;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\HtmlString;
@@ -38,6 +39,16 @@ class AppServiceProvider extends ServiceProvider
     {
         // Configure application
         $this->configureApp();
+
+        // Double encode Blade directives
+        Blade::directive('json', function ($expression) {
+            return new HtmlString('<?php echo json_encode(' . $expression . '); ?>');
+        });
+
+        // Set the base URL if it is set in the environment
+        if ($baseUrl = env('APP_URL')) {
+            URL::forceRootUrl($baseUrl);
+        }
     }
 
     private function configureApp(): void

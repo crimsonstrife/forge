@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Settings;
 use App\Models\Auth\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
