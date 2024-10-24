@@ -59,6 +59,10 @@ class UserSeeder extends Seeder
         // Since the password will be unknown, and ideally temporary, log it to the console for the user
         $this->command->info('Admin password: ' . $password . ' (This password will be used to log in as the super admin user, you should change it.)');
 
+        // Wait for the user to see the password
+        sleep(10); // 10 seconds
+
+        // Return the hashed password
         return bcrypt($password);
     }
 }
