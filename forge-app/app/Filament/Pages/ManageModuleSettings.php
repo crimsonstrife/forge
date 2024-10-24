@@ -21,9 +21,9 @@ class ManageModuleSettings extends SettingsPage
 
     protected static string $settings = ModuleSettings::class;
 
-    protected static ?string $navigationIcon = 'far-gear-code';
+    protected static ?string $navigationIcon = 'far-puzzle-piece';
 
-    protected static ?string $activeNavigationIcon = 'fas-gear-code';
+    protected static ?string $activeNavigationIcon = 'fas-puzzle-piece';
 
     protected static ?string $slug = 'module-settings';
 
@@ -34,6 +34,8 @@ class ManageModuleSettings extends SettingsPage
     protected static ?string $navigationGroup = 'Settings';
 
     protected static ?string $navigationLabel = 'Modules';
+
+    protected static ?string $cluster = \App\Filament\Clusters\Settings::class;
 
     /* public static function shouldRegisterNavigation(): bool
     {

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Clusters\Settings;
 use App\Models\Auth\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,8 @@ class ManageGiteaSettings extends SettingsPage
     protected static ?string $navigationGroup = 'Modules';
 
     protected static ?string $navigationLabel = 'Gitea';
+
+    protected static ?string $cluster = Settings::class;
 
     /**
      * Only show the Gitea settings page if the module is enabled in the module settings.

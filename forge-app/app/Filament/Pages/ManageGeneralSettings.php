@@ -14,6 +14,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\SettingsPage;
 use Illuminate\Contracts\Support\Htmlable;
+use App\Filament\Clusters\Settings;
 
 class ManageGeneralSettings extends SettingsPage
 {
@@ -34,6 +35,8 @@ class ManageGeneralSettings extends SettingsPage
     protected static ?string $navigationGroup = 'Settings';
 
     protected static ?string $navigationLabel = 'General';
+
+    protected static ?string $cluster = Settings::class;
 
     /* public static function shouldRegisterNavigation(): bool
     {
