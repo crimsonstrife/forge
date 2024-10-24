@@ -24,7 +24,9 @@ class IconResource extends Resource
 {
     protected static ?string $model = Icon::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'far-icons';
+
+    protected static ?string $activeNavigationIcon = 'fas-icons';
 
     public static function form(Form $form): Form
     {

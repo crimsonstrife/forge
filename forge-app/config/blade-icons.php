@@ -30,7 +30,7 @@ return [
             |
             */
 
-            'path' => 'public/icons/builtin/fontawesome',
+            'path' => 'public/icons/builtin/fontawesome/regular',
 
             /*
             |-----------------------------------------------------------------
@@ -56,7 +56,7 @@ return [
             |
             */
 
-            'prefix' => 'fa',
+            'prefix' => 'far',
 
             /*
             |-----------------------------------------------------------------
@@ -80,7 +80,173 @@ return [
             |
             */
 
-            'class' => 'fa-icon-set',
+            'class' => 'fa-icon-set far-icon',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Attributes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some attributes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            // 'attributes' => [
+                // 'width' => 50,
+                // 'height' => 50,
+            // ],
+
+        ],
+        'default-solid' => [
+
+            /*
+            |-----------------------------------------------------------------
+            | Icons Path
+            |-----------------------------------------------------------------
+            |
+            | Provide the relative path from your app root to your SVG icons
+            | directory. Icons are loaded recursively so there's no need to
+            | list every sub-directory.
+            |
+            | Relative to the disk root when the disk option is set.
+            |
+            */
+
+            'path' => 'public/icons/builtin/fontawesome/solid',
+
+            /*
+            |-----------------------------------------------------------------
+            | Filesystem Disk
+            |-----------------------------------------------------------------
+            |
+            | Optionally, provide a specific filesystem disk to read
+            | icons from. When defining a disk, the "path" option
+            | starts relatively from the disk root.
+            |
+            */
+
+            // 'disk' => 'public',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Prefix
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a default prefix for
+            | your icons. The dash separator will be applied automatically
+            | to every icon name. It's required and needs to be unique.
+            |
+            */
+
+            'prefix' => 'fas',
+
+            /*
+            |-----------------------------------------------------------------
+            | Fallback Icon
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a fallback
+            | icon when an icon in this set cannot be found.
+            |
+            */
+
+            // 'fallback' => '',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Classes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some classes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            'class' => 'fa-icon-set fas-icon',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Attributes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some attributes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            // 'attributes' => [
+                // 'width' => 50,
+                // 'height' => 50,
+            // ],
+
+        ],
+        'default-brand' => [
+
+            /*
+            |-----------------------------------------------------------------
+            | Icons Path
+            |-----------------------------------------------------------------
+            |
+            | Provide the relative path from your app root to your SVG icons
+            | directory. Icons are loaded recursively so there's no need to
+            | list every sub-directory.
+            |
+            | Relative to the disk root when the disk option is set.
+            |
+            */
+
+            'path' => 'public/icons/builtin/fontawesome/brand',
+
+            /*
+            |-----------------------------------------------------------------
+            | Filesystem Disk
+            |-----------------------------------------------------------------
+            |
+            | Optionally, provide a specific filesystem disk to read
+            | icons from. When defining a disk, the "path" option
+            | starts relatively from the disk root.
+            |
+            */
+
+            // 'disk' => 'public',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Prefix
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a default prefix for
+            | your icons. The dash separator will be applied automatically
+            | to every icon name. It's required and needs to be unique.
+            |
+            */
+
+            'prefix' => 'fab',
+
+            /*
+            |-----------------------------------------------------------------
+            | Fallback Icon
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a fallback
+            | icon when an icon in this set cannot be found.
+            |
+            */
+
+            // 'fallback' => '',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Classes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some classes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            'class' => 'fa-icon-set fab-icon',
 
             /*
             |-----------------------------------------------------------------
@@ -196,7 +362,7 @@ return [
             |
             */
 
-            'path' => 'public/icons/builtin/octicon',
+            'path' => 'public/icons/builtin/octicon/regular',
 
             /*
             |-----------------------------------------------------------------
@@ -222,7 +388,7 @@ return [
             |
             */
 
-            'prefix' => 'octi',
+            'prefix' => 'octir',
 
             /*
             |-----------------------------------------------------------------
@@ -246,7 +412,256 @@ return [
             |
             */
 
-            'class' => 'octi-icon-set',
+            'class' => 'octi-icon-set octir-icon',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Attributes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some attributes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            // 'attributes' => [
+                // 'width' => 50,
+                // 'height' => 50,
+            // ],
+
+        ],
+        'octicon-solid' => [
+
+            /*
+            |-----------------------------------------------------------------
+            | Icons Path
+            |-----------------------------------------------------------------
+            |
+            | Provide the relative path from your app root to your SVG icons
+            | directory. Icons are loaded recursively so there's no need to
+            | list every sub-directory.
+            |
+            | Relative to the disk root when the disk option is set.
+            |
+            */
+
+            'path' => 'public/icons/builtin/octicon/solid',
+
+            /*
+            |-----------------------------------------------------------------
+            | Filesystem Disk
+            |-----------------------------------------------------------------
+            |
+            | Optionally, provide a specific filesystem disk to read
+            | icons from. When defining a disk, the "path" option
+            | starts relatively from the disk root.
+            |
+            */
+
+            // 'disk' => 'public',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Prefix
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a default prefix for
+            | your icons. The dash separator will be applied automatically
+            | to every icon name. It's required and needs to be unique.
+            |
+            */
+
+            'prefix' => 'octis',
+
+            /*
+            |-----------------------------------------------------------------
+            | Fallback Icon
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a fallback
+            | icon when an icon in this set cannot be found.
+            |
+            */
+
+            // 'fallback' => '',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Classes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some classes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            'class' => 'octi-icon-set octis-icon',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Attributes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some attributes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            // 'attributes' => [
+                // 'width' => 50,
+                // 'height' => 50,
+            // ],
+
+        ],
+        'octicon-outline' => [
+
+            /*
+            |-----------------------------------------------------------------
+            | Icons Path
+            |-----------------------------------------------------------------
+            |
+            | Provide the relative path from your app root to your SVG icons
+            | directory. Icons are loaded recursively so there's no need to
+            | list every sub-directory.
+            |
+            | Relative to the disk root when the disk option is set.
+            |
+            */
+
+            'path' => 'public/icons/builtin/octicon/outline',
+
+            /*
+            |-----------------------------------------------------------------
+            | Filesystem Disk
+            |-----------------------------------------------------------------
+            |
+            | Optionally, provide a specific filesystem disk to read
+            | icons from. When defining a disk, the "path" option
+            | starts relatively from the disk root.
+            |
+            */
+
+            // 'disk' => 'public',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Prefix
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a default prefix for
+            | your icons. The dash separator will be applied automatically
+            | to every icon name. It's required and needs to be unique.
+            |
+            */
+
+            'prefix' => 'octio',
+
+            /*
+            |-----------------------------------------------------------------
+            | Fallback Icon
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a fallback
+            | icon when an icon in this set cannot be found.
+            |
+            */
+
+            // 'fallback' => '',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Classes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some classes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            'class' => 'octi-icon-set octio-icon',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Attributes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some attributes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            // 'attributes' => [
+                // 'width' => 50,
+                // 'height' => 50,
+            // ],
+
+        ],
+        'octicon-brands' => [
+
+            /*
+            |-----------------------------------------------------------------
+            | Icons Path
+            |-----------------------------------------------------------------
+            |
+            | Provide the relative path from your app root to your SVG icons
+            | directory. Icons are loaded recursively so there's no need to
+            | list every sub-directory.
+            |
+            | Relative to the disk root when the disk option is set.
+            |
+            */
+
+            'path' => 'public/icons/builtin/octicon/brands',
+
+            /*
+            |-----------------------------------------------------------------
+            | Filesystem Disk
+            |-----------------------------------------------------------------
+            |
+            | Optionally, provide a specific filesystem disk to read
+            | icons from. When defining a disk, the "path" option
+            | starts relatively from the disk root.
+            |
+            */
+
+            // 'disk' => 'public',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Prefix
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a default prefix for
+            | your icons. The dash separator will be applied automatically
+            | to every icon name. It's required and needs to be unique.
+            |
+            */
+
+            'prefix' => 'octib',
+
+            /*
+            |-----------------------------------------------------------------
+            | Fallback Icon
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a fallback
+            | icon when an icon in this set cannot be found.
+            |
+            */
+
+            // 'fallback' => '',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Classes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some classes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            'class' => 'octi-icon-set octib-icon',
 
             /*
             |-----------------------------------------------------------------
