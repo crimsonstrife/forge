@@ -20,7 +20,7 @@ class ManageGiteaSettings extends SettingsPage
 {
     //protected static bool $shouldRegisterNavigation = true;
 
-    protected static ?string $navigationIcon = 'heroicon-o-link';
+    protected static ?string $navigationIcon = 'misc-gitea';
 
     protected static string $settings = GiteaSettings::class;
 
