@@ -10,13 +10,14 @@ use Illuminate\Support\Str;
 use App\Services\SvgSanitizerService;
 use Illuminate\Support\Facades\Log;
 
-use function storage_path;
 
 class IconSeeder extends Seeder
 {
     public $storagePath;
 
     private $styleEnum = ['solid', 'regular', 'light', 'duotone', 'brand', 'outline', 'custom', null];
+
+use function storage_path;
 
     private $filesystem;
 
