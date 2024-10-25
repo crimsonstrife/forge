@@ -22,7 +22,7 @@ class IconSeeder extends Seeder
 {
     public $storagePath;
 
-    private $styleEnum = ['solid', 'regular', 'light', 'duotone', 'brand', 'outline'];
+    private $styleEnum = ['solid', 'regular', 'light', 'duotone', 'brand', 'outline', 'custom', null];
 
     private $filesystem;
 
