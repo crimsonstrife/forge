@@ -10,8 +10,8 @@
         $context = stream_context_create($contextOptions);
     @endphp
     <div class="grid gap-y-2">
-        <div class="flex items-center gap-x-3 justify-between">
-            <label for="icon-picker" class="fi-fo-field-wrp-label inline-flex items-center gap-x-3">
+        <div class="flex items-center justify-between gap-x-3">
+            <label for="icon-picker" class="inline-flex items-center fi-fo-field-wrp-label gap-x-3">
                 <span class="text-sm font-medium leading-6 text-gray-950 dark:text-white">Icon</span>
                 <span class="fi-fo-field-wrp-label-hint">Select an icon from the available options.</span>
             </label>
@@ -53,15 +53,15 @@
                 </div>
 
                 <!-- Modal with the icon picker -->
-                <div id="icon-picker-modal" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
+                <div id="icon-picker-modal" class="fixed inset-0 z-10 overflow-y-auto" aria-labelledby="modal-title"
                     role="dialog" aria-modal="true" style="display: none;">
-                    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+                    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                        <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true"></div>
 
                         <!-- Modal content -->
                         <div id="icon-modal-content"
                             class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full min-w-[600px] min-h-[400px]">
-                            <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="px-4 pt-5 pb-4 bg-white dark:bg-gray-800 sm:p-6 sm:pb-4">
                                 <!-- Filters for Icon Type and Style -->
                                 <div class="flex justify-between mb-4">
                                     <select id="icon-type-filter" class="px-2 py-1 border rounded" onchange="filterIcons()">
@@ -81,11 +81,11 @@
 
                                 <!-- Grid of icons with responsive columns -->
                                 <div id="icon-picker-grid"
-                                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 max-h-96 overflow-y-auto">
+                                    class="grid grid-cols-1 gap-4 overflow-y-auto sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 max-h-96">
                                     @foreach ($getIcons() as $icon)
                                         <div onclick="selectIcon('{{ $icon->id }}')" data-type="{{ $icon->type }}"
                                             data-style="{{ $icon->style }}"
-                                            class="cursor-pointer border p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 icon-picker-button">
+                                            class="p-2 border rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 icon-picker-button">
                                             @if (!empty($icon->getSvg($icon->id)))
                                                 <!-- Render the SVG file -->
                                                 @if ($isFile($icon->id))
@@ -101,8 +101,8 @@
                                     @endforeach
                                 </div>
                             </div>
-                            <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                <button onclick="toggleIconPicker()" class="px-4 py-2 bg-blue-600 text-white rounded">
+                            <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 sm:px-6 sm:flex sm:flex-row-reverse">
+                                <button onclick="toggleIconPicker()" class="px-4 py-2 text-white bg-blue-600 rounded">
                                     Close
                                 </button>
                             </div>
@@ -114,6 +114,37 @@
     </div>
 </div>
 <script>
+    let currentPage = 1;
+
+    function loadMoreIcons() {
+        fetch(`/api/icons?page=${currentPage + 1}`)
+            .then(response => response.json())
+            .then(data => {
+                const iconGrid = document.getElementById('icon-grid');
+                data.icons.forEach(icon => {
+                    const iconElement = document.createElement('div');
+                    iconElement.onclick = () => selectIcon(icon.id);
+                    iconElement.setAttribute('data-type', icon.type);
+                    iconElement.setAttribute('data-style', icon.style);
+                    iconElement.classList.add('p-2', 'border', 'rounded-lg', 'cursor-pointer', 'hover:bg-gray-100', 'dark:hover:bg-gray-700', 'icon-picker-button');
+                    if (icon.svg) {
+                        if (icon.is_file) {
+                            const img = document.createElement('img');
+                            img.src = icon.svg;
+                            img.alt = `icon-${icon.name}`;
+                            iconElement.appendChild(img);
+                        } else {
+                            iconElement.innerHTML = icon.svg;
+                        }
+                    } else {
+                        iconElement.innerHTML = '<p>No icon available</p>';
+                    }
+                    iconGrid.appendChild(iconElement);
+                });
+                currentPage++;
+            });
+    }
+
     function toggleIconPicker() {
         const modal = document.getElementById('icon-picker-modal');
         const isShown = modal.style.display === 'none';
@@ -122,6 +153,11 @@
         // Apply filters when the modal is opened
         if (isShown) {
             filterIcons();
+        }
+
+        // Reset the current page when the modal is closed
+        if (currentPage === 1) {
+            loadMoreIcons();
         }
     }
 
