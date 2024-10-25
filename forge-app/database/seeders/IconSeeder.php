@@ -26,7 +26,7 @@ class IconSeeder extends Seeder
 
     private $filesystem;
 
-    private $disks;
+    private $svgSanitizer;
 
     public function __construct()
     {
@@ -99,7 +99,7 @@ class IconSeeder extends Seeder
                 $iconName = $icon['name'];
 
                 // Get the icon path
-                $iconPath = $icon['path'];
+                $iconPath = $iconSetPath . '/' . $iconName . '.svg';
 
                 // Get the icon svg code
                 $iconSvg = $icon['svg'];
@@ -171,13 +171,19 @@ class IconSeeder extends Seeder
         $icons = [];
 
         // Initialize the return array
-        $return = [];
+        $return = array();
 
         // Absolute path to the icon set (remove 'public/' from the path)
         $absolutePath = Str::replaceFirst('public/', '', $iconSetPath);
 
         // Get the icons (svg files) from the set path
-        $icons = $this->filesystem->files(public_path($absolutePath), true);
+        $icons = $this->filesystem->files(public_path($absolutePath));
+
+        // For debugging, convert the icons array to a string
+        $iconsString = implode(', ', $icons);
+
+        // Debugging: Log the icons
+        $this->command->info('Icons: ' . $iconsString);
 
         // Make sure the icons are not empty, and only contain svg files
         if (empty($icons)) {
@@ -187,8 +193,20 @@ class IconSeeder extends Seeder
         } else {
             // Loop through the icons
             foreach ($icons as $icon) {
+                // Initialize the isValid variable
+                $isValid = false;
+
+                // Initialize the isSVG variable
+                $isSVG = false;
+
+                // Debugging: Log which icon is being processed
+                $this->command->info('Processing Icon: ' . $icon);
+
+                // Is the icon an SVG file?
+                $isSVG = $this->filesystem->extension($icon) === 'svg';
+
                 // Get only the files with the .svg extension
-                if ($this->filesystem->extension($icon) === 'svg') {
+                if ($isSVG) {
                     // Get the contents of the svg file for validation/sanitization
                     $svgCode = $this->filesystem->get($icon);
 
@@ -200,7 +218,7 @@ class IconSeeder extends Seeder
                         // Sanitize the SVG code
                         $sanitizedSvg = $this->svgSanitizer->sanitize($svgCode);
 
-                        // Add the icon to the return array
+                        // Append the icon to the return array
                         $return[] = [
                             'name' => $this->filesystem->name($icon),
                             'path' => $icon,
@@ -211,20 +229,19 @@ class IconSeeder extends Seeder
                         $this->command->error('The SVG file is not valid or is unsafe: ' . $icon);
                         throw new SvgNotFound('The SVG file is not valid or is unsafe: ' . $icon);
                     }
-
-                    // Log an error if the SVG file is not found
-                    $this->command->error('The SVG file is not found: ' . $icon);
-                    Log::error('The SVG file is not found: ' . $icon);
+                } else {
+                    // Log a warning if the file is not an SVG file
+                    $this->command->warn('The file is not an SVG file: ' . $icon);
                 }
-
-                // Return the icons
-                return $return;
             }
 
-            // Log an error if the icons are empty
-            $this->command->error('No icons found in the set path: ' . $iconSetPath);
-            Log::error('No icons found in the set path: ' . $iconSetPath);
+            // Return the icons
+            return $return;
         }
+
+        // Log an error if the icons are empty
+        $this->command->error('No icons found in the set path: ' . $iconSetPath);
+        Log::error('No icons found in the set path: ' . $iconSetPath);
 
         // Return an empty array if no icons are found
         return [];
@@ -248,9 +265,6 @@ class IconSeeder extends Seeder
      */
     private function createIcon($iconName, $iconType, $iconStyle, $iconPrefix, $iconSvg, $iconPath, $iconSetClass, $iconSetName): void
     {
-        // Absolute path to the icon set (remove 'public/' from the path)
-        $absolutePath = Str::replaceFirst('public/', '', $iconPath);
-
         // Try to create the icon in the database if it does not already exist
         try {
             // Create the icon in the database
@@ -261,15 +275,15 @@ class IconSeeder extends Seeder
                 'prefix' => $iconPrefix,
                 'set' => $iconSetName,
                 'class' => $iconSetClass,
-                'svg' => $iconSvg,
-                'path' => $absolutePath,
+                'svg_code' => $iconSvg,
+                'svg_file_path' => $iconPath,
                 'is_builtin' => true,
             ]);
         } catch (\Exception $e) {
             // Log an error if the icon could not be created
-            $this->command->error('The icon could not be created: ' . $iconName . ' / ' . $iconType . ' / ' . $iconStyle);
+            $this->command->error('The icon could not be created: ' . $iconName . ' / ' . $iconType . ' / ' . $iconStyle . ' Error: ' . $e->getMessage());
             // Log an error if the icon could not be created
-            Log::error('The icon could not be created: ' . $iconName . ' / ' . $iconType . ' / ' . $iconStyle);
+            Log::error('The icon could not be created: ' . $iconName . ' / ' . $iconType . ' / ' . $iconStyle . ' Error: ' . $e->getMessage());
         }
     }
 }
