@@ -3,13 +3,14 @@
 namespace Database\Seeders;
 
 use App\Models\Icon;
-use function storage_path;
 use Illuminate\Database\Seeder;
 use BladeUI\Icons\Exceptions\SvgNotFound;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use App\Services\SvgSanitizerService;
 use Illuminate\Support\Facades\Log;
+
+use function storage_path;
 
 class IconSeeder extends Seeder
 {
