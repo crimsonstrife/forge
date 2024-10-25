@@ -209,6 +209,13 @@
                 document.getElementById('current-icon-preview').innerHTML = '<p>No icon selected</p>';
             });
     }
+
+    // Lazy load more icons when the user scrolls to the bottom
+    document.getElementById('icon-picker-modal').addEventListener('scroll', function() {
+    if (this.scrollTop + this.clientHeight >= this.scrollHeight) {
+        loadMoreIcons();
+    }
+});
 </script>
 <style>
     /* Ensure the modal is centered */
