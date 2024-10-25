@@ -1,19 +1,20 @@
 <div class="icon-preview flex items-center justify-center">
-    @if (!empty($getRecord()->getSvg($getRecord()->id)))
-        @if ($getRecord()->isFile($getRecord()->id))
-            @php
-            $contextOptions = [];
-            if (app()->environment('local')) {
-                $contextOptions['ssl'] = [
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                ];
-            }
-            $context = stream_context_create($contextOptions);
-            @endphp
-            {!! file_get_contents($getRecord()->getSvg($getRecord()->id), false, $context) !!}
+    @php
+        $icon = $getRecord();
+    @endphp
+
+    @if ($icon)
+        @if ($icon->is_builtin)
+            <!-- Use BladeUI to render the icon from the built-in set, assuming proper prefix and set registration -->
+            <x-dynamic-component :component="$icon->prefix . '-' . $icon->name" />
+        @elseif (!empty($icon->svg_code))
+            <!-- Render the custom SVG code directly -->
+            {!! $icon->svg_code !!}
+        @elseif (!empty($icon->svg_file_path))
+            <!-- If a custom file is used, render the SVG from the file path -->
+            <img src="{{ Storage::url($icon->svg_file_path) }}" alt="icon-{{ $icon->name }}" />
         @else
-            {!! $getRecord()->getSvg($getRecord()->id) !!}
+            <p>No icon available</p>
         @endif
     @else
         <p>No icon available</p>

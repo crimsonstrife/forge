@@ -3,19 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\Icon;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use function storage_path;
-use Illuminate\Support\Facades\File;
 use Illuminate\Database\Seeder;
-use BladeUI\Icons\Factory;
 use BladeUI\Icons\Exceptions\SvgNotFound;
-use Illuminate\Contracts\Filesystem\Factory as FilesystemFactory;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Str;
 use App\Services\SvgSanitizerService;
-use Filament\Forms\Components\KeyValue;
 use Illuminate\Support\Facades\Log;
 
 class IconSeeder extends Seeder
@@ -65,56 +58,48 @@ class IconSeeder extends Seeder
     private function createIcons($iconSets): void
     {
         // Loop through the icon sets
-        foreach ($iconSets as $iconSet) {
-            // Get the icon set name - this is the key name the loop is currently on in the icon sets array
-            $iconSetName = key($iconSets);
-
-            // Debugging: Log the icon set name
-            $this->command->info('Icon Set Name: ' . $iconSetName);
+        foreach ($iconSets as $iconSetName => $iconSet) {
 
             // Get the icon set class
             $iconSetClass = $iconSet['class'];
 
-            // Debugging: Log the icon set class
-            $this->command->info('Icon Set Class: ' . $iconSetClass);
-
             // Get the icon set prefix
             $iconSetPrefix = $iconSet['prefix'];
-
-            // Debugging: Log the icon set prefix
-            $this->command->info('Icon Set Prefix: ' . $iconSetPrefix);
 
             // Get the icon set path
             $iconSetPath = $iconSet['path'];
 
-            // Debugging: Log the icon set path
-            $this->command->info('Icon Set Path: ' . $iconSetPath);
-
             // Get the icons from the set path
             $icons = $this->getIcons($iconSetPath);
 
-            // For each icon in the set, create an icon in the database
-            foreach ($icons as $icon) {
-                // Get the icon name
-                $iconName = $icon['name'];
+            // Get the icons in chunks to avoid memory overload/segfault
+            foreach (array_chunk($icons, 100) as $iconChunk) {
+                // For each icon in the set, create an icon in the database
+                foreach ($iconChunk as $icon) {
+                    // Get the icon name
+                    $iconName = $icon['name'];
 
-                // Get the icon path
-                $iconPath = $iconSetPath . '/' . $iconName . '.svg';
+                    // Get the icon path
+                    $iconPath = $iconSetPath . '/' . $iconName . '.svg';
 
-                // Get the icon svg code
-                $iconSvg = $icon['svg'];
+                    // Get the icon svg code
+                    $iconSvg = $icon['svg'];
 
-                // Get the icon type and style
-                $iconTypeAndStyle = $this->getIconTypeAndStyle($iconSetName);
+                    // Get the icon type and style
+                    $iconTypeAndStyle = $this->getIconTypeAndStyle($iconSetName);
 
-                // Get the icon type
-                $iconType = $iconTypeAndStyle['type'];
+                    // Get the icon type
+                    $iconType = $iconTypeAndStyle['type'];
 
-                // Get the icon style
-                $iconStyle = $iconTypeAndStyle['style'];
+                    // Get the icon style
+                    $iconStyle = $iconTypeAndStyle['style'];
 
-                // Create the icon in the database
-                $this->createIcon($iconName, $iconType, $iconStyle, $iconSetPrefix, $iconSvg, $iconPath, $iconSetClass, $iconSetName);
+                    // Create the icon in the database
+                    $this->createIcon($iconName, $iconType, $iconStyle, $iconSetPrefix, $iconSvg, $iconPath, $iconSetClass, $iconSetName);
+                }
+
+                // Free memory after each chunk
+                gc_collect_cycles();
             }
         }
     }
@@ -133,10 +118,10 @@ class IconSeeder extends Seeder
         $iconTypeAndStyle = explode('-', $iconSetName);
 
         // Get the icon type
-        $iconType = $iconTypeAndStyle[0];
+        $iconType = $iconTypeAndStyle[0] ?? 'custom';
 
         // Get the icon style
-        $iconStyle = $iconTypeAndStyle[1];
+        $iconStyle = $iconTypeAndStyle[1] ?? null;
 
         // Check if the icon style is valid
         if (in_array($iconStyle, $this->styleEnum)) {
@@ -179,60 +164,46 @@ class IconSeeder extends Seeder
         // Get the icons (svg files) from the set path
         $icons = $this->filesystem->files(public_path($absolutePath));
 
-        // For debugging, convert the icons array to a string
-        $iconsString = implode(', ', $icons);
-
-        // Debugging: Log the icons
-        $this->command->info('Icons: ' . $iconsString);
-
         // Make sure the icons are not empty, and only contain svg files
         if (empty($icons)) {
             // Log an error if no icons are found
             $this->command->error('No icons found in the set path: ' . $iconSetPath);
-            throw new FileNotFoundException('No icons found in the set path: ' . $iconSetPath);
         } else {
-            // Loop through the icons
-            foreach ($icons as $icon) {
-                // Initialize the isValid variable
-                $isValid = false;
+            // Chunk the icons to avoid memory overload/segfault
+            foreach (array_chunk($icons, 100) as $iconChunk) {
+                // Loop through the icons
+                foreach ($iconChunk as $icon) {
+                    // Get only the files with the .svg extension
+                    if ($this->filesystem->extension($icon) === 'svg') {
+                        // Get the contents of the svg file for validation/sanitization
+                        $svgCode = $this->filesystem->get($icon);
 
-                // Initialize the isSVG variable
-                $isSVG = false;
+                        // Validate the SVG code
+                        $isValid = $this->svgSanitizer->validate($svgCode);
 
-                // Debugging: Log which icon is being processed
-                $this->command->info('Processing Icon: ' . $icon);
+                        // if the SVG is valid, add it to the return array, and sanitize the SVG code
+                        if ($isValid) {
+                            // Sanitize the SVG code
+                            $sanitizedSvg = $this->svgSanitizer->sanitize($svgCode);
 
-                // Is the icon an SVG file?
-                $isSVG = $this->filesystem->extension($icon) === 'svg';
-
-                // Get only the files with the .svg extension
-                if ($isSVG) {
-                    // Get the contents of the svg file for validation/sanitization
-                    $svgCode = $this->filesystem->get($icon);
-
-                    // Validate the SVG code
-                    $isValid = $this->svgSanitizer->validate($svgCode);
-
-                    // if the SVG is valid, add it to the return array, and sanitize the SVG code
-                    if ($isValid) {
-                        // Sanitize the SVG code
-                        $sanitizedSvg = $this->svgSanitizer->sanitize($svgCode);
-
-                        // Append the icon to the return array
-                        $return[] = [
-                            'name' => $this->filesystem->name($icon),
-                            'path' => $icon,
-                            'svg' => $sanitizedSvg,
-                        ];
+                            // Append the icon to the return array
+                            $return[] = [
+                                'name' => $this->filesystem->name($icon),
+                                'path' => $icon,
+                                'svg' => $sanitizedSvg,
+                            ];
+                        } else {
+                            // Log an error if the SVG file is not valid
+                            $this->command->error('The SVG file is not valid or is unsafe: ' . $icon);
+                        }
                     } else {
-                        // Log an error if the SVG file is not valid
-                        $this->command->error('The SVG file is not valid or is unsafe: ' . $icon);
-                        throw new SvgNotFound('The SVG file is not valid or is unsafe: ' . $icon);
+                        // Log a warning if the file is not an SVG file
+                        $this->command->warn('The file is not an SVG file: ' . $icon);
                     }
-                } else {
-                    // Log a warning if the file is not an SVG file
-                    $this->command->warn('The file is not an SVG file: ' . $icon);
                 }
+
+                // Free memory after each chunk
+                gc_collect_cycles();
             }
 
             // Return the icons
