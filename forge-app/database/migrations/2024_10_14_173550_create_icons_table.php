@@ -14,7 +14,10 @@ return new class () extends Migration {
             $table->id();
             $table->string('name'); // Icon name
             $table->string('type'); // Icon type: heroicon, fontawesome, custom, etc.
-            $table->enum('style', ['solid', 'regular', 'light', 'duotone', 'brands', 'outline'])->default('solid'); // Icon style
+            $table->enum('style', ['solid', 'regular', 'light', 'duotone', 'brand', 'outline'])->nullable()->default('regular'); // Icon style
+            $table->string('prefix');// Icon prefix (e.g., fas, far, fab, etc.)
+            $table->string('set')->nullable(); // Icon set (e.g., heroicon-outline, fontawesome-regular, etc.)
+            $table->string('class')->nullable(); // Icon class
             $table->text('svg_code')->nullable(); // Optional for custom SVGs entered as text
             $table->string('svg_file_path')->nullable(); // Store the uploaded SVG file path
             $table->bigInteger('created_by')->unsigned()->nullable(); // User ID who created the icon
@@ -30,9 +33,9 @@ return new class () extends Migration {
             $table->foreign('deleted_by')->references('id')->on('users');
         });
 
-        // Add a unique constraint for the icon name, type, and style
+        // Add a unique constraint for the icon name, type, style, and prefix
         Schema::table('icons', function (Blueprint $table) {
-            $table->unique(['name', 'type', 'style']);
+            $table->unique(['name', 'type', 'style', 'prefix'], 'unique_icon');
         });
     }
 

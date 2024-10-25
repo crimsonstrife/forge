@@ -12,7 +12,7 @@ return new class () extends Migration {
     {
         // Adds a foreign key to the tables that reference the icons table
         Schema::table('issue_types', function (Blueprint $table) {
-            $table->foreign('icon')->references('id')->on('icons');
+            $table->foreign('icon')->nullable()->references('id')->on('icons')->onDelete('set null');
         });
     }
 

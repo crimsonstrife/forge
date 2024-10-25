@@ -26,16 +26,11 @@
                                 $icon = App\Models\Icon::find($getState());
                             @endphp
                             @if ($icon)
-                                @if (!empty($icon->getSvg($icon->id)))
-                                    <!-- If the icon is a file path, render the SVG file -->
-                                    @if (!empty($icon->getSvg($icon->id)) && $icon->isFile($icon->id))
-                                        <img src="{{ $icon->getSvg($icon->id) }}" alt="icon-{{ $icon->name }}" />
-                                    @else
-                                        <!-- If the icon is a code, render the SVG code -->
-                                        {!! $icon->getSvg($icon->id) !!}
-                                    @endif
+                                @if ($icon->isFile($icon->id))
+                                    <img src="{{ $icon->getSvgUrlAttribute() }}" alt="icon-{{ $icon->name }}" />
                                 @else
-                                    <p>No icon selected</p>
+                                    <!-- Fallback to SVG code if the icon is not a file -->
+                                    {!! $icon->getSvgCodeAttribute() !!}
                                 @endif
                             @else
                                 <p>No icon selected</p>
@@ -55,8 +50,10 @@
                 <!-- Modal with the icon picker -->
                 <div id="icon-picker-modal" class="fixed inset-0 z-10 overflow-y-auto" aria-labelledby="modal-title"
                     role="dialog" aria-modal="true" style="display: none;">
-                    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                        <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true"></div>
+                    <div
+                        class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                        <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true">
+                        </div>
 
                         <!-- Modal content -->
                         <div id="icon-modal-content"
@@ -64,14 +61,16 @@
                             <div class="px-4 pt-5 pb-4 bg-white dark:bg-gray-800 sm:p-6 sm:pb-4">
                                 <!-- Filters for Icon Type and Style -->
                                 <div class="flex justify-between mb-4">
-                                    <select id="icon-type-filter" class="px-2 py-1 border rounded" onchange="filterIcons()">
+                                    <select id="icon-type-filter" class="px-2 py-1 border rounded"
+                                        onchange="filterIcons()">
                                         @foreach ($getTypes() as $type)
-                                            <!-- If the current type is fontawesome, set it selected -->
                                             <option value="{{ $type }}"
-                                                @if ($type === 'fontawesome') selected @endif>{{ ucfirst($type) }}</option>
+                                                @if ($type === 'fontawesome') selected @endif>{{ ucfirst($type) }}
+                                            </option>
                                         @endforeach
                                     </select>
-                                    <select id="icon-style-filter" class="px-2 py-1 border rounded" onchange="filterIcons()">
+                                    <select id="icon-style-filter" class="px-2 py-1 border rounded"
+                                        onchange="filterIcons()">
                                         <option value="" selected>All Styles</option>
                                         @foreach ($getStyles() as $style)
                                             <option value="{{ $style }}">{{ ucfirst($style) }}</option>
@@ -86,16 +85,25 @@
                                         <div onclick="selectIcon('{{ $icon->id }}')" data-type="{{ $icon->type }}"
                                             data-style="{{ $icon->style }}"
                                             class="p-2 border rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 icon-picker-button">
-                                            @if (!empty($icon->getSvg($icon->id)))
-                                                <!-- Render the SVG file -->
-                                                @if ($isFile($icon->id))
-                                                    <img src="{{ $icon->getSvg($icon->id) }}" alt="icon-{{ $icon->name }}" />
+                                            @if ($icon->isFile($icon->id))
+                                                <!-- Use BladeUI's icon rendering for SVGs -->
+                                                @if ($icon->is_builtin)
+                                                    <x-dynamic-component :component="'icon.' .
+                                                        $icon->type .
+                                                        '-' .
+                                                        $icon->style .
+                                                        '-' .
+                                                        $icon->name" />
                                                 @else
-                                                    {!! $icon->getSvg($icon->id) !!}
+                                                    <x-dynamic-component :component="'icon.custom-' .
+                                                        $icon->type .
+                                                        '-' .
+                                                        $icon->style .
+                                                        '-' .
+                                                        $icon->name" />
                                                 @endif
                                             @else
-                                                <!-- Handle case when no file or code is available -->
-                                                <p>No icon available</p>
+                                                {!! $icon->getSvgCodeAttribute() !!}
                                             @endif
                                         </div>
                                     @endforeach
@@ -120,22 +128,18 @@
         fetch(`/api/icons?page=${currentPage + 1}`)
             .then(response => response.json())
             .then(data => {
-                const iconGrid = document.getElementById('icon-grid');
+                const iconGrid = document.getElementById('icon-picker-grid');
                 data.icons.forEach(icon => {
                     const iconElement = document.createElement('div');
                     iconElement.onclick = () => selectIcon(icon.id);
                     iconElement.setAttribute('data-type', icon.type);
                     iconElement.setAttribute('data-style', icon.style);
-                    iconElement.classList.add('p-2', 'border', 'rounded-lg', 'cursor-pointer', 'hover:bg-gray-100', 'dark:hover:bg-gray-700', 'icon-picker-button');
+                    iconElement.classList.add('p-2', 'border', 'rounded-lg', 'cursor-pointer',
+                        'hover:bg-gray-100', 'dark:hover:bg-gray-700', 'icon-picker-button');
                     if (icon.svg) {
-                        if (icon.is_file) {
-                            const img = document.createElement('img');
-                            img.src = icon.svg;
-                            img.alt = `icon-${icon.name}`;
-                            iconElement.appendChild(img);
-                        } else {
-                            iconElement.innerHTML = icon.svg;
-                        }
+                        const bladeComponent =
+                            `<x-dynamic-component component="${icon.blade_component}" class="w-6 h-6" />`;
+                        iconElement.innerHTML = bladeComponent;
                     } else {
                         iconElement.innerHTML = '<p>No icon available</p>';
                     }
@@ -148,7 +152,7 @@
     function toggleIconPicker() {
         const modal = document.getElementById('icon-picker-modal');
         const isShown = modal.style.display === 'none';
-        modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
+        modal.style.display = isShown ? 'block' : 'none';
 
         // Apply filters when the modal is opened
         if (isShown) {
@@ -162,9 +166,9 @@
     }
 
     function selectIcon(iconId) {
-        @this.set('{{ $getStatePath() }}', iconId);
-        updateCurrentIconPreview(iconId); // Update the preview when a new icon is selected
-        toggleIconPicker(); // Close the modal after selecting
+        @this.set('{{ $getStatePath() }}', iconId); // Save the selected icon's ID as before
+        updateCurrentIconPreview(iconId);
+        toggleIconPicker();
     }
 
     function filterIcons() {
@@ -188,22 +192,18 @@
     }
 
     function updateCurrentIconPreview(iconId) {
-        // Reset the preview if no icon is selected
         if (!iconId) {
             document.getElementById('current-icon-preview').innerHTML = '<p>No icon selected</p>';
             return;
         }
 
-        // Fetch the selected icon's SVG and update the preview
         fetch(`/icons/${iconId}/svg`)
             .then(response => response.json())
             .then(icon => {
                 const preview = document.getElementById('current-icon-preview');
-                if (icon.svg) {
-                    preview.innerHTML = icon.svg;
-                } else {
-                    preview.innerHTML = '<p>No icon selected</p>';
-                }
+                const bladeComponent =
+                `<x-dynamic-component component="${icon.blade_component}" class="w-6 h-6" />`;
+                preview.innerHTML = bladeComponent;
             })
             .catch(() => {
                 document.getElementById('current-icon-preview').innerHTML = '<p>No icon selected</p>';
@@ -212,10 +212,10 @@
 
     // Lazy load more icons when the user scrolls to the bottom
     document.getElementById('icon-picker-modal').addEventListener('scroll', function() {
-    if (this.scrollTop + this.clientHeight >= this.scrollHeight) {
-        loadMoreIcons();
-    }
-});
+        if (this.scrollTop + this.clientHeight >= this.scrollHeight) {
+            loadMoreIcons();
+        }
+    });
 </script>
 <style>
     /* Ensure the modal is centered */
@@ -260,7 +260,8 @@
     }
 
     /* Set the SVG size and color */
-    #icon-picker-modal svg, #icon-picker-modal img {
+    #icon-picker-modal svg,
+    #icon-picker-modal img {
         min-width: 16px;
         /* Ensure a minimum width */
         min-height: 16px;
@@ -279,7 +280,8 @@
         /* Use the current text color */
     }
 
-    #current-icon-preview svg, #current-icon-preview img {
+    #current-icon-preview svg,
+    #current-icon-preview img {
         min-width: 32px;
         /* Ensure a minimum width */
         min-height: 32px;

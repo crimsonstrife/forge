@@ -56,6 +56,7 @@ return [
     App\Providers\JetstreamServiceProvider::class,
     App\Providers\RouteServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
+    App\Providers\IconServiceProvider::class,
 
     /**
      * Custom Module Service Providers...
