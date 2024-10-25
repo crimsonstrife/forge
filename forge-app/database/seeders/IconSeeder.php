@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Icon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use function storage_path;
 use Illuminate\Support\Facades\File;
 use Illuminate\Database\Seeder;
 use BladeUI\Icons\Factory;
@@ -17,6 +16,8 @@ use Illuminate\Support\Str;
 use App\Services\SvgSanitizerService;
 use Filament\Forms\Components\KeyValue;
 use Illuminate\Support\Facades\Log;
+
+use function storage_path;
 
 class IconSeeder extends Seeder
 {
