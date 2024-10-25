@@ -21,6 +21,23 @@ class IconSeeder extends Seeder
 
     private $svgSanitizer;
 
+    private $iconSetCount = 0;
+
+    private $iconCount = 0;
+
+    private $iconSetProgressBar;
+
+    private $iconProgressBar;
+
+    private $iconChunkSize = 100;
+
+    private $iconChunkCount = 0;
+
+    private $iconChunkProgressBar;
+
+    /**
+     * IconSeeder constructor.
+     */
     public function __construct()
     {
         // Initialize the SVG sanitizer service
@@ -45,6 +62,12 @@ class IconSeeder extends Seeder
             $this->command->error('No icon sets found in the configuration file.');
         }
 
+        // Count the number of icon sets
+        $iconSetCount = count($iconSets);
+
+        // Initialize the icon set progress bar
+        $this->iconSetProgressBar = $this->command->getOutput()->createProgressBar($iconSetCount);
+
         // Create Icons dynamically
         $this->createIcons($iconSets);
     }
@@ -57,8 +80,13 @@ class IconSeeder extends Seeder
      */
     private function createIcons($iconSets): void
     {
+        $iconsToCreate = []; // Initialize the icons to create array
+
         // Loop through the icon sets
         foreach ($iconSets as $iconSetName => $iconSet) {
+
+            // Advance the icon set progress bar
+            $this->iconSetProgressBar->advance();
 
             // Get the icon set class
             $iconSetClass = $iconSet['class'];
@@ -72,8 +100,23 @@ class IconSeeder extends Seeder
             // Get the icons from the set path
             $icons = $this->getIcons($iconSetPath);
 
+            // Count the number of icons in the set
+            $iconCount = count($icons);
+
+            // Initialize the icon progress bar
+            $this->iconProgressBar = $this->command->getOutput()->createProgressBar($iconCount);
+
+            // Determine the number of chunks based on the number of icons
+            $iconChunkCount = ceil($iconCount / $this->iconChunkSize);
+
+            // Initialize the icon chunk progress bar
+            $this->iconChunkProgressBar = $this->command->getOutput()->createProgressBar($iconChunkCount);
+
             // Get the icons in chunks to avoid memory overload/segfault
-            foreach (array_chunk($icons, 100) as $iconChunk) {
+            foreach (array_chunk($icons, $this->iconChunkSize) as $iconChunk) {
+                // Advance the icon chunk progress bar
+                $this->iconChunkProgressBar->advance();
+
                 // For each icon in the set, create an icon in the database
                 foreach ($iconChunk as $icon) {
                     // Get the icon name
@@ -95,13 +138,42 @@ class IconSeeder extends Seeder
                     $iconStyle = $iconTypeAndStyle['style'];
 
                     // Create the icon in the database
-                    $this->createIcon($iconName, $iconType, $iconStyle, $iconSetPrefix, $iconSvg, $iconPath, $iconSetClass, $iconSetName);
+                    //$this->createIcon($iconName, $iconType, $iconStyle, $iconSetPrefix, $iconSvg, $iconPath, $iconSetClass, $iconSetName);
+
+                    // Add the icon to the icons to create array
+                    $iconsToCreate[] = [
+                        'name' => $iconName,
+                        'type' => $iconType,
+                        'style' => $iconStyle ?? null,
+                        'prefix' => $iconSetPrefix,
+                        'svg_code' => $iconSvg ?? null,
+                        'svg_file_path' => $iconPath,
+                        'class' => $iconSetClass,
+                        'set' => $iconSetName ?? 'custom',
+                        'is_builtin' => true,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
                 }
 
                 // Free memory after each chunk
                 gc_collect_cycles();
+
+                // Finish the icon chunk progress bar
+                $this->iconChunkProgressBar->finish();
             }
+            // Submit the icons to the database in bulk
+            $this->bulkCreateIcons($iconsToCreate, $iconCount, $iconSetName);
+
+            // Finish the icon progress bar
+            $this->iconProgressBar->finish();
+
+            // Log a message when the icon set is completed
+            $this->command->info('Icon set completed: ' . $iconSetName);
         }
+
+        // Finish the icon set progress bar
+        $this->iconSetProgressBar->finish();
     }
 
     /**
@@ -170,7 +242,7 @@ class IconSeeder extends Seeder
             $this->command->error('No icons found in the set path: ' . $iconSetPath);
         } else {
             // Chunk the icons to avoid memory overload/segfault
-            foreach (array_chunk($icons, 100) as $iconChunk) {
+            foreach (array_chunk($icons, $this->iconChunkSize) as $iconChunk) {
                 // Loop through the icons
                 foreach ($iconChunk as $icon) {
                     // Get only the files with the .svg extension
@@ -256,5 +328,32 @@ class IconSeeder extends Seeder
             // Log an error if the icon could not be created
             Log::error('The icon could not be created: ' . $iconName . ' / ' . $iconType . ' / ' . $iconStyle . ' Error: ' . $e->getMessage());
         }
+
+        // Advance the icon progress bar
+        $this->iconProgressBar->advance();
+    }
+
+    /**
+     * Bulk create icons in the database
+     *
+     * @param array $iconsToCreate
+     * @param int $iconCount
+     * @param string $iconSetName
+     */
+    private function bulkCreateIcons($iconsToCreate, $iconCount, $iconSetName): void
+    {
+        // Try to bulk create the icons in the database
+        try {
+            // Bulk create the icons in the database
+            Icon::insert($iconsToCreate);
+        } catch (\Exception $e) {
+            // Log an error if the icons could not be created
+            $this->command->error('The icons could not be created: ' . $iconSetName . ' Error: ' . $e->getMessage());
+            // Log an error if the icons could not be created
+            Log::error('The icons could not be created: ' . $iconSetName . ' Error: ' . $e->getMessage());
+        }
+
+        // Advance the icon progress bar
+        $this->iconProgressBar->advance($iconCount);
     }
 }
