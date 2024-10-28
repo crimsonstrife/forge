@@ -137,8 +137,7 @@
                     iconElement.classList.add('p-2', 'border', 'rounded-lg', 'cursor-pointer',
                         'hover:bg-gray-100', 'dark:hover:bg-gray-700', 'icon-picker-button');
                     if (icon.svg) {
-                        const bladeComponent =
-                            `<x-dynamic-component component="${icon.blade_component}" class="w-6 h-6" />`;
+                        const bladeComponent =`<x-dynamic-component component="${icon.blade_component}" class="w-6 h-6" />`;
                         iconElement.innerHTML = bladeComponent;
                     } else {
                         iconElement.innerHTML = '<p>No icon available</p>';

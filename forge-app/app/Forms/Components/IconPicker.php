@@ -17,11 +17,16 @@ class IconPicker extends Field
     public $required = false; // This is the required state of the field
 
     // Optional: If you want to load all icons into the field
-    public function getIcons()
+    public function getIcons($page = 1, $perPage = 25)
     {
-        // Load icons from the database or from a file (as per your project)
+        // Initialize the icon model
         $iconModel = new \App\Models\Icon();
-        return $iconModel->loadAllIcons();
+
+        // Load only a limited subset of icons per request
+        $loadedIcons = $iconModel->paginate($perPage, ['*'], 'page', $page);
+
+        // Return the loaded icons
+        return $loadedIcons;
     }
 
     /**
