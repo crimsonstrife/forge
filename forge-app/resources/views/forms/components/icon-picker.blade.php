@@ -85,19 +85,28 @@
                                 <!-- Grid of icons with responsive columns -->
                                 <div id="icon-picker-grid"
                                     class="grid grid-cols-1 gap-4 overflow-y-auto sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 max-h-96">
-                                    @foreach ($getIcons() as $icon)
+                                    <!-- Remove this loop to prevent duplicate rendering -->
+                                    {{-- @foreach ($getIcons() as $icon)
                                         <div onclick="selectIcon('{{ $icon->id }}')" data-type="{{ $icon->type }}"
                                             data-style="{{ $icon->style }}"
                                             class="p-2 border rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 icon-picker-button">
                                             <!-- Use icon-preview component to render the icon -->
-                                            <x-icon-preview :icon="$icon" />
+                                            <x-icon-preview :icon="$icon->id" />
                                         </div>
-                                    @endforeach
+                                    @endforeach --}}
+                                    <!-- Icons will load here dynamically -->
                                 </div>
                             </div>
+                            <!-- Close button -->
                             <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 sm:px-6 sm:flex sm:flex-row-reverse">
                                 <button onclick="toggleIconPicker()" class="px-4 py-2 text-white bg-blue-600 rounded">
                                     Close
+                                </button>
+                            </div>
+                            <!-- Pagination Controls -->
+                            <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 sm:px-6 sm:flex sm:flex-row-reverse">
+                                <button onclick="loadMoreIcons()" class="px-4 py-2 text-white bg-blue-600 rounded">
+                                    Load More
                                 </button>
                             </div>
                         </div>
@@ -108,31 +117,77 @@
     </div>
 </div>
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        loadMoreIcons(true); // Initial load on page load
+    });
+
     let currentPage = 1;
+    let isFetching = false;
 
-    function loadMoreIcons() {
-        fetch(`/api/icons?page=${currentPage + 1}`)
-            .then(response => response.json())
-            .then(data => {
-                const iconGrid = document.getElementById('icon-picker-grid');
+    function loadMoreIcons(reset = false) {
+        if (isFetching) return;
+        isFetching = true;
 
-                // Loop through each icon and insert pre-rendered HTML from backend
-                data.icons.forEach(iconHtml => {
-                    const iconElement = document.createElement('div');
-                    iconElement.classList.add(
-                        'p-2', 'border', 'rounded-lg', 'cursor-pointer',
-                        'hover:bg-gray-100', 'dark:hover:bg-gray-700', 'icon-picker-button'
-                    );
-                    // Insert pre-rendered HTML directly from API response
-                    iconElement.innerHTML = iconHtml;
-                    // Add click handler to select the icon
-                    iconElement.onclick = () => selectIcon(icon.id);
-                    // Append the icon to the grid
-                    iconGrid.appendChild(iconElement);
-                });
-                currentPage++;
+        if (reset) {
+            currentPage = 1;
+            document.getElementById('icon-picker-grid').innerHTML = '';
+        }
+
+        const iconGrid = document.getElementById('icon-picker-grid');
+        const typeFilter = document.getElementById('icon-type-filter').value;
+        const styleFilter = document.getElementById('icon-style-filter').value;
+
+        // Add loading indicator only if it doesn’t exist already
+        let loadingIndicator = document.getElementById('loading-indicator');
+        if (!loadingIndicator) {
+            loadingIndicator = document.createElement('div');
+            loadingIndicator.id = 'loading-indicator';
+            loadingIndicator.innerHTML = 'Loading icons...';
+            iconGrid.appendChild(loadingIndicator);
+        }
+
+        fetch(`/api/icons?type=${typeFilter}&style=${styleFilter}&page=${currentPage}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok " + response.statusText);
+                }
+                return response.text();
             })
-            .catch(error => console.error('Error loading icons:', error));
+            .then(text => {
+                console.log("Fetched icons JSON:", text); // Log the raw JSON response
+                const data = JSON.parse(text);
+                // Remove loading indicator safely
+                if (loadingIndicator && loadingIndicator.parentNode === iconGrid) {
+                    iconGrid.removeChild(loadingIndicator);
+                }
+                data.icons.forEach(iconHtml => {
+                    if (iconHtml && iconHtml !== 'undefined') {
+                        const iconElement = document.createElement('div');
+                        iconElement.innerHTML = iconHtml;
+                        iconElement.classList.add('icon-picker-button');
+                        iconElement.onclick = () => {
+                            const iconId = iconElement.querySelector('[data-icon-id]').dataset.iconId;
+                            if (iconId) selectIcon(iconId);
+                        };
+                        iconGrid.appendChild(iconElement);
+                    } else {
+                        console.warn('Skipping undefined icon element');
+                    }
+                });
+
+                if (data.pagination && currentPage < data.pagination.lastPage) {
+                    currentPage++;
+                }
+                isFetching = false;
+            })
+            .catch(error => {
+                console.error('Error loading icons:', error);
+                // Ensure loading indicator is removed on error
+                if (loadingIndicator && loadingIndicator.parentNode === iconGrid) {
+                    iconGrid.removeChild(loadingIndicator);
+                }
+                isFetching = false;
+            });
     }
 
     function toggleIconPicker() {
@@ -160,21 +215,35 @@
     function filterIcons() {
         const typeFilter = document.getElementById('icon-type-filter').value;
         const styleFilter = document.getElementById('icon-style-filter').value;
-        const icons = document.querySelectorAll('#icon-picker-grid .icon-picker-button');
+        const iconGrid = document.getElementById('icon-picker-grid');
 
-        icons.forEach(icon => {
-            const type = icon.getAttribute('data-type');
-            const style = icon.getAttribute('data-style');
+        // Clear the current icon grid content
+        iconGrid.innerHTML = '';
+        currentPage = 1; // Reset page count
+        loadMoreIcons(true); // Reload with filters
 
-            const matchesType = !typeFilter || type === typeFilter;
-            const matchesStyle = !styleFilter || style === styleFilter;
+        // Fetch icons with the selected filters from the server
+        fetch(`/api/icons?type=${typeFilter}&style=${styleFilter}`)
+            .then(response => response.json())
+            .then(data => {
+                data.icons.forEach(icon => {
+                    // Create an element for each icon
+                    const iconElement = document.createElement('div');
+                    iconElement.onclick = () => selectIcon(icon.id);
+                    iconElement.setAttribute('data-type', icon.type);
+                    iconElement.setAttribute('data-style', icon.style);
+                    iconElement.classList.add('p-2', 'border', 'rounded-lg', 'cursor-pointer',
+                        'hover:bg-gray-100', 'dark:hover:bg-gray-700', 'icon-picker-button');
 
-            if (matchesType && matchesStyle) {
-                icon.style.display = 'block';
-            } else {
-                icon.style.display = 'none';
-            }
-        });
+                    // Use icon-preview component for rendering each icon
+                    iconElement.innerHTML = icon.html;
+
+                    iconGrid.appendChild(iconElement);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching icons:', error);
+            });
     }
 
     function updateCurrentIconPreview(iconId) {

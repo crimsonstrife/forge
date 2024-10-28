@@ -1,9 +1,14 @@
 @props(['selectedIconId' => null, 'icon' => null])
-<div class="flex items-center justify-center icon-preview">
     @php
         $icon = $selectedIconId ? \App\Models\Icon::find($selectedIconId) : $icon;
+
+        // if the passed icon is not an instance of the Icon model, we will try to find it by the ID
+        if (!$icon instanceof \App\Models\Icon && $icon) {
+            $icon = \App\Models\Icon::find($icon);
+        }
     @endphp
 
+<div class="flex items-center justify-center icon-preview" data-icon-id="{{ $icon->id ?? '' }}">
     @if ($icon)
         @if ($icon->is_builtin)
             <!-- Use BladeUI to render the icon from the built-in set, assuming proper prefix and set registration -->
