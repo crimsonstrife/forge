@@ -1,6 +1,7 @@
+@props(['selectedIconId' => null, 'icon' => null])
 <div class="flex items-center justify-center icon-preview">
     @php
-        $icon = $getRecord();
+        $icon = $selectedIconId ? \App\Models\Icon::find($selectedIconId) : $icon;
     @endphp
 
     @if ($icon)

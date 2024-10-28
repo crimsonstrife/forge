@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\Project;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RepositoryController;
+use App\Http\Controllers\IconController;
 
 /**
  * Retrieve the authenticated user.
@@ -55,24 +56,22 @@ Route::middleware('sanctum-api')->group(function () {
  * @return \Illuminate\Http\Response
  */
 Route::get('/icon/{id}/svg', function (int|null $id) {
-    // Load the icon model
-    $iconModel = new \App\Models\Icon();
-
-    // Get the icon by id
-    $icon = $iconModel->find($id);
-
-    // Get the icon SVG
-    $svg = $iconModel->getSvg($icon);
-
-    // Check if the SVG is not empty
-    if (!empty($svg)) {
-        // Return the SVG
-        return response($svg, 200)->header('Content-Type', 'image/svg+xml');
+    $icon = \App\Models\Icon::find($id);
+    if (!$icon) {
+        return response()->json(['error' => 'Icon not found'], 404);
     }
 
-    // Return a 404 error if the SVG is empty
-    return response('Icon not found', 404);
+    return response()->json([
+        'blade_component' => $icon->is_builtin ? "{$icon->prefix}-{$icon->name}" : "custom-{$icon->prefix}-{$icon->name}",
+        'svg_code' => $icon->svg_code,
+        'svg_file_path' => $icon->svg_file_path,
+    ]);
 })->name('icon.svg');
+
+/**
+ *  API route for fetching all icons in the application.
+ */
+Route::get('/icons', [IconController::class, 'fetchIcons']);
 
 /**
  * API Routes for Projects and Project Repositories

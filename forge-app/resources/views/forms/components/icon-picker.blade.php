@@ -20,18 +20,20 @@
             <div>
                 <div class="flex items-center">
                     <!-- Current Selected Icon Preview -->
-                    <div id="current-icon-preview" class="mr-2">
+                    <div id="current-icon-preview" wire:key="icon-preview-{{ $getState() }}" class="mr-2">
                         @if ($getState())
                             @php
                                 $icon = App\Models\Icon::find($getState());
+
+                                // Get the icon id
+                                $iconId = $icon->id ?? null;
+
+                                // set the icon id to the selected icon id
+                                $selectedIconId = $iconId;
                             @endphp
-                            @if ($icon)
-                                @if ($icon->isFile($icon->id))
-                                    <img src="{{ $icon->getSvgUrlAttribute() }}" alt="icon-{{ $icon->name }}" />
-                                @else
-                                    <!-- Fallback to SVG code if the icon is not a file -->
-                                    {!! $icon->getSvgCodeAttribute() !!}
-                                @endif
+                            @if ($selectedIconId)
+                                <!-- Use icon-preview component to render the icon -->
+                                <x-icon-preview :icon="$selectedIconId" />
                             @else
                                 <p>No icon selected</p>
                             @endif
@@ -71,9 +73,11 @@
                                     </select>
                                     <select id="icon-style-filter" class="px-2 py-1 border rounded"
                                         onchange="filterIcons()">
-                                        <option value="" selected>All Styles</option>
+                                        <option value="">All Styles</option>
                                         @foreach ($getStyles() as $style)
-                                            <option value="{{ $style }}">{{ ucfirst($style) }}</option>
+                                            <option value="{{ $style }}"
+                                                @if ($style === 'regular') selected @endif>{{ ucfirst($style) }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -85,26 +89,8 @@
                                         <div onclick="selectIcon('{{ $icon->id }}')" data-type="{{ $icon->type }}"
                                             data-style="{{ $icon->style }}"
                                             class="p-2 border rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 icon-picker-button">
-                                            @if ($icon->isFile($icon->id))
-                                                <!-- Use BladeUI's icon rendering for SVGs -->
-                                                @if ($icon->is_builtin)
-                                                    <x-dynamic-component :component="'icon.' .
-                                                        $icon->type .
-                                                        '-' .
-                                                        $icon->style .
-                                                        '-' .
-                                                        $icon->name" />
-                                                @else
-                                                    <x-dynamic-component :component="'icon.custom-' .
-                                                        $icon->type .
-                                                        '-' .
-                                                        $icon->style .
-                                                        '-' .
-                                                        $icon->name" />
-                                                @endif
-                                            @else
-                                                {!! $icon->getSvgCodeAttribute() !!}
-                                            @endif
+                                            <!-- Use icon-preview component to render the icon -->
+                                            <x-icon-preview :icon="$icon" />
                                         </div>
                                     @endforeach
                                 </div>
@@ -129,23 +115,24 @@
             .then(response => response.json())
             .then(data => {
                 const iconGrid = document.getElementById('icon-picker-grid');
-                data.icons.forEach(icon => {
+
+                // Loop through each icon and insert pre-rendered HTML from backend
+                data.icons.forEach(iconHtml => {
                     const iconElement = document.createElement('div');
+                    iconElement.classList.add(
+                        'p-2', 'border', 'rounded-lg', 'cursor-pointer',
+                        'hover:bg-gray-100', 'dark:hover:bg-gray-700', 'icon-picker-button'
+                    );
+                    // Insert pre-rendered HTML directly from API response
+                    iconElement.innerHTML = iconHtml;
+                    // Add click handler to select the icon
                     iconElement.onclick = () => selectIcon(icon.id);
-                    iconElement.setAttribute('data-type', icon.type);
-                    iconElement.setAttribute('data-style', icon.style);
-                    iconElement.classList.add('p-2', 'border', 'rounded-lg', 'cursor-pointer',
-                        'hover:bg-gray-100', 'dark:hover:bg-gray-700', 'icon-picker-button');
-                    if (icon.svg) {
-                        const bladeComponent =`<x-dynamic-component component="${icon.blade_component}" class="w-6 h-6" />`;
-                        iconElement.innerHTML = bladeComponent;
-                    } else {
-                        iconElement.innerHTML = '<p>No icon available</p>';
-                    }
+                    // Append the icon to the grid
                     iconGrid.appendChild(iconElement);
                 });
                 currentPage++;
-            });
+            })
+            .catch(error => console.error('Error loading icons:', error));
     }
 
     function toggleIconPicker() {
@@ -196,17 +183,7 @@
             return;
         }
 
-        fetch(`/icons/${iconId}/svg`)
-            .then(response => response.json())
-            .then(icon => {
-                const preview = document.getElementById('current-icon-preview');
-                const bladeComponent =
-                `<x-dynamic-component component="${icon.blade_component}" class="w-6 h-6" />`;
-                preview.innerHTML = bladeComponent;
-            })
-            .catch(() => {
-                document.getElementById('current-icon-preview').innerHTML = '<p>No icon selected</p>';
-            });
+        @this.set('selectedIconId', iconId); // Emit Livewire update for `selectedIconId`
     }
 
     // Lazy load more icons when the user scrolls to the bottom

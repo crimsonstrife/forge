@@ -30,4 +30,20 @@ class IconController extends Controller
 
         return redirect()->back()->with('success', 'Icon uploaded successfully.');
     }
+
+    /**
+     * Fetch icons for the icon picker.
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function fetchIcons(Request $request)
+    {
+        $icons = Icon::paginate(25); // Adjust pagination as needed
+        $iconsHtml = $icons->map(function ($icon) {
+            return view('components.icon-preview', ['icon' => $icon])->render();
+        });
+
+        return response()->json(['icons' => $iconsHtml]);
+    }
 }
