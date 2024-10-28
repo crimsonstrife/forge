@@ -127,7 +127,7 @@ class IconSeeder extends Seeder
                     $iconPath = $iconSetPath . '/' . $iconName . '.svg';
 
                     // Get the icon svg code
-                    $iconSvg = $icon['svg'];
+                    //$iconSvg = $icon['svg']; - removed for memory issues, also not technically needed anymore
 
                     // Get the icon type and style
                     $iconTypeAndStyle = $this->getIconTypeAndStyle($iconSetName);
@@ -147,7 +147,6 @@ class IconSeeder extends Seeder
                         'type' => $iconType,
                         'style' => $iconStyle ?? null,
                         'prefix' => $iconSetPrefix,
-                        'svg_code' => $iconSvg ?? null,
                         'svg_file_path' => $iconPath,
                         'class' => $iconSetClass,
                         'set' => $iconSetName ?? 'custom',
@@ -263,7 +262,6 @@ class IconSeeder extends Seeder
                             $return[] = [
                                 'name' => $this->filesystem->name($icon),
                                 'path' => $icon,
-                                'svg' => $sanitizedSvg,
                             ];
                         } else {
                             // Log an error if the SVG file is not valid
@@ -298,7 +296,6 @@ class IconSeeder extends Seeder
      * @param string $iconType
      * @param string $iconStyle
      * @param string $iconPrefix
-     * @param string $iconSvg
      * @param string $iconPath
      * @param string $iconSetClass
      * @param string $iconSetName
@@ -307,7 +304,7 @@ class IconSeeder extends Seeder
      *
      * @throws \Exception
      */
-    private function createIcon($iconName, $iconType, $iconStyle, $iconPrefix, $iconSvg, $iconPath, $iconSetClass, $iconSetName): void
+    private function createIcon($iconName, $iconType, $iconStyle, $iconPrefix, $iconPath, $iconSetClass, $iconSetName): void
     {
         // Try to create the icon in the database if it does not already exist
         try {
@@ -319,7 +316,7 @@ class IconSeeder extends Seeder
                 'prefix' => $iconPrefix,
                 'set' => $iconSetName,
                 'class' => $iconSetClass,
-                'svg_code' => $iconSvg,
+                'svg_code' => null,
                 'svg_file_path' => $iconPath,
                 'is_builtin' => true,
             ]);
