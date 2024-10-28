@@ -101,9 +101,15 @@ class RoleSeeder extends Seeder
         // Get the Permission IDs
         $permissionIds = Permission::whereIn('name', $permissions)->pluck('id')->toArray();
 
-        // For each Permission, attach it to the Role
-        foreach ($permissionIds as $permissionId) {
-            $role->givePermissionTo($permissionId);
+        // Chunk the Permission IDs to avoid memory issues
+        foreach (array_chunk($permissionIds, 80) as $permissionIdsChunk) {
+            // For each Permission, attach it to the Role
+            foreach ($permissionIdsChunk as $permissionId) {
+                $role->givePermissionTo($permissionId);
+            }
+
+            // Free memory after each chunk
+            gc_collect_cycles();
         }
 
         // Sync the permissions
@@ -120,9 +126,14 @@ class RoleSeeder extends Seeder
         // Get the PermissionSet IDs
         $permissionSetIds = PermissionSet::whereIn('name', $permissionSets)->pluck('id')->toArray();
 
-        // For each PermissionSet, attach it to the Role
-        foreach ($permissionSetIds as $permissionSetId) {
-            $role->permissionSets()->attach($permissionSetId);
+        foreach (array_chunk($permissionSetIds, 80) as $permissionSetIdsChunk) {
+            // For each PermissionSet, attach it to the Role
+            foreach ($permissionSetIdsChunk as $permissionSetId) {
+                $role->permissionSets()->attach($permissionSetId);
+            }
+
+            // Free memory after each chunk
+            gc_collect_cycles();
         }
 
         $this->command->info("Permission sets assigned to role: {$role->name}");
@@ -136,9 +147,14 @@ class RoleSeeder extends Seeder
         // Get the PermissionGroup IDs
         $permissionGroupIds = PermissionGroup::whereIn('name', $permissionGroups)->pluck('id')->toArray();
 
-        // For each PermissionGroup, attach it to the Role
-        foreach ($permissionGroupIds as $permissionGroupId) {
-            $role->permissionGroups()->attach($permissionGroupId);
+        foreach (array_chunk($permissionGroupIds, 80) as $permissionGroupIdsChunk) {
+            // For each PermissionGroup, attach it to the Role
+            foreach ($permissionGroupIdsChunk as $permissionGroupId) {
+                $role->permissionGroups()->attach($permissionGroupId);
+            }
+
+            // Free memory after each chunk
+            gc_collect_cycles();
         }
 
         $this->command->info("Permission groups assigned to role: {$role->name}");
