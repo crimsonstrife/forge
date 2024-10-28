@@ -1,4 +1,4 @@
-<div class="icon-preview flex items-center justify-center">
+<div class="flex items-center justify-center icon-preview">
     @php
         $icon = $getRecord();
     @endphp
@@ -43,5 +43,23 @@
     .icon-preview svg path {
         fill: currentColor;
         /* Use the current text color */
+    }
+
+    /* Exempt the Heroicons set outline style from the fill color */
+    .icon-preview svg.hero-icon-set.heroo-icon path {
+        fill: none;
+        /* Use no fill color */
+    }
+
+    /* Exempt the Heroicons set solid style from the stroke width */
+    .icon-preview svg.hero-icon-set.heros-icon path {
+        stroke-width: 0px;
+        /* Use no stroke width */
+    }
+
+    /* Exempt the Octicon set solid style from the stroke width */
+    .icon-preview svg.octi-icon-set.octis-icon path {
+        stroke-width: 0px;
+        /* Use no stroke width */
     }
 </style>
