@@ -14,7 +14,7 @@ return new class () extends Migration {
             $table->id();
             $table->string('name'); // Icon name
             $table->string('type'); // Icon type: heroicon, fontawesome, custom, etc.
-            $table->enum('style', ['solid', 'regular', 'light', 'duotone', 'brand', 'outline'])->nullable()->default('regular'); // Icon style
+            $table->enum('style', ['solid', 'regular', 'light', 'duotone', 'brand', 'outline', 'thin', 'custom'])->nullable()->default('regular'); // Icon style
             $table->string('prefix');// Icon prefix (e.g., fas, far, fab, etc.)
             $table->string('set')->nullable(); // Icon set (e.g., heroicon-outline, fontawesome-regular, etc.)
             $table->string('class')->nullable(); // Icon class

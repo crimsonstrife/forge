@@ -16,7 +16,7 @@ class IconSeeder extends Seeder
 {
     public $storagePath;
 
-    private $styleEnum = ['solid', 'regular', 'light', 'duotone', 'brand', 'outline', 'custom', null];
+    private $styleEnum = ['solid', 'regular', 'light', 'duotone', 'brand', 'outline', 'custom', 'thin', null];
 
     private $filesystem;
 
