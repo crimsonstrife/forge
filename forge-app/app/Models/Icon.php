@@ -445,8 +445,5 @@ class Icon extends Model
             // If it's a user-uploaded icon, return true if the SVG file path is not empty, else return false
             return !empty($icon->getSvgUrlAttribute());
         }
-
-        // Return false if the icon has no SVG file path or SVG code
-        return false;
     }
 }

@@ -10,16 +10,20 @@ use App\Utilities\DynamicModelUtility as ModelUtility;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use App\Services\SvgSanitizerService;
+use Exception;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
 
+/** @package App\Filament\Resources */
 class IconResource extends Resource
 {
     protected static ?string $model = Icon::class;
@@ -58,7 +62,7 @@ class IconResource extends Resource
                             ->whereNotIn('type', ['heroicon', 'octicon', 'fontawesome'])
                             ->distinct()
                             ->pluck('type')
-                            ->mapWithKeys(fn ($type) => [$type => Str::title($type)])
+                            ->mapWithKeys(fn($type) => [$type => Str::title($type)])
                             ->prepend('Custom', 'custom');
                     })
                     ->reactive()
@@ -75,8 +79,8 @@ class IconResource extends Resource
                 // A text input for entering a new icon type if no existing type is selected
                 Forms\Components\TextInput::make('new_type')
                     ->label('New Icon Type')
-                    ->visible(fn ($get) => $get('type') === null || !in_array($get('type'), ['fontawesome', 'heroicon', 'octicon', 'custom'])) // Only show if no existing type is selected, or if the type is a custom one i.e not an included one from the base app.
-                    ->required(fn ($get) => $get('type') === null || !in_array($get('type'), ['fontawesome', 'heroicon', 'octicon', 'custom'])) // Required if no existing type is selected
+                    ->visible(fn($get) => $get('type') === null || !in_array($get('type'), ['fontawesome', 'heroicon', 'octicon', 'custom'])) // Only show if no existing type is selected, or if the type is a custom one i.e not an included one from the base app.
+                    ->required(fn($get) => $get('type') === null || !in_array($get('type'), ['fontawesome', 'heroicon', 'octicon', 'custom'])) // Required if no existing type is selected
                     ->helperText('Enter a new type for the icon. This should be lowercase, with hyphens for spaces.')
                     ->unique(static function ($query, $type, $state) {
                         return $query->where('type', $type);
@@ -96,14 +100,14 @@ class IconResource extends Resource
                     ->directory('icons')
                     ->acceptedFileTypes(['image/svg+xml'])
                     ->helperText('Upload an SVG file.')
-                    ->visible(fn ($get) => $get('type') === 'custom')
-                    ->dehydrated(fn ($get, $state) => $get('type') === 'custom' && !empty($state)),
+                    ->visible(fn($get) => $get('type') === 'custom')
+                    ->dehydrated(fn($get, $state) => $get('type') === 'custom' && !empty($state)),
 
                 Forms\Components\Textarea::make('svg_code')
                     ->label('Custom SVG Code')
                     ->helperText('Paste the SVG code here for custom icons.')
-                    ->visible(fn ($get) => $get('type') === 'custom' && !$get('svg_file_path'))
-                    ->dehydrated(fn ($get, $state) => $get('type') === 'custom' && !empty($state))
+                    ->visible(fn($get) => $get('type') === 'custom' && !$get('svg_file_path'))
+                    ->dehydrated(fn($get, $state) => $get('type') === 'custom' && !empty($state))
                     // Required if no SVG file is uploaded and the icon type is custom
                     ->rules(['required_if:type,custom', 'required_if:svg_file_path,null'])
                     ->afterStateUpdated(function ($state, callable $set) {
@@ -116,6 +120,14 @@ class IconResource extends Resource
             ]);
     }
 
+    /**
+     *
+     * @param Table $table
+     * @return Table
+     * @throws BindingResolutionException
+     * @throws InvalidArgumentException
+     * @throws Exception
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -124,8 +136,8 @@ class IconResource extends Resource
                 Tables\Columns\TextColumn::make('type')->label('Type')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('style')->label('Style')->sortable()->searchable(),
                 Tables\Columns\ViewColumn::make('preview')
-                ->label('Preview')
-                ->view('components.icon-preview'), // Reference to a Blade component that renders the icon preview
+                    ->label('Preview')
+                    ->view('components.icon-preview') // Reference to a Blade component that renders the icon preview
             ])
             ->filters([
                 // Filter by icon type and/or style - generated dynamically based on existing icons
@@ -136,7 +148,7 @@ class IconResource extends Resource
                             ->select('type')
                             ->distinct()
                             ->pluck('type')
-                            ->mapWithKeys(fn ($type) => [$type => Str::title($type)]);
+                            ->mapWithKeys(fn($type) => [$type => Str::title($type)]);
                     })
                     ->placeholder('All Types'),
 
@@ -147,7 +159,7 @@ class IconResource extends Resource
                             ->select('style')
                             ->distinct()
                             ->pluck('style')
-                            ->mapWithKeys(fn ($style) => [$style => Str::title($style)]);
+                            ->mapWithKeys(fn($style) => [$style => Str::title($style)]);
                     })
                     ->placeholder('All Styles'),
             ]);
