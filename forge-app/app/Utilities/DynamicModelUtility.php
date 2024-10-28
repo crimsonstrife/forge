@@ -24,40 +24,46 @@ class DynamicModelUtility extends Utility
         //initialize an empty array to store the names of the models with the specified trait
         $models = [];
 
-        //loop through each file in the models directory
-        foreach ($files as $file) {
-            //get the model class
-            $class = $file->getBasename('.php');
+        //loop through each file, chunking the files into groups of 100
+        foreach (array_chunk($files, 20) as $filesChunk) {
+            //loop through each file in the models directory
+            foreach ($filesChunk as $file) {
+                //get the model class
+                $class = $file->getBasename('.php');
 
-            //get the path to the file
-            $filePath = $file->getPathname();
+                //get the path to the file
+                $filePath = $file->getPathname();
 
-            //get the namespace of the file
-            $namespace = self::getNamespaceFromFile($filePath);
+                //get the namespace of the file
+                $namespace = self::getNamespaceFromFile($filePath);
 
-            //add the namespace to the class name
-            $class = $namespace . '\\' . $class;
+                //add the namespace to the class name
+                $class = $namespace . '\\' . $class;
 
-            //prevent errors if the class does not exist
-            if (!class_exists($class)) {
-                //output an error message and continue to the next class
-                warning('Class ' . $class . ' does not exist');
+                //prevent errors if the class does not exist
+                if (!class_exists($class)) {
+                    //output an error message and continue to the next class
+                    warning('Class ' . $class . ' does not exist');
 
-                //continue to the next class
-                continue;
+                    //continue to the next class
+                    continue;
+                }
+
+                //check if the class has the specified trait
+                if (self::HasTrait($class, $traitName)) {
+                    //add the model class to the models array
+                    $models[] = $class;
+                } else {
+                    //output a message if the class does not have the specified trait
+                    warning('Class ' . $class . ' does not have trait ' . $traitName);
+
+                    //continue to the next class
+                    continue;
+                }
             }
 
-            //check if the class has the specified trait
-            if (self::HasTrait($class, $traitName)) {
-                //add the model class to the models array
-                $models[] = $class;
-            } else {
-                //output a message if the class does not have the specified trait
-                warning('Class ' . $class . ' does not have trait ' . $traitName);
-
-                //continue to the next class
-                continue;
-            }
+            // Free memory
+            gc_collect_cycles();
         }
 
         //output a message with the number of models found

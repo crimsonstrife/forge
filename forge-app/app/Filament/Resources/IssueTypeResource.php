@@ -31,6 +31,18 @@ class IssueTypeResource extends Resource
 
     protected static ?string $cluster = Issues::class;
 
+    public $selectedIconId;
+
+    protected $listeners = ['iconUpdated' => 'updateIconPreview'];
+
+    /**
+     * Update the selected icon preview.
+     */
+    public function updateIconPreview($iconId)
+    {
+        $this->selectedIconId = $iconId;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -53,7 +65,9 @@ class IssueTypeResource extends Resource
                     ->label('Type Icon'), */
                 IconPicker::make('icon')
                     ->label('Select Icon')
-                    ->required(),
+                    ->required()
+                    ->reactive()
+                    ->afterStateUpdated(fn ($state) => $this->emit('iconUpdated', $state)),
 
                 Forms\Components\Toggle::make('is_default')
                     ->label('Set as Default')

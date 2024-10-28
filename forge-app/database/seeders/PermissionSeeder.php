@@ -61,16 +61,21 @@ class PermissionSeeder extends Seeder
     private function createBasicPermissions(): void
     {
         // Loop through each basic action and create a permission for it
-        foreach ($this->basicActions as $action) {
-            // Use firstOrCreate to ensure permissions are only created if they don't exist
-            $createdPermission = Permission::firstOrCreate(['name' => $action, 'guard_name' => 'web']);
+        foreach (array_chunk($this->basicActions, 10) as $actionChunk) {
+            foreach ($actionChunk as $action) {
+                // Use firstOrCreate to ensure permissions are only created if they don't exist
+                $createdPermission = Permission::firstOrCreate(['name' => $action, 'guard_name' => 'web']);
 
-            // Log whether the permission was created or already existed
-            if ($createdPermission->wasRecentlyCreated) {
-                $this->command->info("Basic permission created: {$action}");
-            } else {
-                $this->command->comment("Basic permission already exists: {$action}, skipping");
+                // Log whether the permission was created or already existed
+                if ($createdPermission->wasRecentlyCreated) {
+                    $this->command->info("Basic permission created: {$action}");
+                } else {
+                    $this->command->comment("Basic permission already exists: {$action}, skipping");
+                }
             }
+
+            // Free memory after each chunk
+            gc_collect_cycles();
         }
     }
 
@@ -84,14 +89,19 @@ class PermissionSeeder extends Seeder
             return;
         }
 
-        foreach ($this->specialPermissions as $permission) {
-            $createdPermission = Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
+        foreach (array_chunk($this->specialPermissions, 10) as $permissionChunk) {
+            foreach ($this->specialPermissions as $permission) {
+                $createdPermission = Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
 
-            if ($createdPermission->wasRecentlyCreated) {
-                $this->command->info("Special permission created: {$permission}");
-            } else {
-                $this->command->comment("Special permission already exists: {$permission}, skipping");
+                if ($createdPermission->wasRecentlyCreated) {
+                    $this->command->info("Special permission created: {$permission}");
+                } else {
+                    $this->command->comment("Special permission already exists: {$permission}, skipping");
+                }
             }
+
+            // Free memory after each chunk
+            gc_collect_cycles();
         }
     }
 

@@ -1,8 +1,14 @@
-<div class="icon-preview flex items-center justify-center">
+@props(['selectedIconId' => null, 'icon' => null])
     @php
-        $icon = $getRecord();
+        $icon = $selectedIconId ? \App\Models\Icon::find($selectedIconId) : $icon;
+
+        // if the passed icon is not an instance of the Icon model, we will try to find it by the ID
+        if (!$icon instanceof \App\Models\Icon && $icon) {
+            $icon = \App\Models\Icon::find($icon);
+        }
     @endphp
 
+<div class="flex items-center justify-center icon-preview" data-icon-id="{{ $icon->id ?? '' }}">
     @if ($icon)
         @if ($icon->is_builtin)
             <!-- Use BladeUI to render the icon from the built-in set, assuming proper prefix and set registration -->
@@ -43,5 +49,23 @@
     .icon-preview svg path {
         fill: currentColor;
         /* Use the current text color */
+    }
+
+    /* Exempt the Heroicons set outline style from the fill color */
+    .icon-preview svg.hero-icon-set.heroo-icon path {
+        fill: none;
+        /* Use no fill color */
+    }
+
+    /* Exempt the Heroicons set solid style from the stroke width */
+    .icon-preview svg.hero-icon-set.heros-icon path {
+        stroke-width: 0px;
+        /* Use no stroke width */
+    }
+
+    /* Exempt the Octicon set solid style from the stroke width */
+    .icon-preview svg.octi-icon-set.octis-icon path {
+        stroke-width: 0px;
+        /* Use no stroke width */
     }
 </style>

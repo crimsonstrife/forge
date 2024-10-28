@@ -50,24 +50,29 @@ class PermissionGroupSeeder extends Seeder
      */
     private function createPermissionGroups(array $groupsData): void
     {
-        foreach ($groupsData['groups'] as $groupData) {
-            // Create or update the PermissionGroup
-            $permissionGroup = PermissionGroup::firstOrCreate(['name' => $groupData['name']]);
+        foreach (array_chunk($groupsData['groups'], 10) as $groupChunk) {
+            foreach ($groupChunk as $groupData) {
+                // Create or update the PermissionGroup
+                $permissionGroup = PermissionGroup::firstOrCreate(['name' => $groupData['name']]);
 
-            // Get the IDs of the associated PermissionSets
-            $permissionSetIds = PermissionSet::whereIn('name', $groupData['sets'])->pluck('id')->toArray();
+                // Get the IDs of the associated PermissionSets
+                $permissionSetIds = PermissionSet::whereIn('name', $groupData['sets'])->pluck('id')->toArray();
 
-            // Sync the PermissionSets with the PermissionGroup
-            $permissionGroup->permissionSets()->sync($permissionSetIds);
+                // Sync the PermissionSets with the PermissionGroup
+                $permissionGroup->permissionSets()->sync($permissionSetIds);
 
-            // Handle special permissions for the group
-            if (!empty($groupData['permissions'])) {
-                $specialPermissionIds = Permission::whereIn('name', $groupData['permissions'])->pluck('id')->toArray();
-                $permissionGroup->permissions()->syncWithoutDetaching($specialPermissionIds); // Sync without detaching existing permissions
+                // Handle special permissions for the group
+                if (!empty($groupData['permissions'])) {
+                    $specialPermissionIds = Permission::whereIn('name', $groupData['permissions'])->pluck('id')->toArray();
+                    $permissionGroup->permissions()->syncWithoutDetaching($specialPermissionIds); // Sync without detaching existing permissions
+                }
+
+                // Log the creation or update of the PermissionGroup
+                $this->command->info("PermissionGroup created/updated: {$groupData['name']}");
             }
 
-            // Log the creation or update of the PermissionGroup
-            $this->command->info("PermissionGroup created/updated: {$groupData['name']}");
+            // Free memory after each chunk
+            gc_collect_cycles();
         }
     }
 }
