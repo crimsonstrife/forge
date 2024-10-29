@@ -59,7 +59,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
             // Get users who have the access-telescope permission.
             $userModel = config('auth.providers.users.model');
             // Initiate an instance of the User model
-            $user = new $userModel;
+            $user = new $userModel();
 
             // Create an array to hold the users who have the access-telescope permission
             $usersWithAccess = [];
