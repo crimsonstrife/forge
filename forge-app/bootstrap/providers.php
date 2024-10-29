@@ -55,7 +55,7 @@ return [
     App\Providers\HorizonServiceProvider::class,
     App\Providers\JetstreamServiceProvider::class,
     App\Providers\RouteServiceProvider::class,
-    App\Providers\TelescopeServiceProvider::class,
+    //App\Providers\TelescopeServiceProvider::class, - Commented out to prevent loading of Telescope in production
     App\Providers\IconServiceProvider::class,
 
     /**
