@@ -56,9 +56,23 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
     protected function gate(): void
     {
         Gate::define('viewTelescope', function ($user) {
-            return in_array($user->email, [
-                //
-            ]);
+            // Get users who have the access-telescope permission.
+            $userModel = config('auth.providers.users.model');
+            // Initiate an instance of the User model
+            $user = new $userModel;
+
+            // Create an array to hold the users who have the access-telescope permission
+            $usersWithAccess = [];
+
+            // Loop through the users and check if they have the access-telescope permission
+            foreach ($users as $user) {
+                if ($user->hasPermissionTo('access-telescope')) {
+                    $usersWithAccess[] = $user;
+                }
+            }
+
+            // Return true if the user is in the usersWithAccess array
+            return in_array($user, $usersWithAccess);
         });
     }
 }
