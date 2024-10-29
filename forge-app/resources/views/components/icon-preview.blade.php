@@ -1,17 +1,21 @@
 @props(['selectedIconId' => null, 'icon' => null])
-    @php
-        $icon = $selectedIconId ? \App\Models\Icon::find($selectedIconId) : $icon;
+@php
+    // Determine the icon to display based on different contexts.
+    $icon = $selectedIconId ? \App\Models\Icon::find($selectedIconId) : $icon;
 
-        // if the passed icon is not an instance of the Icon model, we will try to find it by the ID, assuming icon may currently be an int.
-        if (!$icon instanceof \App\Models\Icon && $icon) {
-            $icon = \App\Models\Icon::find($icon);
-        }
+    // If icon is not yet resolved, check if it's an ID or a related model.
+if (!($icon instanceof \App\Models\Icon) && isset($icon)) {
+    $icon = \App\Models\Icon::find($icon);
+}
 
-        // if the icon is still not found, use getRecord()
-        if (!$icon instanceof \App\Models\Icon || !$icon || !$icon->exists) {
-            $icon = $getRecord();
-        }
-    @endphp
+// If icon is still not an instance, check for a related record's icon.
+    if (!($icon instanceof \App\Models\Icon)) {
+        $record = $getRecord();
+
+        // If $record is an icon, use it directly; if not, get the related icon.
+        $icon = $record instanceof \App\Models\Icon ? $record : $record?->icon()->first() ?? null;
+    }
+@endphp
 
 <div class="flex items-center justify-center icon-preview" data-icon-id="{{ $icon->id ?? '' }}">
     @if ($icon)
@@ -28,7 +32,7 @@
             <p>No icon available</p>
         @endif
     @else
-        <p>No icon available</p>
+        <p>No icon selected</p>
     @endif
 </div>
 <style>

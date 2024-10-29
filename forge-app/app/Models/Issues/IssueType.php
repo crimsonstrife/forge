@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Facades\Log;
 use App\Models\Issues\Issue;
+use App\Models\Icon;
 use App\Traits\IsPermissable;
 
 /**
@@ -56,13 +58,13 @@ class IssueType extends Model
     ];
 
     /**
-     * Get the issues associated with the issue type.
+     * Relationship with the icon model.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function issues(): HasMany
+    public function icon()
     {
-        return $this->hasMany(Issue::class, 'type_id', 'id')->withTrashed();
+        return $this->belongsTo(Icon::class, 'icon', 'id');
     }
 
     /**

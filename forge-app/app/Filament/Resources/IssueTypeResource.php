@@ -67,7 +67,13 @@ class IssueTypeResource extends Resource
                     ->label('Select Icon')
                     ->required()
                     ->reactive()
-                    ->afterStateUpdated(fn ($state) => $this->emit('iconUpdated', $state)),
+                    ->afterStateUpdated(function ($state) {
+                        return <<<JS
+                            if (window.Livewire) {
+                                Livewire.emit('iconUpdated', {$state});
+                            }
+                        JS;
+                    }),
 
                 Forms\Components\Toggle::make('is_default')
                     ->label('Set as Default')
@@ -86,6 +92,8 @@ class IssueTypeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // Eager load the icon relationship to avoid N+1 query issues
+            ->query(static::getModel()::with('icon')) // Explicitly setting the query
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Type Name')
@@ -95,8 +103,19 @@ class IssueTypeResource extends Resource
                 Tables\Columns\ColorColumn::make('color')
                     ->label('Color'),
 
-                Tables\Columns\TextColumn::make('icon')
-                    ->label('Icon'),
+                Tables\Columns\ViewColumn::make('preview')
+                    ->label('Preview')
+                    ->view('components.icon-preview')
+                    ->extraAttributes(function ($record) {
+                        // Add dd() to inspect $record->icon
+                        dd($record->icon);
+                        return [
+                            'icon' => $record->icon()->first()?->id, // Retrieve the icon ID directly
+                            'selectedIconId' => $record->icon()->first()?->id, // Retrieve the icon ID directly
+                        ];
+                    })
+                    ->sortable(false)
+                    ->searchable(false),
 
                 Tables\Columns\IconColumn::make('is_default')
                     ->label('Default')
