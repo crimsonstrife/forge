@@ -93,6 +93,10 @@
                             <div id="icon-picker-grid"
                             class="grid grid-cols-1 gap-4 overflow-y-auto sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 max-h-96">
                             <!-- Icons will load here dynamically -->
+                            <!-- Loading Indicator -->
+                                <div id="loading-overlay" class="absolute inset-0 flex items-center justify-center hidden bg-gray-200 bg-opacity-50 dark:bg-gray-700">
+                                    <x-filament::loading-indicator class="w-10 h-10 text-blue-500" />
+                                </div>
                         </div>
                             <!-- Action buttons -->
                             <div class="flex items-center justify-start gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-700 sm:px-6">
@@ -126,6 +130,7 @@
     let debounceTimeout;
     let hasLoadedInitially = false;
     let selectedIconId = '{{ $getState() }}';
+    const loadingOverlay = document.getElementById('loading-overlay');
 
     function loadMoreIcons(reset = false) {
         if (isFetching) return;
@@ -140,16 +145,8 @@
         const styleFilter = document.getElementById('icon-style-filter').value;
         const searchQuery = document.getElementById('icon-search-input').value ?? '';
 
-        // Add loading indicator only if it doesn’t exist already
-        let loadingIndicator = document.getElementById('loading-indicator');
-        if (!loadingIndicator) {
-            // Create a loading indicator using x-filament::loading-indicator component
-            loadingIndicator = document.createElement('x-filament::loading-indicator');
-            loadingIndicator.id = 'loading-indicator';
-            loadingIndicator.classList.add('h-5', 'w-5')
-            loadingIndicator.innerHTML = 'Loading icons...';
-            iconGrid.appendChild(loadingIndicator);
-        }
+        // Show loading overlay
+        loadingOverlay.classList.remove('hidden');
 
         fetch(`/api/icons?type=${typeFilter}&style=${styleFilter}&search=${searchQuery}&page=${currentPage}`)
             .then(response => {
@@ -161,10 +158,8 @@
             .then(text => {
                 console.log("Fetched icons JSON:", text); // Log the raw JSON response
                 const data = JSON.parse(text);
-                // Remove loading indicator safely
-                if (loadingIndicator && loadingIndicator.parentNode === iconGrid) {
-                    iconGrid.removeChild(loadingIndicator);
-                }
+                // Hide loading overlay
+                loadingOverlay.classList.add('hidden');
                 data.icons.forEach(iconHtml => {
                     if (iconHtml && iconHtml !== 'undefined') {
                         const iconElement = document.createElement('div');
@@ -188,9 +183,7 @@
             .catch(error => {
                 console.error('Error loading icons:', error);
                 // Ensure loading indicator is removed on error
-                if (loadingIndicator && loadingIndicator.parentNode === iconGrid) {
-                    iconGrid.removeChild(loadingIndicator);
-                }
+                loadingOverlay.classList.add('hidden');
                 isFetching = false;
             });
     }
