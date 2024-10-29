@@ -176,4 +176,14 @@ class IconPicker extends Field
         // return false if the icon is not an instance of the Icon model
         return false;
     }
+
+    /**
+     * Emit the icon updated event.
+     *
+     * @param $iconId
+     */
+    public function emitIconUpdated($iconId)
+    {
+        $this->emit('iconUpdated', $iconId);
+    }
 }
