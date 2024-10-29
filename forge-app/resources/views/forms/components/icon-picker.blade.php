@@ -1,6 +1,11 @@
 <div data-field-wrapper="" class="fi-fo-field-wrp">
     @php
         $contextOptions = [];
+
+
+	protected $casts = [
+
+	];
         if (app()->environment('local')) {
             $contextOptions['ssl'] = [
                 'verify_peer' => false,
