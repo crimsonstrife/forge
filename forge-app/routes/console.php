@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 /**
  * Command to display an inspiring quote.
@@ -14,3 +15,13 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
+
+/**
+ * Command to prune Telescope data.
+ *
+ * This command will prune the Telescope data using the telescope:prune command.
+ * It can be executed daily.
+ *
+ * @return void
+ */
+Schedule::command('telescope:prune --hours=48')->daily();
