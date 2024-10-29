@@ -25,16 +25,18 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 
         $isLocal = $this->app->environment('local');
 
-        Telescope::filter(function (IncomingEntry $entry) {
-            if ($this->app->environment('local')) {
+        Telescope::filterBatch(function (Collection $entries) {
+            if ($isLocal) {
                 return true;
             }
 
-            return $entry->isReportableException() ||
-                $entry->isFailedJob() ||
-                $entry->isScheduledTask() ||
-                $entry->isSlowQuery() ||
-                $entry->hasMonitoredTag();
+            return $entries->contains(function (IncomingEntry $entry) {
+                return $entry->isReportableException() ||
+                    $entry->isFailedJob() ||
+                    $entry->isScheduledTask() ||
+                    $entry->isSlowQuery() ||
+                    $entry->hasMonitoredTag();
+                });
         });
     }
 
