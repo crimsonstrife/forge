@@ -2,10 +2,6 @@
     @php
         $contextOptions = [];
 
-
-	protected $casts = [
-
-	];
         if (app()->environment('local')) {
             $contextOptions['ssl'] = [
                 'verify_peer' => false,
@@ -128,17 +124,18 @@
 
     let currentPage = 1;
     let isFetching = false;
+    let debounceTimeout;
+    let hasLoadedInitially = false;
 
     function loadMoreIcons(reset = false) {
         if (isFetching) return;
         isFetching = true;
 
+        const iconGrid = document.getElementById('icon-picker-grid');
         if (reset) {
             currentPage = 1;
-            document.getElementById('icon-picker-grid').innerHTML = '';
+            iconGrid.innerHTML = ''; // Clear existing icons if resetting
         }
-
-        const iconGrid = document.getElementById('icon-picker-grid');
         const typeFilter = document.getElementById('icon-type-filter').value;
         const styleFilter = document.getElementById('icon-style-filter').value;
 
@@ -195,19 +192,30 @@
             });
     }
 
+    // Debounce function to avoid multiple API calls
+    function debounce(fn, delay) {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(fn, delay);
+    }
+
     function toggleIconPicker() {
         const modal = document.getElementById('icon-picker-modal');
         const isShown = modal.style.display === 'none';
         modal.style.display = isShown ? 'block' : 'none';
 
-        // Apply filters when the modal is opened
-        if (isShown) {
-            filterIcons();
+        // If the modal is shown for the first time, load the icons
+        if (isShown && !hasLoadedInitially) {
+            loadMoreIcons(true);
+            hasLoadedInitially = true;
         }
 
-        // Reset the current page when the modal is closed
-        if (currentPage === 1) {
-            loadMoreIcons();
+        if (isShown && hasLoadedInitially) {
+            debounce(() => loadMoreIcons(true), 300);
+        }
+
+        // Reset the debounce timeout when the modal is closed
+        if (!isShown) {
+            debounce(() => loadMoreIcons(true), 300);
         }
     }
 
@@ -218,37 +226,8 @@
     }
 
     function filterIcons() {
-        const typeFilter = document.getElementById('icon-type-filter').value;
-        const styleFilter = document.getElementById('icon-style-filter').value;
-        const iconGrid = document.getElementById('icon-picker-grid');
-
-        // Clear the current icon grid content
-        iconGrid.innerHTML = '';
-        currentPage = 1; // Reset page count
         loadMoreIcons(true); // Reload with filters
-
-        // Fetch icons with the selected filters from the server
-        fetch(`/api/icons?type=${typeFilter}&style=${styleFilter}`)
-            .then(response => response.json())
-            .then(data => {
-                data.icons.forEach(icon => {
-                    // Create an element for each icon
-                    const iconElement = document.createElement('div');
-                    iconElement.onclick = () => selectIcon(icon.id);
-                    iconElement.setAttribute('data-type', icon.type);
-                    iconElement.setAttribute('data-style', icon.style);
-                    iconElement.classList.add('p-2', 'border', 'rounded-lg', 'cursor-pointer',
-                        'hover:bg-gray-100', 'dark:hover:bg-gray-700', 'icon-picker-button');
-
-                    // Use icon-preview component for rendering each icon
-                    iconElement.innerHTML = icon.html;
-
-                    iconGrid.appendChild(iconElement);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching icons:', error);
-            });
+        debounce(() => loadMoreIcons(true), 300);
     }
 
     function updateCurrentIconPreview(iconId) {
@@ -261,7 +240,7 @@
     }
 
     // Lazy load more icons when the user scrolls to the bottom
-    document.getElementById('icon-picker-modal').addEventListener('scroll', function() {
+    document.getElementById('icon-picker-grid').addEventListener('scroll', function() {
         if (this.scrollTop + this.clientHeight >= this.scrollHeight) {
             loadMoreIcons();
         }

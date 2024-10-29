@@ -2,9 +2,14 @@
     @php
         $icon = $selectedIconId ? \App\Models\Icon::find($selectedIconId) : $icon;
 
-        // if the passed icon is not an instance of the Icon model, we will try to find it by the ID
+        // if the passed icon is not an instance of the Icon model, we will try to find it by the ID, assuming icon may currently be an int.
         if (!$icon instanceof \App\Models\Icon && $icon) {
             $icon = \App\Models\Icon::find($icon);
+        }
+
+        // if the icon is still not found, use getRecord()
+        if (!$icon instanceof \App\Models\Icon || !$icon || !$icon->exists) {
+            $icon = $getRecord();
         }
     @endphp
 

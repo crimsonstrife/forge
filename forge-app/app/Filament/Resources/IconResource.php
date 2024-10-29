@@ -137,7 +137,12 @@ class IconResource extends Resource
                 Tables\Columns\TextColumn::make('style')->label('Style')->sortable()->searchable(),
                 Tables\Columns\ViewColumn::make('preview')
                     ->label('Preview')
-                    ->view('components.icon-preview') // Reference to a Blade component that renders the icon preview
+                    ->view('components.icon-preview')
+                    ->extraAttributes(fn ($record) => [
+                        'selectedIconId' => $record->id, // Pass the ID to `icon-preview`
+                    ])
+                    ->sortable(false)
+                    ->searchable(false),
             ])
             ->filters([
                 // Filter by icon type and/or style - generated dynamically based on existing icons
