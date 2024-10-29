@@ -116,28 +116,6 @@
     /* Enable vertical scrolling for icons if needed */
 }
 
-/* Make sure the buttons are responsive */
-#icon-picker-modal .icon-picker-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-style: none;
-    /* Remove any border */
-}
-
-/* Handle the ::before and ::after pseudo-elements of the buttons */
-#icon-picker-modal .icon-picker-button::before,
-#icon-picker-modal .icon-picker-button::after {
-    border-style: none;
-    /* Remove any border */
-}
-
-/* Handle the hover state of the buttons */
-#icon-picker-modal .icon-picker-button:hover {
-    /* Only slightly brighten the background */
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
 .icon-preview svg {
     min-width: 16px;
     /* Ensure a minimum width */

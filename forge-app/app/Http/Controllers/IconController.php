@@ -45,6 +45,7 @@ class IconController extends Controller
         $style = $request->query('style', null); // Can be null, especially if the style is custom
         $prefix = $request->query('prefix'); // Optional filter for prefix, not generally used in the icon picker as the type is sufficient
         $paginate = $request->query('paginate', 60); // Default to 60 icons per page if not specified
+        $search = $request->query('search'); // Optional search query
 
         // Query icons with additional filters for non-empty values. Generally a search would look for all records matching the combination of filters provided i.e. AND condition
         $icons = Icon::query()
@@ -56,6 +57,9 @@ class IconController extends Controller
             })
             ->when($prefix, function ($query, $prefix) {
                 return $query->where('prefix', $prefix);
+            })
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'like', "%{$search}%"); // Search for icons with names containing the search query
             })
             ->paginate($paginate);
 
