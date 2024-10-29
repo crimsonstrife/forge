@@ -1,0 +1,8 @@
+parameters:
+    level: 6
+	paths:
+		- forge-app
+    excludePaths:
+		- tests/*/data/*
+        - vendor/*
+        - node_modules/*
