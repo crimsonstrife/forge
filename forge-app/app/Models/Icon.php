@@ -272,6 +272,13 @@ class Icon extends Model
     {
         $directory = null;
         $filename = null;
+        $temporaryFile = null;
+
+        // If a file was uploaded, set the temporary file path
+        if ($this->svg_file_path) {
+            $temporaryFile = public_path($this->svg_file_path);
+        }
+
         // If the icon is built-in, set the directory based on the type and style
         if ($this->is_builtin) {
             // If the icon is built-in, ensure the type is set
@@ -293,7 +300,7 @@ class Icon extends Model
             $filename = pathinfo($this->name, PATHINFO_FILENAME);
 
             // If the icon is built-in, ensure the SVG file path is set
-            $this->svg_file_path = "{$directory}/{$filename}.svg";
+            $this->svg_file_path = "{$directory}/{$filename}";
 
             // Make sure the file path is unique
             $this->svg_file_path = self::ensureUniqueFileName($directory, $this->name, 'svg');
@@ -315,7 +322,7 @@ class Icon extends Model
         // If the directory is set, proceed to save the icon file
         if ($directory) {
             // Set the file name based on the provided name of the icon, making it URL-friendly and unique
-            $filename = Str::slug(pathinfo($this->name, PATHINFO_FILENAME)) . '.svg'; // Example: "icon-name.svg"
+            $filename = Str::slug(pathinfo($this->name, PATHINFO_FILENAME)); // Example: "icon-name.svg"
             // Set the file path based on the directory and file name
             $filePath = "{$directory}/{$filename}";
 
@@ -350,6 +357,11 @@ class Icon extends Model
 
             // Save the file path in the database, without any preceding slashes
             $this->svg_file_path = ltrim($filePath, '/');
+
+            // Remove the temporary file from the icons directory
+            if ($temporaryFile) {
+                File::delete($temporaryFile);
+            }
         }
 
         // Save the icon details in the database

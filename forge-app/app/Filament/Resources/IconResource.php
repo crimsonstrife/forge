@@ -10,7 +10,7 @@ use App\Utilities\DynamicModelUtility as ModelUtility;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use App\Services\SvgSanitizerService;
-use Clockwork\Request\Log;
+use Illuminate\Support\Facades\Log;
 use Exception;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -73,6 +73,10 @@ class IconResource extends Resource
         // Get the prefixes from the sets, and pair them with the set name/key
         $prefixes = collect($sets)->mapWithKeys(fn($set, $key) => [$key => $set['prefix']]);
 
+
+        // Get the classes from the sets, and pair them with the set name/key
+        $classes = collect($sets)->mapWithKeys(fn($set, $key) => [$key => $set['class']]);
+
         // Set static variables
         $typeArray = static::$typeArray;
         $customTypes = static::$customTypes;
@@ -124,9 +128,8 @@ class IconResource extends Resource
                     ->searchable()
                     ->reactive()
                     ->helperText('Choose a predefined type for the icon.')
-                    ->afterStateUpdated(function ($state, callable $set, $get) use ($prefixes) {
+                    ->afterStateUpdated(function ($state, callable $set, $get) {
                         $style = $get('style');  // Retrieve style field value
-                        $set('prefix', $prefixes[$state] ?? 'custom');
                         $set('set', $state . '-' . ($style ?? ''));
                         // Show the 'New Icon Type' field only if no existing type is selected
                         if (!$state) {
@@ -141,12 +144,27 @@ class IconResource extends Resource
                     ->dehydrated()
                     ->reactive(),
 
+                // Hidden Class Field - automatically set based on the type
+                Forms\Components\Hidden::make('class')
+                    ->default(fn($get) => $classes[$get('type')] ?? 'custom')
+                    ->disabled(fn($get) => $get('is_builtin')) // Disables the field if the icon is built-in
+                    ->dehydrated()
+                    ->reactive(),
+
                 // Hidden set field - automatically set based on the type and style, ie custom-solid or custom-outline
                 Forms\Components\Hidden::make('set')
                     ->default(fn($get) => $get('type') . '-' . $get('style'))
                     ->disabled(fn($get) => $get('is_builtin')) // Disables the field if the icon is built-in
                     ->dehydrated()
-                    ->reactive(),
+                    ->reactive()
+                    ->afterStateHydrated(function ($state, callable $set, $get) use ($prefixes, $classes) {
+                        // The keys in the $prefixes and $classes arrays are the same as the the set created here, so we can use the set to get the prefix and class
+                        $thisSet = $get('set');
+                        $prefix = $prefixes[$thisSet] ?? 'custom-c';
+                        $class = $classes[$thisSet] ?? 'custom-icon-set custom-icon';
+
+                        $set('prefix', $prefix);
+                    }),
 
                 // Icon Style
                 Forms\Components\Select::make('style')
