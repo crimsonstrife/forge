@@ -11,7 +11,6 @@ use App\Services\SvgSanitizerService;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 
-
 class Icon extends Model
 {
     use HasFactory;
