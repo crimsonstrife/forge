@@ -26,7 +26,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 
         $isLocal = $this->app->environment('local');
 
-        Telescope::filterBatch(function (Collection $entries) {
+        Telescope::filterBatch(function (Collection $entries) use ($isLocal) {
             if ($isLocal) {
                 return true;
             }
@@ -70,15 +70,17 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
             // Get users who have the access-telescope permission.
             $userModel = config('auth.providers.users.model');
             // Initiate an instance of the User model
-            $user = new $userModel();
+            $userModelInstance = new $userModel();
+
+            $users = $userModelInstance->all();
 
             // Create an array to hold the users who have the access-telescope permission
             $usersWithAccess = [];
 
             // Loop through the users and check if they have the access-telescope permission
-            foreach ($users as $user) {
-                if ($user->hasPermissionTo('access-telescope')) {
-                    $usersWithAccess[] = $user;
+            foreach ($users as $authUser) {
+                if ($authUser->can('access-telescope')) {
+                    $usersWithAccess[] = $authUser;
                 }
             }
 
