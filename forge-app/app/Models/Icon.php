@@ -228,6 +228,93 @@ class Icon extends Model
     }
 
     /**
+     * Save the icon.
+     * This method is used to save the uploaded icon file to the storage directory and save the icon details in the database.
+     *
+     * @param array $options
+     * @return void
+     *
+     * @throws \Exception
+     */
+    public function save(array $options = [])
+    {
+        $directory = null;
+        // If the icon is built-in, set the directory based on the type and style
+        if ($this->is_builtin) {
+            // If the icon is built-in, ensure the type is set
+            $this->type = $this->type ?: 'custom';
+
+            // If the icon is built-in, ensure the style is set
+            $this->style = $this->style ?: 'regular';
+
+            $directory = "icons/{$this->type}/{$this->style}";
+            // Ensure the directory exists
+            if (!Storage::exists($directory)) {
+                Storage::makeDirectory($directory);
+            }
+
+            // If the icon is built-in, ensure the SVG code is empty
+            $this->svg_code = null;
+
+            // If the icon is built-in, ensure the SVG file path is set
+            $this->svg_file_path = "{$directory}/{$this->name}.svg";
+        }
+        // If there is a file path, or custom svg code, set the directory based on the type and style, and ensure it exists
+        if ($this->svg_file_path || $this->svg_code) {
+            // Type should be custom in this case, as it's a user-uploaded icon
+            $this->type = 'custom';
+            // If the style is empty, set it to 'regular' as a default
+            $this->style = $this->style ?: 'regular';
+            // Establish the directory for the icon
+            $directory = "storage/uploads/icons/{$this->type}/{$this->style}";
+            // Ensure the directory exists
+            if (!Storage::exists($directory)) {
+                Storage::makeDirectory($directory);
+            }
+        }
+
+        // If the directory is set, proceed to save the icon file
+        if ($directory) {
+            // Set the file name based on the provided name of the icon, making it URL-friendly and unique
+            $filename = Str::slug($this->name) . '.svg'; // Example: "icon-name.svg"
+            // Set the file path based on the directory and file name
+            $filePath = "{$directory}/{$filename}";
+
+            // Confirm if the file path is set and not empty, then check that the name is unique
+            if ($this->svg_file_path || $this->svg_code) {
+                // Ensure the file name is unique within the directory
+                $filename = self::ensureUniqueFileName($directory, $filename, 'svg');
+                // Update the file path based on the unique file name
+                $filePath = "{$directory}/{$filename}";
+            }
+
+            // Was the icon uploaded as a file?
+            if ($this->svg_file_path) {
+                // Move the uploaded file to the storage directory and rename it
+                Storage::disk('public')->move($this->svg_file_path, $filePath);
+            } else {
+                // If the icon was uploaded as SVG code, save the code to the file
+                // Sanitize the SVG code before saving
+                $sanitizer = app(SvgSanitizerService::class);
+
+                // Sanitize the SVG code before saving
+                $sanitized = $sanitizer->sanitize($this->svg_code);
+
+                if ($sanitized === null) {
+                    // Return an error message if the SVG is invalid
+                    throw new \Exception('Invalid SVG code.');
+                }
+
+                // Save the sanitized SVG code to the file
+                Storage::disk('public')->put($filePath, $sanitized);
+            }
+        }
+
+        // Save the icon details in the database
+        parent::save($options);
+    }
+
+    /**
      * Save uploaded file to the appropriate directory.
      *
      * @param \Illuminate\Http\UploadedFile $uploadedFile

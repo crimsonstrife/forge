@@ -10,6 +10,7 @@ use App\Utilities\DynamicModelUtility as ModelUtility;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use App\Services\SvgSanitizerService;
+use Clockwork\Request\Log;
 use Exception;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\Config;
 
 /** @package App\Filament\Resources */
 class IconResource extends Resource
@@ -34,89 +36,150 @@ class IconResource extends Resource
 
     protected static ?string $navigationGroup = 'Application';
 
+    protected static bool $softDelete = true;
+
+    protected static bool $search = true;
+
+    protected static ?array $styleArray = [
+        'outline' => 'Outline',
+        'solid' => 'Solid',
+        'duotone' => 'Duotone',
+        'brand' => 'Brand',
+        'regular' => 'Regular',
+        'light' => 'Light',
+        'thin' => 'Thin',
+        'custom' => 'Custom',
+    ];
+
+    // Define the protected types
+    protected static ?array $typeArray = [
+        'heroicon' => 'Heroicons',
+        'octicon' => 'Octicons',
+        'fontawesome' => 'Font Awesome',
+        'misc' => 'Miscellaneous',
+    ];
+
+    protected static ?array $customTypes = ['custom' => 'Custom'];
+
     public static function form(Form $form): Form
     {
+        // Load the blade-icons configuration to get prefix mappings
+        $bladeIcons = Config::get('blade-icons', []);
+
+        // Get the sets from the blade-icons configuration
+        $sets = $bladeIcons['sets'] ?? [];
+
+        // Get the prefixes from the sets, and pair them with the set name/key
+        $prefixes = collect($sets)->mapWithKeys(fn($set, $key) => [$key => $set['prefix']]);
+
+        // Set static variables
+        $typeArray = static::$typeArray;
+        $customTypes = static::$customTypes;
+
+        // Get only existing custom types (non-built-in)
+        $existingTypes = Icon::query()
+            ->select('type')
+            ->distinct()
+            ->pluck('type')
+            ->filter(fn($type) => !in_array($type, array_keys($typeArray)))
+            ->mapWithKeys(fn($type) => [$type => Str::title($type)])
+            ->toArray();
+
+        // Combine existing custom types with predefined custom types
+        $availableTypes = array_merge($existingTypes, $customTypes);
+
         return $form
             ->schema([
+                // Name of the icon
                 Forms\Components\TextInput::make('name')
                     ->label('Icon Name')
                     ->required()
                     ->reactive()
-                    // Ensure the name is unique compared to existing icons of the same type and style
-                    ->unique(static function ($query, $name, $state) {
-                        return $query->where('name', $name)
-                            ->where('type', $state['type'])->where('style', $state['style']);
-                    })
                     ->helperText('Enter a unique name for the icon. This should be lowercase, with hyphens for spaces.')
-                    ->afterStateUpdated(function ($state, callable $set) {
-                        // Sanitize the icon name to be lowercase and HTML-friendly
-                        $set('name', Str::slug($state, '-'));
-                    }),
+                    ->afterStateUpdated(fn($state, callable $set) => $set('name', Str::slug($state, '-')))
+                    ->rule(function (callable $get) {
+                        $type = $get('type');
+                        $style = $get('style');
 
+                        // Apply the rule only if both type and style are set
+                        if ($type && $style) {
+                            return 'unique:icons,name,NULL,id,type,' . $type . ',style,' . $style;
+                        }
+
+                        // Return a basic rule if type or style isn't set yet
+                        return 'unique:icons,name';
+                    })
+                    ->validationAttribute('name'),
+
+                // Icon Type Selection
                 Forms\Components\Select::make('type')
                     ->label('Icon Type')
-                    ->options(function () {
-                        // Fetch existing custom icon types, excluding heroicon, octicons, and font awesome. If custom is not found, add it to the list.
-                        return Icon::query()
-                            ->select('type')
-                            ->whereNotIn('type', ['heroicon', 'octicon', 'fontawesome'])
-                            ->distinct()
-                            ->pluck('type')
-                            ->mapWithKeys(fn ($type) => [$type => Str::title($type)])
-                            ->prepend('Custom', 'custom');
-                    })
-                    ->reactive()
+                    ->options($availableTypes)
                     ->searchable()
-                    ->nullable()
-                    ->helperText('Select from existing custom types or enter a new one.')
+                    ->reactive()
+                    ->helperText('Choose a predefined type for the icon.')
                     ->afterStateUpdated(function ($state, callable $set) {
+                        // Show the 'New Icon Type' field only if no existing type is selected
                         if (!$state) {
-                            // If no existing type is selected, allow entry of a new type
                             $set('new_type', true);
                         }
                     }),
 
-                // A text input for entering a new icon type if no existing type is selected
-                Forms\Components\TextInput::make('new_type')
-                    ->label('New Icon Type')
-                    ->visible(fn ($get) => $get('type') === null || !in_array($get('type'), ['fontawesome', 'heroicon', 'octicon', 'custom'])) // Only show if no existing type is selected, or if the type is a custom one i.e not an included one from the base app.
-                    ->required(fn ($get) => $get('type') === null || !in_array($get('type'), ['fontawesome', 'heroicon', 'octicon', 'custom'])) // Required if no existing type is selected
-                    ->helperText('Enter a new type for the icon. This should be lowercase, with hyphens for spaces.')
-                    ->unique(static function ($query, $type, $state) {
-                        return $query->where('type', $type);
-                    })
-                    ->placeholder('my-new-type')
-                    ->rules(['required_if:type,null', 'visible_if:type,null'])
-                    ->afterStateUpdated(function ($state, callable $set) {
-                        // Sanitize the new type to be lowercase and HTML-friendly
-                        $set('type', Str::slug($state, '-'));
-                    })
-                    ->dehydrated(), // Save only if filled in
+                // Hidden Prefix Field - automatically set based on the type
+                Forms\Components\Hidden::make('prefix')
+                    ->default(fn($get) => $prefixes[$get('type')] ?? 'custom')
+                    ->dehydrated(),
 
-                // SVG file upload and code fields remain the same as before
+                // Hidden set field - automatically set based on the type and style, ie custom-solid or custom-outline
+                Forms\Components\Hidden::make('set')
+                    ->default(fn($get) => $get('type') . '-' . $get('style'))
+                    ->dehydrated(),
+
+                // Icon Style
+                Forms\Components\Select::make('style')
+                    ->label('Icon Style')
+                    ->options(static::$styleArray)
+                    ->required()
+                    ->helperText('Choose a predefined style for the icon.'),
+
+                // Icon file upload
                 Forms\Components\FileUpload::make('svg_file_path')
                     ->label('Upload SVG File')
                     ->disk('public')
-                    ->directory('icons')
+                    ->directory(fn($get) => "uploads/icons/{$get('type')}/{$get('style')}")
                     ->acceptedFileTypes(['image/svg+xml'])
-                    ->helperText('Upload an SVG file.')
-                    ->visible(fn ($get) => $get('type') === 'custom')
-                    ->dehydrated(fn ($get, $state) => $get('type') === 'custom' && !empty($state)),
+                    ->helperText('Upload an SVG file. If provided, this file will take priority over SVG code.')
+                    ->visible(fn($get) => $get('type') === 'custom')
+                    ->reactive()
+                    ->before(function ($state, $set, $get) {
+                        // Set the full path and name dynamically
+                        $fileName = $get('name') ? $get('name') . '.svg' : 'default.svg';
+                        $set('svg_file_path', "uploads/icons/{$get('type')}/{$get('style')}/" . $fileName);
+                        return $state;
+                    })
+                    ->afterStateUpdated(fn($state, callable $set) => $set('preview_source', 'file')),
 
+                // Custom SVG Code
                 Forms\Components\Textarea::make('svg_code')
                     ->label('Custom SVG Code')
-                    ->helperText('Paste the SVG code here for custom icons.')
-                    ->visible(fn ($get) => $get('type') === 'custom' && !$get('svg_file_path'))
-                    ->dehydrated(fn ($get, $state) => $get('type') === 'custom' && !empty($state))
-                    // Required if no SVG file is uploaded and the icon type is custom
-                    ->rules(['required_if:type,custom', 'required_if:svg_file_path,null'])
+                    ->helperText('Paste SVG code here if no file is uploaded. SVG will be saved as a file upon submission.')
+                    ->visible(fn($get) => $get('type') === 'custom' && !$get('svg_file_path'))
+                    ->reactive()
                     ->afterStateUpdated(function ($state, callable $set) {
                         $sanitizer = app(SvgSanitizerService::class);
-
-                        // Sanitize the SVG code before saving
                         $sanitized = $sanitizer->sanitize($state);
                         $set('svg_code', $sanitized);
+                        $set('preview_source', 'code'); // Set preview to code
                     }),
+
+                // Live Preview
+                Forms\Components\ViewField::make('preview')
+                    ->label('Live Preview')
+                    ->view('components.icon-preview')
+                    ->extraAttributes(fn($get) => [
+                        'svg_code' => $get('preview_source') === 'code' ? $get('svg_code') : null,
+                        'svg_file_path' => $get('preview_source') === 'file' ? $get('svg_file_path') : null,
+                    ]),
             ]);
     }
 
@@ -138,7 +201,7 @@ class IconResource extends Resource
                 Tables\Columns\ViewColumn::make('preview')
                     ->label('Preview')
                     ->view('components.icon-preview')
-                    ->extraAttributes(fn ($record) => [
+                    ->extraAttributes(fn($record) => [
                         'selectedIconId' => $record->id, // Pass the ID to `icon-preview`
                     ])
                     ->sortable(false)
@@ -153,7 +216,7 @@ class IconResource extends Resource
                             ->select('type')
                             ->distinct()
                             ->pluck('type')
-                            ->mapWithKeys(fn ($type) => [$type => Str::title($type)]);
+                            ->mapWithKeys(fn($type) => [$type => Str::title($type)]);
                     })
                     ->placeholder('All Types'),
 
@@ -164,7 +227,7 @@ class IconResource extends Resource
                             ->select('style')
                             ->distinct()
                             ->pluck('style')
-                            ->mapWithKeys(fn ($style) => [$style => Str::title($style)]);
+                            ->mapWithKeys(fn($style) => [$style => Str::title($style)]);
                     })
                     ->placeholder('All Styles'),
             ]);
