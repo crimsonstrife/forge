@@ -71,11 +71,11 @@ class IconResource extends Resource
         $sets = $bladeIcons['sets'] ?? [];
 
         // Get the prefixes from the sets, and pair them with the set name/key
-        $prefixes = collect($sets)->mapWithKeys(fn ($set, $key) => [$key => $set['prefix']]);
+        $prefixes = collect($sets)->mapWithKeys(fn($set, $key) => [$key => $set['prefix']]);
 
 
         // Get the classes from the sets, and pair them with the set name/key
-        $classes = collect($sets)->mapWithKeys(fn ($set, $key) => [$key => $set['class']]);
+        $classes = collect($sets)->mapWithKeys(fn($set, $key) => [$key => $set['class']]);
 
         // Set static variables
         $typeArray = static::$typeArray;
@@ -86,8 +86,8 @@ class IconResource extends Resource
             ->select('type')
             ->distinct()
             ->pluck('type')
-            ->filter(fn ($type) => !in_array($type, array_keys($typeArray)))
-            ->mapWithKeys(fn ($type) => [$type => Str::title($type)])
+            ->filter(fn($type) => !in_array($type, array_keys($typeArray)))
+            ->mapWithKeys(fn($type) => [$type => Str::title($type)])
             ->toArray();
 
         // Combine existing custom types with predefined custom types
@@ -100,9 +100,9 @@ class IconResource extends Resource
                     ->label('Icon Name')
                     ->required()
                     ->reactive()
-                    ->disabled(fn ($get) => $get('is_builtin')) // Disables the field if the icon is built-in
+                    ->disabled(fn($get) => $get('is_builtin')) // Disables the field if the icon is built-in
                     ->helperText('Enter a unique name for the icon. This should be lowercase, with hyphens for spaces.')
-                    ->afterStateUpdated(fn ($state, callable $set) => $set('name', Str::slug($state, '-')))
+                    ->afterStateUpdated(fn($state, callable $set) => $set('name', Str::slug($state, '-')))
                     ->rule(function ($get) {
                         $type = $get('type');
                         $style = $get('style');
@@ -120,11 +120,24 @@ class IconResource extends Resource
                     })
                     ->validationAttribute('name'),
 
+                // Icon Style Selection
+                Forms\Components\Select::make('style')
+                    ->label('Icon Style')
+                    ->options(static::$styleArray)
+                    ->disabled(fn($get) => $get('is_builtin')) // Disables the field if the icon is built-in
+                    ->required()
+                    ->reactive()
+                    ->helperText('Choose a predefined style for the icon.')
+                    ->afterStateUpdated(function ($state, callable $set, $get) {
+                        $type = $get('type');  // Retrieve type field value
+                        $set('set', ($type ?? '') . '-' . $state);
+                    }),
+
                 // Icon Type Selection
                 Forms\Components\Select::make('type')
                     ->label('Icon Type')
                     ->options($availableTypes)
-                    ->disabled(fn ($get) => $get('is_builtin')) // Disables the field if the icon is built-in
+                    ->disabled(fn($get) => $get('is_builtin')) // Disables the field if the icon is built-in
                     ->searchable()
                     ->reactive()
                     ->helperText('Choose a predefined type for the icon.')
@@ -137,53 +150,46 @@ class IconResource extends Resource
                         }
                     }),
 
+                // Hidden set field - automatically set based on the type and style, ie custom-solid or custom-outline
+                Forms\Components\Hidden::make('set')
+                    ->default(fn($get) => $get('type') . '-' . $get('style'))
+                    ->disabled(fn($get) => $get('is_builtin')) // Disables the field if the icon is built-in
+                    ->dehydrated()
+                    ->reactive()
+                    ->afterStateHydrated(function ($state, callable $set, $get) use ($prefixes, $classes) {
+                        $prefix = $prefixes[$state] ?? 'custom-c';
+                        $class = $classes[$state] ?? 'custom-icon-set custom-icon';
+                        Log::info('Set: ' . $state);
+                        $set('prefix', $prefix);
+                        $set('class', $class);
+                    })
+                    ->afterStateUpdated(function ($state, callable $set, $get) use ($prefixes, $classes) {
+                        $prefix = $prefixes[$state] ?? 'custom-c';
+                        $class = $classes[$state] ?? 'custom-icon-set custom-icon';
+                        Log::info('Set: ' . $state);
+                        $set('prefix', $prefix);
+                        $set('class', $class);
+                    }),
+
                 // Hidden Prefix Field - automatically set based on the type
                 Forms\Components\Hidden::make('prefix')
-                    ->default(fn ($get) => $prefixes[$get('type')] ?? 'custom')
-                    ->disabled(fn ($get) => $get('is_builtin')) // Disables the field if the icon is built-in
+                    ->default(fn($get) => $prefixes[$get('set')] ?? 'custom-c')
+                    ->disabled(fn($get) => $get('is_builtin')) // Disables the field if the icon is built-in
                     ->dehydrated()
                     ->reactive(),
 
                 // Hidden Class Field - automatically set based on the type
                 Forms\Components\Hidden::make('class')
-                    ->default(fn ($get) => $classes[$get('type')] ?? 'custom')
-                    ->disabled(fn ($get) => $get('is_builtin')) // Disables the field if the icon is built-in
+                    ->default(fn($get) => $classes[$get('set')] ?? 'custom-icon-set custom-icon')
+                    ->disabled(fn($get) => $get('is_builtin')) // Disables the field if the icon is built-in
                     ->dehydrated()
                     ->reactive(),
-
-                // Hidden set field - automatically set based on the type and style, ie custom-solid or custom-outline
-                Forms\Components\Hidden::make('set')
-                    ->default(fn ($get) => $get('type') . '-' . $get('style'))
-                    ->disabled(fn ($get) => $get('is_builtin')) // Disables the field if the icon is built-in
-                    ->dehydrated()
-                    ->reactive()
-                    ->afterStateHydrated(function ($state, callable $set, $get) use ($prefixes, $classes) {
-                        // The keys in the $prefixes and $classes arrays are the same as the the set created here, so we can use the set to get the prefix and class
-                        $thisSet = $get('set');
-                        $prefix = $prefixes[$thisSet] ?? 'custom-c';
-                        $class = $classes[$thisSet] ?? 'custom-icon-set custom-icon';
-
-                        $set('prefix', $prefix);
-                    }),
-
-                // Icon Style
-                Forms\Components\Select::make('style')
-                    ->label('Icon Style')
-                    ->options(static::$styleArray)
-                    ->disabled(fn ($get) => $get('is_builtin')) // Disables the field if the icon is built-in
-                    ->required()
-                    ->reactive()
-                    ->helperText('Choose a predefined style for the icon.')
-                    ->afterStateUpdated(function ($state, callable $set, $get) {
-                        $type = $get('type');  // Retrieve type field value
-                        $set('set', ($type ?? '') . '-' . $state);
-                    }),
 
                 // Icon file upload
                 Forms\Components\FileUpload::make('svg_file_path')
                     ->label('Upload SVG File')
                     ->disk('public')
-                    ->directory(fn ($get) => "uploads/icons/{$get('type')}/{$get('style')}")
+                    ->directory(fn($get) => "uploads/icons/{$get('type')}/{$get('style')}")
                     ->afterStateHydrated(function ($state, $set, $get) {
                         // Set the file name to the slugified icon name + '.svg' if the file is new
                         if ($state instanceof \Livewire\TemporaryUploadedFile) {
@@ -197,22 +203,27 @@ class IconResource extends Resource
                     })
                     ->acceptedFileTypes(['image/svg+xml'])
                     ->helperText('Upload an SVG file. If provided, this file will take priority over SVG code.')
-                    ->visible(fn ($get) => $get('type') === 'custom')
-                    ->disabled(fn ($get) => $get('is_builtin')) // Disables the field if the icon is built-in
+                    ->visible(fn($get) => $get('type') === 'custom')
+                    ->disabled(fn($get) => $get('is_builtin')) // Disables the field if the icon is built-in
                     ->reactive()
-                    ->afterStateUpdated(fn ($state, callable $set) => $set('preview_source', 'file')),
+                    ->afterStateUpdated(fn($state, callable $set) => $set('preview_source', 'file')),
 
                 // Custom SVG Code
                 Forms\Components\Textarea::make('svg_code')
                     ->label('Custom SVG Code')
                     ->helperText('Paste SVG code here if no file is uploaded. SVG will be saved as a file upon submission.')
-                    ->visible(fn ($get) => $get('type') === 'custom' && !$get('svg_file_path'))
-                    ->disabled(fn ($get) => $get('is_builtin')) // Disables the field if the icon is built-in
+                    ->visible(fn($get) => $get('type') === 'custom' && !$get('svg_file_path'))
+                    ->disabled(fn($get) => $get('is_builtin')) // Disables the field if the icon is built-in
                     ->reactive()
-                    ->afterStateUpdated(function ($state, callable $set) {
+                    ->afterStateHydrated(function ($state, callable $set) {
                         $sanitizer = app(SvgSanitizerService::class);
-                        $sanitized = $sanitizer->sanitize($state);
-                        $set('svg_code', $sanitized);
+                        // Only sanitize the SVG code if it's not empty
+                        if ($state) {
+                            $sanitized = $sanitizer->sanitize($state);
+                            $set('svg_code', $sanitized);
+                        } else {
+                            $set('svg_code', $state);
+                        }
                         $set('preview_source', 'code'); // Set preview to code
                     }),
 
@@ -220,7 +231,7 @@ class IconResource extends Resource
                 Forms\Components\ViewField::make('preview')
                     ->label('Live Preview')
                     ->view('components.icon-preview')
-                    ->extraAttributes(fn ($get) => [
+                    ->extraAttributes(fn($get) => [
                         'svg_code' => $get('preview_source') === 'code' ? $get('svg_code') : null,
                         'svg_file_path' => $get('preview_source') === 'file' ? $get('svg_file_path') : null,
                     ]),
@@ -245,7 +256,7 @@ class IconResource extends Resource
                 Tables\Columns\ViewColumn::make('preview')
                     ->label('Preview')
                     ->view('components.icon-preview')
-                    ->extraAttributes(fn ($record) => [
+                    ->extraAttributes(fn($record) => [
                         'selectedIconId' => $record->id, // Pass the ID to `icon-preview`
                     ])
                     ->sortable(false)
@@ -260,7 +271,7 @@ class IconResource extends Resource
                             ->select('type')
                             ->distinct()
                             ->pluck('type')
-                            ->mapWithKeys(fn ($type) => [$type => Str::title($type)]);
+                            ->mapWithKeys(fn($type) => [$type => Str::title($type)]);
                     })
                     ->placeholder('All Types'),
 
@@ -271,7 +282,7 @@ class IconResource extends Resource
                             ->select('style')
                             ->distinct()
                             ->pluck('style')
-                            ->mapWithKeys(fn ($style) => [$style => Str::title($style)]);
+                            ->mapWithKeys(fn($style) => [$style => Str::title($style)]);
                     })
                     ->placeholder('All Styles'),
             ]);

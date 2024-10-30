@@ -116,7 +116,7 @@
     /* Enable vertical scrolling for icons if needed */
 }
 
-.icon-preview svg {
+.icon-preview svg img {
     min-width: 16px;
     /* Ensure a minimum width */
     min-height: 16px;
@@ -133,6 +133,11 @@
     /* Ensure no background color */
     stroke: currentColor;
     /* Use the current text color */
+}
+
+.icon-preview img {
+    stroke: none;
+    /* Use no stroke color */
 }
 
 .icon-preview svg path {

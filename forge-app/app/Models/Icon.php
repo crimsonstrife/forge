@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\File;
 use App\Services\SvgSanitizerService;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Config;
 
 class Icon extends Model
 {
@@ -256,6 +257,43 @@ class Icon extends Model
         if ($record->is_builtin) {
             throw new \Exception('Built-in icons cannot be modified.');
         }
+
+        if (!$record->name) {
+            throw new \Exception('The icon name is required.');
+        }
+
+        if (!$record->type) {
+            throw new \Exception('The icon type is required.');
+        }
+
+        if (!$record->style) {
+            throw new \Exception('The icon style is required.');
+        }
+
+        if (!$record->set) {
+            throw new \Exception('The icon set is required.');
+        }
+
+        // Ensure the prefix and class are set and correct, else set them based on the type and style
+        if (!$record->prefix) {
+            $record->prefix = $this->makeIconPrefix($record->type, $record->style);
+        } else {
+            // Compare the prefix with the generated prefix based on the type and style, and update it if they don't match
+            $generatedPrefix = $this->makeIconPrefix($record->type, $record->style);
+            if ($record->prefix !== $generatedPrefix) {
+                $record->prefix = $generatedPrefix;
+            }
+        }
+
+        if (!$record->class) {
+            $record->class = $this->makeIconClass($record->type, $record->style);
+        } else {
+            // Compare the class with the generated class based on the type and style, and update it if they don't match
+            $generatedClass = $this->makeIconClass($record->type, $record->style);
+            if ($record->class !== $generatedClass) {
+                $record->class = $generatedClass;
+            }
+        }
     }
 
     /**
@@ -272,6 +310,9 @@ class Icon extends Model
         $directory = null;
         $filename = null;
         $temporaryFile = null;
+
+        // Ensure the icon is setup correctly before saving it
+        $this->beforeSave($this);
 
         // If a file was uploaded, set the temporary file path
         if ($this->svg_file_path) {
@@ -586,4 +627,64 @@ class Icon extends Model
             return !empty($icon->getSvgUrlAttribute());
         }
     }
+
+    /**
+     * Make the icon prefix based on the icon type and style.
+     * This method is used to set the icon prefix based on the icon type and style, ensuring the correct prefix is used for the icon.
+     *
+     * @param string $type - The icon type, e.g., "fontawesome", "heroicon", "octicons", etc.
+     * @param string $style - The icon style, e.g., "brands", "solid", "regular", etc.
+     *
+     * @return string - The icon prefix based on the icon type and style.
+     */
+    public function makeIconPrefix(string $type, string $style): string
+    {
+        // Get the config for the blade-icons package
+        $bladeIcons = Config::get('blade-icons', []);
+
+        // Get the sets from the blade-icons configuration
+        $sets = $bladeIcons['sets'] ?? [];
+
+        // Get the prefixes from the sets, and pair them with the set name/key
+        $prefixes = collect($sets)->mapWithKeys(fn($set, $key) => [$key => $set['prefix']]);
+
+        // The prefixes are stored on the set name, which is a combination of the type and style (e.g., "fontawesome-solid")
+        $setName = "{$type}-{$style}";
+
+        // Get the prefix for the set name, or return an empty string if it doesn't exist
+        $prefix = $prefixes[$setName] ?? '';
+
+        // Return the prefix for the icon
+        return $prefix;
+    }
+
+    /**
+     * Make the icon class based on the icon type, style
+     *
+     * @param string $type - The icon type, e.g., "fontawesome", "heroicon", "octicons", etc.
+     * @param string $style - The icon style, e.g., "brands", "solid", "regular", etc.
+     *
+     * @return string - The icon class based on the icon type and style.
+     */
+    public function makeIconClass(string $type, string $style): string
+    {
+        // Get the config for the blade-icons package
+        $bladeIcons = Config::get('blade-icons', []);
+
+        // Get the sets from the blade-icons configuration
+        $sets = $bladeIcons['sets'] ?? [];
+
+        // Get the classes from the sets, and pair them with the set name/key
+        $classes = collect($sets)->mapWithKeys(fn($set, $key) => [$key => $set['class']]);
+
+        // The classes are stored on the set name, which is a combination of the type and style (e.g., "fontawesome-solid")
+        $setName = "{$type}-{$style}";
+
+        // Get the class for the set name, or return an empty string if it doesn't exist
+        $class = $classes[$setName] ?? '';
+
+        // Return the class for the icon
+        return $class;
+    }
+
 }
