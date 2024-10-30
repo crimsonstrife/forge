@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use App\Services\SvgSanitizerService;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
+
 
 class Icon extends Model
 {
@@ -43,6 +46,22 @@ class Icon extends Model
         // Clear the cache when icons are saved or deleted
         static::deleted(function () {
             cache()->forget('icons.all');
+        });
+
+        static::saving(function ($model) {
+            $query = static::where('name', $model->name)
+                ->where('type', $model->type)
+                ->where('style', $model->style);
+
+            if ($model->exists) {
+                $query->where('id', '!=', $model->id);
+            }
+
+            if ($query->exists()) {
+                throw ValidationException::withMessages([
+                    'name' => 'The name has already been taken for this type and style.'
+                ]);
+            }
         });
     }
 
@@ -228,6 +247,19 @@ class Icon extends Model
     }
 
     /**
+     * Before saving the icon
+     * This method is used to ensure the icon is setup correctly before saving it.
+     *
+     * @param $record
+     */
+    public function beforeSave($record)
+    {
+        if ($record->is_builtin) {
+            throw new \Exception('Built-in icons cannot be modified.');
+        }
+    }
+
+    /**
      * Save the icon.
      * This method is used to save the uploaded icon file to the storage directory and save the icon details in the database.
      *
@@ -239,6 +271,7 @@ class Icon extends Model
     public function save(array $options = [])
     {
         $directory = null;
+        $filename = null;
         // If the icon is built-in, set the directory based on the type and style
         if ($this->is_builtin) {
             // If the icon is built-in, ensure the type is set
@@ -247,7 +280,7 @@ class Icon extends Model
             // If the icon is built-in, ensure the style is set
             $this->style = $this->style ?: 'regular';
 
-            $directory = "icons/{$this->type}/{$this->style}";
+            $directory = "uploads/icons/{$this->type}/{$this->style}";
             // Ensure the directory exists
             if (!Storage::exists($directory)) {
                 Storage::makeDirectory($directory);
@@ -256,8 +289,14 @@ class Icon extends Model
             // If the icon is built-in, ensure the SVG code is empty
             $this->svg_code = null;
 
+            // If the name already has a file extension, remove it
+            $filename = pathinfo($this->name, PATHINFO_FILENAME);
+
             // If the icon is built-in, ensure the SVG file path is set
-            $this->svg_file_path = "{$directory}/{$this->name}.svg";
+            $this->svg_file_path = "{$directory}/{$filename}.svg";
+
+            // Make sure the file path is unique
+            $this->svg_file_path = self::ensureUniqueFileName($directory, $this->name, 'svg');
         }
         // If there is a file path, or custom svg code, set the directory based on the type and style, and ensure it exists
         if ($this->svg_file_path || $this->svg_code) {
@@ -266,7 +305,7 @@ class Icon extends Model
             // If the style is empty, set it to 'regular' as a default
             $this->style = $this->style ?: 'regular';
             // Establish the directory for the icon
-            $directory = "storage/uploads/icons/{$this->type}/{$this->style}";
+            $directory = "uploads/icons/{$this->type}/{$this->style}";
             // Ensure the directory exists
             if (!Storage::exists($directory)) {
                 Storage::makeDirectory($directory);
@@ -276,7 +315,7 @@ class Icon extends Model
         // If the directory is set, proceed to save the icon file
         if ($directory) {
             // Set the file name based on the provided name of the icon, making it URL-friendly and unique
-            $filename = Str::slug($this->name) . '.svg'; // Example: "icon-name.svg"
+            $filename = Str::slug(pathinfo($this->name, PATHINFO_FILENAME)) . '.svg'; // Example: "icon-name.svg"
             // Set the file path based on the directory and file name
             $filePath = "{$directory}/{$filename}";
 
@@ -308,6 +347,9 @@ class Icon extends Model
                 // Save the sanitized SVG code to the file
                 Storage::disk('public')->put($filePath, $sanitized);
             }
+
+            // Save the file path in the database, without any preceding slashes
+            $this->svg_file_path = ltrim($filePath, '/');
         }
 
         // Save the icon details in the database

@@ -1094,7 +1094,7 @@ return [
             // ],
 
         ],
-        'custom' => [
+        'custom-solid' => [
 
             /*
             |-----------------------------------------------------------------
@@ -1109,7 +1109,7 @@ return [
             |
             */
 
-            'path' => 'public/storage/uploads/icons/custom',
+            'path' => 'public/storage/uploads/icons/custom/solid',
 
             /*
             |-----------------------------------------------------------------
@@ -1135,7 +1135,588 @@ return [
             |
             */
 
-            'prefix' => 'custom',
+            'prefix' => 'custom-s',
+
+            /*
+            |-----------------------------------------------------------------
+            | Fallback Icon
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a fallback
+            | icon when an icon in this set cannot be found.
+            |
+            */
+
+            // 'fallback' => '',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Classes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some classes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            'class' => 'custom-icon-set custom-icon',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Attributes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some attributes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            // 'attributes' => [
+            // 'width' => 50,
+            // 'height' => 50,
+            // ],
+
+        ],
+        'custom-regular' => [
+
+            /*
+            |-----------------------------------------------------------------
+            | Icons Path
+            |-----------------------------------------------------------------
+            |
+            | Provide the relative path from your app root to your SVG icons
+            | directory. Icons are loaded recursively so there's no need to
+            | list every sub-directory.
+            |
+            | Relative to the disk root when the disk option is set.
+            |
+            */
+
+            'path' => 'public/storage/uploads/icons/custom/regular',
+
+            /*
+            |-----------------------------------------------------------------
+            | Filesystem Disk
+            |-----------------------------------------------------------------
+            |
+            | Optionally, provide a specific filesystem disk to read
+            | icons from. When defining a disk, the "path" option
+            | starts relatively from the disk root.
+            |
+            */
+
+            // 'disk' => 'public',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Prefix
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a default prefix for
+            | your icons. The dash separator will be applied automatically
+            | to every icon name. It's required and needs to be unique.
+            |
+            */
+
+            'prefix' => 'custom-r',
+
+            /*
+            |-----------------------------------------------------------------
+            | Fallback Icon
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a fallback
+            | icon when an icon in this set cannot be found.
+            |
+            */
+
+            // 'fallback' => '',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Classes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some classes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            'class' => 'custom-icon-set custom-icon',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Attributes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some attributes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            // 'attributes' => [
+            // 'width' => 50,
+            // 'height' => 50,
+            // ],
+
+        ],
+        'custom-brand' => [
+
+            /*
+            |-----------------------------------------------------------------
+            | Icons Path
+            |-----------------------------------------------------------------
+            |
+            | Provide the relative path from your app root to your SVG icons
+            | directory. Icons are loaded recursively so there's no need to
+            | list every sub-directory.
+            |
+            | Relative to the disk root when the disk option is set.
+            |
+            */
+
+            'path' => 'public/storage/uploads/icons/custom/brand',
+
+            /*
+            |-----------------------------------------------------------------
+            | Filesystem Disk
+            |-----------------------------------------------------------------
+            |
+            | Optionally, provide a specific filesystem disk to read
+            | icons from. When defining a disk, the "path" option
+            | starts relatively from the disk root.
+            |
+            */
+
+            // 'disk' => 'public',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Prefix
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a default prefix for
+            | your icons. The dash separator will be applied automatically
+            | to every icon name. It's required and needs to be unique.
+            |
+            */
+
+            'prefix' => 'custom-b',
+
+            /*
+            |-----------------------------------------------------------------
+            | Fallback Icon
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a fallback
+            | icon when an icon in this set cannot be found.
+            |
+            */
+
+            // 'fallback' => '',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Classes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some classes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            'class' => 'custom-icon-set custom-icon',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Attributes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some attributes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            // 'attributes' => [
+            // 'width' => 50,
+            // 'height' => 50,
+            // ],
+
+        ],
+        'custom-duotone' => [
+
+            /*
+            |-----------------------------------------------------------------
+            | Icons Path
+            |-----------------------------------------------------------------
+            |
+            | Provide the relative path from your app root to your SVG icons
+            | directory. Icons are loaded recursively so there's no need to
+            | list every sub-directory.
+            |
+            | Relative to the disk root when the disk option is set.
+            |
+            */
+
+            'path' => 'public/storage/uploads/icons/custom/duotone',
+
+            /*
+            |-----------------------------------------------------------------
+            | Filesystem Disk
+            |-----------------------------------------------------------------
+            |
+            | Optionally, provide a specific filesystem disk to read
+            | icons from. When defining a disk, the "path" option
+            | starts relatively from the disk root.
+            |
+            */
+
+            // 'disk' => 'public',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Prefix
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a default prefix for
+            | your icons. The dash separator will be applied automatically
+            | to every icon name. It's required and needs to be unique.
+            |
+            */
+
+            'prefix' => 'custom-dt',
+
+            /*
+            |-----------------------------------------------------------------
+            | Fallback Icon
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a fallback
+            | icon when an icon in this set cannot be found.
+            |
+            */
+
+            // 'fallback' => '',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Classes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some classes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            'class' => 'custom-icon-set custom-icon',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Attributes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some attributes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            // 'attributes' => [
+            // 'width' => 50,
+            // 'height' => 50,
+            // ],
+
+        ],
+        'custom-thin' => [
+
+            /*
+            |-----------------------------------------------------------------
+            | Icons Path
+            |-----------------------------------------------------------------
+            |
+            | Provide the relative path from your app root to your SVG icons
+            | directory. Icons are loaded recursively so there's no need to
+            | list every sub-directory.
+            |
+            | Relative to the disk root when the disk option is set.
+            |
+            */
+
+            'path' => 'public/storage/uploads/icons/custom/thin',
+
+            /*
+            |-----------------------------------------------------------------
+            | Filesystem Disk
+            |-----------------------------------------------------------------
+            |
+            | Optionally, provide a specific filesystem disk to read
+            | icons from. When defining a disk, the "path" option
+            | starts relatively from the disk root.
+            |
+            */
+
+            // 'disk' => 'public',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Prefix
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a default prefix for
+            | your icons. The dash separator will be applied automatically
+            | to every icon name. It's required and needs to be unique.
+            |
+            */
+
+            'prefix' => 'custom-t',
+
+            /*
+            |-----------------------------------------------------------------
+            | Fallback Icon
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a fallback
+            | icon when an icon in this set cannot be found.
+            |
+            */
+
+            // 'fallback' => '',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Classes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some classes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            'class' => 'custom-icon-set custom-icon',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Attributes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some attributes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            // 'attributes' => [
+            // 'width' => 50,
+            // 'height' => 50,
+            // ],
+
+        ],
+        'custom-light' => [
+
+            /*
+            |-----------------------------------------------------------------
+            | Icons Path
+            |-----------------------------------------------------------------
+            |
+            | Provide the relative path from your app root to your SVG icons
+            | directory. Icons are loaded recursively so there's no need to
+            | list every sub-directory.
+            |
+            | Relative to the disk root when the disk option is set.
+            |
+            */
+
+            'path' => 'public/storage/uploads/icons/custom/light',
+
+            /*
+            |-----------------------------------------------------------------
+            | Filesystem Disk
+            |-----------------------------------------------------------------
+            |
+            | Optionally, provide a specific filesystem disk to read
+            | icons from. When defining a disk, the "path" option
+            | starts relatively from the disk root.
+            |
+            */
+
+            // 'disk' => 'public',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Prefix
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a default prefix for
+            | your icons. The dash separator will be applied automatically
+            | to every icon name. It's required and needs to be unique.
+            |
+            */
+
+            'prefix' => 'custom-l',
+
+            /*
+            |-----------------------------------------------------------------
+            | Fallback Icon
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a fallback
+            | icon when an icon in this set cannot be found.
+            |
+            */
+
+            // 'fallback' => '',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Classes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some classes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            'class' => 'custom-icon-set custom-icon',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Attributes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some attributes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            // 'attributes' => [
+            // 'width' => 50,
+            // 'height' => 50,
+            // ],
+
+        ],
+        'custom-outline' => [
+
+            /*
+            |-----------------------------------------------------------------
+            | Icons Path
+            |-----------------------------------------------------------------
+            |
+            | Provide the relative path from your app root to your SVG icons
+            | directory. Icons are loaded recursively so there's no need to
+            | list every sub-directory.
+            |
+            | Relative to the disk root when the disk option is set.
+            |
+            */
+
+            'path' => 'public/storage/uploads/icons/custom/outline',
+
+            /*
+            |-----------------------------------------------------------------
+            | Filesystem Disk
+            |-----------------------------------------------------------------
+            |
+            | Optionally, provide a specific filesystem disk to read
+            | icons from. When defining a disk, the "path" option
+            | starts relatively from the disk root.
+            |
+            */
+
+            // 'disk' => 'public',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Prefix
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a default prefix for
+            | your icons. The dash separator will be applied automatically
+            | to every icon name. It's required and needs to be unique.
+            |
+            */
+
+            'prefix' => 'custom-o',
+
+            /*
+            |-----------------------------------------------------------------
+            | Fallback Icon
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a fallback
+            | icon when an icon in this set cannot be found.
+            |
+            */
+
+            // 'fallback' => '',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Classes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some classes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            'class' => 'custom-icon-set custom-icon',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Set Attributes
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define some attributes which
+            | will be applied by default to all icons within this set.
+            |
+            */
+
+            // 'attributes' => [
+            // 'width' => 50,
+            // 'height' => 50,
+            // ],
+
+        ],
+        'custom-custom' => [
+
+            /*
+            |-----------------------------------------------------------------
+            | Icons Path
+            |-----------------------------------------------------------------
+            |
+            | Provide the relative path from your app root to your SVG icons
+            | directory. Icons are loaded recursively so there's no need to
+            | list every sub-directory.
+            |
+            | Relative to the disk root when the disk option is set.
+            |
+            */
+
+            'path' => 'public/storage/uploads/icons/custom/custom',
+
+            /*
+            |-----------------------------------------------------------------
+            | Filesystem Disk
+            |-----------------------------------------------------------------
+            |
+            | Optionally, provide a specific filesystem disk to read
+            | icons from. When defining a disk, the "path" option
+            | starts relatively from the disk root.
+            |
+            */
+
+            // 'disk' => 'public',
+
+            /*
+            |-----------------------------------------------------------------
+            | Default Prefix
+            |-----------------------------------------------------------------
+            |
+            | This config option allows you to define a default prefix for
+            | your icons. The dash separator will be applied automatically
+            | to every icon name. It's required and needs to be unique.
+            |
+            */
+
+            'prefix' => 'custom-c',
 
             /*
             |-----------------------------------------------------------------
