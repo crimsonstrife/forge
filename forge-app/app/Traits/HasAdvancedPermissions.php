@@ -27,7 +27,7 @@ trait HasAdvancedPermissions
 
         // If there are muted permissions, log them
         if ($mutedPermissions->isNotEmpty()) {
-            logger()->info('Muted permissions: ' . $mutedPermissions->implode(', '));
+            logger()->debug('Muted permissions: ' . $mutedPermissions->implode(', '));
         }
 
         // Check if the provided permission is a string, or an integer, if so, find the permission object instead
@@ -42,28 +42,28 @@ trait HasAdvancedPermissions
         // If permission is muted for the user, deny access
         if ($mutedPermissions->contains($permission)) {
             // Log the muted permission
-            logger()->info('Permission is muted: ' . $permission);
+            logger()->debug('Permission is muted: ' . $permission);
             return false;
         }
 
         // Check if user has permission directly
         if ($this->permissions->contains('name', $permission)) {
             // Log the permission
-            logger()->info('Permission found: ' . $permission . ' (directly)');
+            logger()->debug('Permission found: ' . $permission . ' (directly)');
             return true;
         }
 
         // Check if the user has the permission via their roles
         if ($this->hasPermissionViaRoles($permission)) {
             // Log the permission
-            logger()->info('Permission found: ' . $permission . ' (via roles)');
+            logger()->debug('Permission found: ' . $permission . ' (via roles)');
             return true;
         }
 
         // Check if permission exists in PermissionSets or PermissionGroups
         if ($this->hasPermissionViaSetsOrGroups($permission)) {
             // Log the permission
-            logger()->info('Permission found: ' . $permission . ' (via PermissionSets or PermissionGroups)');
+            logger()->debug('Permission found: ' . $permission . ' (via PermissionSets or PermissionGroups)');
             return true;
         }
 
