@@ -30,25 +30,26 @@ if (!($icon instanceof \App\Models\Icon) && isset($icon)) {
             @endphp
             @if ($componentExists)
                 <!-- Use BladeUI to render the icon from a custom set, assuming proper set registration -->
-                <x-dynamic-component :component="$icon->prefix . '::' . $icon->name" />
+                <x-dynamic-component :component="$icon->prefix . '-' . $icon->name" />
+            @elseif (!empty($icon->svg_code))
+                <!-- Render the custom SVG code directly -->
+                {!! $icon->svg_code !!}
+            @elseif (!empty($icon->svg_file_path))
+                <!-- If a custom file is used, render the SVG from the file path -->
+                <img src="{{ Storage::url($icon->svg_file_path) }}" alt="icon-{{ $icon->name }}" />
             @else
-                <p>No icon component found for {{ $component }}</p>
+                <p>No icon available</p>
             @endif
-        @elseif (!empty($icon->svg_code))
-            <!-- Render the custom SVG code directly -->
-            {!! $icon->svg_code !!}
-        @elseif (!empty($icon->svg_file_path))
-            <!-- If a custom file is used, render the SVG from the file path -->
-            <img src="{{ Storage::url($icon->svg_file_path) }}" alt="icon-{{ $icon->name }}" />
         @else
-            <p>No icon available</p>
+            <p>No icon selected/provided</p>
         @endif
     @else
         <p>No icon selected/provided</p>
     @endif
 </div>
 <style>
-    .icon-preview svg img {
+    .icon-preview svg,
+    .icon-preview img {
         min-width: 16px;
         /* Ensure a minimum width */
         min-height: 16px;

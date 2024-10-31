@@ -64,16 +64,6 @@ Route::group([
 });
 
 /**
- * Route for accessing the Horizon dashboard.
- *
- * This route maps to the 'index' method of the 'HomeController' class.
- * It is accessible via the '/horizon' URL and has the name 'horizon.index'.
- *
- * @return \Illuminate\Contracts\View\View
- */
-Route::get('/horizon', [HomeController::class, 'index'])->name('horizon.index');
-
-/**
  * Route for verifying email address after registration.
  * uses the 'verification.verify' middleware.
  * This route is accessible via the '/email/verify/{id}/{hash}' URL.
