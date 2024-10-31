@@ -9,6 +9,24 @@ const forgeAppUrl = process.env.APP_URL;
 
 const { exec } = require('child_process');
 
+/**
+ * Sanitize a Discord ID.
+ *
+ * This function checks if the provided ID is a string consisting only of numbers.
+ * If the ID is valid, it returns the ID. Otherwise, it returns null.
+ *
+ * @param {string} id - The Discord ID to be sanitized.
+ * @returns {string|null} - The sanitized Discord ID or null if invalid.
+ */
+function sanitizeDiscordId(id) {
+    // Check if the ID is a string and consists of only numbers
+    if (typeof id === "string" && /^\d+$/.test(id)) {
+        return id; // Valid ID
+    } else {
+        return null; // Invalid ID
+    }
+}
+
 client.once('ready', () => {
     console.log('Discord Bot is ready!');
 });
@@ -106,7 +124,8 @@ async function notifyDiscordUser(userId, messageContent) {
             }
         });
 
-        const discordId = response.data.discord_id;
+        // Sanitize the Discord ID
+        const discordId = sanitizeDiscordId(response.data.discord_id);
 
         if (discordId) {
             const user = await client.users.fetch(discordId);  // Fetch the user from Discord by their Discord ID
