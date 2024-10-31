@@ -16,16 +16,16 @@ const forgeAppUrl = process.env.APP_URL;
  *
  * @param {string} id - The Discord ID to be sanitized.
  * @returns {string|null} - The sanitized Discord ID or null if invalid.
+ * @throws {Error} - If the ID is invalid.
  */
 function sanitizeDiscordId(id) {
-    // Check if the ID is a string and consists of only numbers
-    if (typeof id === "string" && /^\d+$/.test(id)) {
-        return id; // Valid ID
-    } else {
-        // Log an error if the ID is invalid
-        console.error(`Invalid Discord ID`);
-        return null; // Invalid ID
+    // Check if the ID is a string consisting only of numbers
+    if (typeof id !== "string" || !/^\d+$/.test(id)) {
+        // Throw an error if the ID is invalid
+        throw new Error(`Invalid Discord ID: ${id}`);
     }
+    // Return the sanitized ID
+    return id;
 }
 
 client.once('ready', () => {
@@ -125,22 +125,12 @@ async function notifyDiscordUser(userId, messageContent) {
             }
         });
 
-        // Sanitize the Discord ID
-        const discordId = sanitizeDiscordId(response.data.discord_id);
+        const user = await client.users.fetch(sanitizeDiscordId(response.data.discord_id));
+        await user.send(messageContent);  // Send the user a direct message
+        console.log(`Notification sent to Discord user: ${user.username}`);
 
-        if (discordId) {
-            const user = await client.users.fetch(discordId);  // Fetch the user from Discord by their Discord ID
-            if (user) {
-                await user.send(messageContent);  // Send the user a direct message
-                console.log(`Notification sent to Discord user: ${user.username}`);
-            } else {
-                console.log(`Discord user not found for ID: ${discordId}`);
-            }
-        } else {
-            console.log(`No linked Discord account for user ID: ${userId}`);
-        }
     } catch (error) {
-        console.error('Error fetching user data or sending message:', error);
+        console.error('Error fetching user data or sending notification:', error);
     }
 }
 
@@ -159,13 +149,13 @@ if (process.argv.length > 2) {
 // Function to fetch the Roles of a Discord User
 async function fetchUserRoles(discordId) {
     // Sanitize the Discord ID
-    discordId = sanitizeDiscordId(discordId);
+    const sanitizedDiscordId = sanitizeDiscordId(discordId);
 
     try {
         const guilds = client.guilds.cache;
 
         for (const guild of guilds.values()) {
-            const member = await guild.members.fetch(discordId);
+            const member = await guild.members.fetch(sanitizedDiscordId);
 
             if (member) {
                 const roles = member.roles.cache.map(role => ({
@@ -173,12 +163,12 @@ async function fetchUserRoles(discordId) {
                     name: role.name,
                 }));
 
-                console.log(`Roles for Discord user ${discordId}:`, roles);
+                console.log(`Roles for Discord user ${sanitizedDiscordId}:`, roles);
                 return roles;
             }
         }
 
-        console.log(`Discord user ${discordId} not found.`);
+        console.log(`Discord user ${sanitizedDiscordId} not found.`);
         return [];
     } catch (error) {
         console.error('Error fetching roles:', error);
@@ -187,10 +177,12 @@ async function fetchUserRoles(discordId) {
 }
 
 async function assignRoleToUser(discordId, roleName) {
+    // Sanitize the Discord ID
+    const sanitizedDiscordId = sanitizeDiscordId(discordId);
     try {
         const guilds = client.guilds.cache;
         for (const guild of guilds.values()) {
-            const member = await guild.members.fetch(discordId);
+            const member = await guild.members.fetch(sanitizeDiscordId);
             if (member) {
                 // Find the role by name
                 const role = guild.roles.cache.find(r => r.name === roleName);
