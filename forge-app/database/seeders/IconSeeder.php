@@ -22,17 +22,11 @@ class IconSeeder extends Seeder
 
     private $svgSanitizer;
 
-    private $iconSetCount = 0;
-
-    private $iconCount = 0;
-
     private $iconSetProgressBar;
 
     private $iconProgressBar;
 
     private $iconChunkSize = 25;
-
-    private $iconChunkCount = 0;
 
     private $iconChunkProgressBar;
 
