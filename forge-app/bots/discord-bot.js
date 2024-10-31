@@ -23,6 +23,8 @@ function sanitizeDiscordId(id) {
     if (typeof id === "string" && /^\d+$/.test(id)) {
         return id; // Valid ID
     } else {
+        // Log an error if the ID is invalid
+        console.error(`Invalid Discord ID`);
         return null; // Invalid ID
     }
 }
@@ -157,6 +159,9 @@ if (process.argv.length > 2) {
 
 // Function to fetch the Roles of a Discord User
 async function fetchUserRoles(discordId) {
+    // Sanitize the Discord ID
+    discordId = sanitizeDiscordId(discordId);
+
     try {
         const guilds = client.guilds.cache;
 
