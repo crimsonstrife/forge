@@ -136,7 +136,7 @@ class IconResource extends Resource
                 // Icon Type Selection
                 Forms\Components\Select::make('type')
                     ->label('Icon Type')
-                    ->options($availableTypes)
+                    ->options(fn () => is_array($availableTypes) ? $availableTypes : [])
                     ->disabled(fn ($get) => $get('is_builtin')) // Disables the field if the icon is built-in
                     ->searchable()
                     ->reactive()
@@ -159,14 +159,14 @@ class IconResource extends Resource
                     ->afterStateHydrated(function ($state, callable $set, $get) use ($prefixes, $classes) {
                         $prefix = $prefixes[$state] ?? 'custom-c';
                         $class = $classes[$state] ?? 'custom-icon-set custom-icon';
-                        Log::info('Set: ' . $state);
+                        Log::debug('Set: ' . $state);
                         $set('prefix', $prefix);
                         $set('class', $class);
                     })
                     ->afterStateUpdated(function ($state, callable $set, $get) use ($prefixes, $classes) {
                         $prefix = $prefixes[$state] ?? 'custom-c';
                         $class = $classes[$state] ?? 'custom-icon-set custom-icon';
-                        Log::info('Set: ' . $state);
+                        Log::debug('Set: ' . $state);
                         $set('prefix', $prefix);
                         $set('class', $class);
                     }),
@@ -189,24 +189,32 @@ class IconResource extends Resource
                 Forms\Components\FileUpload::make('svg_file_path')
                     ->label('Upload SVG File')
                     ->disk('public')
-                    ->directory(fn ($get) => "uploads/icons/{$get('type')}/{$get('style')}")
-                    ->afterStateHydrated(function ($state, $set, $get) {
-                        // Set the file name to the slugified icon name + '.svg' if the file is new
-                        if ($state instanceof \Livewire\TemporaryUploadedFile) {
-                            $set('svg_file_path', Str::slug($get('name'), '-') . '.svg');
-                        }
-
-                        // Set the file path to the existing file path if the icon is being edited
-                        if ($state === null && $get('svg_file_path')) {
-                            $set('svg_file_path', $get('svg_file_path'));
-                        }
-                    })
+                    ->directory(fn ($get) => "uploads/icons/{$get('type')}/{$get('style')}") // Set the upload directory based on the type and style
+                    ->default([]) // Ensures the state is always an array
                     ->acceptedFileTypes(['image/svg+xml'])
                     ->helperText('Upload an SVG file. If provided, this file will take priority over SVG code.')
                     ->visible(fn ($get) => $get('type') === 'custom')
                     ->disabled(fn ($get) => $get('is_builtin')) // Disables the field if the icon is built-in
                     ->reactive()
-                    ->afterStateUpdated(fn ($state, callable $set) => $set('preview_source', 'file')),
+                    ->afterStateHydrated(function ($state, callable $set, $get) {
+                        if (is_string($state)) {
+                            // Check if file exists on disk and wrap it as an array with URL if it exists
+                            $fileUrl = Storage::disk('public')->exists($state) ? Storage::disk('public')->url($state) : null;
+                            $set('svg_file_path', $fileUrl ? [$fileUrl] : []);
+                        } elseif (is_array($state) && count($state) === 1) {
+                            // If it’s already an array with one path, ensure the URL is accessible
+                            $fileUrl = Storage::disk('public')->exists($state[0]) ? Storage::disk('public')->url($state[0]) : null;
+                            $set('svg_file_path', $fileUrl ? [$fileUrl] : []);
+                        }
+                    })
+                    ->dehydrated()
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        // Ensure the state is wrapped in an array if it’s a single path
+                        if (is_string($state)) {
+                            $fileUrl = Storage::disk('public')->exists($state) ? Storage::disk('public')->url($state) : null;
+                            $set('svg_file_path', $fileUrl ? [$fileUrl] : []);
+                        }
+                    }),
 
                 // Custom SVG Code
                 Forms\Components\Textarea::make('svg_code')
