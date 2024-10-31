@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class StartDiscordBot extends Command
 {
@@ -28,14 +30,20 @@ class StartDiscordBot extends Command
         $this->info('Starting Discord bot...');
 
         // Use the `pgrep` command to check if the bot is already running
-        $isRunning = exec('pgrep -f discord-bot.js');
+        $process = new Process(['pgrep', '-f', 'discord-bot.js']);
 
-        // Start the bot with `pm2` if it is not already running
-        if (!$isRunning) {
-            exec('pm2 start /path/to/bot/discord-bot.js');
-            $this->info('Discord bot started.');
-        } else {
-            $this->info('Discord bot is already running.');
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $exception) {
+            // If the bot is not running, start it
+            $this->info('Discord bot is not running. Starting bot...');
+
+            $process = new Process(['node', 'discord-bot.js']);
+            $process->start();
+
+            $this->info('Discord bot started successfully.');
+        } catch (\Exception $exception) {
+            $this->error('An error occurred while starting the Discord bot.');
         }
     }
 }

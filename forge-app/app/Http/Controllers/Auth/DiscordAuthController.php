@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Auth\Role;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 /**
  * Class DiscordAuthController
@@ -117,7 +119,7 @@ class DiscordAuthController extends Controller
      * Get the Discord ID from a User
      * @param mixed $userId
      * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \Exception
      */
     public function getUserDiscordId($userId)
     {
@@ -129,25 +131,42 @@ class DiscordAuthController extends Controller
      * Helper function to fetch Discord roles using the bot
      * @param mixed $discordId
      * @return mixed
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \Exception
      */
     protected function fetchDiscordRoles($discordId)
     {
+        // Path to the bot script
         $botPath = base_path('bot/discordBot.js');
+
+        // Set the command to fetch the user roles
         $command = "node {$botPath} fetchUserRoles {$discordId}";
-        exec($command, $output, $returnVar);
 
-        if ($returnVar === 0) {
-            return json_decode(implode("\n", $output), true);
+        // Initialize the Process with command and arguments
+        $process = new Process(explode(' ', $command));
+
+        try {
+            // Run the process and wait for it to finish
+            $process->mustRun();
+
+            // Get the output
+            $roles = $process->getOutput();
+            // Log success
+            Log::info("Discord roles fetched for user ID: {$discordId}");
+
+            return json_decode($roles);
+        } catch (ProcessFailedException $exception) {
+            // Log error
+            Log::error("Failed to fetch Discord roles for user ID: {$discordId}");
+
+            throw new \Exception("Failed to fetch Discord roles for user ID: {$discordId}");
         }
-
-        return [];
     }
 
     /**
      * Helper function to sync Discord roles with Forge
      * @param int $userID
      * @return void
+     * @throws \Exception
      */
     protected function syncDiscordRolesToForge($userId)
     {
@@ -174,18 +193,32 @@ class DiscordAuthController extends Controller
 
     /**
      * This function calls the Discord bot to assign a role in Discord
+     *
+     * @param mixed $discordId
+     * @param mixed $discordRoleName
+     * @return void
+     * @throws \Exception
      */
     protected function assignDiscordRole($discordId, $discordRoleName)
     {
         // Use the bot to assign the role via Discord API
         $botPath = base_path('bot/discordBot.js');
         $command = "node {$botPath} assignRole {$discordId} '{$discordRoleName}'";
-        exec($command, $output, $returnVar);
 
-        if ($returnVar === 0) {
-            Log::info("Role '{$discordRoleName}' assigned to Discord user ID: {$discordId}");
-        } else {
-            Log::error("Failed to assign role '{$discordRoleName}' to Discord user ID: {$discordId}");
+        // Initialize the Process with command and arguments
+        $process = new Process(explode(' ', $command));
+
+        try {
+            // Run the process and wait for it to finish
+            $process->mustRun();
+
+            // Log success
+            Log::info("Discord role '{$discordRoleName}' assigned to user ID: {$discordId}");
+        } catch (ProcessFailedException $exception) {
+            // Log error
+            Log::error("Failed to assign Discord role '{$discordRoleName}' to user ID: {$discordId}");
+
+            throw new \Exception("Failed to assign Discord role '{$discordRoleName}' to user ID: {$discordId}");
         }
     }
 }
