@@ -12,6 +12,8 @@ use App\Models\DiscordConfig as Discord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Auth\DiscordAuthController as DiscordAuth;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 /**
  * Class DiscordController
@@ -174,22 +176,36 @@ class DiscordController extends Controller
      *
      * @param string $discordUsername
      * @param string $message
+     * @return void
+     * @throws Exception
      */
     protected function sendDiscordMessage($discordUsername, $message)
     {
-        // Call the Node.js bot via a child process or HTTP request
-        try {
-            $botPath = base_path('bot/discordBot.js');
-            $command = "node {$botPath} '{$discordUsername}' '{$message}'";
-            exec($command, $output, $returnVar);
+        // Path to the bot script
+        $botPath = base_path('bot/discordBot.js');
 
-            if ($returnVar === 0) {
-                Log::info("Message sent to {$discordUsername}: {$message}");
-            } else {
-                Log::error("Failed to send message to {$discordUsername}: " . implode("\n", $output));
-            }
+        // Initialize the Process with command and arguments
+        $process = new Process(['node', $botPath, $discordUsername, $message]);
+
+        try {
+            $process->setTimeout(60);  // Set a timeout of 60 seconds
+            // Run the process and wait for it to finish
+            $process->mustRun();
+
+            // Log success
+            Log::info("Message sent to {$discordUsername}: {$message}");
+        } catch (ProcessFailedException $e) {
+            // Log any errors
+            Log::error("Failed to send message to {$discordUsername}: " . $e->getMessage());
+
+            // Throw an exception
+            throw new \Exception($e->getMessage());
         } catch (\Exception $e) {
+            // Catch any other exceptions and log them
             Log::error("Error sending Discord message: {$e->getMessage()}");
+
+            // Throw an exception
+            throw new \Exception($e->getMessage());
         }
     }
 
@@ -199,10 +215,35 @@ class DiscordController extends Controller
      * @param mixed $userId
      * @param mixed $message
      * @return void
+     * @throws \Exception
      */
     protected function sendDiscordNotification($userId, $message)
     {
-        // Trigger the bot to send a message
-        exec("node bot/discordBot.js {$userId} '{$message}'");
+        // Path to the bot script
+        $botPath = base_path('bot/discordBot.js');
+
+        // Initialize the Process with command and arguments to send a notification
+        $process = new Process(['node', $botPath, $userId, $message]);
+
+        try {
+            $process->setTimeout(60);  // Set a timeout of 60 seconds
+            // Run the process and wait for it to finish
+            $process->mustRun();
+
+            // Log success
+            Log::info("Notification sent to {$userId}: {$message}");
+        } catch (ProcessFailedException $e) {
+            // Log any errors
+            Log::error("Failed to send notification to {$userId}: " . $e->getMessage());
+
+            // Throw an exception
+            throw new \Exception($e->getMessage());
+        } catch (\Exception $e) {
+            // Catch any other exceptions and log them
+            Log::error("Error sending Discord notification: {$e->getMessage()}");
+
+            // Throw an exception
+            throw new \Exception($e->getMessage());
+        }
     }
 }
