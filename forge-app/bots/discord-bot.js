@@ -7,7 +7,6 @@ require('dotenv').config();
 const discordToken = process.env.DISCORD_BOT_TOKEN;
 const forgeAppUrl = process.env.APP_URL;
 
-const { exec } = require('child_process');
 
 /**
  * Sanitize a Discord ID.
