@@ -64,7 +64,7 @@ class IconSeeder extends Seeder
         }
 
         // Count the number of icon sets
-        $this>$iconSetCount = count($iconSets);
+        $this > $iconSetCount = count($iconSets);
 
         // Initialize the icon set progress bar
         $this->iconSetProgressBar = $this->command->getOutput()->createProgressBar($this->$iconSetCount);
