@@ -33,6 +33,7 @@ class StartDiscordBot extends Command
         $process = new Process(['pgrep', '-f', 'discord-bot.js']);
 
         try {
+            $process->setTimeout(60);  // Set a timeout of 60 seconds
             $process->mustRun();
         } catch (ProcessFailedException $exception) {
             // If the bot is not running, start it

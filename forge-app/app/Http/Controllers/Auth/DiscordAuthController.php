@@ -138,13 +138,11 @@ class DiscordAuthController extends Controller
         // Path to the bot script
         $botPath = base_path('bot/discordBot.js');
 
-        // Set the command to fetch the user roles
-        $command = "node {$botPath} fetchUserRoles {$discordId}";
-
         // Initialize the Process with command and arguments
-        $process = new Process(explode(' ', $command));
+        $process = new Process(['node', $botPath, 'fetchUserRoles', $discordId]);
 
         try {
+            $process->setTimeout(60);  // Set a timeout of 60 seconds
             // Run the process and wait for it to finish
             $process->mustRun();
 
@@ -203,12 +201,12 @@ class DiscordAuthController extends Controller
     {
         // Use the bot to assign the role via Discord API
         $botPath = base_path('bot/discordBot.js');
-        $command = "node {$botPath} assignRole {$discordId} '{$discordRoleName}'";
 
         // Initialize the Process with command and arguments
-        $process = new Process(explode(' ', $command));
+        $process = new Process(['node', $botPath, 'assignRole', $discordId, $discordRoleName]);
 
         try {
+            $process->setTimeout(60);  // Set a timeout of 60 seconds
             // Run the process and wait for it to finish
             $process->mustRun();
 

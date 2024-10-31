@@ -188,6 +188,7 @@ class DiscordController extends Controller
         $process = new Process(['node', $botPath, $discordUsername, $message]);
 
         try {
+            $process->setTimeout(60);  // Set a timeout of 60 seconds
             // Run the process and wait for it to finish
             $process->mustRun();
 
@@ -225,6 +226,7 @@ class DiscordController extends Controller
         $process = new Process(['node', $botPath, $userId, $message]);
 
         try {
+            $process->setTimeout(60);  // Set a timeout of 60 seconds
             // Run the process and wait for it to finish
             $process->mustRun();
 
