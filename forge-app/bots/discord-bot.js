@@ -33,13 +33,15 @@ client.once('ready', () => {
 });
 
 client.on('messageCreate', async (message) => {
-    if (message.author.bot) return; // Ignore bot messages
+    if (message.author.bot){
+        return; // Ignore bot messages
+    }
 
-    const content = message.content;
+    const messageContent = message.content;
 
     // Handle Bug submissions
-    if (content.startsWith('!bug')) {
-        const bugDescription = content.replace('!bug', '').trim();
+    if (messageContent.startsWith('!bug')) {
+        const bugDescription = messageContent.replace('!bug', '').trim();
 
         if (!bugDescription) {
             message.reply('Please provide a description of the bug.');
@@ -152,34 +154,29 @@ if (process.argv.length > 2) {
     });
 }
 
-// Function to fetch the Roles of a Discord User
+/**
+ * Fetch the roles of a Discord user by their Discord ID.
+ *
+ * @param {string} discordId - The Discord ID of the user.
+ * @returns {Promise<Array<{id: string, name: string}>>} - A promise that resolves to an array of role objects.
+ * @throws {Error} - If the Discord ID is invalid or there is an error fetching the roles.
+ */
 async function fetchUserRoles(discordId) {
-    // Sanitize the Discord ID
-    const sanitizedDiscordId = sanitizeDiscordId(discordId);
-
-    try {
-        const guilds = client.guilds.cache;
-
-        for (const guild of guilds.values()) {
-            const member = await guild.members.fetch(sanitizedDiscordId);
-
-            if (member) {
-                const roles = member.roles.cache.map(role => ({
-                    id: role.id,
-                    name: role.name,
-                }));
-
-                console.log(`Roles for Discord user ${sanitizedDiscordId}:`, roles);
-                return roles;
-            }
-        }
-
-        console.log(`Discord user ${sanitizedDiscordId} not found.`);
-        return [];
-    } catch (error) {
-        console.error('Error fetching roles:', error);
-        return [];
+    if (sanitizeDiscordId(discordId) === null) {
+        throw new Error('Invalid Discord ID format')
     }
+
+    const guilds = client.guilds.cache;
+    for (const guild of guilds.values()) {
+        const member = await guild.members.fetch(discordId);
+        if (member) {
+            return member.roles.cache.map((role) => ({
+                id: role.id,
+                name: role.name
+            }))
+        }
+    }
+    return [];
 }
 
 async function assignRoleToUser(discordId, roleName) {
