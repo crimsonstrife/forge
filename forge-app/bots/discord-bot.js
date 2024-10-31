@@ -93,7 +93,13 @@ client.on('messageReactionAdd', async (reaction, user) => {
     // Additional handlers for other commands if needed
 });
 
-// Function to send a direct message to a Discord user
+/**
+ * Send a direct message to a Discord user by their username.
+ *
+ * @param {string} username - The username of the Discord user.
+ * @param {string} content - The content of the message to be sent.
+ * @throws {Error} - If there is an error sending the message.
+ */
 async function sendMessageToUser(username, content) {
     try {
         const guilds = client.guilds.cache;
@@ -111,7 +117,7 @@ async function sendMessageToUser(username, content) {
 
         console.log(`User ${username} not found.`);
     } catch (error) {
-        console.error('Error sending message:', error);
+        throw new Error(`Error sending message to ${username}: ${error.message}`);
     }
 }
 
