@@ -72,14 +72,13 @@ client.on('messageCreate', async (message) => {
                 `Bug report submitted! Forge Issue ID: ${response.data.id}`
       )
     } catch (error) {
-      console.error(error)
-      message.reply('There was an error submitting your bug report.')
+      throw new Error(`There was an error submitting your bug report.`);
     }
   }
 
   // Handle Status check requests
-  if (content.startsWith('!status')) {
-    const issueId = content.replace('!status', '').trim()
+  if (messageContent.startsWith('!status')) {
+    const issueId = messageContent.replace('!status', '').trim()
 
     if (!issueId) {
       message.reply('Please provide the issue ID.')
@@ -101,8 +100,7 @@ client.on('messageCreate', async (message) => {
                 `Issue #${issueId} is currently: ${response.data.status}`
       )
     } catch (error) {
-      console.error(error)
-      message.reply('There was an error retrieving the issue status.')
+      throw new Error('There was an error retrieving the issue status.')
     }
   }
 })
@@ -176,8 +174,7 @@ async function notifyDiscordUser (userId, messageContent) {
                 ? `Discord user not found for ID from Forge user ${userId}`
                 : `Failed to notify user ${userId}: ${error.message}`
 
-    console.error(errorMessage)
-    throw error
+    throw new Error(`Error notifying user ${userId}: `, error.Message)
   }
 }
 
