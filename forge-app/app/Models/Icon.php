@@ -189,43 +189,6 @@ class Icon extends Model
     }
 
     /**
-     * Helper function to load icons from a base directory with sub-directories {type}/{style}
-     *
-     * @param string $baseDirectory
-     * @return \Illuminate\Support\Collection
-     */
-    private function loadIconsFromDirectory(string $baseDirectory)
-    {
-        if (!File::exists($baseDirectory)) {
-            return collect();
-        }
-
-        $icons = collect();
-
-        // Traverse the {type}/{style} directories and load icons
-        foreach (File::directories($baseDirectory) as $typeDir) {
-            foreach (File::directories($typeDir) as $styleDir) {
-                $type = basename($typeDir);
-                $style = basename($styleDir);
-
-                $files = File::files($styleDir);
-                foreach ($files as $file) {
-                    if (pathinfo($file, PATHINFO_EXTENSION) === 'svg') {
-                        $icons->push([
-                            'name' => pathinfo($file, PATHINFO_FILENAME),
-                            'path' => str_replace(base_path(), asset(''), $file),
-                            'type' => $type,
-                            'style' => $style,
-                        ]);
-                    }
-                }
-            }
-        }
-
-        return $icons;
-    }
-
-    /**
      * Ensure the file name is unique within the given directory.
      *
      * @param string $directory
