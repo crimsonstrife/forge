@@ -72,7 +72,7 @@ client.on('messageCreate', async (message) => {
                 `Bug report submitted! Forge Issue ID: ${response.data.id}`
       )
     } catch (error) {
-      throw new Error(`There was an error submitting your bug report.`);
+      throw new Error('There was an error submitting your bug report.')
     }
   }
 
