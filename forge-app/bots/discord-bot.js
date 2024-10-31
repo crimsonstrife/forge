@@ -1,12 +1,17 @@
-const { Client, GatewayIntentBits } = require('discord.js');
-const axios = require('axios');
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+const { Client, GatewayIntentBits } = require('discord.js')
+const axios = require('axios')
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ]
+})
 
-require('dotenv').config();
+require('dotenv').config()
 
-const discordToken = process.env.DISCORD_BOT_TOKEN;
-const forgeAppUrl = process.env.APP_URL;
-
+const discordToken = process.env.DISCORD_BOT_TOKEN
+const forgeAppUrl = process.env.APP_URL
 
 /**
  * Sanitize a Discord ID.
@@ -18,82 +23,93 @@ const forgeAppUrl = process.env.APP_URL;
  * @returns {string|null} - The sanitized Discord ID or null if invalid.
  * @throws {Error} - If the ID is invalid.
  */
-function sanitizeDiscordId(id) {
-    // Check if the ID is a string consisting only of numbers
-    if (typeof id !== "string" || !/^\d+$/.test(id)) {
-        // Throw an error if the ID is invalid
-        throw new Error(`Invalid Discord ID: ${id}`);
-    }
-    // Return the sanitized ID
-    return id;
+function sanitizeDiscordId (id) {
+  // Check if the ID is a string consisting only of numbers
+  if (typeof id !== 'string' || !/^\d+$/.test(id)) {
+    // Throw an error if the ID is invalid
+    throw new Error(`Invalid Discord ID: ${id}`)
+  }
+  // Return the sanitized ID
+  return id
 }
 
 client.once('ready', () => {
-    console.log('Discord Bot is ready!');
-});
+  console.log('Discord Bot is ready!')
+})
 
 client.on('messageCreate', async (message) => {
-    if (message.author.bot){
-        return; // Ignore bot messages
+  if (message.author.bot) {
+    return // Ignore bot messages
+  }
+
+  const messageContent = message.content
+
+  // Handle Bug submissions
+  if (messageContent.startsWith('!bug')) {
+    const bugDescription = messageContent.replace('!bug', '').trim()
+
+    if (!bugDescription) {
+      message.reply('Please provide a description of the bug.')
+      return
     }
 
-    const messageContent = message.content;
-
-    // Handle Bug submissions
-    if (messageContent.startsWith('!bug')) {
-        const bugDescription = messageContent.replace('!bug', '').trim();
-
-        if (!bugDescription) {
-            message.reply('Please provide a description of the bug.');
-            return;
-        }
-
-        try {
-            // Call Laravel to create the issue using Laravel's API
-            const response = await axios.post(`${forgeAppUrl}/discord/create-issue`, {
-                description: bugDescription,
-                discordUser: message.author.username
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${process.env.FORGE_API_TOKEN}`,  // Optional if you want to use API tokens
+    try {
+      // Call Laravel to create the issue using Laravel's API
+      const response = await axios.post(
+                `${forgeAppUrl}/discord/create-issue`,
+                {
+                  description: bugDescription,
+                  discordUser: message.author.username
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${process.env.FORGE_API_TOKEN}` // Optional if you want to use API tokens
+                  }
                 }
-            });
+      )
 
-            message.reply(`Bug report submitted! Forge Issue ID: ${response.data.id}`);
-        } catch (error) {
-            console.error(error);
-            message.reply('There was an error submitting your bug report.');
-        }
+      message.reply(
+                `Bug report submitted! Forge Issue ID: ${response.data.id}`
+      )
+    } catch (error) {
+      console.error(error)
+      message.reply('There was an error submitting your bug report.')
+    }
+  }
+
+  // Handle Status check requests
+  if (content.startsWith('!status')) {
+    const issueId = content.replace('!status', '').trim()
+
+    if (!issueId) {
+      message.reply('Please provide the issue ID.')
+      return
     }
 
-    // Handle Status check requests
-    if (content.startsWith('!status')) {
-        const issueId = content.replace('!status', '').trim();
-
-        if (!issueId) {
-            message.reply('Please provide the issue ID.');
-            return;
-        }
-
-        try {
-            // Call Laravel to get the issue status
-            const response = await axios.get(`${forgeAppUrl}/discord/issue-status/${issueId}`, {
-                headers: {
-                    'Authorization': `Bearer ${process.env.FORGE_API_TOKEN}`,
+    try {
+      // Call Laravel to get the issue status
+      const response = await axios.get(
+                `${forgeAppUrl}/discord/issue-status/${issueId}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${process.env.FORGE_API_TOKEN}`
+                  }
                 }
-            });
+      )
 
-            message.reply(`Issue #${issueId} is currently: ${response.data.status}`);
-        } catch (error) {
-            console.error(error);
-            message.reply('There was an error retrieving the issue status.');
-        }
+      message.reply(
+                `Issue #${issueId} is currently: ${response.data.status}`
+      )
+    } catch (error) {
+      console.error(error)
+      message.reply('There was an error retrieving the issue status.')
     }
-});
+  }
+})
 
 client.on('messageReactionAdd', async (reaction, user) => {
-    // Additional handlers for other commands if needed
-});
+  // Additional handlers for other commands if needed
+})
 
 /**
  * Send a direct message to a Discord user by their username.
@@ -102,56 +118,67 @@ client.on('messageReactionAdd', async (reaction, user) => {
  * @param {string} content - The content of the message to be sent.
  * @throws {Error} - If there is an error sending the message.
  */
-async function sendMessageToUser(username, content) {
-    try {
-        const guilds = client.guilds.cache;
+async function sendMessageToUser (username, content) {
+  try {
+    const guilds = client.guilds.cache
 
-        for (const guild of guilds.values()) {
-            const members = await guild.members.fetch();
-            const member = members.find(m => m.user.username === username);
+    for (const guild of guilds.values()) {
+      const members = await guild.members.fetch()
+      const member = members.find((m) => m.user.username === username)
 
-            if (member) {
-                await member.send(content);  // Send a direct message
-                console.log(`Message sent to ${username}: ${content}`);
-                return;
-            }
-        }
-
-        console.log(`User ${username} not found.`);
-    } catch (error) {
-        throw new Error(`Error sending message to ${username}: ${error.message}`);
+      if (member) {
+        await member.send(content) // Send a direct message
+        console.log(`Message sent to ${username}: ${content}`)
+        return
+      }
     }
+
+    console.log(`User ${username} not found.`)
+  } catch (error) {
+    throw new Error(
+            `Error sending message to ${username}: ${error.message}`
+    )
+  }
 }
 
 // Function to notify a Discord user by their Forge user ID
-async function notifyDiscordUser(userId, messageContent) {
-    // Fetch user information from Forge
-    try {
-        const response = await axios.get(`${forgeAppUrl}/discord/user/${userId}`, {
-            headers: {
-                'Authorization': `Bearer ${process.env.FORGE_API_TOKEN}`,
+async function notifyDiscordUser (userId, messageContent) {
+  // Fetch user information from Forge
+  try {
+    const response = await axios.get(
+            `${forgeAppUrl}/discord/user/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${process.env.FORGE_API_TOKEN}`
+              }
             }
-        });
+    )
 
-        const user = await client.users.fetch(sanitizeDiscordId(response.data.discord_id));
-        await user.send(messageContent);  // Send the user a direct message
-        console.log(`Notification sent to Discord user: ${user.username}`);
-
-    } catch (error) {
-        console.error('Error fetching user data or sending notification:', error);
-    }
+    const user = await client.users.fetch(
+      sanitizeDiscordId(response.data.discord_id)
+    )
+    await user.send(messageContent) // Send the user a direct message
+    console.log(`Notification sent to Discord user: ${user.username}`)
+  } catch (error) {
+    console.error(
+      'Error fetching user data or sending notification:',
+      error
+    )
+  }
 }
 
 if (process.argv.length > 2) {
-    const discordUsername = process.argv[2];
-    const messageContent = process.argv[3];
-    sendMessageToUser(discordUsername, messageContent).then(() => {
-        console.log(`Notification sent to ${discordUsername}`);
-        process.exit(0); // Exit the process after sending the message
-    }).catch((err) => {
-        console.error('Error sending notification:', err);
-        process.exit(1); // Exit with error code
-    });
+  const discordUsername = process.argv[2]
+  const messageContent = process.argv[3]
+  sendMessageToUser(discordUsername, messageContent)
+    .then(() => {
+      console.log(`Notification sent to ${discordUsername}`)
+      process.exit(0) // Exit the process after sending the message
+    })
+    .catch((err) => {
+      console.error('Error sending notification:', err)
+      process.exit(1) // Exit with error code
+    })
 }
 
 /**
@@ -161,59 +188,68 @@ if (process.argv.length > 2) {
  * @returns {Promise<Array<{id: string, name: string}>>} - A promise that resolves to an array of role objects.
  * @throws {Error} - If the Discord ID is invalid or there is an error fetching the roles.
  */
-async function fetchUserRoles(discordId) {
-    if (sanitizeDiscordId(discordId) === null) {
-        throw new Error('Invalid Discord ID format')
-    }
+async function fetchUserRoles (discordId) {
+  if (sanitizeDiscordId(discordId) === null) {
+    throw new Error('Invalid Discord ID format')
+  }
 
-    const guilds = client.guilds.cache;
-    for (const guild of guilds.values()) {
-        const member = await guild.members.fetch(discordId);
-        if (member) {
-            return member.roles.cache.map((role) => ({
-                id: role.id,
-                name: role.name
-            }))
-        }
+  const guilds = client.guilds.cache
+  for (const guild of guilds.values()) {
+    const member = await guild.members.fetch(discordId)
+    if (member) {
+      return member.roles.cache.map((role) => ({
+        id: role.id,
+        name: role.name
+      }))
     }
-    return [];
+  }
+  return []
 }
 
-async function assignRoleToUser(discordId, roleName) {
-    // Sanitize the Discord ID
-    const sanitizedDiscordId = sanitizeDiscordId(discordId);
-    try {
-        const guilds = client.guilds.cache;
-        for (const guild of guilds.values()) {
-            const member = await guild.members.fetch(sanitizeDiscordId);
-            if (member) {
-                // Find the role by name
-                const role = guild.roles.cache.find(r => r.name === roleName);
-                if (role) {
-                    // Assign the role to the member
-                    await member.roles.add(role);
-                    console.log(`Role '${roleName}' assigned to ${member.user.username}`);
-                } else {
-                    console.log(`Role '${roleName}' not found in guild.`);
-                }
-            }
+async function assignRoleToUser (discordId, roleName) {
+  // Sanitize the Discord ID
+  const sanitizedDiscordId = sanitizeDiscordId(discordId)
+  try {
+    const guilds = client.guilds.cache
+    for (const guild of guilds.values()) {
+      const member = await guild.members.fetch(sanitizeDiscordId)
+      if (member) {
+        // Find the role by name
+        const role = guild.roles.cache.find((r) => r.name === roleName)
+        if (role) {
+          // Assign the role to the member
+          await member.roles.add(role)
+          console.log(
+                        `Role '${roleName}' assigned to ${member.user.username}`
+          )
+        } else {
+          console.log(`Role '${roleName}' not found in guild.`)
         }
-    } catch (error) {
-        console.error('Error assigning role:', error);
+      }
     }
+  } catch (error) {
+    console.error('Error assigning role:', error)
+  }
 }
 
 // Check command-line arguments to assign role
 if (process.argv.length > 2) {
-    const discordId = process.argv[2];
-    const roleName = process.argv[3];
-    assignRoleToUser(discordId, roleName).then(() => process.exit(0)).catch(() => process.exit(1));
+  const discordId = process.argv[2]
+  const roleName = process.argv[3]
+  assignRoleToUser(discordId, roleName)
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1))
 }
 
 // Login to Discord with your bot token
-client.login(discordToken);
+client.login(discordToken)
 
 // Export the functions to be used in other scripts
-module.exports = { sendMessageToUser, notifyDiscordUser, fetchUserRoles, assignRoleToUser };
+module.exports = {
+  sendMessageToUser,
+  notifyDiscordUser,
+  fetchUserRoles,
+  assignRoleToUser
+}
 
 // End of Discord Bot script
