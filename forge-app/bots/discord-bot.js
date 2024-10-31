@@ -130,11 +130,13 @@ async function sendMessageToUser (username, content) {
         try {
           await member.send(content)
         } catch (error) {
-          throw new Error(`Failed to send DM to Guild Member: ${error.message}`)
+          throw new Error(
+                        `Failed to send DM to Guild Member: ${error.message}`
+          )
         }
         console.log(`Message sent to ${username}.`)
         return
-      } 
+      }
     }
 
     console.log(`User ${username} not found.`)
@@ -146,32 +148,36 @@ async function sendMessageToUser (username, content) {
 }
 
 // Function to notify a Discord user by their Forge user ID
-async function notifyDiscordUser(userId, messageContent) {
+async function notifyDiscordUser (userId, messageContent) {
   try {
-    const response = await axios.get(`${forgeAppUrl}/discord/user/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${process.env.FORGE_API_TOKEN}`
-      }
-    });
+    const response = await axios.get(
+            `${forgeAppUrl}/discord/user/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${process.env.FORGE_API_TOKEN}`
+              }
+            }
+    )
 
     if (!response.data?.discord_id) {
-      throw new Error(`No Discord ID found for user ${userId}`);
+      throw new Error(`No Discord ID found for user ${userId}`)
     }
 
-    const discordId = sanitizeDiscordId(response.data.discord_id);
-    const user = await client.users.fetch(discordId);
-    await user.send(messageContent);
+    const discordId = sanitizeDiscordId(response.data.discord_id)
+    const user = await client.users.fetch(discordId)
+    await user.send(messageContent)
 
-    console.log(`Notification sent to Discord user: ${user.username}`);
+    console.log(`Notification sent to Discord user: ${user.username}`)
   } catch (error) {
-    const errorMessage = error.response?.status === 404
-      ? `User ${userId} not found in Forge`
-      : error.code === 10013
-        ? `Discord user not found for ID from Forge user ${userId}`
-        : `Failed to notify user ${userId}: ${error.message}`;
+    const errorMessage =
+            error.response?.status === 404
+              ? `User ${userId} not found in Forge`
+              : error.code === 10013
+                ? `Discord user not found for ID from Forge user ${userId}`
+                : `Failed to notify user ${userId}: ${error.message}`
 
-    console.error(errorMessage);
-    throw error;
+    console.error(errorMessage)
+    throw error
   }
 }
 
