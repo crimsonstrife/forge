@@ -174,7 +174,7 @@ async function notifyDiscordUser (userId, messageContent) {
                 ? `Discord user not found for ID from Forge user ${userId}`
                 : `Failed to notify user ${userId}: ${error.message}`
 
-    throw new Error(`Error notifying user ${userId}: `, errorMessage)
+    throw new Error(`Error notifying user ${userId}: ${errorMessage}`)
   }
 }
 
