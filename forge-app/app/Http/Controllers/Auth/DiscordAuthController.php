@@ -136,7 +136,7 @@ class DiscordAuthController extends Controller
     protected function fetchDiscordRoles($discordId)
     {
         // Path to the bot script
-        $botPath = base_path('bot/discordBot.js');
+        $botPath = base_path('bot/discord-bot.js');
 
         // Initialize the Process with command and arguments
         $process = new Process(['node', $botPath, 'fetchUserRoles', $discordId]);
@@ -200,7 +200,7 @@ class DiscordAuthController extends Controller
     protected function assignDiscordRole($discordId, $discordRoleName)
     {
         // Use the bot to assign the role via Discord API
-        $botPath = base_path('bot/discordBot.js');
+        $botPath = base_path('bot/discord-bot.js');
 
         // Initialize the Process with command and arguments
         $process = new Process(['node', $botPath, 'assignRole', $discordId, $discordRoleName]);

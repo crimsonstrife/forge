@@ -182,7 +182,7 @@ class DiscordController extends Controller
     protected function sendDiscordMessage($discordUsername, $message)
     {
         // Path to the bot script
-        $botPath = base_path('bot/discordBot.js');
+        $botPath = base_path('bot/discord-bot.js');
 
         // Initialize the Process with command and arguments
         $process = new Process(['node', $botPath, $discordUsername, $message]);
@@ -220,7 +220,7 @@ class DiscordController extends Controller
     protected function sendDiscordNotification($userId, $message)
     {
         // Path to the bot script
-        $botPath = base_path('bot/discordBot.js');
+        $botPath = base_path('bot/discord-bot.js');
 
         // Initialize the Process with command and arguments to send a notification
         $process = new Process(['node', $botPath, $userId, $message]);
