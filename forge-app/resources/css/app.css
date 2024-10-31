@@ -116,7 +116,8 @@
     /* Enable vertical scrolling for icons if needed */
 }
 
-.icon-preview svg, .icon-preview img {
+.icon-preview svg,
+.icon-preview img {
     min-width: 16px;
     /* Ensure a minimum width */
     min-height: 16px;
