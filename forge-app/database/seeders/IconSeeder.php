@@ -22,11 +22,17 @@ class IconSeeder extends Seeder
 
     private $svgSanitizer;
 
+    private $iconSetCount = 0;
+
     private $iconSetProgressBar;
 
     private $iconProgressBar;
 
+    private $iconCount = 0;
+
     private $iconChunkSize = 25;
+
+    private $iconChunkCount = 0;
 
     private $iconChunkProgressBar;
 
@@ -58,10 +64,10 @@ class IconSeeder extends Seeder
         }
 
         // Count the number of icon sets
-        $iconSetCount = count($iconSets);
+        $this>$iconSetCount = count($iconSets);
 
         // Initialize the icon set progress bar
-        $this->iconSetProgressBar = $this->command->getOutput()->createProgressBar($iconSetCount);
+        $this->iconSetProgressBar = $this->command->getOutput()->createProgressBar($this->$iconSetCount);
 
         // Create Icons dynamically
         $this->createIcons($iconSets);
@@ -93,16 +99,16 @@ class IconSeeder extends Seeder
                 $icons = $this->getIcons($iconSetPath);
 
                 // Count the number of icons in the set
-                $iconCount = count($icons);
+                $this->$iconCount = count($icons);
 
                 // Initialize the icon progress bar
-                $this->iconProgressBar = $this->command->getOutput()->createProgressBar($iconCount);
+                $this->iconProgressBar = $this->command->getOutput()->createProgressBar($this->$iconCount);
 
                 // Determine the number of chunks based on the number of icons
-                $iconChunkCount = ceil($iconCount / $this->iconChunkSize);
+                $this->$iconChunkCount = ceil($this->$iconCount / $this->iconChunkSize);
 
                 // Initialize the icon chunk progress bar
-                $this->iconChunkProgressBar = $this->command->getOutput()->createProgressBar($iconChunkCount);
+                $this->iconChunkProgressBar = $this->command->getOutput()->createProgressBar($this->$iconChunkCount);
 
                 // Get the icons in chunks to avoid memory overload/segfault
                 foreach (array_chunk($icons, $this->iconChunkSize) as $iconChunk) {
@@ -163,7 +169,7 @@ class IconSeeder extends Seeder
                     $this->iconChunkProgressBar->finish();
                 }
                 // Submit the icons to the database in bulk
-                $this->bulkCreateIcons($iconsToCreate, $iconCount, $iconSetName);
+                $this->bulkCreateIcons($iconsToCreate, $this->$iconCount, $iconSetName);
 
                 // Clear the icons to create array after each bulk creation batch
                 $iconsToCreate = [];
