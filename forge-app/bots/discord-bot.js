@@ -128,10 +128,12 @@ async function sendMessageToUser (username, content) {
 
       if (member) {
         try {
-          await member.send(content);
-      } catch (error) {
-          console.error(`Failed to send DM to user: ${error.message}`);
-      }
+          await member.send(content)
+        } catch (error) {
+          console.error(
+                        `Failed to send DM to user: ${error.message}`
+          )
+        }
         console.log(`Message sent to ${username}: ${content}`)
         return
       }
@@ -146,32 +148,38 @@ async function sendMessageToUser (username, content) {
 }
 
 // Function to notify a Discord user by their Forge user ID
-async function notifyDiscordUser(userId, messageContent) {
+async function notifyDiscordUser (userId, messageContent) {
   try {
-    const response = await axios.get(`${forgeAppUrl}/discord/user/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${process.env.FORGE_API_TOKEN}`
-      }
-    });
+    const response = await axios.get(
+            `${forgeAppUrl}/discord/user/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${process.env.FORGE_API_TOKEN}`
+              }
+            }
+    )
 
     if (!response.data?.discord_id) {
-      throw new Error(`No Discord ID found for user ${userId}`);
+      throw new Error(`No Discord ID found for user ${userId}`)
     }
 
-    const discordId = sanitizeDiscordId(response.data.discord_id);
-    const user = await client.users.fetch(discordId);
-    await user.send(messageContent);
+    const discordId = sanitizeDiscordId(response.data.discord_id)
+    const user = await client.users.fetch(discordId)
+    await user.send(messageContent)
 
-    console.log(`Notification sent to Discord user: ${user.username}`);
+    console.log(`Notification sent to Discord user: ${user.username}`)
   } catch (error) {
     if (error.response?.status === 404) {
-      console.error(`User ${userId} not found in Forge`);
-    } else if (error.code === 10013) { // Discord user not found
-      console.error(`Discord user not found for ID from Forge user ${userId}`);
+      console.error(`User ${userId} not found in Forge`)
+    } else if (error.code === 10013) {
+      // Discord user not found
+      console.error(
+                `Discord user not found for ID from Forge user ${userId}`
+      )
     } else {
-      console.error(`Failed to notify user ${userId}: ${error.message}`);
+      console.error(`Failed to notify user ${userId}: ${error.message}`)
     }
-    throw error; // Re-throw to let caller handle the failure
+    throw error // Re-throw to let caller handle the failure
   }
 }
 
@@ -201,19 +209,19 @@ async function fetchUserRoles (discordId) {
 
 async function assignRoleToUser (discordId, roleName) {
   try {
-      const sanitizedId = sanitizeDiscordId(discordId);
-      const guilds = client.guilds.cache;
-      for (const guild of guilds.values()) {
-          const member = await guild.members.fetch(sanitizedId);
-          if (member) {
-              const role = guild.roles.cache.find(r => r.name === roleName);
-              if (!role) {
-                throw new Error(`Role "${roleName}" not found in guild`);
-            }
-            await member.roles.add(role);
-          }
+    const sanitizedId = sanitizeDiscordId(discordId)
+    const guilds = client.guilds.cache
+    for (const guild of guilds.values()) {
+      const member = await guild.members.fetch(sanitizedId)
+      if (member) {
+        const role = guild.roles.cache.find((r) => r.name === roleName)
+        if (!role) {
+          throw new Error(`Role "${roleName}" not found in guild`)
+        }
+        await member.roles.add(role)
       }
-    } catch (error) {
+    }
+  } catch (error) {
     throw new Error('Error assigning role:', error.message)
   }
 }
