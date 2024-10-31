@@ -180,33 +180,33 @@ class DiscordController extends Controller
      * @throws Exception
      */
     protected function sendDiscordMessage($discordUsername, $message)
-{
-    // Path to the bot script
-    $botPath = base_path('bot/discordBot.js');
+    {
+        // Path to the bot script
+        $botPath = base_path('bot/discordBot.js');
 
-    // Initialize the Process with command and arguments
-    $process = new Process(['node', $botPath, $discordUsername, $message]);
+        // Initialize the Process with command and arguments
+        $process = new Process(['node', $botPath, $discordUsername, $message]);
 
-    try {
-        // Run the process and wait for it to finish
-        $process->mustRun();
+        try {
+            // Run the process and wait for it to finish
+            $process->mustRun();
 
-        // Log success
-        Log::info("Message sent to {$discordUsername}: {$message}");
-    } catch (ProcessFailedException $e) {
-        // Log any errors
-        Log::error("Failed to send message to {$discordUsername}: " . $e->getMessage());
+            // Log success
+            Log::info("Message sent to {$discordUsername}: {$message}");
+        } catch (ProcessFailedException $e) {
+            // Log any errors
+            Log::error("Failed to send message to {$discordUsername}: " . $e->getMessage());
 
-        // Throw an exception
-        throw new \Exception($e->getMessage());
-    } catch (\Exception $e) {
-        // Catch any other exceptions and log them
-        Log::error("Error sending Discord message: {$e->getMessage()}");
+            // Throw an exception
+            throw new \Exception($e->getMessage());
+        } catch (\Exception $e) {
+            // Catch any other exceptions and log them
+            Log::error("Error sending Discord message: {$e->getMessage()}");
 
-        // Throw an exception
-        throw new \Exception($e->getMessage());
+            // Throw an exception
+            throw new \Exception($e->getMessage());
+        }
     }
-}
 
     /**
      * Trigger the Discord bot to send a notification to a User.
