@@ -36,7 +36,9 @@ class IssuePriority extends Model
      */
     public function issues(): HasMany
     {
-        return $this->hasMany(Issue::class, 'priority_id', 'id')->withTrashed();
+        return $this->hasMany(Issue::class, 'issue_priority_id', 'id')->with(function ($query) {
+            $query->withTrashed();
+        });
     }
 
     /**

@@ -30,6 +30,18 @@ class IssuePriorityResource extends Resource
 
     protected static ?string $cluster = Issues::class;
 
+    public $selectedIconId;
+
+    protected $listeners = ['iconUpdated' => 'updateIconPreview'];
+
+    /**
+     * Update the selected icon preview.
+     */
+    public function updateIconPreview($iconId)
+    {
+        $this->selectedIconId = $iconId;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
