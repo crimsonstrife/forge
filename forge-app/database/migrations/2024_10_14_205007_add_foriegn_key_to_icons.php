@@ -14,6 +14,9 @@ return new class () extends Migration {
         Schema::table('issue_types', function (Blueprint $table) {
             $table->foreign('icon')->nullable()->references('id')->on('icons')->onDelete('set null');
         });
+        Schema::table('issue_priorities', function (Blueprint $table) {
+            $table->foreign('icon')->nullable()->references('id')->on('icons')->onDelete('set null');
+        });
     }
 
     /**
@@ -22,6 +25,9 @@ return new class () extends Migration {
     public function down(): void
     {
         Schema::table('issue_types', function (Blueprint $table) {
+            $table->dropForeign(['icon']);
+        });
+        Schema::table('issue_priorities', function (Blueprint $table) {
             $table->dropForeign(['icon']);
         });
     }

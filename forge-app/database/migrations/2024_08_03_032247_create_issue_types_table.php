@@ -17,8 +17,17 @@ return new class () extends Migration {
             $table->string('color')->default('#cecece');
             $table->string('description')->nullable();
             $table->boolean('is_default')->default(false);
+            $table->bigInteger('created_by')->unsigned()->nullable();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
+            $table->bigInteger('deleted_by')->unsigned()->nullable();
             $table->softDeletes();
             $table->timestamps();
+        });
+
+        Schema::table('issue_types', function (Blueprint $table) {
+            $table->foreign('created_by')->references('id')->on('users');
+            $table->foreign('updated_by')->references('id')->on('users');
+            $table->foreign('deleted_by')->references('id')->on('users');
         });
     }
 
