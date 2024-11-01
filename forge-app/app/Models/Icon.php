@@ -659,7 +659,7 @@ class Icon extends Model
         $sets = $bladeIcons['sets'] ?? [];
 
         // Get the prefixes from the sets, and pair them with the set name/key
-        $prefixes = collect($sets)->mapWithKeys(fn($set, $key) => [$key => $set['prefix']]);
+        $prefixes = collect($sets)->mapWithKeys(fn ($set, $key) => [$key => $set['prefix']]);
 
         // The prefixes are stored on the set name, which is a combination of the type and style (e.g., "fontawesome-solid")
         $setName = "{$type}-{$style}";
@@ -688,7 +688,7 @@ class Icon extends Model
         $sets = $bladeIcons['sets'] ?? [];
 
         // Get the classes from the sets, and pair them with the set name/key
-        $classes = collect($sets)->mapWithKeys(fn($set, $key) => [$key => $set['class']]);
+        $classes = collect($sets)->mapWithKeys(fn ($set, $key) => [$key => $set['class']]);
 
         // The classes are stored on the set name, which is a combination of the type and style (e.g., "fontawesome-solid")
         $setName = "{$type}-{$style}";
