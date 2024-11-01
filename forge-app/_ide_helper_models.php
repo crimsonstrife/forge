@@ -440,14 +440,11 @@ namespace App\Models\Issues{
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
  * @property-read \App\Models\User|null $owner
- * @property-read \App\Models\Issues\IssuePriority|null $priority
- * @property-read \App\Models\Projects\Project $project
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Issues\IssueRelation> $relations
  * @property-read int|null $relations_count
  * @property-read \App\Models\User|null $responsible
  * @property-read \App\Models\Sprint|null $sprint
  * @property-read \App\Models\Sprint|null $sprints
- * @property-read \App\Models\Issues\IssueStatus|null $status
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $subscribers
  * @property-read int|null $subscribers_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Tags> $tags
@@ -457,7 +454,6 @@ namespace App\Models\Issues{
  * @property-read mixed $total_logged_hours
  * @property-read mixed $total_logged_in_hours
  * @property-read mixed $total_logged_seconds
- * @property-read \App\Models\Issues\IssueType|null $type
  * @property-read mixed $watchers
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Issue newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Issue newQuery()
@@ -611,8 +607,6 @@ namespace App\Models\Issues{
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Issues\Issue> $issues
- * @property-read int|null $issues_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority default()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority newQuery()
@@ -758,6 +752,8 @@ namespace App\Models\Issues{
  * @method static \Illuminate\Database\Query\Builder|IssueType withoutTrashed()
  * @mixin \Eloquent
  * @property string|null $description
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IssueType default()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IssueType notDefault()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssueType whereDescription($value)
  */
 	class IssueType extends \Eloquent {}
