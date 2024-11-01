@@ -1,5 +1,6 @@
 <?php
-    const CUSTOM_ICONS_CLASSES = 'custom-icon-set custom-icon';
+
+const CUSTOM_ICONS_CLASSES = 'custom-icon-set custom-icon';
 return [
 
 
