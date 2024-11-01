@@ -11,6 +11,8 @@ use App\Http\Middleware\RoleMiddleware;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
 use Filament\Pages;
@@ -69,6 +71,10 @@ class AdminPanelProvider extends PanelProvider
             'notifications::notification.success' => 'far-circle-check',
             'notifications::notification.warning' => 'far-circle-exclamation',
             'notifications::notification.close-button' => 'far-circle-xmark',
+        ]);
+        // Register CSS files
+        FilamentAsset::register([
+            Css::make('icons-stylesheet', __DIR__ . '/../../../resources/css/icons.css'),
         ]);
     }
 

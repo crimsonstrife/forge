@@ -1,6 +1,9 @@
 <?php
 
+const BUILTIN_ICONS_ROOT = 'public/icons/builtin';
+const CUSTOM_ICONS_ROOT = 'public/icons/custom';
 const CUSTOM_ICONS_CLASSES = 'custom-icon-set custom-icon';
+
 return [
 
 
@@ -33,7 +36,7 @@ return [
             |
             */
 
-            'path' => 'public/icons/builtin/fontawesome/regular',
+            'path' =>  BUILTIN_ICONS_ROOT . '/fontawesome/regular',
 
             /*
             |-----------------------------------------------------------------
@@ -116,7 +119,7 @@ return [
             |
             */
 
-            'path' => 'public/icons/builtin/fontawesome/solid',
+            'path' => BUILTIN_ICONS_ROOT . '/fontawesome/solid',
 
             /*
             |-----------------------------------------------------------------
@@ -199,7 +202,7 @@ return [
             |
             */
 
-            'path' => 'public/icons/builtin/fontawesome/brand',
+            'path' => BUILTIN_ICONS_ROOT . '/fontawesome/brand',
 
             /*
             |-----------------------------------------------------------------
@@ -282,7 +285,7 @@ return [
             |
             */
 
-            'path' => 'public/icons/builtin/fontawesome/duotone',
+            'path' => BUILTIN_ICONS_ROOT . '/fontawesome/duotone',
 
             /*
             |-----------------------------------------------------------------
@@ -365,7 +368,7 @@ return [
             |
             */
 
-            'path' => 'public/icons/builtin/fontawesome/thin',
+            'path' => BUILTIN_ICONS_ROOT . '/fontawesome/thin',
 
             /*
             |-----------------------------------------------------------------
@@ -448,7 +451,7 @@ return [
             |
             */
 
-            'path' => 'public/icons/builtin/fontawesome/light',
+            'path' => BUILTIN_ICONS_ROOT . '/fontawesome/light',
 
             /*
             |-----------------------------------------------------------------
@@ -531,7 +534,7 @@ return [
             |
             */
 
-            'path' => 'public/icons/builtin/heroicon/outline',
+            'path' => BUILTIN_ICONS_ROOT . '/heroicon/outline',
 
             /*
             |-----------------------------------------------------------------
@@ -614,7 +617,7 @@ return [
             |
             */
 
-            'path' => 'public/icons/builtin/heroicon/solid',
+            'path' => BUILTIN_ICONS_ROOT . '/heroicon/solid',
 
             /*
             |-----------------------------------------------------------------
@@ -1112,7 +1115,7 @@ return [
             |
             */
 
-            'path' => 'storage/app/public/uploads/icons/custom/solid',
+            'path' => CUSTOM_ICONS_ROOT . '/solid',
 
             /*
             |-----------------------------------------------------------------
@@ -1125,7 +1128,7 @@ return [
             |
             */
 
-            //disk' => 'public',
+            // 'disk' => 'local',
 
             /*
             |-----------------------------------------------------------------
@@ -1195,7 +1198,7 @@ return [
             |
             */
 
-            'path' => 'storage/app/public/uploads/icons/custom/regular',
+            'path' => CUSTOM_ICONS_ROOT . '/regular',
 
             /*
             |-----------------------------------------------------------------
@@ -1208,7 +1211,7 @@ return [
             |
             */
 
-            // 'disk' => 'public',
+            // 'disk' => 'local',
 
             /*
             |-----------------------------------------------------------------
@@ -1278,7 +1281,7 @@ return [
             |
             */
 
-            'path' => 'storage/app/public/uploads/icons/custom/brand',
+            'path' => CUSTOM_ICONS_ROOT . '/brand',
 
             /*
             |-----------------------------------------------------------------
@@ -1291,7 +1294,7 @@ return [
             |
             */
 
-            // 'disk' => 'public',
+            // 'disk' => 'local',
 
             /*
             |-----------------------------------------------------------------
@@ -1361,7 +1364,7 @@ return [
             |
             */
 
-            'path' => 'storage/app/public/uploads/icons/custom/duotone',
+            'path' => CUSTOM_ICONS_ROOT . '/duotone',
 
             /*
             |-----------------------------------------------------------------
@@ -1374,7 +1377,7 @@ return [
             |
             */
 
-            // 'disk' => 'public',
+            // 'disk' => 'local',
 
             /*
             |-----------------------------------------------------------------
@@ -1444,7 +1447,7 @@ return [
             |
             */
 
-            'path' => 'storage/app/public/uploads/icons/custom/thin',
+            'path' => CUSTOM_ICONS_ROOT . '/thin',
 
             /*
             |-----------------------------------------------------------------
@@ -1457,7 +1460,7 @@ return [
             |
             */
 
-            // 'disk' => 'public',
+            // 'disk' => 'local',
 
             /*
             |-----------------------------------------------------------------
@@ -1527,7 +1530,7 @@ return [
             |
             */
 
-            'path' => 'storage/app/public/uploads/icons/custom/light',
+            'path' => CUSTOM_ICONS_ROOT . '/light',
 
             /*
             |-----------------------------------------------------------------
@@ -1540,7 +1543,7 @@ return [
             |
             */
 
-            // 'disk' => 'public',
+            // 'disk' => 'local',
 
             /*
             |-----------------------------------------------------------------
@@ -1610,7 +1613,7 @@ return [
             |
             */
 
-            'path' => 'storage/app/public/uploads/icons/custom/outline',
+            'path' => CUSTOM_ICONS_ROOT . '/outline',
 
             /*
             |-----------------------------------------------------------------
@@ -1623,7 +1626,7 @@ return [
             |
             */
 
-            // 'disk' => 'public',
+            // 'disk' => 'local',
 
             /*
             |-----------------------------------------------------------------
@@ -1693,7 +1696,7 @@ return [
             |
             */
 
-            'path' => 'storage/app/public/uploads/icons/custom/custom',
+            'path' => CUSTOM_ICONS_ROOT . '/custom',
 
             /*
             |-----------------------------------------------------------------
@@ -1706,7 +1709,7 @@ return [
             |
             */
 
-            // 'disk' => 'public',
+            // 'disk' => 'local',
 
             /*
             |-----------------------------------------------------------------

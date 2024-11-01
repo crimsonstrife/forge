@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\Rule;
+use Illuminate\Filesystem\Filesystem;
 
 /** @package App\Filament\Resources */
 class IconResource extends Resource
@@ -64,6 +65,10 @@ class IconResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $filesystem = new Filesystem();
+
+        $storagePath = storage_path('app/public/icons');
+
         // Load the blade-icons configuration to get prefix mappings
         $bladeIcons = Config::get('blade-icons', []);
 
@@ -188,8 +193,8 @@ class IconResource extends Resource
                 // Icon file upload
                 Forms\Components\FileUpload::make('svg_file_path')
                     ->label('Upload SVG File')
-                    ->disk('public')
-                    ->directory(fn ($get) => "uploads/icons/{$get('type')}/{$get('style')}") // Set the upload directory based on the type and style
+                    ->disk('local')
+                    ->directory(fn ($get) => $storagePath . "/custom/{$get('type')}/{$get('style')}") // Set the upload directory based on the type and style
                     ->default([]) // Ensures the state is always an array
                     ->acceptedFileTypes(['image/svg+xml'])
                     ->helperText('Upload an SVG file. If provided, this file will take priority over SVG code.')
@@ -199,11 +204,11 @@ class IconResource extends Resource
                     ->afterStateHydrated(function ($state, callable $set, $get) {
                         if (is_string($state)) {
                             // Check if file exists on disk and wrap it as an array with URL if it exists
-                            $fileUrl = Storage::disk('public')->exists($state) ? Storage::disk('public')->url($state) : null;
+                            $fileUrl = Storage::disk('local')->exists($state) ? Storage::disk('local')->url($state) : null;
                             $set('svg_file_path', $fileUrl ? [$fileUrl] : []);
                         } elseif (is_array($state) && count($state) === 1) {
                             // If it’s already an array with one path, ensure the URL is accessible
-                            $fileUrl = Storage::disk('public')->exists($state[0]) ? Storage::disk('public')->url($state[0]) : null;
+                            $fileUrl = Storage::disk('local')->exists($state[0]) ? Storage::disk('local')->url($state[0]) : null;
                             $set('svg_file_path', $fileUrl ? [$fileUrl] : []);
                         }
                     })
@@ -211,7 +216,7 @@ class IconResource extends Resource
                     ->afterStateUpdated(function ($state, callable $set) {
                         // Ensure the state is wrapped in an array if it’s a single path
                         if (is_string($state)) {
-                            $fileUrl = Storage::disk('public')->exists($state) ? Storage::disk('public')->url($state) : null;
+                            $fileUrl = Storage::disk('local')->exists($state) ? Storage::disk('local')->url($state) : null;
                             $set('svg_file_path', $fileUrl ? [$fileUrl] : []);
                         }
                     }),

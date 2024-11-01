@@ -1,0 +1,157 @@
+/* Ensure the modal is centered */
+#icon-picker-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Ensure the modal is hidden by default */
+#icon-picker-modal {
+    display: none;
+}
+
+/* Keep the modal elements displaying correctly */
+#icon-picker-modal #icon-modal-content {
+    display: inline-table;
+}
+
+/* Ensure the modal is a decent width, but not too wide */
+#icon-picker-modal #icon-modal-content {
+    width: 40vw;
+    /* Set the width to 40% of the viewport */
+    max-width: 600px;
+    /* Set a maximum width */
+}
+
+/* Ensure the modal is a decent height, but not too tall */
+#icon-picker-modal #icon-modal-content {
+    height: 60vh;
+    /* Set the height to 60% of the viewport */
+    max-height: 400px;
+    /* Set a maximum height */
+}
+
+/* Keep the modal from being too high and clipping into the header */
+#icon-picker-modal #icon-modal-content {
+    top: 20vh;
+    /* Set the top to 20% of the viewport */
+    position: sticky;
+    /* Keep the modal in place */
+}
+
+/* Set the SVG size and color */
+#icon-picker-modal svg,
+#icon-picker-modal img {
+    min-width: 16px;
+    /* Ensure a minimum width */
+    min-height: 16px;
+    /* Ensure a minimum height */
+    max-width: 32px;
+    /* Ensure the SVG scales */
+    max-height: 32px;
+    /* Ensure the SVG scales */
+    width: 100%;
+    /* Ensure the SVG scales */
+    height: 100%;
+    /* Ensure the SVG scales */
+    background-color: transparent;
+    /* Ensure no background color */
+    stroke: currentColor;
+    /* Use the current text color */
+}
+
+#current-icon-preview svg,
+#current-icon-preview img {
+    min-width: 32px;
+    /* Ensure a minimum width */
+    min-height: 32px;
+    /* Ensure a minimum height */
+    max-width: 64px;
+    /* Ensure the SVG scales */
+    max-height: 64px;
+    /* Ensure the SVG scales */
+    width: 100%;
+    /* Ensure the SVG scales */
+    height: 100%;
+    /* Ensure the SVG scales */
+    background-color: transparent;
+    /* Ensure no background color */
+    stroke: currentColor;
+    /* Use the current text color */
+}
+
+/* Set the SVG path fill color */
+#icon-picker-modal svg path {
+    fill: currentColor;
+    /* Use the current text color */
+}
+
+/* Hover state to change color */
+#icon-picker-modal svg:hover {
+    fill: #3b82f6;
+    /* Example hover color */
+}
+
+/* Make sure the grid is responsive */
+#icon-picker-modal .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    /* Ensure responsive columns */
+    gap: 1rem;
+}
+
+/* Modal background and grid behavior */
+#icon-picker-modal .grid {
+    max-height: 400px;
+    /* Set max height for the grid */
+    overflow-y: auto;
+    /* Enable vertical scrolling for icons if needed */
+}
+
+.icon-preview svg,
+.icon-preview img {
+    min-width: 16px;
+    /* Ensure a minimum width */
+    min-height: 16px;
+    /* Ensure a minimum height */
+    max-width: 32px;
+    /* Ensure the SVG scales */
+    max-height: 32px;
+    /* Ensure the SVG scales */
+    width: 100%;
+    /* Ensure the SVG scales */
+    height: 100%;
+    /* Ensure the SVG scales */
+    background-color: transparent;
+    /* Ensure no background color */
+    stroke: currentColor;
+    /* Use the current text color */
+}
+
+.icon-preview img {
+    stroke: none;
+    /* Use no stroke color */
+}
+
+.icon-preview svg path {
+    fill: currentColor;
+    /* Use the current text color */
+}
+
+/* Exempt the Heroicons set outline style from the fill color */
+.icon-preview svg.hero-icon-set.heroo-icon path {
+    fill: none;
+    /* Use no fill color */
+}
+
+/* Exempt the Heroicons set solid style from the stroke width */
+.icon-preview svg.hero-icon-set.heros-icon path {
+    stroke-width: 0px;
+    /* Use no stroke width */
+}
+
+/* Exempt the Octicon set solid style from the stroke width */
+.icon-preview svg.octi-icon-set.octis-icon path {
+    stroke-width: 0px;
+    /* Use no stroke width */
+}

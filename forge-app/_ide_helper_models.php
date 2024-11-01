@@ -601,9 +601,12 @@ namespace App\Models\Issues{
  * @package App\Models\Issues\Issues
  * @property int $id
  * @property string $name
- * @property string|null $icon
+ * @property int|null $icon
  * @property string $color
  * @property int $is_default
+ * @property int|null $created_by
+ * @property int|null $updated_by
+ * @property int|null $deleted_by
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -615,12 +618,15 @@ namespace App\Models\Issues{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority whereColor($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority whereCreatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority whereDeletedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority whereIcon($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority whereIsDefault($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority whereUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority withoutTrashed()
  */
@@ -752,9 +758,15 @@ namespace App\Models\Issues{
  * @method static \Illuminate\Database\Query\Builder|IssueType withoutTrashed()
  * @mixin \Eloquent
  * @property string|null $description
+ * @property int|null $created_by
+ * @property int|null $updated_by
+ * @property int|null $deleted_by
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssueType default()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssueType notDefault()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IssueType whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IssueType whereDeletedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssueType whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IssueType whereUpdatedBy($value)
  */
 	class IssueType extends \Eloquent {}
 }

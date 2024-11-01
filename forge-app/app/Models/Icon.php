@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Illuminate\Filesystem\Filesystem;
 use App\Services\SvgSanitizerService;
 use Clockwork\Request\Log;
 use Illuminate\Validation\ValidationException;
@@ -19,6 +20,10 @@ class Icon extends Model
 {
     use HasFactory;
     use IsPermissable;
+
+    public $storagePath;
+
+    private $filesystem;
 
     protected $fillable = [
         'name',
@@ -31,6 +36,21 @@ class Icon extends Model
         'svg_file_path',
         'is_builtin',
     ];
+
+    /**
+     * Constructor
+     *
+     * @param array $attributes
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        // Initialize the filesystem
+        $this->filesystem = new Filesystem();
+        // Initialize the storage path
+        $this->storagePath = storage_path('app/public/icons');
+    }
 
     /**
      * Boot the model.
@@ -201,14 +221,16 @@ class Icon extends Model
      */
     public static function ensureUniqueFileName(string $directory, string $fileName, string $extension)
     {
-        $counter = 1;
-        $originalFileName = $fileName;
+        $counter = 1; // Start the counter at 1
+        $baseFileName = \pathinfo($fileName, \PATHINFO_BASENAME); // Get the base file name without the extension
 
-        while (Storage::disk('public')->exists("{$directory}/{$fileName}.{$extension}")) {
-            $fileName = "{$originalFileName}-{$counter}";
-            $counter++;
+        // Loop until a unique file name is found
+        while (Storage::exists("{$directory}/{$fileName}")) {
+            $fileName = "{$baseFileName}-{$counter}"; // Append the counter to the base file name
+            $counter++; // Increment the counter
         }
 
+        // Return the unique file name with the extension re-appended
         return "{$fileName}.{$extension}";
     }
 
@@ -284,7 +306,7 @@ class Icon extends Model
      */
     public function save(array $options = [])
     {
-        $directory = null;
+        $directory = $this->storagePath;
         $filename = null;
         $temporaryFile = null;
 
@@ -293,34 +315,17 @@ class Icon extends Model
 
         // If a file was uploaded, set the temporary file path
         if ($this->svg_file_path) {
-            $temporaryFile = public_path($this->svg_file_path);
+            $temporaryFile = $this->svg_file_path;
         }
 
         // If the icon is built-in, set the directory based on the type and style
         if ($this->is_builtin) {
-            // If the icon is built-in, ensure the type is set
-            $this->type = $this->type ?: 'custom';
-
-            // If the icon is built-in, ensure the style is set
-            $this->style = $this->style ?: 'regular';
-
-            $directory = "uploads/icons/{$this->type}/{$this->style}";
-            // Ensure the directory exists
-            if (!Storage::exists($directory)) {
-                Storage::makeDirectory($directory);
-            }
-
-            // If the icon is built-in, ensure the SVG code is empty
-            $this->svg_code = null;
-
-            // If the name already has a file extension, remove it
-            $filename = pathinfo($this->name, PATHINFO_FILENAME);
-
-            // If the icon is built-in, ensure the SVG file path is set
-            $this->svg_file_path = "{$directory}/{$filename}";
-
-            // Make sure the file path is unique
-            $this->svg_file_path = self::ensureUniqueFileName($directory, $this->name, 'svg');
+            // TODO: Implement the built-in icons save logic - though it's not necessary as built-in icons are not user-uploaded
+            // Append the builtin directory to the storage path
+            $directory = $directory . '/builtin/';
+        } else {
+            // If the icon is not built-in, append custom to the directory
+            $directory = $directory . '/custom/';
         }
         // If there is a file path, or custom svg code, set the directory based on the type and style, and ensure it exists
         if ($this->svg_file_path || $this->svg_code) {
@@ -329,7 +334,7 @@ class Icon extends Model
             // If the style is empty, set it to 'regular' as a default
             $this->style = $this->style ?: 'regular';
             // Establish the directory for the icon
-            $directory = "uploads/icons/{$this->type}/{$this->style}";
+            $directory = $directory . "{$this->type}/{$this->style}";
             // Ensure the directory exists
             if (!Storage::exists($directory)) {
                 Storage::makeDirectory($directory);
@@ -339,7 +344,7 @@ class Icon extends Model
         // If the directory is set, proceed to save the icon file
         if ($directory) {
             // Set the file name based on the provided name of the icon, making it URL-friendly and unique
-            $filename = Str::slug(pathinfo($this->name, PATHINFO_FILENAME)); // Example: "icon-name.svg"
+            $filename = Str::slug(pathinfo($this->name, \PATHINFO_BASENAME)); // Example: "icon-name.svg"
             // Set the file path based on the directory and file name
             $filePath = "{$directory}/{$filename}";
 
@@ -354,8 +359,8 @@ class Icon extends Model
             // Was the icon uploaded as a file?
             if ($this->svg_file_path) {
                 // Move the uploaded file to the storage directory and rename it
-                Storage::disk('public')->move($this->svg_file_path, $filePath);
-            } else {
+                Storage::disk('local')->move($this->svg_file_path, $filePath);
+            } elseif ($this->svg_code) {
                 // If the icon was uploaded as SVG code, save the code to the file
                 // Sanitize the SVG code before saving
                 $sanitizer = app(SvgSanitizerService::class);
@@ -369,7 +374,7 @@ class Icon extends Model
                 }
 
                 // Save the sanitized SVG code to the file
-                Storage::disk('public')->put($filePath, $sanitized);
+                Storage::disk('local')->put($filePath, $sanitized);
             }
 
             // Save the file path in the database, without any preceding slashes
@@ -388,43 +393,74 @@ class Icon extends Model
     /**
      * Save uploaded file to the appropriate directory.
      *
-     * @param \Illuminate\Http\UploadedFile $uploadedFile
-     * @param string $type
-     * @param string $style
-     * @return string
+     * @param \Illuminate\Http\UploadedFile|string $uploadedFile - The uploaded file or SVG code.
+     * @param string $type - The icon type, e.g., "fontawesome", "heroicon", "octicons", etc.
+     * @param string $style - The icon style, e.g., "brands", "solid", "regular", etc.
+     * @param string $name - The name of the icon.
+     * @return string|null
+     * @throws \Exception
      */
-    public static function saveIconFile($uploadedFile, string $type, string $style)
+    public static function saveIconFile(\Illuminate\Http\UploadedFile|string $uploadedFile, string $type, string $style, string $name)
     {
-        $directory = "icons/{$type}/{$style}";
-        $fileName = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
-        $extension = $uploadedFile->getClientOriginalExtension();
-
-        // Ensure the file name is unique within the directory
-        $uniqueFileName = self::ensureUniqueFileName($directory, $fileName, $extension);
-
-        // Validate the file as an SVG file, check for errors, etc.
-        $uploadedFile->validate([
-            'file' => 'required|file|mimes:svg',
-        ]);
-
-        // Sanitize the SVG code before saving
+        // Initialize the SVG Sanitizer service
         $sanitizer = app(SvgSanitizerService::class);
 
-        // Read the file contents and sanitize the SVG code
-        $svgCode = File::get($uploadedFile->getRealPath());
+        // Set the directory based on the type and style
+        $directory = "public/icons/custom/{$type}/{$style}";
 
-        // Sanitize the SVG code before saving
-        $sanitized = $sanitizer->sanitize($svgCode);
+        // Is the uploaded file an instance of an uploaded file or a string of SVG code?
+        if (is_string($uploadedFile)) {
+            // If the uploaded file is not an instance of an uploaded file, then it should be a string of svg code
+            $svgCode = $uploadedFile;
 
-        if ($sanitized === null) {
-            // Return an error message if the SVG is invalid
-            return 'Invalid SVG code.';
+            // Sanitize the SVG code before saving
+            $sanitized = $sanitizer->sanitize($svgCode);
+
+            if ($sanitized === null) {
+                // Return an error message if the SVG is invalid
+                throw new \Exception('Invalid SVG code.');
+            }
+
+            // Make an SVG file based on the SVG code, with a unique file name based on the name of the icon
+            $uniqueFileName = self::ensureUniqueFileName($directory, Str::slug($name), 'svg'); // Set the file name
+
+            // Save the sanitized SVG code to the file
+            try {
+                Storage::disk('local')->put("{$directory}/{$uniqueFileName}", $sanitized);
+            } catch (\Exception $e) {
+                // Return an error message if the SVG code could not be saved
+                throw new \Exception('Could not save the SVG code.');
+            }
+
+            return "{$directory}/{$uniqueFileName}";
+
+        } elseif ($uploadedFile instanceof \Illuminate\Http\UploadedFile) {
+            $fileName = pathinfo($uploadedFile->getClientOriginalName(), \PATHINFO_BASENAME);
+            $extension = $uploadedFile->getClientOriginalExtension();
+
+            // Ensure the file name is unique within the directory
+            $uniqueFileName = self::ensureUniqueFileName($directory, $fileName, $extension);
+
+            // Validate the file as an SVG file, check for errors, etc.
+            $uploadedFile->validate([
+                'file' => 'required|file|mimes:svg',
+            ]);
+
+            // Read the file contents and sanitize the SVG code
+            $svgCode = File::get($uploadedFile->getRealPath());
+
+            // Sanitize the SVG code before saving
+            $sanitized = $sanitizer->sanitize($svgCode);
+
+            if ($sanitized === null) {
+                // Return an error message if the SVG is invalid
+                throw new \Exception('Invalid SVG code.');
+            }
+
+            return "{$directory}/{$uniqueFileName}";
         }
 
-        // Save the sanitized SVG code to the file
-        Storage::disk('public')->put("{$directory}/{$uniqueFileName}", $sanitized);
-
-        return "{$directory}/{$uniqueFileName}";
+        return null;
     }
 
     /**
@@ -623,7 +659,7 @@ class Icon extends Model
         $sets = $bladeIcons['sets'] ?? [];
 
         // Get the prefixes from the sets, and pair them with the set name/key
-        $prefixes = collect($sets)->mapWithKeys(fn ($set, $key) => [$key => $set['prefix']]);
+        $prefixes = collect($sets)->mapWithKeys(fn($set, $key) => [$key => $set['prefix']]);
 
         // The prefixes are stored on the set name, which is a combination of the type and style (e.g., "fontawesome-solid")
         $setName = "{$type}-{$style}";
@@ -652,7 +688,7 @@ class Icon extends Model
         $sets = $bladeIcons['sets'] ?? [];
 
         // Get the classes from the sets, and pair them with the set name/key
-        $classes = collect($sets)->mapWithKeys(fn ($set, $key) => [$key => $set['class']]);
+        $classes = collect($sets)->mapWithKeys(fn($set, $key) => [$key => $set['class']]);
 
         // The classes are stored on the set name, which is a combination of the type and style (e.g., "fontawesome-solid")
         $setName = "{$type}-{$style}";
@@ -663,5 +699,4 @@ class Icon extends Model
         // Return the class for the icon
         return $class;
     }
-
 }

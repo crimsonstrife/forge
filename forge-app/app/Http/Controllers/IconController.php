@@ -7,11 +7,17 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Services\SvgSanitizerService;
 
 class IconController extends Controller
 {
     public function store(Request $request)
     {
+        // Sanitize the SVG code before saving
+        $sanitizer = app(SvgSanitizerService::class);
+        $filePath = null;
+        $code = null;
+
         // Validate the request
         $request->validate([
             'icon' => 'required|file|mimes:svg',
@@ -35,8 +41,19 @@ class IconController extends Controller
             return redirect()->back()->with('error', 'You do not have permission to upload icons.');
         }
 
-        // Save the uploaded file using the Icon model method
-        $filePath = Icon::saveIconFile($request->file('icon'), $request->input('type'), $request->input('style'));
+        // If the request has an svg_file_path, save it
+        if ($request->has('svg_file_path')) {
+            // Save the uploaded file using the Icon model method
+            $filePath = Icon::saveIconFile($request->file('icon'), $request->input('type'), $request->input('style'), $request->input('name'));
+        } else {
+            // Save the SVG code in the database
+            $filePath = Icon::saveIconFile($request->input('svg_code'), $request->input('type'), $request->input('style'), $request->input('name'));
+        }
+
+        // Sanitize the svg_code if it is present
+        if ($request->has('svg_code')) {
+            $code = $sanitizer->sanitize($request->input('svg_code'));
+        }
 
         // Save the icon details in the database
         Icon::create([
@@ -44,8 +61,8 @@ class IconController extends Controller
             'type' => $request->input('type'),
             'style' => $request->input('style'),
             // Save the file path in the database, without any preceding slashes
-            'svg_file_path' => ltrim($filePath, '/'),
-            'svg_code' => null,
+            'svg_file_path' => ltrim($filePath, '/') ?? null,
+            'svg_code' => $code ?? null,
         ]);
 
         return redirect()->back()->with('success', 'Icon uploaded successfully.');
