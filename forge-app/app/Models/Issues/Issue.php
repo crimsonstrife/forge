@@ -140,7 +140,9 @@ class Issue extends Model implements HasMedia
      */
     public function project(): BelongsTo
     {
-        return $this->belongsTo(Project::class, 'project_id')->withTrashed();
+        return $this->belongsTo(Project::class, 'project_id', 'id')->with(function ($query) {
+            $query->withTrashed();
+        });
     }
 
     /**
@@ -149,7 +151,9 @@ class Issue extends Model implements HasMedia
      */
     public function type(): BelongsTo
     {
-        return $this->belongsTo(IssueType::class, 'issue_id')->withTrashed();
+        return $this->belongsTo(IssueType::class, 'issue_id', 'id')->with(function ($query) {
+            $query->withTrashed();
+        });
     }
 
     /**
@@ -158,7 +162,9 @@ class Issue extends Model implements HasMedia
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(IssueStatus::class, 'issue_id')->withTrashed();
+        return $this->belongsTo(IssueStatus::class, 'issue_id', 'id')->with(function ($query) {
+            $query->withTrashed();
+        });
     }
 
     /**
@@ -167,7 +173,9 @@ class Issue extends Model implements HasMedia
      */
     public function priority(): BelongsTo
     {
-        return $this->belongsTo(IssuePriority::class, 'issue_id')->withTrashed();
+        return $this->belongsTo(IssuePriority::class, 'issue_id', 'id')->with(function ($query) {
+            $query->withTrashed();
+        });
     }
 
     /**
@@ -176,7 +184,7 @@ class Issue extends Model implements HasMedia
      */
     public function epic(): BelongsTo
     {
-        return $this->belongsTo(Epic::class, 'epic_id');
+        return $this->belongsTo(Epic::class, 'epic_id', 'id');
     }
 
     /**
@@ -185,7 +193,7 @@ class Issue extends Model implements HasMedia
      */
     public function sprint(): BelongsTo
     {
-        return $this->belongsTo(Sprint::class, 'sprint_id');
+        return $this->belongsTo(Sprint::class, 'sprint_id', 'id');
     }
 
     /**
@@ -194,7 +202,7 @@ class Issue extends Model implements HasMedia
      */
     public function activities(): HasMany
     {
-        return $this->hasMany(IssueActivity::class, 'issue_id');
+        return $this->hasMany(IssueActivity::class, 'issue_id', 'id');
     }
 
     /**
@@ -203,7 +211,7 @@ class Issue extends Model implements HasMedia
      */
     public function comments(): HasMany
     {
-        return $this->hasMany(Comment::class, 'issue_id');
+        return $this->hasMany(Comment::class, 'issue_id', 'id');
     }
 
     /**
@@ -221,7 +229,7 @@ class Issue extends Model implements HasMedia
      */
     public function tags(): HasMany
     {
-        return $this->hasMany(Tags::class, 'issue_id');
+        return $this->hasMany(Tags::class, 'issue_id', 'id');
     }
 
     /**

@@ -54,8 +54,45 @@ class IssueType extends Model
         'name',
         'color',
         'icon',
-        'is_default'
+        'is_default',
+        'description'
     ];
+
+    /**
+     * Boot the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Clear the cache when Issue Types are saved or deleted
+        static::saved(function () {
+            cache()->forget('issue_types.all');
+        });
+
+        // Clear the cache when Issue Types are saved or deleted
+        static::deleted(function () {
+            cache()->forget('issue_types.all');
+        });
+
+        static::saving(function ($model) {
+            $query = static::where('name', $model->name)
+                ->where('icon', $model->icon)
+                ->where('color', $model->color);
+
+            if ($model->exists) {
+                $query->where('id', '!=', $model->id);
+            }
+
+            if ($query->exists()) {
+                throw ValidationException::withMessages([
+                    'name' => 'Issue type with this name, icon, and color already exists, please make changes to avoid duplication.'
+                ]);
+            }
+        });
+    }
 
     /**
      * Relationship with the icon model.
@@ -75,5 +112,39 @@ class IssueType extends Model
     public static function getDefault()
     {
         return self::where('is_default', true)->first();
+    }
+
+    /**
+     * Get the issues associated with this issue type.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function issues(): HasMany
+    {
+        return $this->hasMany(Issue::class, 'issue_type_id', 'id')->with(function ($query) {
+            $query->withTrashed();
+        });
+    }
+
+    /**
+     * Scope a query to only include default issue priorities.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDefault($query)
+    {
+        return $query->where('is_default', true);
+    }
+
+    /**
+     * Scope a query to only include issue priorities that are not default.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeNotDefault($query)
+    {
+        return $query->where('is_default', false);
     }
 }
