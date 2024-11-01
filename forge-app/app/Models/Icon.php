@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use App\Traits\IsPermissable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use App\Services\SvgSanitizerService;
+use Clockwork\Request\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
@@ -38,12 +41,12 @@ class Icon extends Model
     {
         parent::boot();
 
-        // Clear the cache when icons are saved or deleted
+        // Clear the cache when Icons are saved or deleted
         static::saved(function () {
             cache()->forget('icons.all');
         });
 
-        // Clear the cache when icons are saved or deleted
+        // Clear the cache when Icons are saved or deleted
         static::deleted(function () {
             cache()->forget('icons.all');
         });
@@ -217,6 +220,17 @@ class Icon extends Model
      */
     public function beforeSave($record)
     {
+        // Get the authenticated user and check if they have the relevant permission.
+        $user = Auth::user();
+        // Create the permission name dynamically based on the model name
+        $permission = 'create-icon';
+
+        // Only proceed if the user has the necessary permission
+        if (!$user->can($permission)) {
+            Log::channel('single')->warning("User {$user->id} does not have permission to create icons.");
+            throw new \Exception('You do not have permission to create icons.');
+        }
+
         if ($record->is_builtin) {
             throw new \Exception('Built-in icons cannot be modified.');
         }

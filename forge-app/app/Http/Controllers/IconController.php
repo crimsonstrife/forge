@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Icon;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -10,11 +12,28 @@ class IconController extends Controller
 {
     public function store(Request $request)
     {
+        // Validate the request
         $request->validate([
             'icon' => 'required|file|mimes:svg',
             'type' => 'required|string',
             'style' => 'required|string',
         ]);
+
+        // Validate that the request has either a svg_code or a svg_file_path
+        if (!$request->has('svg_code') && !$request->hasFile('icon')) {
+            return redirect()->back()->with('error', 'Please provide an icon file or SVG code.');
+        }
+
+        // Get the authenticated user and check if they have the relevant permission.
+        $user = Auth::user();
+        // Create the permission name dynamically based on the model name
+        $permission = 'create-icon';
+
+        // Only proceed if the user has the necessary permission
+        if (!$user->can($permission)) {
+            Log::warning("User with ID {$user->id} attempted to upload an icon without the necessary permission: {$permission}");
+            return redirect()->back()->with('error', 'You do not have permission to upload icons.');
+        }
 
         // Save the uploaded file using the Icon model method
         $filePath = Icon::saveIconFile($request->file('icon'), $request->input('type'), $request->input('style'));

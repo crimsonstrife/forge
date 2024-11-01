@@ -30,7 +30,5 @@ class IconServiceProvider extends ServiceProvider
 
         // Load the built-in icon sets from the configuration file
         $this->builtInSets = config('blade-icons.sets');
-
-
     }
 }
