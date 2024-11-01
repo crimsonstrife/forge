@@ -1,6 +1,8 @@
 <?php
-
+    const CUSTOM_ICONS_CLASSES = 'custom-icon-set custom-icon';
 return [
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -1109,7 +1111,7 @@ return [
             |
             */
 
-            'path' => 'public/storage/uploads/icons/custom/solid',
+            'path' => 'storage/app/public/uploads/icons/custom/solid',
 
             /*
             |-----------------------------------------------------------------
@@ -1159,7 +1161,7 @@ return [
             |
             */
 
-            'class' => 'custom-icon-set custom-icon',
+            'class' => 'CUSTOM_ICONS_CLASSES',
 
             /*
             |-----------------------------------------------------------------
@@ -1192,7 +1194,7 @@ return [
             |
             */
 
-            'path' => 'public/storage/uploads/icons/custom/regular',
+            'path' => 'storage/app/public/uploads/icons/custom/regular',
 
             /*
             |-----------------------------------------------------------------
@@ -1242,7 +1244,7 @@ return [
             |
             */
 
-            'class' => 'custom-icon-set custom-icon',
+            'class' => 'CUSTOM_ICONS_CLASSES',
 
             /*
             |-----------------------------------------------------------------
@@ -1275,7 +1277,7 @@ return [
             |
             */
 
-            'path' => 'public/storage/uploads/icons/custom/brand',
+            'path' => 'storage/app/public/uploads/icons/custom/brand',
 
             /*
             |-----------------------------------------------------------------
@@ -1325,7 +1327,7 @@ return [
             |
             */
 
-            'class' => 'custom-icon-set custom-icon',
+            'class' => 'CUSTOM_ICONS_CLASSES',
 
             /*
             |-----------------------------------------------------------------
@@ -1358,7 +1360,7 @@ return [
             |
             */
 
-            'path' => 'public/storage/uploads/icons/custom/duotone',
+            'path' => 'storage/app/public/uploads/icons/custom/duotone',
 
             /*
             |-----------------------------------------------------------------
@@ -1408,7 +1410,7 @@ return [
             |
             */
 
-            'class' => 'custom-icon-set custom-icon',
+            'class' => 'CUSTOM_ICONS_CLASSES',
 
             /*
             |-----------------------------------------------------------------
@@ -1441,7 +1443,7 @@ return [
             |
             */
 
-            'path' => 'public/storage/uploads/icons/custom/thin',
+            'path' => 'storage/app/public/uploads/icons/custom/thin',
 
             /*
             |-----------------------------------------------------------------
@@ -1491,7 +1493,7 @@ return [
             |
             */
 
-            'class' => 'custom-icon-set custom-icon',
+            'class' => 'CUSTOM_ICONS_CLASSES',
 
             /*
             |-----------------------------------------------------------------
@@ -1524,7 +1526,7 @@ return [
             |
             */
 
-            'path' => 'public/storage/uploads/icons/custom/light',
+            'path' => 'storage/app/public/uploads/icons/custom/light',
 
             /*
             |-----------------------------------------------------------------
@@ -1574,7 +1576,7 @@ return [
             |
             */
 
-            'class' => 'custom-icon-set custom-icon',
+            'class' => 'CUSTOM_ICONS_CLASSES',
 
             /*
             |-----------------------------------------------------------------
@@ -1607,7 +1609,7 @@ return [
             |
             */
 
-            'path' => 'public/storage/uploads/icons/custom/outline',
+            'path' => 'storage/app/public/uploads/icons/custom/outline',
 
             /*
             |-----------------------------------------------------------------
@@ -1657,7 +1659,7 @@ return [
             |
             */
 
-            'class' => 'custom-icon-set custom-icon',
+            'class' => 'CUSTOM_ICONS_CLASSES',
 
             /*
             |-----------------------------------------------------------------
@@ -1690,7 +1692,7 @@ return [
             |
             */
 
-            'path' => 'public/storage/uploads/icons/custom/custom',
+            'path' => 'storage/app/public/uploads/icons/custom/custom',
 
             /*
             |-----------------------------------------------------------------
@@ -1740,7 +1742,7 @@ return [
             |
             */
 
-            'class' => 'custom-icon-set custom-icon',
+            'class' => 'CUSTOM_ICONS_CLASSES',
 
             /*
             |-----------------------------------------------------------------
