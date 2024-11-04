@@ -144,7 +144,7 @@ class IssueStatus extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public static function getProjectStatuses()
+    public static function getProjectIssueStatuses()
     {
         return self::where('project_id', auth()->user()->current_project_id)
             ->orderBy('order')
