@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\IsPermissable;
 use App\Models\Icon;
+use App\Models\PrioritySet;
 
 /**
  * Class IssuePriority
@@ -15,7 +16,7 @@ use App\Models\Icon;
  * This class represents the IssuePriority model in the application.
  * It extends the base Model class and uses the HasFactory and SoftDeletes traits.
  *
- * @package App\Models\Issues\Issues
+ * @package App\Models\Issues\IssuePriority
  */
 class IssuePriority extends Model
 {
@@ -31,6 +32,42 @@ class IssuePriority extends Model
     ];
 
     /**
+     * Boot the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Clear the cache when Issue Priorities are saved or deleted
+        static::saved(function () {
+            cache()->forget('issue_priorities.all');
+        });
+
+        // Clear the cache when Issue Priorities are saved or deleted
+        static::deleted(function () {
+            cache()->forget('issue_priorities.all');
+        });
+
+        static::saving(function ($model) {
+            $query = static::where('name', $model->name)
+                ->where('icon', $model->icon)
+                ->where('color', $model->color);
+
+            if ($model->exists) {
+                $query->where('id', '!=', $model->id);
+            }
+
+            if ($query->exists()) {
+                throw ValidationException::withMessages([
+                    'name' => 'Issue priority with this name, icon, and color already exists, please make changes to avoid duplication.'
+                ]);
+            }
+        });
+    }
+
+    /**
      * Relationship with the icon model.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -38,6 +75,16 @@ class IssuePriority extends Model
     public function icon()
     {
         return $this->belongsTo(Icon::class, 'icon', 'id');
+    }
+
+    /**
+     * Get the default issue type.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|IssueType
+     */
+    public static function getDefault()
+    {
+        return self::where('is_default', true)->first();
     }
 
     /**
@@ -50,6 +97,18 @@ class IssuePriority extends Model
         return $this->hasMany(Issue::class, 'issue_priority_id', 'id')->with(function ($query) {
             $query->withTrashed();
         });
+    }
+
+    /**
+     * Get the priority sets that this priority is associated with.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function prioritySets()
+    {
+        return $this->belongsToMany(PrioritySet::class)
+                    ->withPivot('order', 'is_default')
+                    ->orderBy('pivot_order');
     }
 
     /**

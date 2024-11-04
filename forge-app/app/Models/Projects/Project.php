@@ -18,6 +18,7 @@ use App\Models\Issues\Issue;
 use App\Models\Story;
 use App\Models\Epic;
 use App\Models\Sprint;
+use App\Models\PrioritySet as IssuePrioritySet;
 use App\Models\Projects\ProjectStatus;
 use App\Models\Projects\ProjectType;
 use App\Models\Projects\ProjectRepository;
@@ -81,7 +82,39 @@ class Project extends Model implements HasMedia
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(ProjectStatus::class, 'status_id', 'id')->withTrashed();
+        $relation = $this->belongsTo(ProjectStatus::class, 'status_id', 'id');
+        $relation->withDefault();
+        $relation->withTrashed();
+        return $relation;
+    }
+
+    /**
+     * Get the Priority Set of the Project
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function prioritySet()
+    {
+        return $this->belongsTo(PrioritySet::class);
+    }
+
+    /**
+     * Get the Priorities available to Issues of the Project
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function availablePriorities()
+    {
+        return $this->prioritySet ? $this->prioritySet->priorities() : collect();
+    }
+
+    /**
+     * Get the Default Priority for Issues of the Project
+     * Default Priority is the Priority that is set as the default in the Priority Set
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function defaultPriority()
+    {
+        return $this->prioritySet ? $this->prioritySet->defaultPriority() : null;
     }
 
     /**
