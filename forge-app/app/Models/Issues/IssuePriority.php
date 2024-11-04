@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\IsPermissable;
+use App\Models\Icon;
 
 /**
  * Class IssuePriority
@@ -28,6 +29,16 @@ class IssuePriority extends Model
         'icon',
         'is_default'
     ];
+
+    /**
+     * Relationship with the icon model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function icon()
+    {
+        return $this->belongsTo(Icon::class, 'icon', 'id');
+    }
 
     /**
      * Get the issues associated with this issue priority.

@@ -8,5 +8,11 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateIssuePriority extends CreateRecord
 {
+    protected static ?string $model = IssuePriority::class;
+
     protected static string $resource = IssuePriorityResource::class;
+
+    public $selectedIconId;
+
+    protected $listeners = ['iconUpdated' => 'updateIconPreview'];
 }

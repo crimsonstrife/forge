@@ -8,6 +8,8 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditIcon extends EditRecord
 {
+    protected static ?string $model = Icon::class;
+
     protected static string $resource = IconResource::class;
 
     protected function getHeaderActions(): array

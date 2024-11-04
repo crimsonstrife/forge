@@ -17,6 +17,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Clusters\Issues;
+use App\Forms\Components\IconPicker;
 
 class IssuePriorityResource extends Resource
 {
@@ -54,24 +55,67 @@ class IssuePriorityResource extends Resource
                     ->required()
                     ->label('Priority Color'),
 
-                Forms\Components\TextInput::make('icon')
+                /* Forms\Components\TextInput::make('icon')
                     ->required()
-                    ->label('Priority Icon (CSS class or URL)'),
+                    ->label('Type Icon'), */
+                IconPicker::make('icon')
+                    ->label('Select Icon')
+                    ->required()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state) {
+                        return <<<JS
+                            if (window.Livewire) {
+                                Livewire.emit('iconUpdated', {$state});
+                            }
+                        JS;
+                    }),
 
                 Forms\Components\Toggle::make('is_default')
                     ->label('Set as Default')
-                    ->default(false),
+                    ->reactive()
+                    ->helperText('If selected, this type will be the default for new issues globally.')
+                    ->afterStateUpdated(function ($state, callable $set, $get) {
+                        // When "is_default" is toggled to true, update other types to ensure only one default type
+                        if ($state) {
+                            IssueType::where('id', '<>', $get('id'))
+                                ->update(['is_default' => false]);
+                        }
+                    }),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            // Eager load the icon relationship to avoid N+1 query issues
+            ->query(static::getModel()::with('icon')) // Explicitly setting the query
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Priority Name'),
-                Tables\Columns\TextColumn::make('color')->label('Priority Color'),
-                Tables\Columns\IconColumn::make('is_default')->label('Default Priority')->boolean()->trueIcon('heroicon-o-check-circle')
-                ->falseIcon('heroicon-o-x-circle'),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Type Name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\ColorColumn::make('color')
+                    ->label('Color'),
+                Tables\Columns\ViewColumn::make('preview')
+                    ->label('Preview')
+                    ->view('components.icon-preview')
+                    ->extraAttributes(function ($record) {
+                        // Add dd() to inspect $record->icon
+                        dd($record->icon);
+                        return [
+                            'icon' => $record->icon()->first()?->id, // Retrieve the icon ID directly
+                            'selectedIconId' => $record->icon()->first()?->id, // Retrieve the icon ID directly
+                        ];
+                    })
+                    ->sortable(false)
+                    ->searchable(false),
+
+                Tables\Columns\IconColumn::make('is_default')
+                    ->label('Default')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->sortable(),
             ]);
     }
 

@@ -10,6 +10,10 @@ class EditIssueType extends EditRecord
 {
     protected static string $resource = IssueTypeResource::class;
 
+    public $selectedIconId;
+
+    protected $listeners = ['iconUpdated' => 'updateIconPreview'];
+
     protected function getHeaderActions(): array
     {
         return [
