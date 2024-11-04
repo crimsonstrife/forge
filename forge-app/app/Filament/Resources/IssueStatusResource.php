@@ -38,6 +38,10 @@ class IssueStatusResource extends Resource
                     ->required()
                     ->label('Status Name'),
 
+                Forms\Components\Textarea::make('description')
+                    ->label('Description')
+                    ->nullable(),
+
                 Forms\Components\ColorPicker::make('color')
                     ->required()
                     ->label('Status Color'),

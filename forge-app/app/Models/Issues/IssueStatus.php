@@ -27,6 +27,7 @@ class IssueStatus extends Model
 
     protected $fillable = [
         'name',
+        'description',
         'color',
         'is_default',
         'order',
@@ -41,6 +42,16 @@ class IssueStatus extends Model
     public static function boot()
     {
         parent::boot();
+
+        // Clear the cache when Issue Statuses are saved or deleted
+        static::saved(function () {
+            cache()->forget('issue_statuses.all');
+        });
+
+        // Clear the cache when Issue Statuses are saved or deleted
+        static::deleted(function () {
+            cache()->forget('issue_statuses.all');
+        });
 
         /**
          * Event handler for the "saved" event of the IssueStatus model.
@@ -102,5 +113,41 @@ class IssueStatus extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
+
+    /**
+     * Get the global default issue status. i.e. a status marked as default but not associated with any project.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|IssueStatus
+     */
+    public static function getGlobalDefault()
+    {
+        return self::where('is_default', true)
+            ->whereNull('project_id')
+            ->first();
+    }
+
+    /**
+     * Get the default issue status for the project.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|IssueStatus
+     */
+    public static function getDefault()
+    {
+        return self::where('is_default', true)
+            ->where('project_id', auth()->user()->current_project_id)
+            ->first();
+    }
+
+    /**
+     * Get the issue statuses associated with the project.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function getProjectStatuses()
+    {
+        return self::where('project_id', auth()->user()->current_project_id)
+            ->orderBy('order')
+            ->get();
     }
 }
