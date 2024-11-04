@@ -60,9 +60,6 @@ class IssueTypeResource extends Resource
                     ->required()
                     ->label('Type Color'),
 
-                /* Forms\Components\TextInput::make('icon')
-                    ->required()
-                    ->label('Type Icon'), */
                 IconPicker::make('icon')
                     ->label('Select Icon')
                     ->required()

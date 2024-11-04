@@ -55,9 +55,6 @@ class IssuePriorityResource extends Resource
                     ->required()
                     ->label('Priority Color'),
 
-                /* Forms\Components\TextInput::make('icon')
-                    ->required()
-                    ->label('Type Icon'), */
                 IconPicker::make('icon')
                     ->label('Select Icon')
                     ->required()
