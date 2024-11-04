@@ -74,5 +74,8 @@ class PermissionGroupSeeder extends Seeder
             // Free memory after each chunk
             gc_collect_cycles();
         }
+
+        // Free memory after all groups are created
+        gc_collect_cycles();
     }
 }
