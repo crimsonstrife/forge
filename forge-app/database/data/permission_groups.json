@@ -33,7 +33,8 @@
                 "Tags Management",
                 "Team Management",
                 "Team Member Management",
-                "Icon Management"
+                "Icon Management",
+                "Priority Set Management"
             ],
             "permissions": [
                 "manage-settings",
