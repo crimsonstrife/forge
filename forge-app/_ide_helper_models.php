@@ -598,10 +598,10 @@ namespace App\Models\Issues{
  * This class represents the IssuePriority model in the application.
  * It extends the base Model class and uses the HasFactory and SoftDeletes traits.
  *
- * @package App\Models\Issues\Issues
+ * @package App\Models\Issues\IssuePriority
  * @property int $id
  * @property string $name
- * @property int|null $icon
+ * @property \App\Models\Icon|null $icon
  * @property string $color
  * @property int $is_default
  * @property int|null $created_by
@@ -610,6 +610,8 @@ namespace App\Models\Issues{
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PrioritySet> $prioritySets
+ * @property-read int|null $priority_sets_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority default()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssuePriority newQuery()
@@ -664,8 +666,13 @@ namespace App\Models\Issues{
 
 namespace App\Models\Issues{
 /**
+ * Class IssueStatus
  * The IssueStatus model represents the status of an issue in a project.
+ * 
+ * This class extends the base Model class and uses the HasFactory and SoftDeletes traits.
+ * It also uses the IsPermissable trait to determine if the current user has permission to perform certain actions.
  *
+ * @package App\Models\Issues\IssueStatus
  * @property int $id
  * @property string $name
  * @property string $color
@@ -676,8 +683,6 @@ namespace App\Models\Issues{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int $order
  * @property int|null $project_id
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Issues\Issue> $issues
- * @property-read int|null $issues_count
  * @property-read \App\Models\Projects\Project|null $project
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssueStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|IssueStatus newQuery()
@@ -731,7 +736,7 @@ namespace App\Models\Issues{
  * This class represents the IssueType model in the application.
  * It extends the base Model class and uses the HasFactory and SoftDeletes traits.
  *
- * @package App\Models
+ * @package App\Models\Issues\IssueType
  * @property int $id
  * @property string $name
  * @property string $color
@@ -834,6 +839,42 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalAccessToken whereUpdatedAt($value)
  */
 	class PersonalAccessToken extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $name
+ * @property int|null $created_by
+ * @property int|null $updated_by
+ * @property int|null $deleted_by
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Issues\IssuePriority> $issuePriorities
+ * @property-read int|null $issue_priorities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Issues\IssuePriority> $priorities
+ * @property-read int|null $priorities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Projects\Project> $projects
+ * @property-read int|null $projects_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet whereDeletedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PrioritySet withoutTrashed()
+ */
+	class PrioritySet extends \Eloquent {}
 }
 
 namespace App\Models\Projects{
