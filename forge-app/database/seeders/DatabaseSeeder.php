@@ -38,5 +38,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         //Seed the icons
         $this->call(IconSeeder::class);
+        //Seed the Issue Seeder Group
+        $this->call(IssueRelatedSeederGroup::class); // Contains seeders related to Issue models.
     }
 }
