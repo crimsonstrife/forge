@@ -30,7 +30,7 @@ class ProjectStatus extends Model
         'description'
     ];
 
-        /**
+    /**
      * Boot the model.
      *
      * @return void
