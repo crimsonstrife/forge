@@ -17,7 +17,7 @@ use App\Traits\IsPermissable;
  * This class represents the IssueType model in the application.
  * It extends the base Model class and uses the HasFactory and SoftDeletes traits.
  *
- * @package App\Models
+ * @package App\Models\Issues\IssueType
  * @property int $id
  * @property string $name
  * @property string $color
