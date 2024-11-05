@@ -2,6 +2,7 @@
 
 namespace App\Utilities;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
 
 use function Laravel\Prompts\info;
@@ -165,5 +166,77 @@ class DynamicModelUtility extends Utility
 
         //return the formatted name
         return $model;
+    }
+
+    public static function getModelId(string $modelName, mixed $recordName): int|null
+    {
+        $model = self::getModelByName($modelName);
+
+        if (!self::isValidModel($model)) {
+            return null;
+        }
+
+        $record = $model::where('name', $recordName)->first();
+
+        return $record ? $record->id : null;
+    }
+
+    /**
+     * Check if a model is valid.
+     *
+     * @param Model|null $model
+     * @return bool
+     */
+    public static function isValidModel(?Model $model): bool
+    {
+        return $model instanceof Model && property_exists($model, 'name');
+    }
+
+    /**
+     * Retrieves the model instance by its name.
+     *
+     * @param string $modelName The name of the model to retrieve.
+     * @return Model|null The model instance if found, or null if not found.
+     */
+    public static function getModelByName(string $modelName): Model|null
+    {
+        //set the path to the models directory
+        $path = app_path('Models');
+
+        //get all files in the models directory and subdirectories
+        $files = File::allFiles($path);
+
+        //Find the Model file by the Model Name
+        foreach ($files as $file) {
+            //get the model class
+            $class = $file->getBasename('.php');
+
+            //get the path to the file
+            $filePath = $file->getPathname();
+
+            //get the namespace of the file
+            $namespace = self::getNamespaceFromFile($filePath);
+
+            //add the namespace to the class name
+            $class = $namespace . '\\' . $class;
+
+            //Check if the class exists
+            if (!class_exists($class)) {
+                //output an error message and continue to the next class
+                warning('Class ' . $class . ' does not exist');
+
+                //continue to the next class
+                continue;
+            }
+
+            //Check if the class is the Model we are looking for
+            if ($class === $modelName) {
+                //return the Model object
+                return new $class;
+            }
+        }
+
+        //return null if the Model was not found
+        return null;
     }
 }
