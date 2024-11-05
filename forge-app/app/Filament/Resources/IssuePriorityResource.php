@@ -19,6 +19,34 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Clusters\Issues;
 use App\Forms\Components\IconPicker;
 
+/**
+ * Class IssuePriorityResource
+ *
+ * Provides functionality for managing issue priorities within a system.
+ *
+ * Properties:
+ * - $model: The associated model class for issue priorities.
+ * - $navigationIcon: The icon used for navigation in non-active state.
+ * - $activeNavigationIcon: The icon used for navigation in active state.
+ * - $navigationGroup: The navigation group to which this resource belongs.
+ * - $cluster: The cluster to which this resource is associated.
+ * - $selectedIconId: Stores the ID of the currently selected icon.
+ * - $listeners: List of event listeners for handling custom events.
+ *
+ * Methods:
+ * - updateIconPreview: Updates the selected icon preview based on given icon ID.
+ * - form: Defines the form structure for creating or editing issue priorities.
+ * - table: Defines the table structure for displaying issue priorities.
+ * - getRelations: Retrieves related resources.
+ * - getPages: Provides routes for various pages related to issue priorities.
+ * - canAccess: Determines if the user has access to the resource.
+ * - canViewAny: Checks if the user can view any instances of the resource.
+ * - canView: Checks if the user can view a specific instance of the resource.
+ * - canCreate: Checks if the user can create a new instance of the resource.
+ * - canEdit: Checks if the user can edit a specific instance of the resource.
+ * - canUpdate: Checks if the user can update a specific instance of the resource.
+ * - canDelete: Checks if the user can delete a specific instance of the resource.
+ */
 class IssuePriorityResource extends Resource
 {
     protected static ?string $model = IssuePriority::class;

@@ -18,6 +18,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Clusters\Projects;
 
+/**
+ * ProjectStatusResource extends the Resource class, representing the status of a project within a project management context.
+ * It provides methods to define the form schema, table columns, and access permissions related to project statuses.
+ */
 class ProjectStatusResource extends Resource
 {
     protected static ?string $model = ProjectStatus::class;

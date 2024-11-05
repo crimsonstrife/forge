@@ -22,6 +22,13 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use App\Filament\Clusters\Security;
 
+/**
+ * Class PermissionSetResource
+ *
+ * This class defines the resource for managing permission sets.
+ * It includes methods for defining the form schema, table columns,
+ * and various permission checks for CRUD operations.
+ */
 class PermissionSetResource extends Resource
 {
     protected static ?string $model = PermissionSet::class;

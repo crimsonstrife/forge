@@ -18,6 +18,15 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Clusters\Projects;
 
+/**
+ * Class ProjectTypeResource
+ *
+ * This class represents the resource configuration and behavior related to the ProjectType model.
+ * It defines how the form and table for ProjectType are constructed, as well as the permissions
+ * required for various actions on the ProjectType records.
+ *
+ * The class extends the core functionality from the Resource base class.
+ */
 class ProjectTypeResource extends Resource
 {
     protected static ?string $model = ProjectType::class;

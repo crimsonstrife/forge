@@ -8,6 +8,13 @@ use App\Utilities\DynamicModelUtility as ModelUtility;
 use Spatie\Permission\Models\Permission;
 use App\Models\Auth\PermissionRegistrar;
 
+/**
+ * Class PermissionSeeder
+ *
+ * The PermissionSeeder class is responsible for seeding the database with various types of permissions.
+ * This includes basic, CRUD, advanced, and special permissions. The class ensures that permissions
+ * are created only if they do not already exist, and it handles the caching of permissions as well.
+ */
 class PermissionSeeder extends Seeder
 {
     use WithoutModelEvents;

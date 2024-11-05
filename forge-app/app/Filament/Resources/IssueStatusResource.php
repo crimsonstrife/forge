@@ -18,6 +18,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Clusters\Issues;
 
+/**
+ * IssueStatusResource handles operations and UI configuration for the IssueStatus model.
+ * It defines how the form and table for IssueStatus should be structured,
+ * the relations, and the pages for creating, editing, and listing IssueStatus records.
+ */
 class IssueStatusResource extends Resource
 {
     protected static ?string $model = IssueStatus::class;

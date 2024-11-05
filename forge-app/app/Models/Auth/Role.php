@@ -15,8 +15,35 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Traits\RefreshesPermissionCache;
 
 /**
- * @property ?\Illuminate\Support\Carbon $created_at
- * @property ?\Illuminate\Support\Carbon $updated_at
+ * Class Role
+ *
+ * Extends the base role functionality and implements additional contract methods.
+ * Utilizes various traits to enhance permission management and caching.
+ *
+ * Traits:
+ * - IsPermissable
+ * - HasAdvancedPermissions
+ * - RefreshesPermissionCache
+ *
+ * Protected Properties:
+ * - $fillable: Defines the fillable attributes for the model.
+ * - $guarded: Specifies attributes that are not mass assignable.
+ *
+ * Methods:
+ * - boot(): Static method to prevent deletion of protected roles.
+ * - __construct(): Constructor to initialize the role with optional attributes.
+ * - create(): Static method to create a new role; throws RoleAlreadyExists if the role exists.
+ * - permissions(): Defines a many-to-many relationship with Permission class.
+ * - permissionSets(): Defines a many-to-many relationship with PermissionSet class.
+ * - permissionGroups(): Defines a many-to-many relationship with PermissionGroup class.
+ * - users(): Defines a polymorphic many-to-many relationship with User model associated with the guard.
+ * - findByName(): Static method to find a role by name and guard name; throws RoleDoesNotExist if not found.
+ * - findById(): Static method to find a role by ID and optionally guard name; throws RoleDoesNotExist if not found.
+ * - findOrCreate(): Static method to find a role or create it if it does not exist.
+ * - findByParam(): Protected static method to find a role based on an array of parameters.
+ * - hasDirectPermission(): Method to check if the role has a specific permission directly.
+ * - hasPermissionThroughSet(): Method to check if the role has a specific permission through a permission set.
+ * - hasPermissionThroughGroup(): Method to check if the role has a specific permission through a permission group.
  */
 class Role extends SpatieRole implements RoleContract
 {

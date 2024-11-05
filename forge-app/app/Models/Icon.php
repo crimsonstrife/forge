@@ -16,6 +16,11 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
 
+/**
+ * Icon class represents an icon stored in the system.
+ * This class provides methods for managing icons,
+ * including validation, caching, and fetching icon-related data.
+ */
 class Icon extends Model
 {
     use HasFactory;

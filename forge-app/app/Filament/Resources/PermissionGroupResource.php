@@ -23,6 +23,12 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use App\Filament\Clusters\Security;
 
+/**
+ * Class PermissionGroupResource
+ *
+ * Represents a resource for managing permission groups. Permission groups
+ * are collections of permissions that can be assigned to users or roles.
+ */
 class PermissionGroupResource extends Resource
 {
     protected static ?string $model = PermissionGroup::class;

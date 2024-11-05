@@ -27,7 +27,12 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\Rule;
 use Illuminate\Filesystem\Filesystem;
 
-/** @package App\Filament\Resources */
+/**
+ * Class IconResource responsible for managing icon resources.
+ *
+ * This class extends from the base Resource class and provides configurations
+ * and form definitions for managing icons within the application.
+ */
 class IconResource extends Resource
 {
     protected static ?string $model = Icon::class;

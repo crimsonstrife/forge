@@ -10,6 +10,10 @@ use App\Models\Auth\PermissionSet;
 use App\Models\Auth\PermissionGroup;
 use App\Models\Auth\Role;
 
+/**
+ * A seeder class responsible for creating roles from a JSON file and
+ * associating permissions, permission sets, and permission groups with these roles.
+ */
 class RoleSeeder extends Seeder
 {
     use WithoutModelEvents;

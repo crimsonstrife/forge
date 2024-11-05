@@ -21,6 +21,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use App\Filament\Clusters\Security;
 
+/**
+ * UserResource class represents a resource for managing user-related functionality,
+ * such as displaying user information in tables, forms, and handling permissions
+ * for various user actions.
+ */
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;

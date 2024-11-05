@@ -21,6 +21,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use App\Filament\Clusters\Security;
 
+/**
+ * Class representing a permission resource with all necessary configurations
+ * for managing permissions within an application.
+ */
 class PermissionResource extends Resource
 {
     protected static ?string $model = Permission::class;

@@ -18,6 +18,44 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+/**
+ * Class PrioritySetResource
+ *
+ * Represents a resource for managing Priority Sets.
+ *
+ * Attributes:
+ * - Defines the associated model class.
+ * - Specifies the icons for navigation and active state.
+ * - Indicates the group to which this resource belongs in the navigation.
+ * - Specifies the cluster for the resource.
+ *
+ * Methods:
+ *
+ * form:
+ * Configures the form for creating or editing a Priority Set.
+ * Takes a Form instance and returns the configured form schema, which includes a text input for the Priority Set name and a repeater for issue priorities.
+ *
+ * table:
+ * Configures the table for displaying Priority Sets.
+ * Takes a Table instance and returns the configured table schema, specifying columns such as the Priority Set name and the count of issue priorities.
+ *
+ * getRelations:
+ * Returns an array of relations for the resource.
+ *
+ * getPages:
+ * Returns an array of pages for managing Priority Sets, defining routes for listing, creating, and editing Priority Sets.
+ *
+ * Permissions:
+ * - canAccess: Checks if the authenticated user has permission to access the resource.
+ * - canViewAny: Determines if the user can view any Priority Set records.
+ * - canView: Checks if the user can view a specific Priority Set record.
+ * - canCreate: Determines if the user can create a new Priority Set.
+ * - canEdit: Alias for canUpdate, checks if the user can edit a Priority Set.
+ * - canUpdate: Determines if the user can update a Priority Set.
+ * - canDelete: Checks if the user can delete a Priority Set.
+ * - canRestore: Determines if the user can restore a deleted Priority Set.
+ * - canForceDelete: Checks if the user can permanently delete a Priority Set.
+ */
 class PrioritySetResource extends Resource
 {
     protected static ?string $model = PrioritySet::class;

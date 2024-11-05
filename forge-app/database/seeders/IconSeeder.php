@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Log;
 
 use function storage_path;
 
+/**
+ * IconSeeder is responsible for seeding the database with icon sets.
+ * It initializes necessary services like SVG sanitizer and filesystem,
+ * processes icon sets, and handles inserting icons into the database in bulk.
+ */
 class IconSeeder extends Seeder
 {
     public $storagePath;

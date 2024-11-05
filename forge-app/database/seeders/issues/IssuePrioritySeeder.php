@@ -9,6 +9,11 @@ use App\Utilities\DynamicModelUtility as ModelUtility;
 use App\Models\Issues\IssuePriority;
 use App\Models\Icon;
 
+/**
+ * Class IssuePrioritySeeder
+ *
+ * A Seeder class responsible for populating the IssuePriorities table with initial data.
+ */
 class IssuePrioritySeeder extends Seeder
 {
     use WithoutModelEvents;

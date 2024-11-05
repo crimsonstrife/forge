@@ -7,6 +7,10 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
 use App\Models\Icon;
 
+/**
+ * Service provider class responsible for registering and bootstrapping
+ * services related to icon sets within the BladeUI Icons package.
+ */
 class IconServiceProvider extends ServiceProvider
 {
     // Built-in icon sets that are available in the application by default, pulled from the configuration file for BladeUI Icons

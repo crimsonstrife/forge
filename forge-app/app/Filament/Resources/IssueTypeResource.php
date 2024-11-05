@@ -19,6 +19,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Clusters\Issues;
 
+/**
+ * The IssueTypeResource class provides the necessary configuration and behavior
+ * for the Issue Type resource in the application. It extends from the base Resource
+ * class and configures the form schema, table columns, and permissions for the resource.
+ */
 class IssueTypeResource extends Resource
 {
     protected static ?string $model = IssueType::class;

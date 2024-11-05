@@ -24,6 +24,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use App\Filament\Clusters\Security;
 
+/**
+ * Manages the resources related to roles including their form, table, permissions, and navigation settings.
+ */
 class RoleResource extends Resource
 {
     protected static ?string $model = Role::class;

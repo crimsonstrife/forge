@@ -7,6 +7,9 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use Faker\Factory as Faker;
 
+/**
+ * UserSeeder class responsible for seeding the User model with necessary initial data.
+ */
 class UserSeeder extends Seeder
 {
     use WithoutModelEvents;

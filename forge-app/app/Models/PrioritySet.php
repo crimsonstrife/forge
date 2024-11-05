@@ -9,6 +9,11 @@ use App\Models\Issues\IssuePriority;
 use App\Models\Projects\Project;
 use App\Traits\IsPermissable;
 
+/**
+ * Represents a set of priorities that can be assigned to projects or tasks.
+ * Manages operations such as adding, removing, and reordering priorities,
+ * as well as setting the default priority.
+ */
 class PrioritySet extends Model
 {
     use HasFactory;

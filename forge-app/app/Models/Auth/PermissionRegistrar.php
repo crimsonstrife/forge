@@ -13,6 +13,9 @@ use Spatie\Permission\PermissionRegistrar as SpatiePermissionRegistrar;
 use Spatie\Permission\Models\Permission;
 use App\Models\Auth\Role as Role;
 
+/**
+ * This class handles the registration and caching of permissions and roles.
+ */
 class PermissionRegistrar extends SpatiePermissionRegistrar
 {
     protected Repository $cache;

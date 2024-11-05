@@ -18,6 +18,13 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+/**
+ * Class DiscordConfigResource
+ *
+ * This class represents the resource for managing Discord configuration settings.
+ * It extends the Resource class and provides methods for form schema, table configuration,
+ * defining relations, pages, and permissions related to Discord settings.
+ */
 class DiscordConfigResource extends Resource
 {
     protected static bool $shouldRegisterNavigation = true;
