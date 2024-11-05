@@ -4,6 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * Migration to create the user_has_permissions table.
+ *
+ * This migration defines the structure of the user_has_permissions table,
+ * which is used to manage the relationship between users and their permissions.
+ *
+ * @return void
+ */
 return new class () extends Migration {
     /**
      * Run the migrations.

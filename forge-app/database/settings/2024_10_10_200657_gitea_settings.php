@@ -2,6 +2,15 @@
 
 use Spatie\LaravelSettings\Migrations\SettingsMigration;
 
+
+/**
+ * Migration class for Gitea settings.
+ *
+ * This class extends the SettingsMigration class and is used to handle
+ * the migration of settings related to Gitea.
+ *
+ * @return void
+ */
 return new class () extends SettingsMigration {
     /**
      * Run the "up" method of the migration.

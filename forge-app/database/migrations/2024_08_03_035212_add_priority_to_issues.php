@@ -4,6 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * Migration to add a priority column to the issues table.
+ *
+ * This migration adds a new column named 'priority' to the 'issues' table
+ * in the database. The 'priority' column is intended to store the priority
+ * level of each issue.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

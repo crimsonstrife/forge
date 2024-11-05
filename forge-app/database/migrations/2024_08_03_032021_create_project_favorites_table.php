@@ -4,6 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * CreateProjectFavoritesTable migration class.
+ *
+ * This migration creates the 'project_favorites' table in the database.
+ * The table is used to store information about user favorite projects.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

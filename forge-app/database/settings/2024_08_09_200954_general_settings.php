@@ -2,9 +2,14 @@
 
 use Spatie\LaravelSettings\Migrations\SettingsMigration;
 
+
 /**
+ * Migration class for general settings.
  *
- * Class representing a settings migration for general settings.
+ * This class extends the SettingsMigration class and is used to handle
+ * the migration of general settings in the database.
+ *
+ * @return void
  */
 return new class () extends SettingsMigration {
     /**

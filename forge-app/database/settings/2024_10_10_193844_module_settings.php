@@ -2,6 +2,15 @@
 
 use Spatie\LaravelSettings\Migrations\SettingsMigration;
 
+
+/**
+ * This file contains a settings migration class for the module settings.
+ *
+ * The class extends the `SettingsMigration` class and is used to handle
+ * the migration of settings for the module.
+ *
+ * @return void
+ */
 return new class () extends SettingsMigration {
     /**
      * Run the "up" method of the migration.

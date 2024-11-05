@@ -11,6 +11,7 @@ use Illuminate\Facades\Log;
 use App\Models\Issues\Issue;
 use App\Models\Icon;
 use App\Traits\IsPermissable;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Class IssueType
@@ -147,61 +148,5 @@ class IssueType extends Model
     public function scopeNotDefault($query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('is_default', false);
-    }
-
-    /**
-     * Get the issue type by name.
-     *
-     * @param string $name
-     * @return IssueType
-     */
-    public static function getByName(string $name): IssueType
-    {
-        return self::where('name', $name)->first();
-    }
-
-    /**
-     * Generic method to find IssueType by column and value or fail
-     *
-     * @param string $column
-     * @param mixed $value
-     * @return IssueType
-     * @throws RuntimeException
-     */
-    public static function findByColumnOrFail(string $column, mixed $value): IssueType
-    {
-        $issueType = self::whereColumn($column, $value);
-
-        if ($issueType === null) {
-            throw new \RuntimeException('IssueType not found');
-        }
-
-        return $issueType;
-    }
-
-    /**
-     * Retrieves the first IssueType by given column and value
-     *
-     * @param string $column
-     * @param mixed $value
-     * @return IssueType|null
-     */
-    private static function whereColumn(string $column, mixed $value): ?IssueType
-    {
-        return self::where($column, $value)->first();
-    }
-
-    /**
-     * Where
-     * Alias for findByColumnOrFail
-     *
-     * @param string $column
-     * @param mixed $value
-     * @return IssueType
-     * @throws RuntimeException
-     */
-    public static function where(string $column, mixed $value): IssueType
-    {
-        return self::findByColumnOrFail($column, $value);
     }
 }

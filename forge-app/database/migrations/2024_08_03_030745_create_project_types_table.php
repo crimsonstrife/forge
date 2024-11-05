@@ -4,6 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * CreateProjectTypesTable migration class.
+ *
+ * This migration creates the 'project_types' table in the database.
+ * It is part of the Forge application and is located in the
+ * 'database/migrations' directory.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

@@ -14,36 +14,15 @@ use App\Traits\HasAdvancedPermissions;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Traits\RefreshesPermissionCache;
 
+
 /**
  * Class Role
  *
- * Extends the base role functionality and implements additional contract methods.
- * Utilizes various traits to enhance permission management and caching.
+ * This class extends the SpatieRole and implements the Role contract.
+ * It represents a role within the application, providing methods and properties
+ * to manage and interact with roles.
  *
- * Traits:
- * - IsPermissable
- * - HasAdvancedPermissions
- * - RefreshesPermissionCache
- *
- * Protected Properties:
- * - $fillable: Defines the fillable attributes for the model.
- * - $guarded: Specifies attributes that are not mass assignable.
- *
- * Methods:
- * - boot(): Static method to prevent deletion of protected roles.
- * - __construct(): Constructor to initialize the role with optional attributes.
- * - create(): Static method to create a new role; throws RoleAlreadyExists if the role exists.
- * - permissions(): Defines a many-to-many relationship with Permission class.
- * - permissionSets(): Defines a many-to-many relationship with PermissionSet class.
- * - permissionGroups(): Defines a many-to-many relationship with PermissionGroup class.
- * - users(): Defines a polymorphic many-to-many relationship with User model associated with the guard.
- * - findByName(): Static method to find a role by name and guard name; throws RoleDoesNotExist if not found.
- * - findById(): Static method to find a role by ID and optionally guard name; throws RoleDoesNotExist if not found.
- * - findOrCreate(): Static method to find a role or create it if it does not exist.
- * - findByParam(): Protected static method to find a role based on an array of parameters.
- * - hasDirectPermission(): Method to check if the role has a specific permission directly.
- * - hasPermissionThroughSet(): Method to check if the role has a specific permission through a permission set.
- * - hasPermissionThroughGroup(): Method to check if the role has a specific permission through a permission group.
+ * @package App\Models\Auth
  */
 class Role extends SpatieRole implements RoleContract
 {
@@ -55,10 +34,16 @@ class Role extends SpatieRole implements RoleContract
 
     protected $guarded = [];
 
+
     /**
-     * Prevent deletion of the role if it is protected.
+     * Boot the model and its traits.
+     *
+     * This method is called when the model is initialized. It can be used to
+     * register any event listeners or perform any setup required for the model.
+     *
+     * @return void
      */
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
 
@@ -69,6 +54,11 @@ class Role extends SpatieRole implements RoleContract
         });
     }
 
+    /**
+     * Create a new role instance.
+     *
+     * @param array $attributes
+     */
     public function __construct(array $attributes = [])
     {
         $attributes['guard_name'] = $attributes['guard_name'] ?? config('auth.defaults.guard');
@@ -80,11 +70,14 @@ class Role extends SpatieRole implements RoleContract
     }
 
     /**
+     * Create a new role.
+     *
+     * @param array $attributes
      * @return RoleContract|Role
      *
      * @throws RoleAlreadyExists
      */
-    public static function create(array $attributes = [])
+    public static function create(array $attributes = []): RoleContract|Role
     {
         $attributes['guard_name'] = $attributes['guard_name'] ?? Guard::getDefaultName(static::class);
 
@@ -113,7 +106,9 @@ class Role extends SpatieRole implements RoleContract
     }
 
     /**
-     * A role may be given various permissions.
+     * A role may have multiple permissions.
+     * This defines a many-to-many relationship with the Permission class.
+     * @return BelongsToMany
      */
     public function permissions(): BelongsToMany
     {
@@ -122,6 +117,8 @@ class Role extends SpatieRole implements RoleContract
 
     /**
      * A role may be assigned to various permission sets.
+     * This defines a many-to-many relationship with the PermissionSet class.
+     * @return BelongsToMany
      */
     public function permissionSets(): BelongsToMany
     {
@@ -130,6 +127,8 @@ class Role extends SpatieRole implements RoleContract
 
     /**
      * A role may be assigned to various permission groups.
+     * This defines a many-to-many relationship with the PermissionGroup class.
+     * @return BelongsToMany
      */
     public function permissionGroups(): BelongsToMany
     {
@@ -138,6 +137,8 @@ class Role extends SpatieRole implements RoleContract
 
     /**
      * A role belongs to some users of the model associated with its guard.
+     * This defines a polymorphic many-to-many relationship with the User model.
+     * @return BelongsToMany
      */
     public function users(): BelongsToMany
     {
@@ -242,7 +243,7 @@ class Role extends SpatieRole implements RoleContract
     /**
      * See if the role has a permission directly.
      *
-     * @param \App\Models\UserAuth\Permission $permission
+     * @param Permission $permission
      * @return bool
      */
     public function hasDirectPermission($permission): bool
@@ -253,7 +254,7 @@ class Role extends SpatieRole implements RoleContract
     /**
      * See if the role has a permission through a permission set.
      *
-     * @param \App\Models\UserAuth\Permission $permission
+     * @param Permission $permission
      * @return bool
      */
     public function hasPermissionThroughSet($permission): bool
@@ -266,7 +267,7 @@ class Role extends SpatieRole implements RoleContract
     /**
      * See if the role has a permission through a permission group.
      *
-     * @param \App\Models\UserAuth\Permission $permission
+     * @param Permission $permission
      * @return bool
      */
     public function hasPermissionThroughGroup($permission): bool

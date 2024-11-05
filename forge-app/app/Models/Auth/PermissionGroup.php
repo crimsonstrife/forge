@@ -35,8 +35,9 @@ class PermissionGroup extends Model
     protected $guarded = [];
 
     /**
-     * Summary of __construct
-     * @param array $attributes
+     * Create a new permission set group.
+     * @param array $attributes The attributes to create the permission set group with
+     * @return PermissionGroup The created permission set group
      */
     public function __construct(array $attributes = [])
     {
@@ -49,8 +50,9 @@ class PermissionGroup extends Model
     }
 
     /**
-     * Summary of create
-     * @return PermissionGroup
+     * Create a new permission set group.
+     * @param array $attributes The attributes to create the permission set group with
+     * @return PermissionGroup The created permission set group
      */
     public static function create(array $attributes = []): PermissionGroup
     {
@@ -60,7 +62,7 @@ class PermissionGroup extends Model
     }
 
     /**
-     * Define the relationship between the permission set group and the permission sets it contains.
+     * Define the relationship between the permission set group and the permission sets it contains directly.
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function permissionSets()

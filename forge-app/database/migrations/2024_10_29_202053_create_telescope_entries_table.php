@@ -4,6 +4,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * This migration is a copy of the original migration from the package.
+ */
 return new class () extends Migration {
     /**
      * Get the migration connection name.
@@ -15,6 +18,8 @@ return new class () extends Migration {
 
     /**
      * Run the migrations.
+     *
+     * @return void
      */
     public function up(): void
     {

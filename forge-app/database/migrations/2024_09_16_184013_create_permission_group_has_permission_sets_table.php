@@ -4,6 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * Migration class for creating the permission_group_has_permission_sets table.
+ * This table establishes a many-to-many relationship between permission groups and permission sets.
+ */
 return new class () extends Migration {
     /**
      * Run the migrations.

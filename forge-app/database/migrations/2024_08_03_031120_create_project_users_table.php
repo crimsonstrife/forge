@@ -4,6 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Migration class to create the project_users table.
+ *
+ * This migration will create a table to store the relationship between projects and users.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

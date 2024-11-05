@@ -34,7 +34,8 @@ class PermissionSet extends Model
     protected $guarded = [];
 
     /**
-     * Summary of __construct
+     * Create a new PermissionSet instance.
+     *
      * @param array $attributes
      */
     public function __construct(array $attributes = [])
@@ -48,7 +49,9 @@ class PermissionSet extends Model
     }
 
     /**
-     * Summary of create
+     * Create a new PermissionSet instance and save it to the database.
+     *
+     * @param array $attributes
      * @return PermissionSet
      */
     public static function create(array $attributes = []): PermissionSet

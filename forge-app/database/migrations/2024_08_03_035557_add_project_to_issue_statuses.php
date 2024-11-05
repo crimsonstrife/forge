@@ -4,6 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * Migration to add a project to issue statuses.
+ *
+ * This migration script is used to modify the database schema by adding a project
+ * reference to the issue statuses table. It extends the base Migration class provided
+ * by the Laravel framework.
+ *
+ * @return void
+ */
 return new class () extends Migration {
     /**
      * Run the migrations.

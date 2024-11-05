@@ -2,6 +2,15 @@
 
 use Spatie\LaravelSettings\Migrations\SettingsMigration;
 
+/**
+ * Migration for Discord settings.
+ *
+ * This migration class is responsible for handling the database changes
+ * related to Discord settings.
+ *
+ * @return void
+ * @extends SettingsMigration
+ */
 return new class extends SettingsMigration
 {
     public function up(): void

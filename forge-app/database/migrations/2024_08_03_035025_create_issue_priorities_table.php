@@ -4,6 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * Create a new migration class for the issue_priorities table.
+ *
+ * This migration will create the issue_priorities table in the database.
+ * The table will be used to store different priority levels for issues.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

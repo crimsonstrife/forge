@@ -4,6 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * Migration class for creating the permission_groups table.
+ *
+ * This migration will create a new table in the database to store
+ * permission groups, which can be used to manage user permissions
+ * within the application.
+ *
+ * @return void
+ */
 return new class () extends Migration {
     /**
      * Run the migrations.

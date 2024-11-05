@@ -4,6 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * This migration class is responsible for creating the `oauth_refresh_tokens` table.
+ * The table will store refresh tokens used in the OAuth authentication process.
+ *
+ * The migration will be executed when running the `php artisan migrate` command.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

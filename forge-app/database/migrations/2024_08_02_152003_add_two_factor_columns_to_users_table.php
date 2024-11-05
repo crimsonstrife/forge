@@ -5,6 +5,14 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Fortify\Fortify;
 
+/**
+ * Migration to add two-factor authentication columns to the users table.
+ *
+ * This migration adds the necessary columns to support two-factor authentication
+ * in the users table. It extends the base Migration class provided by Laravel.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

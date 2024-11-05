@@ -4,6 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * CreateProjectStatusesTable Migration
+ *
+ * This migration creates the 'project_statuses' table in the database.
+ * The table is used to store various statuses that a project can have.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

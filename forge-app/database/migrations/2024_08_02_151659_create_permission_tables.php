@@ -4,6 +4,16 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+
+/**
+ * Migration class for creating permission tables.
+ *
+ * This migration will create the necessary tables for managing permissions
+ * within the application. It extends the base Migration class provided by
+ * the Laravel framework.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

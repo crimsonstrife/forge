@@ -2,12 +2,14 @@
 
 use Spatie\LaravelSettings\Migrations\SettingsMigration;
 
+
 /**
+ * Migration class for Crucible settings.
  *
- * Class CrucibleSettingsMigration
+ * This class extends the SettingsMigration class and is used to handle
+ * the migration of settings related to Crucible.
  *
- * This class represents a settings migration for the Crucible feature.
- * It extends the SettingsMigration class and defines the up() and down() methods.
+ * @return void
  */
 return new class () extends SettingsMigration {
     /**

@@ -4,6 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Create a new anonymous class that extends the Migration class.
+ * This class will handle the creation of the 'project_slugs' table in the database.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

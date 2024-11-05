@@ -60,8 +60,14 @@ class Issue extends Model implements HasMedia
         'sprint_id',
     ];
 
+
     /**
-     * Boot the model.
+     * Boot the model and its traits.
+     *
+     * This method is called when the model is initialized. It can be used to
+     * register any event listeners or perform any setup required for the model.
+     *
+     * @return void
      */
     protected static function boot()
     {
@@ -69,7 +75,7 @@ class Issue extends Model implements HasMedia
 
         //creating a new issue
         static::creating(function (Issue $issue) {
-            $project = Project::where('id', $issue->project_id)->first();
+            $project = (new Project)->where('id', $issue->project_id)->first();
             $count = Issue::where('project_id', $project->id)->count();
             $order = $project->issues?->last()?->order ?? -1;
             $issue->code = $project->ticket_prefix . '-' . ($count + 1);
@@ -93,7 +99,8 @@ class Issue extends Model implements HasMedia
             // Issue activity based on status
             $oldStatus = $old->status_id;
             if ($oldStatus != $issue->status_id) {
-                IssueActivity::create([
+                $issueActivity = new IssueActivity();
+                $issueActivity->create([
                     'issue_id' => $issue->id,
                     'old_status_id' => $oldStatus,
                     'new_status_id' => $issue->status_id,

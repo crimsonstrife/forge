@@ -4,6 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Migration class for creating the media table.
+ *
+ * This migration will create a new table named 'media' in the database.
+ * The table will be used to store media-related information.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

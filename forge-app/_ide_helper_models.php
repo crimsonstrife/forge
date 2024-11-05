@@ -118,13 +118,18 @@ namespace App\Models\Auth{
 
 namespace App\Models\Auth{
 /**
+ * Class Role
  * 
+ * This class extends the SpatieRole and implements the Role contract.
+ * It represents a role within the application, providing methods and properties
+ * to manage and interact with roles.
  *
- * @property ?\Illuminate\Support\Carbon $created_at
- * @property ?\Illuminate\Support\Carbon $updated_at
+ * @package App\Models\Auth
  * @property int $id
  * @property string $name
  * @property string $guard_name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property int $protected
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Auth\PermissionGroup> $permissionGroups
  * @property-read int|null $permission_groups_count
@@ -273,17 +278,21 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class DiscordConfig
  * 
+ * This class represents the configuration settings for Discord integration.
+ * It extends the base Model class provided by the framework.
  *
+ * @package App\Models
  * @property int $id
  * @property int $enabled
  * @property string $guild_id
  * @property string $client_id
  * @property string $client_secret
- * @property string $bot_token
+ * @property mixed $bot_token
  * @property string $redirect_uri
- * @property array|null $role_mappings
- * @property array|null $channel_mappings
+ * @property mixed $role_mappings
+ * @property mixed $channel_mappings
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DiscordConfig newModelQuery()
@@ -351,7 +360,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Icon class represents an icon stored in the system.
  * 
+ * This class provides methods for managing icons,
+ * including validation, caching, and fetching icon-related data.
  *
  * @property int $id
  * @property string $name
@@ -843,8 +855,13 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Represents a set of priorities that can be assigned to projects or tasks.
  * 
+ * Manages operations such as adding, removing, and reordering priorities,
+ * as well as setting the default priority.
  *
+ * @method static create(array $array)
+ * @method static where(string $string, mixed $name)
  * @property int $id
  * @property string $name
  * @property int|null $created_by

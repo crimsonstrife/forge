@@ -4,6 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Migration class for creating the issue_statuses table.
+ *
+ * This migration will create a new table named 'issue_statuses' in the database.
+ * The table will be used to store different statuses that an issue can have.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

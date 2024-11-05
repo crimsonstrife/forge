@@ -4,6 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Migration class for creating the cache table.
+ *
+ * This migration creates a new table in the database to store cache data.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

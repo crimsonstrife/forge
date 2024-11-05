@@ -4,6 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * CreatePermissionSetRoleTable migration class.
+ *
+ * This migration creates the permission_set_role table.
+ *
+ * @return void
+ */
 return new class () extends Migration {
     /**
      * Run the migrations.

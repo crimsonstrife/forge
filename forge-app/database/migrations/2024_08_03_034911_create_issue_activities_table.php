@@ -4,6 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * Create a new migration class for the issue_activities table.
+ *
+ * This migration will handle the creation of the issue_activities table
+ * in the database. The table will be used to store activities related to
+ * issues within the application.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

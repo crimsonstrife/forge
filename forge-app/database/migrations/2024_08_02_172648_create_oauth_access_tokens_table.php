@@ -4,6 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Create a new migration class for the OAuth access tokens table.
+ *
+ * This migration will create the `oauth_access_tokens` table in the database.
+ * The table will store access tokens for OAuth authentication.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

@@ -4,6 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * Migration to add an 'order' column to the 'issue_statuses' table.
+ *
+ * This migration will modify the 'issue_statuses' table by adding a new column
+ * to store the order of the issue statuses.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

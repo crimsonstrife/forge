@@ -4,6 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * Migration to add the 'is_builtin' column to the 'icons' table.
+ *
+ * This migration creates a new column 'is_builtin' in the 'icons' table
+ * to indicate whether an icon is built-in or not.
+ *
+ * @return void
+ */
 return new class () extends Migration {
     /**
      * Run the migrations.

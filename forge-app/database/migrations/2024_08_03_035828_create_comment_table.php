@@ -4,6 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * CreateCommentTable Migration
+ *
+ * This migration class is responsible for creating the 'comment' table in the database.
+ * It extends the base Migration class provided by the Laravel framework.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

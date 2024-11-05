@@ -4,6 +4,20 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * This migration class is responsible for creating the 'oauth_clients' table.
+ *
+ * The table will store information about OAuth clients, which are applications
+ * that can request tokens from the OAuth server.
+ *
+ * The migration will define the structure of the table, including columns for
+ * client ID, client secret, redirect URIs, and other relevant information.
+ *
+ * The class extends the base Migration class provided by Laravel, and will
+ * include methods for running and rolling back the migration.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

@@ -4,6 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * This migration class is responsible for creating the 'oauth_auth_codes' table.
+ * The table is used to store OAuth authorization codes.
+ *
+ * The class extends the base Migration class provided by Laravel.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**

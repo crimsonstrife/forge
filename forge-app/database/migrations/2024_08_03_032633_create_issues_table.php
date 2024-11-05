@@ -4,6 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+/**
+ * This migration class is responsible for creating the 'issues' table in the database.
+ *
+ * The table will be created when the migration is run, and it will be dropped when the migration is rolled back.
+ *
+ * The class extends the base Migration class provided by the Laravel framework.
+ *
+ * @return void
+ */
 return new class extends Migration
 {
     /**
