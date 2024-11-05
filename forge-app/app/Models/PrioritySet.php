@@ -22,7 +22,7 @@ class PrioritySet extends Model
 
     protected $fillable = ['name'];
 
-        /**
+    /**
      * Boot the model.
      *
      * @return void
