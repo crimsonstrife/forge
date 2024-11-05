@@ -2,6 +2,7 @@
 
 namespace App\Models\Issues;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -99,7 +100,7 @@ class IssueType extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function icon()
+    public function icon(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Icon::class, 'icon', 'id');
     }
@@ -109,7 +110,7 @@ class IssueType extends Model
      *
      * @return \Illuminate\Database\Eloquent\Builder|IssueType
      */
-    public static function getDefault()
+    public static function getDefault(): \Illuminate\Database\Eloquent\Builder|IssueType
     {
         return self::where('is_default', true)->first();
     }
@@ -132,7 +133,7 @@ class IssueType extends Model
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeDefault($query)
+    public function scopeDefault($query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('is_default', true);
     }
@@ -143,8 +144,64 @@ class IssueType extends Model
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeNotDefault($query)
+    public function scopeNotDefault($query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('is_default', false);
+    }
+
+    /**
+     * Get the issue type by name.
+     *
+     * @param string $name
+     * @return IssueType
+     */
+    public static function getByName(string $name): IssueType
+    {
+        return self::where('name', $name)->first();
+    }
+
+    /**
+     * Generic method to find IssueType by column and value or fail
+     *
+     * @param string $column
+     * @param mixed $value
+     * @return IssueType
+     * @throws RuntimeException
+     */
+    public static function findByColumnOrFail(string $column, mixed $value): IssueType
+    {
+        $issueType = self::whereColumn($column, $value);
+
+        if ($issueType === null) {
+            throw new \RuntimeException('IssueType not found');
+        }
+
+        return $issueType;
+    }
+
+    /**
+     * Retrieves the first IssueType by given column and value
+     *
+     * @param string $column
+     * @param mixed $value
+     * @return IssueType|null
+     */
+    private static function whereColumn(string $column, mixed $value): ?IssueType
+    {
+        return self::where($column, $value)->first();
+    }
+
+    /**
+     * Where
+     * Alias for findByColumnOrFail
+     *
+     * @param string $column
+     * @param mixed $value
+     * @return IssueType
+     * @throws RuntimeException
+     */
+    public static function where(string $column, mixed $value): IssueType
+    {
+        return self::findByColumnOrFail($column, $value);
     }
 }

@@ -13,6 +13,8 @@ use App\Traits\IsPermissable;
  * Represents a set of priorities that can be assigned to projects or tasks.
  * Manages operations such as adding, removing, and reordering priorities,
  * as well as setting the default priority.
+ * @method static create(array $array)
+ * @method static where(string $string, mixed $name)
  */
 class PrioritySet extends Model
 {
@@ -27,7 +29,7 @@ class PrioritySet extends Model
      *
      * @return void
      */
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
@@ -59,7 +61,7 @@ class PrioritySet extends Model
     /**
      * Get the priorities associated with the priority set.
      */
-    public function priorities()
+    public function priorities(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(IssuePriority::class)
                     ->withPivot('order')
@@ -79,7 +81,7 @@ class PrioritySet extends Model
     /**
      * Get the issue priorities associated with the priority set.
      */
-    public function issuePriorities()
+    public function issuePriorities(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(IssuePriority::class)
                     ->withPivot('order', 'is_default')
@@ -89,7 +91,7 @@ class PrioritySet extends Model
     /**
      * Set the default priority for the priority set.
      */
-    public function setDefaultPriority(IssuePriority $priority)
+    public function setDefaultPriority(IssuePriority $priority): void
     {
         // Remove the default flag from all priorities in the set, then set the new default
         $this->priorities()->updateExistingPivot($priority->id, ['is_default' => true]);
@@ -98,7 +100,7 @@ class PrioritySet extends Model
     /**
      * Add a priority to the priority set.
      */
-    public function addPriority(IssuePriority $priority, int $order = 0, bool $isDefault = false)
+    public function addPriority(IssuePriority $priority, int $order = 0, bool $isDefault = false): void
     {
         $this->priorities()->attach($priority->id, ['order' => $order, 'is_default' => $isDefault]);
     }
@@ -106,7 +108,7 @@ class PrioritySet extends Model
     /**
      * Remove a priority from the priority set.
      */
-    public function removePriority(IssuePriority $priority)
+    public function removePriority(IssuePriority $priority): void
     {
         $this->priorities()->detach($priority->id);
     }
@@ -114,7 +116,7 @@ class PrioritySet extends Model
     /**
      * Update the order of a priority in the priority set.
      */
-    public function updatePriorityOrder(IssuePriority $priority, int $order)
+    public function updatePriorityOrder(IssuePriority $priority, int $order): void
     {
         $this->priorities()->updateExistingPivot($priority->id, ['order' => $order]);
     }
@@ -122,7 +124,7 @@ class PrioritySet extends Model
     /**
      * Update the default priority for the priority set.
      */
-    public function updateDefaultPriority(IssuePriority $priority)
+    public function updateDefaultPriority(IssuePriority $priority): void
     {
         // Remove the default flag from all priorities in the set, then set the new default
         $this->priorities()->updateExistingPivot($priority->id, ['is_default' => true]);
@@ -131,7 +133,7 @@ class PrioritySet extends Model
     /**
      * Get the projects that use this priority set.
      */
-    public function projects()
+    public function projects(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Project::class);
     }

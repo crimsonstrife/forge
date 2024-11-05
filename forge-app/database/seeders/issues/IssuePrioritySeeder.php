@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use App\Utilities\DynamicModelUtility as ModelUtility;
 use App\Models\Issues\IssuePriority;
 use App\Models\Icon;
+use JsonException;
 
 /**
  * Class IssuePrioritySeeder
@@ -20,6 +21,7 @@ class IssuePrioritySeeder extends Seeder
 
     /**
      * Run the database seeds.
+     * @throws JsonException
      */
     public function run(): void
     {
@@ -36,6 +38,7 @@ class IssuePrioritySeeder extends Seeder
      *
      * @param string $filePath
      * @return array
+     * @throws JsonException
      */
     private function loadPrioritiesFromJson(string $filePath): array
     {
@@ -45,7 +48,7 @@ class IssuePrioritySeeder extends Seeder
         }
 
         $jsonContent = File::get($filePath);
-        return json_decode($jsonContent, true);
+        return json_decode($jsonContent, true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**

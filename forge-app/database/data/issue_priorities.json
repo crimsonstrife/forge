@@ -1,34 +1,55 @@
 {
+    "priority_sets": [
+        {
+            "name": "Default",
+            "description": "The default priority set for issues."
+        }
+    ],
     "issue_priorities": [
         {
             "name": "Lowest",
             "description": "A trivial problem with little or no impact on the project.",
             "color": "#7de2f4",
-            "icon": "far-chevrons-down"
+            "icon": "far-chevrons-down",
+            "set": "default",
+            "is_default": false,
+            "order": 0
         },
         {
             "name": "Low",
             "description": "A minor problem with low impact on the project, or easily worked around.",
             "color": "#0065ff",
-            "icon": "far-chevron-down"
+            "icon": "far-chevron-down",
+            "set": "default",
+            "is_default": false,
+            "order": 1
         },
         {
             "name": "Medium",
             "description": "A problem that has potential to inflict noticeable impact on the project, but is not critical.",
             "color": "#FFAB00",
-            "icon": "far-grip-lines"
+            "icon": "far-grip-lines",
+            "set": "default",
+            "is_default": true,
+            "order": 2
         },
         {
             "name": "High",
             "description": "A serious problem that could block progress on the project.",
             "color": "#ff5630",
-            "icon": "far-chevron-up"
+            "icon": "far-chevron-up",
+            "set": "default",
+            "is_default": false,
+            "order": 3
         },
         {
             "name": "Highest",
             "description": "A critical problem that will block progress on the project.",
             "color": "#d02b06",
-            "icon": "far-chevrons-up"
+            "icon": "far-chevrons-up",
+            "set": "default",
+            "is_default": false,
+            "order": 4
         }
     ]
 }
