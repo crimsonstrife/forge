@@ -11,6 +11,9 @@
 .phpactor.json
 .phpunit.result.cache
 .lock
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
 composer.lock
 package-lock.json
 Homestead.json
