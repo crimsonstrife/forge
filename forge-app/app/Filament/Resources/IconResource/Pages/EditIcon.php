@@ -7,7 +7,6 @@ use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use App\Models\Icon;
 
-
 /**
  * Class EditIcon
  *
