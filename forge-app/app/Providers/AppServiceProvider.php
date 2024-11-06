@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\ServiceProvider;
-use Maatwebsite\Excel\Facades\Excel;
+//use Maatwebsite\Excel\Facades\Excel;
 use App\Services\CustomValueBinder;
 
 /**
@@ -53,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Register the CustomValueBinder
-        Excel::bindValueBinder(CustomValueBinder::class);
+        //Excel::bindValueBinder(CustomValueBinder::class);
     }
 
     private function configureApp(): void

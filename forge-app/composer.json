@@ -45,7 +45,7 @@
         "laravel/tinker": "^2.9",
         "league/commonmark": "^2.5",
         "livewire/livewire": "^3.0",
-        "maatwebsite/excel": "^3.1.58",
+        "maatwebsite/excel": "3.1.59",
         "nesbot/carbon": "^3.7",
         "phpoffice/phpspreadsheet": "^2.3.0",
         "protonemedia/laravel-verify-new-email": "^1.10",
@@ -75,10 +75,11 @@
         "webcreate/util": {
             "type": "vcs",
             "url": "https://github.com/crimsonstrife/util"
+        },
+        "maatwebsite/excel": {
+            "type": "vcs",
+            "url": "https://github.com/crimsonstrife/Laravel-Excel"
         }
-    },
-    "provide": {
-        "phpoffice/phpspreadsheet": "1.29.2"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13",
@@ -118,7 +119,10 @@
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
             "@php artisan filament:upgrade",
-            "@php artisan telescope:publish"
+            "@php artisan telescope:publish",
+            "@php artisan clear-compiled",
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:meta"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
