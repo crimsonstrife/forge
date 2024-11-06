@@ -2,7 +2,6 @@
 
 use Spatie\LaravelSettings\Migrations\SettingsMigration;
 
-
 /**
  * This file contains a settings migration class for the module settings.
  *

@@ -4,7 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-
 /**
  * Migration to add an 'order' column to the 'issue_statuses' table.
  *
@@ -13,8 +12,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * @return void
  */
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */

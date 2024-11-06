@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * @return void
  */
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */

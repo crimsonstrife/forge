@@ -89,7 +89,7 @@ class DiscordConfig extends Model
      */
     public static function getDiscordConfig()
     {
-        return self::first() ?: new self;
+        return self::first() ?: new self();
     }
 
     /**

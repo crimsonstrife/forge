@@ -14,7 +14,6 @@ use App\Traits\HasAdvancedPermissions;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Traits\RefreshesPermissionCache;
 
-
 /**
  * Class Role
  *

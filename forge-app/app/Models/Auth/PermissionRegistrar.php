@@ -13,8 +13,6 @@ use Spatie\Permission\PermissionRegistrar as SpatiePermissionRegistrar;
 use Spatie\Permission\Models\Permission;
 use App\Models\Auth\Role as Role;
 
-
-
 /**
  * Class PermissionRegistrar
  *

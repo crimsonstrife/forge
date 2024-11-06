@@ -2,7 +2,6 @@
 
 use Spatie\LaravelSettings\Migrations\SettingsMigration;
 
-
 /**
  * Migration class for Gitea settings.
  *
