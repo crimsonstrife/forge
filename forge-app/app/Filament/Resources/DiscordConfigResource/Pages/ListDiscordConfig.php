@@ -10,10 +10,23 @@ use App\Models\DiscordConfig;
 use App\Settings\DiscordSettings;
 use App\Settings\ModuleSettings;
 
+/**
+ * Class ListDiscordConfig
+ *
+ * This class extends the ListRecords class and is used to manage the listing of Discord configuration records
+ * within the Filament resource.
+ *
+ * @package App\Filament\Resources\DiscordConfigResource\Pages
+ */
 class ListDiscordConfig extends ListRecords
 {
     protected static string $resource = DiscordConfigResource::class;
 
+    /**
+     * Retrieves the header actions for the Discord configuration resource.
+     *
+     * @return array An array of header actions.
+     */
     protected function getHeaderActions(): array
     {
         // Check if the Discord module is enabled from the ModuleSettings

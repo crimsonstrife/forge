@@ -67,6 +67,12 @@ class PermissionGroupResource extends Resource
         return false;
     } */
 
+    /**
+     * Define the form schema for the PermissionGroupResource.
+     *
+     * @param Forms\Form $form The form instance.
+     * @return Forms\Form The configured form instance.
+     */
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form
@@ -85,6 +91,12 @@ class PermissionGroupResource extends Resource
             ]);
     }
 
+    /**
+     * Configure the table for the PermissionGroupResource.
+     *
+     * @param Tables\Table $table The table instance to configure.
+     * @return Tables\Table The configured table instance.
+     */
     public static function table(Tables\Table $table): Tables\Table
     {
         return $table
@@ -96,11 +108,21 @@ class PermissionGroupResource extends Resource
             ->filters([]);
     }
 
+    /**
+     * Get the relations for the PermissionGroupResource.
+     *
+     * @return array The array of relations.
+     */
     public static function getRelations(): array
     {
         return [];
     }
 
+    /**
+     * Get the pages associated with the PermissionGroupResource.
+     *
+     * @return array The array of pages.
+     */
     public static function getPages(): array
     {
         return [
@@ -110,6 +132,11 @@ class PermissionGroupResource extends Resource
         ];
     }
 
+    /**
+     * Determines if the current user can access the resource.
+     *
+     * @return bool True if the user can access the resource, false otherwise.
+     */
     public static function canAccess(): bool
     {
         // Get an instance of the current model
@@ -136,6 +163,11 @@ class PermissionGroupResource extends Resource
         return false;
     }
 
+    /**
+     * Determine whether any permission groups can be viewed.
+     *
+     * @return bool True if any permission groups can be viewed, false otherwise.
+     */
     public static function canViewAny(): bool
     {
         // Get an instance of the current model
@@ -156,6 +188,12 @@ class PermissionGroupResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be viewed.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be viewed, false otherwise.
+     */
     public static function canView(Model $record): bool
     {
         // Get an instance of the current model
@@ -177,6 +215,11 @@ class PermissionGroupResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if a new permission group can be created.
+     *
+     * @return bool True if the permission group can be created, false otherwise.
+     */
     public static function canCreate(): bool
     {
         // Get an instance of the current model
@@ -197,12 +240,24 @@ class PermissionGroupResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be edited.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be edited, false otherwise.
+     */
     public static function canEdit(Model $record): bool
     {
         // alias for canUpdate
         return static::canUpdate($record);
     }
 
+    /**
+     * Determine if the given record can be updated.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be updated, false otherwise.
+     */
     public static function canUpdate(Model $record): bool
     {
         // Get an instance of the current model
@@ -223,6 +278,12 @@ class PermissionGroupResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be deleted.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be deleted, false otherwise.
+     */
     public static function canDelete(Model $record): bool
     {
         // Get an instance of the current model
@@ -243,6 +304,12 @@ class PermissionGroupResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be restored.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be restored, false otherwise.
+     */
     public static function canRestore(Model $record): bool
     {
         // Get an instance of the current model
@@ -263,6 +330,12 @@ class PermissionGroupResource extends Resource
         return false;
     }
 
+    /**
+     * Determine whether the user can force delete the given record.
+     *
+     * @param Model $record The record instance.
+     * @return bool True if the user can force delete the record, false otherwise.
+     */
     public static function canForceDelete(Model $record): bool
     {
         // Get an instance of the current model
@@ -283,6 +356,11 @@ class PermissionGroupResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if multiple permission groups can be restored.
+     *
+     * @return bool True if multiple permission groups can be restored, false otherwise.
+     */
     public static function canRestoreMultiple(): bool
     {
         // Get an instance of the current model
@@ -303,6 +381,11 @@ class PermissionGroupResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if multiple permission groups can be force deleted.
+     *
+     * @return bool True if multiple permission groups can be force deleted, false otherwise.
+     */
     public static function canForceDeleteMultiple(): bool
     {
         // Get an instance of the current model
@@ -323,6 +406,11 @@ class PermissionGroupResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the permission groups can be reordered.
+     *
+     * @return bool True if the permission groups can be reordered, false otherwise.
+     */
     public static function canReorder(): bool
     {
         // Get an instance of the current model

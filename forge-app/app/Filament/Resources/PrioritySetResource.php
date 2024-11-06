@@ -68,6 +68,12 @@ class PrioritySetResource extends Resource
 
     protected static ?string $cluster = Issues::class;
 
+    /**
+     * Define the form schema for the PrioritySetResource.
+     *
+     * @param Form $form The form instance.
+     * @return Form The configured form instance.
+     */
     public static function form(Form $form): Form
     {
         return $form
@@ -99,6 +105,12 @@ class PrioritySetResource extends Resource
             ]);
     }
 
+    /**
+     * Configure the table for the PrioritySetResource.
+     *
+     * @param Table $table The table instance to configure.
+     * @return Table The configured table instance.
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -111,6 +123,11 @@ class PrioritySetResource extends Resource
             ->defaultSort('name');
     }
 
+    /**
+     * Get the relations for the PrioritySet resource.
+     *
+     * @return array An array of relations.
+     */
     public static function getRelations(): array
     {
         return [
@@ -118,6 +135,11 @@ class PrioritySetResource extends Resource
         ];
     }
 
+    /**
+     * Get the pages associated with the PrioritySet resource.
+     *
+     * @return array An array of pages.
+     */
     public static function getPages(): array
     {
         return [
@@ -127,6 +149,11 @@ class PrioritySetResource extends Resource
         ];
     }
 
+    /**
+     * Determine if the resource can be accessed.
+     *
+     * @return bool True if the resource can be accessed, false otherwise.
+     */
     public static function canAccess(): bool
     {
         // Get an instance of the current model
@@ -153,6 +180,11 @@ class PrioritySetResource extends Resource
         return false;
     }
 
+    /**
+     * Determine whether any priority sets can be viewed.
+     *
+     * @return bool
+     */
     public static function canViewAny(): bool
     {
         // Get an instance of the current model
@@ -173,6 +205,12 @@ class PrioritySetResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be viewed.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be viewed, false otherwise.
+     */
     public static function canView(Model $record): bool
     {
         // Get an instance of the current model
@@ -194,6 +232,11 @@ class PrioritySetResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if a new Priority Set can be created.
+     *
+     * @return bool True if creation is allowed, false otherwise.
+     */
     public static function canCreate(): bool
     {
         // Get an instance of the current model
@@ -214,12 +257,24 @@ class PrioritySetResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be edited.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be edited, false otherwise.
+     */
     public static function canEdit(Model $record): bool
     {
         // alias for canUpdate
         return static::canUpdate($record);
     }
 
+    /**
+     * Determine if the given record can be updated.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be updated, false otherwise.
+     */
     public static function canUpdate(Model $record): bool
     {
         // Get an instance of the current model
@@ -240,6 +295,12 @@ class PrioritySetResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be deleted.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be deleted, false otherwise.
+     */
     public static function canDelete(Model $record): bool
     {
         // Get an instance of the current model
@@ -260,6 +321,12 @@ class PrioritySetResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be restored.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be restored, false otherwise.
+     */
     public static function canRestore(Model $record): bool
     {
         // Get an instance of the current model
@@ -280,6 +347,12 @@ class PrioritySetResource extends Resource
         return false;
     }
 
+    /**
+     * Determine whether the user can force delete the given record.
+     *
+     * @param Model $record The record instance.
+     * @return bool True if the user can force delete the record, false otherwise.
+     */
     public static function canForceDelete(Model $record): bool
     {
         // Get an instance of the current model
@@ -300,6 +373,11 @@ class PrioritySetResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if multiple priority sets can be restored.
+     *
+     * @return bool True if multiple priority sets can be restored, false otherwise.
+     */
     public static function canRestoreMultiple(): bool
     {
         // Get an instance of the current model
@@ -320,6 +398,11 @@ class PrioritySetResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if multiple priority sets can be force deleted.
+     *
+     * @return bool True if multiple priority sets can be force deleted, false otherwise.
+     */
     public static function canForceDeleteMultiple(): bool
     {
         // Get an instance of the current model
@@ -340,6 +423,11 @@ class PrioritySetResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the resource can be reordered.
+     *
+     * @return bool True if the resource can be reordered, false otherwise.
+     */
     public static function canReorder(): bool
     {
         // Get an instance of the current model

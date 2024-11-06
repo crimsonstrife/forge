@@ -6,11 +6,14 @@ use App\Filament\Resources\PrioritySetResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
+
 /**
  * Class CreatePrioritySet
  *
- * This class extends the CreateRecord class specifically for creating PrioritySet records.
- * It specifies the resource type as PrioritySetResource.
+ * This class handles the creation of a new Priority Set record.
+ * It extends the CreateRecord class provided by the Filament framework.
+ *
+ * @package App\Filament\Resources\PrioritySetResource\Pages
  */
 class CreatePrioritySet extends CreateRecord
 {

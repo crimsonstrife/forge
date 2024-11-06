@@ -68,6 +68,12 @@ class IconResource extends Resource
 
     protected static ?array $customTypes = ['custom' => 'Custom'];
 
+    /**
+     * Define the form schema for the IconResource.
+     *
+     * @param Form $form The form instance.
+     * @return Form The configured form instance.
+     */
     public static function form(Form $form): Form
     {
         $filesystem = new Filesystem();
@@ -256,13 +262,12 @@ class IconResource extends Resource
             ]);
     }
 
+
     /**
+     * Configure the table for the IconResource.
      *
-     * @param Table $table
-     * @return Table
-     * @throws BindingResolutionException
-     * @throws InvalidArgumentException
-     * @throws Exception
+     * @param Table $table The table instance to configure.
+     * @return Table The configured table instance.
      */
     public static function table(Table $table): Table
     {
@@ -306,6 +311,11 @@ class IconResource extends Resource
             ]);
     }
 
+    /**
+     * Get the relations for the resource.
+     *
+     * @return array The array of relations.
+     */
     public static function getRelations(): array
     {
         return [
@@ -313,6 +323,11 @@ class IconResource extends Resource
         ];
     }
 
+    /**
+     * Get the pages associated with the IconResource.
+     *
+     * @return array An array of pages.
+     */
     public static function getPages(): array
     {
         return [
@@ -322,6 +337,11 @@ class IconResource extends Resource
         ];
     }
 
+    /**
+     * Determine if the current user can access the IconResource.
+     *
+     * @return bool True if the user can access, false otherwise.
+     */
     public static function canAccess(): bool
     {
         // Get an instance of the current model
@@ -348,6 +368,11 @@ class IconResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if any icons can be viewed.
+     *
+     * @return bool True if any icons can be viewed, false otherwise.
+     */
     public static function canViewAny(): bool
     {
         // Get an instance of the current model
@@ -368,6 +393,12 @@ class IconResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be viewed.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be viewed, false otherwise.
+     */
     public static function canView(Model $record): bool
     {
         // Get an instance of the current model
@@ -389,6 +420,11 @@ class IconResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the resource can be created.
+     *
+     * @return bool True if the resource can be created, false otherwise.
+     */
     public static function canCreate(): bool
     {
         // Get an instance of the current model
@@ -409,12 +445,24 @@ class IconResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be edited.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be edited, false otherwise.
+     */
     public static function canEdit(Model $record): bool
     {
         // alias for canUpdate
         return static::canUpdate($record);
     }
 
+    /**
+     * Determine if the given record can be updated.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be updated, false otherwise.
+     */
     public static function canUpdate(Model $record): bool
     {
         // Get an instance of the current model
@@ -435,6 +483,12 @@ class IconResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be deleted.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be deleted, false otherwise.
+     */
     public static function canDelete(Model $record): bool
     {
         // Get an instance of the current model
@@ -455,6 +509,12 @@ class IconResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be restored.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be restored, false otherwise.
+     */
     public static function canRestore(Model $record): bool
     {
         // Get an instance of the current model
@@ -475,6 +535,12 @@ class IconResource extends Resource
         return false;
     }
 
+    /**
+     * Determine whether the given record can be force deleted.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be force deleted, false otherwise.
+     */
     public static function canForceDelete(Model $record): bool
     {
         // Get an instance of the current model
@@ -495,6 +561,11 @@ class IconResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if multiple icons can be restored.
+     *
+     * @return bool True if multiple icons can be restored, false otherwise.
+     */
     public static function canRestoreMultiple(): bool
     {
         // Get an instance of the current model
@@ -515,6 +586,11 @@ class IconResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if multiple records can be force deleted.
+     *
+     * @return bool True if multiple records can be force deleted, false otherwise.
+     */
     public static function canForceDeleteMultiple(): bool
     {
         // Get an instance of the current model
@@ -535,6 +611,11 @@ class IconResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the icons can be reordered.
+     *
+     * @return bool True if the icons can be reordered, false otherwise.
+     */
     public static function canReorder(): bool
     {
         // Get an instance of the current model

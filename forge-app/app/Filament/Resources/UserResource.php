@@ -64,6 +64,12 @@ class UserResource extends Resource
         return false;
     } */
 
+    /**
+     * Define the form schema for the UserResource.
+     *
+     * @param Forms\Form $form The form instance.
+     * @return Forms\Form The configured form instance.
+     */
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form
@@ -80,6 +86,12 @@ class UserResource extends Resource
             ]);
     }
 
+    /**
+     * Configure the table for the UserResource.
+     *
+     * @param Tables\Table $table The table instance to configure.
+     * @return Tables\Table The configured table instance.
+     */
     public static function table(Tables\Table $table): Tables\Table
     {
         return $table
@@ -91,11 +103,21 @@ class UserResource extends Resource
             ->filters([]);
     }
 
+    /**
+     * Get the relations for the UserResource.
+     *
+     * @return array An array of relations.
+     */
     public static function getRelations(): array
     {
         return [];
     }
 
+    /**
+     * Get the pages associated with the UserResource.
+     *
+     * @return array An array of pages.
+     */
     public static function getPages(): array
     {
         return [
@@ -105,6 +127,11 @@ class UserResource extends Resource
         ];
     }
 
+    /**
+     * Determine if the user can access the resource.
+     *
+     * @return bool True if the user can access the resource, false otherwise.
+     */
     public static function canAccess(): bool
     {
         // Get an instance of the current model
@@ -131,6 +158,11 @@ class UserResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if any user can view the resource.
+     *
+     * @return bool
+     */
     public static function canViewAny(): bool
     {
         // Get an instance of the current model
@@ -151,6 +183,12 @@ class UserResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given user record can be viewed.
+     *
+     * @param Model $record The user record to check.
+     * @return bool True if the user record can be viewed, false otherwise.
+     */
     public static function canView(Model $record): bool
     {
         // Get an instance of the current model
@@ -172,6 +210,11 @@ class UserResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if a new user can be created.
+     *
+     * @return bool True if a new user can be created, false otherwise.
+     */
     public static function canCreate(): bool
     {
         // Get an instance of the current model
@@ -192,12 +235,24 @@ class UserResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given user record can be edited.
+     *
+     * @param Model $record The user record to check.
+     * @return bool True if the record can be edited, false otherwise.
+     */
     public static function canEdit(Model $record): bool
     {
         // alias for canUpdate
         return static::canUpdate($record);
     }
 
+    /**
+     * Determine if the given record can be updated.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be updated, false otherwise.
+     */
     public static function canUpdate(Model $record): bool
     {
         // Get an instance of the current model
@@ -218,6 +273,12 @@ class UserResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be deleted.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be deleted, false otherwise.
+     */
     public static function canDelete(Model $record): bool
     {
         // Get an instance of the current model
@@ -238,6 +299,12 @@ class UserResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be restored.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be restored, false otherwise.
+     */
     public static function canRestore(Model $record): bool
     {
         // Get an instance of the current model
@@ -258,6 +325,12 @@ class UserResource extends Resource
         return false;
     }
 
+    /**
+     * Determine whether the user can force delete the given record.
+     *
+     * @param Model $record The record instance.
+     * @return bool True if the user can force delete the record, false otherwise.
+     */
     public static function canForceDelete(Model $record): bool
     {
         // Get an instance of the current model
@@ -278,6 +351,11 @@ class UserResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if multiple user resources can be restored.
+     *
+     * @return bool True if multiple user resources can be restored, false otherwise.
+     */
     public static function canRestoreMultiple(): bool
     {
         // Get an instance of the current model
@@ -298,6 +376,11 @@ class UserResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if multiple user records can be force deleted.
+     *
+     * @return bool True if multiple user records can be force deleted, false otherwise.
+     */
     public static function canForceDeleteMultiple(): bool
     {
         // Get an instance of the current model
@@ -318,6 +401,11 @@ class UserResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the resource can be reordered.
+     *
+     * @return bool True if the resource can be reordered, false otherwise.
+     */
     public static function canReorder(): bool
     {
         // Get an instance of the current model

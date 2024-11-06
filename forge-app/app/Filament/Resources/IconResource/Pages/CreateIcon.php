@@ -7,11 +7,13 @@ use App\Filament\Resources\IconResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
+
 /**
- * The CreateIcon class is responsible for handling the creation of Icon records.
+ * Class CreateIcon
  *
- * It extends the CreateRecord class and utilizes the Icon and IconResource
- * classes as its model and resource respectively.
+ * This class extends the CreateRecord class and is used to handle the creation of icons within the Filament resource.
+ *
+ * @package App\Filament\Resources\IconResource\Pages
  */
 class CreateIcon extends CreateRecord
 {

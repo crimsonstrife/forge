@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\IssuePriorityResource\Pages;
 use App\Filament\Resources\IssuePriorityResource\RelationManagers;
 use App\Models\Issues\IssuePriority;
+use App\Models\Issues\IssueType;
 use App\Models\User;
 use App\Utilities\DynamicModelUtility as ModelUtility;
 use Illuminate\Database\Eloquent\Model;
@@ -19,33 +20,14 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Clusters\Issues;
 use App\Forms\Components\IconPicker;
 
+
 /**
  * Class IssuePriorityResource
  *
- * Provides functionality for managing issue priorities within a system.
+ * This class represents the resource for managing issue priorities within the application.
+ * It extends the base Resource class provided by the framework.
  *
- * Properties:
- * - $model: The associated model class for issue priorities.
- * - $navigationIcon: The icon used for navigation in non-active state.
- * - $activeNavigationIcon: The icon used for navigation in active state.
- * - $navigationGroup: The navigation group to which this resource belongs.
- * - $cluster: The cluster to which this resource is associated.
- * - $selectedIconId: Stores the ID of the currently selected icon.
- * - $listeners: List of event listeners for handling custom events.
- *
- * Methods:
- * - updateIconPreview: Updates the selected icon preview based on given icon ID.
- * - form: Defines the form structure for creating or editing issue priorities.
- * - table: Defines the table structure for displaying issue priorities.
- * - getRelations: Retrieves related resources.
- * - getPages: Provides routes for various pages related to issue priorities.
- * - canAccess: Determines if the user has access to the resource.
- * - canViewAny: Checks if the user can view any instances of the resource.
- * - canView: Checks if the user can view a specific instance of the resource.
- * - canCreate: Checks if the user can create a new instance of the resource.
- * - canEdit: Checks if the user can edit a specific instance of the resource.
- * - canUpdate: Checks if the user can update a specific instance of the resource.
- * - canDelete: Checks if the user can delete a specific instance of the resource.
+ * @package App\Filament\Resources
  */
 class IssuePriorityResource extends Resource
 {
@@ -63,14 +45,24 @@ class IssuePriorityResource extends Resource
 
     protected $listeners = ['iconUpdated' => 'updateIconPreview'];
 
+
     /**
-     * Update the selected icon preview.
+     * Updates the icon preview based on the provided icon ID.
+     *
+     * @param int $iconId The ID of the icon to update the preview for.
+     * @return void
      */
     public function updateIconPreview($iconId)
     {
         $this->selectedIconId = $iconId;
     }
 
+    /**
+     * Define the form schema for the IssuePriorityResource.
+     *
+     * @param Form $form The form instance.
+     * @return Form The configured form instance.
+     */
     public static function form(Form $form): Form
     {
         return $form
@@ -109,6 +101,12 @@ class IssuePriorityResource extends Resource
             ]);
     }
 
+    /**
+     * Configure the table for the IssuePriorityResource.
+     *
+     * @param Table $table The table instance to configure.
+     * @return Table The configured table instance.
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -144,6 +142,11 @@ class IssuePriorityResource extends Resource
             ]);
     }
 
+    /**
+     * Get the relations for the IssuePriority resource.
+     *
+     * @return array The array of relations.
+     */
     public static function getRelations(): array
     {
         return [
@@ -151,6 +154,11 @@ class IssuePriorityResource extends Resource
         ];
     }
 
+    /**
+     * Get the pages associated with the IssuePriorityResource.
+     *
+     * @return array An array of pages.
+     */
     public static function getPages(): array
     {
         return [
@@ -160,6 +168,11 @@ class IssuePriorityResource extends Resource
         ];
     }
 
+    /**
+     * Determine if the current user can access the IssuePriorityResource.
+     *
+     * @return bool True if the user can access, false otherwise.
+     */
     public static function canAccess(): bool
     {
         // Get an instance of the current model
@@ -186,6 +199,11 @@ class IssuePriorityResource extends Resource
         return false;
     }
 
+    /**
+     * Determine whether any issue priorities can be viewed.
+     *
+     * @return bool
+     */
     public static function canViewAny(): bool
     {
         // Get an instance of the current model
@@ -206,6 +224,12 @@ class IssuePriorityResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be viewed.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be viewed, false otherwise.
+     */
     public static function canView(Model $record): bool
     {
         // Get an instance of the current model
@@ -227,6 +251,11 @@ class IssuePriorityResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if a new issue priority can be created.
+     *
+     * @return bool True if a new issue priority can be created, false otherwise.
+     */
     public static function canCreate(): bool
     {
         // Get an instance of the current model
@@ -247,12 +276,24 @@ class IssuePriorityResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be edited.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be edited, false otherwise.
+     */
     public static function canEdit(Model $record): bool
     {
         // alias for canUpdate
         return static::canUpdate($record);
     }
 
+    /**
+     * Determine if the given record can be updated.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be updated, false otherwise.
+     */
     public static function canUpdate(Model $record): bool
     {
         // Get an instance of the current model
@@ -273,6 +314,12 @@ class IssuePriorityResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be deleted.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be deleted, false otherwise.
+     */
     public static function canDelete(Model $record): bool
     {
         // Get an instance of the current model
@@ -293,6 +340,12 @@ class IssuePriorityResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the given record can be restored.
+     *
+     * @param Model $record The record to check.
+     * @return bool True if the record can be restored, false otherwise.
+     */
     public static function canRestore(Model $record): bool
     {
         // Get an instance of the current model
@@ -313,6 +366,12 @@ class IssuePriorityResource extends Resource
         return false;
     }
 
+    /**
+     * Determine whether the user can force delete the given record.
+     *
+     * @param Model $record The record instance.
+     * @return bool True if the user can force delete the record, false otherwise.
+     */
     public static function canForceDelete(Model $record): bool
     {
         // Get an instance of the current model
@@ -333,6 +392,11 @@ class IssuePriorityResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if multiple issue priorities can be restored.
+     *
+     * @return bool True if multiple issue priorities can be restored, false otherwise.
+     */
     public static function canRestoreMultiple(): bool
     {
         // Get an instance of the current model
@@ -353,6 +417,11 @@ class IssuePriorityResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if multiple issue priorities can be force deleted.
+     *
+     * @return bool True if multiple issue priorities can be force deleted, false otherwise.
+     */
     public static function canForceDeleteMultiple(): bool
     {
         // Get an instance of the current model
@@ -373,6 +442,11 @@ class IssuePriorityResource extends Resource
         return false;
     }
 
+    /**
+     * Determine if the issue priorities can be reordered.
+     *
+     * @return bool True if the issue priorities can be reordered, false otherwise.
+     */
     public static function canReorder(): bool
     {
         // Get an instance of the current model

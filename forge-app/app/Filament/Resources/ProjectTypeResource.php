@@ -39,6 +39,12 @@ class ProjectTypeResource extends Resource
 
     protected static ?string $cluster = Projects::class;
 
+    /**
+     * Define the form schema for the ProjectTypeResource.
+     *
+     * @param Form $form The form instance.
+     * @return Form The configured form instance.
+     */
     public static function form(Form $form): Form
     {
         return $form
@@ -69,6 +75,12 @@ class ProjectTypeResource extends Resource
             ]);
     }
 
+    /**
+     * Define the table structure for the ProjectTypeResource.
+     *
+     * @param Table $table The table instance to configure.
+     * @return Table The configured table instance.
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -94,6 +106,11 @@ class ProjectTypeResource extends Resource
             ]);
     }
 
+    /**
+     * Get the relations for the ProjectType resource.
+     *
+     * @return array An array of relations.
+     */
     public static function getRelations(): array
     {
         return [
@@ -101,6 +118,11 @@ class ProjectTypeResource extends Resource
         ];
     }
 
+    /**
+     * Get the pages associated with the ProjectType resource.
+     *
+     * @return array The array of pages.
+     */
     public static function getPages(): array
     {
         return [
@@ -110,6 +132,11 @@ class ProjectTypeResource extends Resource
         ];
     }
 
+    /**
+     * Determine if the current user can access the ProjectTypeResource.
+     *
+     * @return bool True if the user can access, false otherwise.
+     */
     public static function canAccess(): bool
     {
         // Get an instance of the current model
@@ -136,6 +163,11 @@ class ProjectTypeResource extends Resource
         return false;
     }
 
+    /**
+     * Determine whether any project types can be viewed.
+     *
+     * @return bool
+     */
     public static function canViewAny(): bool
     {
         // Get an instance of the current model

@@ -56,6 +56,14 @@ class AppServiceProvider extends ServiceProvider
         //Excel::bindValueBinder(CustomValueBinder::class);
     }
 
+    /**
+     * Configures the application settings and services.
+     *
+     * This method is responsible for setting up various configurations
+     * and services required by the application.
+     *
+     * @return void
+     */
     private function configureApp(): void
     {
         try {

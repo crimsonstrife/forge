@@ -168,6 +168,13 @@ class DynamicModelUtility extends Utility
         return $model;
     }
 
+    /**
+     * Retrieves the ID of a model based on the model name and record name.
+     *
+     * @param string $modelName The name of the model.
+     * @param mixed $recordName The name of the record.
+     * @return int|null The ID of the model if found, otherwise null.
+     */
     public static function getModelId(string $modelName, mixed $recordName): int|null
     {
         $model = self::getModelByName($modelName);
