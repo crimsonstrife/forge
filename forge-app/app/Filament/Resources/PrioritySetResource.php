@@ -21,7 +21,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Log;
 
-
 /**
  * Class PrioritySetResource
  *
@@ -69,7 +68,7 @@ class PrioritySetResource extends Resource
                         Forms\Components\Select::make('issue_priority_id')
                             ->label('Issue Priority')
                             ->options(
-                                fn() => IssuePriority::pluck('name', 'id')
+                                fn () => IssuePriority::pluck('name', 'id')
                             ) // Lazy load to avoid pre-loading interference
                             ->default(
                                 // Get the first default priority if it exists
