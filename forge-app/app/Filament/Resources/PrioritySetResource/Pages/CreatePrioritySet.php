@@ -6,7 +6,6 @@ use App\Filament\Resources\PrioritySetResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
-
 /**
  * Class CreatePrioritySet
  *

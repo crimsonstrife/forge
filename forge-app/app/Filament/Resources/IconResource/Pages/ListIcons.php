@@ -6,7 +6,6 @@ use App\Filament\Resources\IconResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-
 /**
  * Class ListIcons
  *

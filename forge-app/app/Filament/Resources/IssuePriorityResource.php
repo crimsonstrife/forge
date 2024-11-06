@@ -20,7 +20,6 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Clusters\Issues;
 use App\Forms\Components\IconPicker;
 
-
 /**
  * Class IssuePriorityResource
  *
