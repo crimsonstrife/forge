@@ -4,8 +4,12 @@ namespace App\Models\PivotModels;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Issues\IssuePriority;
 use App\Models\PrioritySet;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Class PrioritySetPriorities
@@ -19,23 +23,37 @@ class PrioritySetPriorities extends Pivot
 {
     use SoftDeletes;
 
-    /**
-     * Get the priority set that this priority belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function prioritySet()
+    protected $table = 'issue_priority_priority_set';
+
+    protected $fillable = ['priority_set_id', 'issue_priority_id', 'order', 'is_default'];
+
+    protected $casts = [
+        'is_default' => 'boolean',
+        'order' => 'integer',
+    ];
+
+    protected static function boot()
     {
-        return $this->belongsTo(PrioritySet::class, 'priority_set_id', 'id');
+        parent::boot();
     }
 
     /**
-     * Get the issue priority that this pivot belongs to.
+     * Get the priority set that this priority belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function issuePriority()
+    public function prioritySet(): BelongsTo
     {
-        return $this->belongsTo(IssuePriority::class, 'issue_priority_id', 'id');
+        return $this->belongsTo(PrioritySet::class);
+    }
+
+    /**
+     * Get the issue priority that this priority set belongs to.
+     *
+     * @return BelongsTo
+     */
+    public function issuePriority(): BelongsTo
+    {
+        return $this->belongsTo(IssuePriority::class);
     }
 }

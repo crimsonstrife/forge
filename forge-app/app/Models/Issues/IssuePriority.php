@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\IsPermissable;
 use App\Models\Icon;
 use App\Models\PrioritySet;
+use App\Models\PivotModels\PrioritySetPriorities;
 
 /**
  * Class IssuePriority
@@ -106,9 +107,7 @@ class IssuePriority extends Model
      */
     public function prioritySets()
     {
-        return $this->belongsToMany(PrioritySet::class)
-                    ->withPivot('order', 'is_default')
-                    ->orderBy('pivot_order');
+        return $this->belongsToMany(PrioritySet::class)->using(PrioritySetPriorities::class)->withPivot('order', 'is_default')->withTimestamps();
     }
 
     /**

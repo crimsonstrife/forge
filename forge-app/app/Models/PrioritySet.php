@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Issues\Issue;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,13 +10,17 @@ use App\Models\Issues\IssuePriority;
 use App\Models\Projects\Project;
 use App\Models\PivotModels\PrioritySetPriorities;
 use App\Traits\IsPermissable;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Represents a set of priorities that can be assigned to projects or tasks.
  * Manages operations such as adding, removing, and reordering priorities,
  * as well as setting the default priority.
+ *
  * @method static create(array $array)
  * @method static where(string $string, mixed $name)
+ *
+ * @package App\Models
  */
 class PrioritySet extends Model
 {
@@ -51,12 +56,25 @@ class PrioritySet extends Model
                 $query->where('id', '!=', $model->id); // Exclude the current model from the query
             }
 
+            // If a priority set with the same name already exists, prevent the model from being saved
             if ($query->exists()) {
                 return false; // Prevent the model from being saved
             }
 
+            // If the model is being saved, return true to allow the save operation to continue
             return true;
         });
+    }
+
+    /**
+     * Before saving the PrioritySet
+     * This method is used to ensure the priority set is setup correctly before saving it.
+     *
+     * @param $record
+     */
+    public function beforeSave($record): void
+    {
+        // If the priority set is being created,
     }
 
     /**
@@ -67,10 +85,16 @@ class PrioritySet extends Model
      */
     public function priorities(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(IssuePriority::class, 'issue_priority_priority_set')
+        // The IssuePriority model is used as the related model, and the pivot table is issue_priority_priority_set
+        return $this->belongsToMany(IssuePriority::class, 'issue_priority_priority_set', 'priority_set_id', 'issue_priority_id')
                     ->using(PrioritySetPriorities::class)
                     ->withPivot('order', 'is_default')
-                    ->withTimestamps();
+                    ->orderBy('order');
+    }
+
+    public function prioritySetPriorities(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PrioritySetPriorities::class);
     }
 
     /**
@@ -78,20 +102,9 @@ class PrioritySet extends Model
      */
     public function defaultPriority()
     {
-        return $this->priorities()
+        return $this->priorities(IssuePriority::class, 'issue_priority_priority_set')
                     ->wherePivot('is_default', true)
                     ->first();
-    }
-
-    /**
-     * Get the issue priorities associated with the priority set.
-     */
-    public function issuePriorities(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
-    {
-        return $this->belongsToMany(IssuePriority::class, 'issue_priority_priority_set')
-                    ->using(PrioritySetPriorities::class)
-                    ->withPivot('order', 'is_default')
-                    ->withTimestamps();
     }
 
     /**

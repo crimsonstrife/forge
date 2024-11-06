@@ -19,44 +19,16 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Log;
+
 
 /**
  * Class PrioritySetResource
  *
- * Represents a resource for managing Priority Sets.
+ * This class represents a resource in the Filament admin panel for managing priority sets.
+ * It extends the base Resource class provided by Filament.
  *
- * Attributes:
- * - Defines the associated model class.
- * - Specifies the icons for navigation and active state.
- * - Indicates the group to which this resource belongs in the navigation.
- * - Specifies the cluster for the resource.
- *
- * Methods:
- *
- * form:
- * Configures the form for creating or editing a Priority Set.
- * Takes a Form instance and returns the configured form schema, which includes a text input for the Priority Set name and a repeater for issue priorities.
- *
- * table:
- * Configures the table for displaying Priority Sets.
- * Takes a Table instance and returns the configured table schema, specifying columns such as the Priority Set name and the count of issue priorities.
- *
- * getRelations:
- * Returns an array of relations for the resource.
- *
- * getPages:
- * Returns an array of pages for managing Priority Sets, defining routes for listing, creating, and editing Priority Sets.
- *
- * Permissions:
- * - canAccess: Checks if the authenticated user has permission to access the resource.
- * - canViewAny: Determines if the user can view any Priority Set records.
- * - canView: Checks if the user can view a specific Priority Set record.
- * - canCreate: Determines if the user can create a new Priority Set.
- * - canEdit: Alias for canUpdate, checks if the user can edit a Priority Set.
- * - canUpdate: Determines if the user can update a Priority Set.
- * - canDelete: Checks if the user can delete a Priority Set.
- * - canRestore: Determines if the user can restore a deleted Priority Set.
- * - canForceDelete: Checks if the user can permanently delete a Priority Set.
+ * @package App\Filament\Resources
  */
 class PrioritySetResource extends Resource
 {
@@ -91,21 +63,29 @@ class PrioritySetResource extends Resource
                 // Repeater for issue priorities assigned to the priority set, defined by the pivot model PrioritySetPriorities,
                 // Uses the priority_set_id and issue_priority_id columns to relate to the PrioritySet and IssuePriority models respectively.
                 Forms\Components\Repeater::make('prioritySetPriorities')
-                    ->relationship('issuePriorities', function ($query) {
-                        return $query->select('id');
-                    })
+                    ->relationship()
                     ->orderColumn('order')
                     ->schema([
                         Forms\Components\Select::make('issue_priority_id')
                             ->label('Issue Priority')
-                            ->options(IssuePriority::all()->pluck('name', 'id', 'icon'))
+                            ->options(
+                                fn() => IssuePriority::pluck('name', 'id')
+                            ) // Lazy load to avoid pre-loading interference
                             ->default(
+                                // Get the first default priority if it exists
                                 IssuePriority::where('is_default', true)->first()?->id
                             )
                             ->required()
                             ->searchable()
                             ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                             ->unique(),
+
+                        Forms\Components\TextInput::make('order')
+                            ->label('Order')
+                            ->numeric()
+                            //->hidden() // Hides the order field from the form
+                            ->required()
+                            ->default(0),  // Sets default order based on index
 
                         // Checkbox to indicate if the priority is the default for the set, only one priority can be the default
                         Forms\Components\Checkbox::make('is_default')
@@ -114,7 +94,6 @@ class PrioritySetResource extends Resource
                             ->distinct()
                             ->fixIndistinctState()
                             ->inline(false),
-
                     ])
                     ->label('Issue Priorities')
                     ->columns(2)
@@ -122,8 +101,7 @@ class PrioritySetResource extends Resource
                     ->collapsible(true)
                     ->reorderableWithButtons(true)
                     ->reorderableWithDragAndDrop(true)
-                    //->itemLabel(fn (array $state): string => IssuePriority::find($state['issue_priority_id'])->name ?? null)
-                    ->addActionLabel('Add Priority')
+                    ->addActionLabel('Add Priority'),
             ]);
     }
 
@@ -138,11 +116,22 @@ class PrioritySetResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Priority Set Name'),
-                Tables\Columns\TextColumn::make('issuePriorities_count')
+                Tables\Columns\TextColumn::make('priorities_count')
                     ->label('Number of Priorities')
-                    ->counts('issuePriorities'),
+                    ->counts('priorities'),
             ])
             ->defaultSort('name');
+    }
+
+
+    /**
+     * Get the form model.
+     *
+     * @return Model|string|null The form model, which can be an instance of Model, a string, or null.
+     */
+    public function getFormModel(): Model|string|null
+    {
+        return IssuePriority::class;
     }
 
     /**

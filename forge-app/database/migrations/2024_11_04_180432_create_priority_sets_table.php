@@ -37,8 +37,8 @@ return new class () extends Migration {
         // Pivot table to associate priorities with sets and include order placement
         Schema::create('issue_priority_priority_set', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('priority_set_id')->constrained()->onDelete('cascade');
-            $table->foreignId('issue_priority_id')->constrained()->onDelete('cascade');
+            $table->foreignId('priority_set_id')->constrained()->onDelete('cascade')->references('id')->on('priority_sets');
+            $table->foreignId('issue_priority_id')->constrained()->onDelete('cascade')->references('id')->on('issue_priorities');
             $table->integer('order')->default(0); // Order of priority in the set
             $table->boolean('is_default')->default(false); // Whether this is the default priority for the set
             $table->softDeletes();
@@ -65,14 +65,27 @@ return new class () extends Migration {
             $table->unique(['priority_set_id', 'order'], 'priority_order_unique');
         });
 
-        // Ensure only one priority is the default for a set
-        Schema::table('issue_priority_priority_set', function (Blueprint $table) {
-            $table->unique(['priority_set_id', 'is_default'], 'priority_default_unique');
+        /*
+        Ensure only one priority is the default for a set
+        Unique constraints on boolean columns (where the result is true/false and not true/null) are not supported in MySQL, so we can't enforce this constraint
+        Instead, we can create a pivot table and use it to enforce the constraint in the application
+        */
+        Schema::table('priority_set_defaults', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('priority_set_issue_pair')->constrained()->onDelete('cascade')->references('id')->on('issue_priority_priority_set');
+            $table->boolean('is_default')->default(false)->nullable();
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        // Make sure that the priority_set_issue_pair is unique with the is_default flag
+        Schema::table('priority_set_defaults', function (Blueprint $table) {
+            $table->unique(['priority_set_issue_pair', 'is_default'], 'priority_default_unique');
         });
 
         // Migration update for Projects
         Schema::table('projects', function (Blueprint $table) {
-            $table->foreignId('priority_set_id')->nullable()->constrained('priority_sets')->onDelete('set null');
+            $table->foreignId('priority_set_id')->nullable()->constrained()->onDelete('set null')->references('id')->on('priority_sets');
         });
     }
 

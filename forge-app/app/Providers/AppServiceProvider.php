@@ -13,6 +13,8 @@ use Illuminate\Support\HtmlString;
 use Illuminate\Support\ServiceProvider;
 //use Maatwebsite\Excel\Facades\Excel;
 use App\Services\CustomValueBinder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * AppServiceProvider class.
@@ -54,6 +56,13 @@ class AppServiceProvider extends ServiceProvider
 
         // Register the CustomValueBinder
         //Excel::bindValueBinder(CustomValueBinder::class);
+
+        // If the application is in debug mode, log all queries and their bindings
+        if (config('app.debug')) {
+            DB::listen(function ($query) {
+                Log::debug("Query executed: {$query->sql} with bindings: " . json_encode($query->bindings));
+            });
+        }
     }
 
     /**
