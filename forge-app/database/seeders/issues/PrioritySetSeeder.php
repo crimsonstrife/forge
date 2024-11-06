@@ -56,14 +56,17 @@ class PrioritySetSeeder extends Seeder
      */
     private function createPrioritySets(array $prioritiesData): void
     {
+        // Instance the PrioritySet model
+        $prioritySet = new PrioritySet();
         foreach (array_chunk($prioritiesData['priority_sets'], 10) as $setChunk) {
             foreach ($setChunk as $set) {
                 $name = $set['name'];
                 $description = $set['description']; // Description not currently used.
 
                 // Create the PrioritySet
-                PrioritySet::create([
+                $prioritySet->create([
                     'name' => $name,
+                    'description' => $description,
                 ]);
 
                 // Log the creation of the PrioritySet
@@ -82,7 +85,7 @@ class PrioritySetSeeder extends Seeder
                 $name = $set['name'];
 
                 // Get the PrioritySet by name
-                $prioritySet = PrioritySet::where('name', $name)->first();
+                $thisPrioritySet = $prioritySet->where('name', $name)->first();
 
                 // Get the priorities from the dataset that match the current set
                 $priorities = array_filter($prioritiesData['issue_priorities'], static function ($priority) use ($name) {
@@ -94,8 +97,13 @@ class PrioritySetSeeder extends Seeder
                     return ModelUtility::getModelId('IssuePriority', $priority['name']);
                 }, $priorities);
 
-                // Attach the priorities to the PrioritySet
-                $prioritySet->priorities()->attach($priorityIds);
+                // For each priority ID, attach it to the PrioritySet
+                foreach ($priorityIds as $priorityId) {
+                    $thisPrioritySet->priorities()->attach($priorityId);
+
+                    // Log the attachment of the priority to the PrioritySet
+                    $this->command->info("Priority attached to PrioritySet: {$name}");
+                }
 
                 // Log the attachment of the priorities to the PrioritySet
                 $this->command->info("Priorities attached to PrioritySet: {$name}");

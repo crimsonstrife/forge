@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Issues\IssuePriority;
 use App\Models\Projects\Project;
+use App\Models\PivotModels\PrioritySetPriorities;
 use App\Traits\IsPermissable;
 
 /**
@@ -60,12 +61,16 @@ class PrioritySet extends Model
 
     /**
      * Get the priorities associated with the priority set.
+     * This relationship is found through the issue_priority_priority_set pivot table, with priority_set_id referencing the id of this model, and issue_priority_id referencing the id of the IssuePriority model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function priorities(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(IssuePriority::class)
-                    ->withPivot('order')
-                    ->orderBy('order');
+        return $this->belongsToMany(IssuePriority::class, 'issue_priority_priority_set')
+                    ->using(PrioritySetPriorities::class)
+                    ->withPivot('order', 'is_default')
+                    ->withTimestamps();
     }
 
     /**
@@ -83,9 +88,10 @@ class PrioritySet extends Model
      */
     public function issuePriorities(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(IssuePriority::class)
+        return $this->belongsToMany(IssuePriority::class, 'issue_priority_priority_set')
+                    ->using(PrioritySetPriorities::class)
                     ->withPivot('order', 'is_default')
-                    ->orderBy('order');
+                    ->withTimestamps();
     }
 
     /**

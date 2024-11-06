@@ -76,10 +76,10 @@ class IssuePrioritySeeder extends Seeder
                 // Create the IssuePriority
                 IssuePriority::create([
                     'name' => $name,
-                    'description' => $description,
+                    'description' => $description ?? null,
                     'color' => $colorCode,
-                    'icon_id' => $icon->id,
-                    'is_default' => false
+                    'icon' => $icon->id,
+                    'is_default' => $priorityData['is_default'] ?? false,
                 ]);
 
                 // Log the priority creation

@@ -8,6 +8,8 @@ use App\Filament\Resources\PrioritySetResource\RelationManagers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\PrioritySet;
+use App\Models\PivotModels\PrioritySetPriorities;
+use App\Models\Issues\IssuePriority;
 use App\Utilities\DynamicModelUtility as ModelUtility;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms;
@@ -60,6 +62,10 @@ class PrioritySetResource extends Resource
 {
     protected static ?string $model = PrioritySet::class;
 
+    protected static ?string $pivotModel = PrioritySetPriorities::class;
+
+    protected static ?string $relatedResource = IssuePriority::class;
+
     protected static ?string $navigationIcon = 'far-list-radio';
 
     protected static ?string $activeNavigationIcon = 'fas-list-radio';
@@ -82,25 +88,41 @@ class PrioritySetResource extends Resource
                     ->label('Priority Set Name')
                     ->required(),
 
-                Forms\Components\Repeater::make('issuePriorities')
-                    ->relationship('issuePriorities')
-                    ->label('Priorities in Set')
+                // Repeater for issue priorities assigned to the priority set, defined by the pivot model PrioritySetPriorities,
+                // Uses the priority_set_id and issue_priority_id columns to relate to the PrioritySet and IssuePriority models respectively.
+                Forms\Components\Repeater::make('prioritySetPriorities')
+                    ->relationship('issuePriorities', function ($query) {
+                        return $query->select('id');
+                    })
+                    ->orderColumn('order')
                     ->schema([
                         Forms\Components\Select::make('issue_priority_id')
-                            ->label('Priority')
-                            ->relationship('issuePriorities', 'name')
+                            ->label('Issue Priority')
+                            ->options(IssuePriority::all()->pluck('name', 'id', 'icon'))
+                            ->default(
+                                IssuePriority::where('is_default', true)->first()?->id
+                            )
                             ->required()
                             ->searchable()
+                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                             ->unique(),
 
-                        Forms\Components\TextInput::make('order')
-                            ->label('Order')
-                            ->numeric()
-                            ->required()
-                            ->default(0),
+                        // Checkbox to indicate if the priority is the default for the set, only one priority can be the default
+                        Forms\Components\Checkbox::make('is_default')
+                            ->label('Default Priority')
+                            ->default(false)
+                            ->distinct()
+                            ->fixIndistinctState()
+                            ->inline(false),
+
                     ])
+                    ->label('Issue Priorities')
                     ->columns(2)
-                    ->minItems(2)
+                    ->minItems(1)
+                    ->collapsible(true)
+                    ->reorderableWithButtons(true)
+                    ->reorderableWithDragAndDrop(true)
+                    //->itemLabel(fn (array $state): string => IssuePriority::find($state['issue_priority_id'])->name ?? null)
                     ->addActionLabel('Add Priority')
             ]);
     }
