@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\ServiceProvider;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Services\CustomValueBinder;
 
 /**
  * AppServiceProvider class.
@@ -49,6 +51,9 @@ class AppServiceProvider extends ServiceProvider
         if ($baseUrl = env('APP_URL')) {
             URL::forceRootUrl($baseUrl);
         }
+
+        // Register the CustomValueBinder
+        Excel::bindValueBinder(CustomValueBinder::class);
     }
 
     private function configureApp(): void
