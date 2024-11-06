@@ -4,7 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-
 /**
  * Create a new migration class for the issue_activities table.
  *
@@ -14,8 +13,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * @return void
  */
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */

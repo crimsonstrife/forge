@@ -75,7 +75,7 @@ class Issue extends Model implements HasMedia
 
         //creating a new issue
         static::creating(function (Issue $issue) {
-            $project = (new Project)->where('id', $issue->project_id)->first();
+            $project = (new Project())->where('id', $issue->project_id)->first();
             $count = Issue::where('project_id', $project->id)->count();
             $order = $project->issues?->last()?->order ?? -1;
             $issue->code = $project->ticket_prefix . '-' . ($count + 1);

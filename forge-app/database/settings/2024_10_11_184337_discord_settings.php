@@ -11,8 +11,7 @@ use Spatie\LaravelSettings\Migrations\SettingsMigration;
  * @return void
  * @extends SettingsMigration
  */
-return new class extends SettingsMigration
-{
+return new class () extends SettingsMigration {
     public function up(): void
     {
         $this->migrator->add('discord.enabled', false);

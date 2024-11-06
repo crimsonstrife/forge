@@ -13,8 +13,7 @@ use Laravel\Fortify\Fortify;
  *
  * @return void
  */
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
