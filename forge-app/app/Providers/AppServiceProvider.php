@@ -60,7 +60,7 @@ class AppServiceProvider extends ServiceProvider
         // If the application is in debug mode, log all queries and their bindings
         if (config('app.debug')) {
             DB::listen(function ($query) {
-                Log::debug("Query executed: {$query->sql} with bindings: " . json_encode($query->bindings));
+                //Log::debug("Query executed: {$query->sql} with bindings: " . json_encode($query->bindings));
             });
         }
     }

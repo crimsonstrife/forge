@@ -193,7 +193,7 @@ class DiscordController extends Controller
             $process->mustRun();
 
             // Log success
-            Log::info("Message sent to {$discordUsername}: {$message}");
+            Log::debug("Message sent to {$discordUsername}: {$message}");
         } catch (ProcessFailedException $e) {
             // Log any errors
             Log::error("Failed to send message to {$discordUsername}: " . $e->getMessage());
@@ -231,7 +231,7 @@ class DiscordController extends Controller
             $process->mustRun();
 
             // Log success
-            Log::info("Notification sent to {$userId}: {$message}");
+            Log::debug("Notification sent to {$userId}: {$message}");
         } catch (ProcessFailedException $e) {
             // Log any errors
             Log::error("Failed to send notification to {$userId}: " . $e->getMessage());

@@ -149,7 +149,7 @@ class DiscordAuthController extends Controller
             // Get the output
             $roles = $process->getOutput();
             // Log success
-            Log::info("Discord roles fetched for user ID: {$discordId}");
+            Log::debug("Discord roles fetched for user ID: {$discordId}");
 
             return json_decode($roles);
         } catch (ProcessFailedException $exception) {
@@ -211,7 +211,7 @@ class DiscordAuthController extends Controller
             $process->mustRun();
 
             // Log success
-            Log::info("Discord role '{$discordRoleName}' assigned to user ID: {$discordId}");
+            Log::debug("Discord role '{$discordRoleName}' assigned to user ID: {$discordId}");
         } catch (ProcessFailedException $exception) {
             // Log error
             Log::error("Failed to assign Discord role '{$discordRoleName}' to user ID: {$discordId}");

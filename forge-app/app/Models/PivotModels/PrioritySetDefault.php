@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\PivotModels\PrioritySetPriorities;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class PrioritySetDefault
@@ -32,5 +33,37 @@ class PrioritySetDefault extends Pivot
     public function prioritySetPriority()
     {
         return $this->belongsTo(PrioritySetPriorities::class, 'priority_set_issue_pair');
+    }
+
+    /**
+     * This method sets the priority for the priority set.
+     *
+     * @return BelongsTo
+     */
+    public function prioritySetPriorities()
+    {
+        return $this->belongsTo(PrioritySetPriorities::class, 'priority_set_issue_pair');
+    }
+
+    /**
+     * Sets the default value for a given priority set issue pair.
+     *
+     * @param int $prioritySetIssuePairId The ID of the priority set issue pair.
+     * @return void
+     */
+    public static function setDefaultForPrioritySet($prioritySetId, $issuePriorityId)
+    {
+        Log::info('Setting default', ['priority_set_id' => $prioritySetId, 'issue_priority_id' => $issuePriorityId]);
+
+        // Remove existing defaults for this priority set
+        self::whereHas('prioritySetPriorities', function ($query) use ($prioritySetId) {
+            $query->where('priority_set_id', $prioritySetId);
+        })->delete();
+
+        // Add the new default
+        self::create([
+            'priority_set_issue_pair' => $issuePriorityId,
+            'is_default' => true,
+        ]);
     }
 }

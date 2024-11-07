@@ -175,14 +175,14 @@ class IconResource extends Resource
                     ->afterStateHydrated(function ($state, callable $set, $get) use ($prefixes, $classes) {
                         $prefix = $prefixes[$state] ?? 'custom-c';
                         $class = $classes[$state] ?? 'custom-icon-set custom-icon';
-                        Log::debug('Set: ' . $state);
+                        //Log::debug('Set: ' . $state);
                         $set('prefix', $prefix);
                         $set('class', $class);
                     })
                     ->afterStateUpdated(function ($state, callable $set, $get) use ($prefixes, $classes) {
                         $prefix = $prefixes[$state] ?? 'custom-c';
                         $class = $classes[$state] ?? 'custom-icon-set custom-icon';
-                        Log::debug('Set: ' . $state);
+                        //Log::debug('Set: ' . $state);
                         $set('prefix', $prefix);
                         $set('class', $class);
                     }),

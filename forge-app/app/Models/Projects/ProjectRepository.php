@@ -82,7 +82,7 @@ class ProjectRepository extends Model
 
             if ($result) {
                 // Log the success message if the metadata is fetched successfully
-                Log::info('Metadata fetched successfully for repository', ['url' => $this->http_url]);
+                Log::debug('Metadata fetched successfully for repository', ['url' => $this->http_url]);
                 return true;
             }
 
@@ -146,7 +146,7 @@ class ProjectRepository extends Model
 
         // Log the response, and return true if the response is successful
         if ($data) {
-            Log::info('Repository verified successfully', $data);
+            Log::debug('Repository verified successfully', $data);
             return true;
         }
 

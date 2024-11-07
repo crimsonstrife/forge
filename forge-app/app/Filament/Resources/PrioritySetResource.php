@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\PrioritySet;
 use App\Models\PivotModels\PrioritySetPriorities;
+use App\Models\PivotModels\PrioritySetDefault;
 use App\Models\Issues\IssuePriority;
 use App\Utilities\DynamicModelUtility as ModelUtility;
 use Illuminate\Database\Eloquent\Model;
@@ -68,12 +69,23 @@ class PrioritySetResource extends Resource
                         Forms\Components\Select::make('issue_priority_id')
                             ->label('Issue Priority')
                             ->options(
-                                fn () => (new IssuePriority())->pluck('name', 'id')
+                                fn() => (new IssuePriority())->pluck('name', 'id')
                             ) // Lazy load to avoid pre-loading interference
                             ->required()
                             ->searchable()
                             ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                            ->unique(),
+                            // Remove unique() to prevent the global unique constraint
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, $set, $get, $record) {
+                                if ($state) {
+                                    // Perform any additional operations needed to ensure unique selections in the repeater
+                                    $selectedPriorities = collect($get('prioritySetPriorities'))->pluck('issue_priority_id');
+                                    if ($selectedPriorities->duplicates()->isNotEmpty()) {
+                                        $set('issue_priority_id', null);
+                                        session()->flash('error', 'Each priority must be unique within the set.');
+                                    }
+                                }
+                            }),
 
                         Forms\Components\TextInput::make('order')
                             ->label('Order')
@@ -89,12 +101,9 @@ class PrioritySetResource extends Resource
                             ->distinct()
                             ->reactive()
                             ->fixIndistinctState()
-                            ->afterStateUpdated(function ($state, $set, $get, $record) {
-                                if ($state) {
-                                    PrioritySetPriorities::where('priority_set_id', $record->priority_set_id)
-                                        ->where('is_default', true)
-                                        ->update(['is_default' => false]);
-                                    $record->setAsDefault();
+                            ->afterStateHydrated(function ($set, $record, $get) {
+                                if ($record && PrioritySetDefault::where('priority_set_issue_pair', $record->id)->exists()) {
+                                    $set('is_default', true);
                                 }
                             })
                             ->inline(false),
@@ -107,6 +116,22 @@ class PrioritySetResource extends Resource
                     ->reorderableWithDragAndDrop(true)
                     ->addActionLabel('Add Priority'),
             ]);
+    }
+
+    /**
+     * After saving the form, ensure the default priority is properly set or cleared.
+     */
+    public static function saved($record)
+    {
+        foreach ($record->prioritySetPriorities as $priority) {
+            // Check if this priority should be default, and update PrioritySetDefault accordingly
+            if ($priority->is_default) {
+                PrioritySetDefault::setDefaultForPrioritySet($record->id, $priority->issue_priority_id);
+            } else {
+                // If is_default is false, remove any existing default for this priority set and priority
+                PrioritySetDefault::where('priority_set_issue_pair', $priority->id)->delete();
+            }
+        }
     }
 
     /**
