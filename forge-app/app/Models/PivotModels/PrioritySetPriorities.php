@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Issues\IssuePriority;
 use App\Models\PrioritySet;
+use App\Models\PivotModels\PrioritySetDefault;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -25,13 +27,22 @@ class PrioritySetPriorities extends Pivot
 
     protected $table = 'issue_priority_priority_set';
 
-    protected $fillable = ['priority_set_id', 'issue_priority_id', 'order', 'is_default'];
+    protected $fillable = ['priority_set_id', 'issue_priority_id', 'order'];
 
     protected $casts = [
         'is_default' => 'boolean',
         'order' => 'integer',
     ];
 
+    // Indicate if the model should be timestamped
+    public $timestamps = true;
+
+    /**
+     * The "booting" method of the model.
+     * This method is called when the model is being initialized.
+     * You can use this method to set up event listeners or perform other
+     * initialization tasks.
+     */
     protected static function boot()
     {
         parent::boot();
@@ -55,5 +66,31 @@ class PrioritySetPriorities extends Pivot
     public function issuePriority(): BelongsTo
     {
         return $this->belongsTo(IssuePriority::class);
+    }
+
+    /**
+     * This method is used to set the default priority.
+     *
+     * @return HasOne
+     */
+    public function default()
+    {
+        return $this->hasOne(PrioritySetDefault::class, 'priority_set_issue_pair');
+    }
+
+    /**
+     * Sets the current priority as the default priority.
+     *
+     * This method updates the relevant records to mark the current priority
+     * as the default one within the priority set.
+     *
+     * @return Model
+     */
+    public function setAsDefault()
+    {
+        return $this->default()->updateOrCreate(
+            ['priority_set_issue_pair' => $this->id],
+            ['is_default' => true]
+        );
     }
 }

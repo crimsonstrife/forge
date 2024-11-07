@@ -40,7 +40,6 @@ return new class () extends Migration {
             $table->foreignId('priority_set_id')->constrained()->onDelete('cascade')->references('id')->on('priority_sets');
             $table->foreignId('issue_priority_id')->constrained()->onDelete('cascade')->references('id')->on('issue_priorities');
             $table->integer('order')->default(0); // Order of priority in the set
-            $table->boolean('is_default')->default(false); // Whether this is the default priority for the set
             $table->softDeletes();
             $table->bigInteger('created_by')->unsigned()->nullable();
             $table->bigInteger('updated_by')->unsigned()->nullable();
@@ -70,10 +69,10 @@ return new class () extends Migration {
         Unique constraints on boolean columns (where the result is true/false and not true/null) are not supported in MySQL, so we can't enforce this constraint
         Instead, we can create a pivot table and use it to enforce the constraint in the application
         */
-        Schema::table('priority_set_defaults', function (Blueprint $table) {
+        Schema::create('priority_set_defaults', function (Blueprint $table) {
             $table->id();
             $table->foreignId('priority_set_issue_pair')->constrained()->onDelete('cascade')->references('id')->on('issue_priority_priority_set');
-            $table->boolean('is_default')->default(false)->nullable();
+            $table->boolean('is_default')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });
@@ -121,6 +120,7 @@ return new class () extends Migration {
         });
 
         // Drop the tables
+        Schema::dropIfExists('priority_set_defaults');
         Schema::dropIfExists('issue_priority_priority_set');
         Schema::dropIfExists('priority_sets');
     }

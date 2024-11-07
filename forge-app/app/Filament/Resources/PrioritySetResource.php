@@ -68,12 +68,8 @@ class PrioritySetResource extends Resource
                         Forms\Components\Select::make('issue_priority_id')
                             ->label('Issue Priority')
                             ->options(
-                                fn () => IssuePriority::pluck('name', 'id')
+                                fn() => (new IssuePriority())->pluck('name', 'id')
                             ) // Lazy load to avoid pre-loading interference
-                            ->default(
-                                // Get the first default priority if it exists
-                                IssuePriority::where('is_default', true)->first()?->id
-                            )
                             ->required()
                             ->searchable()
                             ->disableOptionsWhenSelectedInSiblingRepeaterItems()
@@ -91,7 +87,16 @@ class PrioritySetResource extends Resource
                             ->label('Default Priority')
                             ->default(false)
                             ->distinct()
+                            ->reactive()
                             ->fixIndistinctState()
+                            ->afterStateUpdated(function ($state, $set, $get, $record) {
+                                if ($state) {
+                                    PrioritySetPriorities::where('priority_set_id', $record->priority_set_id)
+                                        ->where('is_default', true)
+                                        ->update(['is_default' => false]);
+                                    $record->setAsDefault();
+                                }
+                            })
                             ->inline(false),
                     ])
                     ->label('Issue Priorities')

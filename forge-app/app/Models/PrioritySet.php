@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Issues\IssuePriority;
 use App\Models\Projects\Project;
 use App\Models\PivotModels\PrioritySetPriorities;
+use App\Models\PivotModels\PrioritySetDefault;
 use App\Traits\IsPermissable;
 use Illuminate\Support\Facades\Log;
 
@@ -88,7 +89,7 @@ class PrioritySet extends Model
         // The IssuePriority model is used as the related model, and the pivot table is issue_priority_priority_set
         return $this->belongsToMany(IssuePriority::class, 'issue_priority_priority_set', 'priority_set_id', 'issue_priority_id')
                     ->using(PrioritySetPriorities::class)
-                    ->withPivot('order', 'is_default')
+                    ->withPivot('order')
                     ->orderBy('order');
     }
 
@@ -98,30 +99,27 @@ class PrioritySet extends Model
     }
 
     /**
-     * Get the default priority for the priority set.
+     * Get the default priorities for the priority set.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
-    public function defaultPriority()
+    public function defaultPriorities(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
-        return $this->priorities(IssuePriority::class, 'issue_priority_priority_set')
-                    ->wherePivot('is_default', true)
-                    ->first();
+        return $this->hasManyThrough(PrioritySetDefault::class, PrioritySetPriorities::class, 'priority_set_id', 'priority_set_issue_pair');
     }
 
     /**
-     * Set the default priority for the priority set.
+     * Set the default priorities for the priority set.
      */
-    public function setDefaultPriority(IssuePriority $priority): void
+    public function setDefaultPriorities(array $priorities): void
     {
-        // Remove the default flag from all priorities in the set, then set the new default
-        $this->priorities()->updateExistingPivot($priority->id, ['is_default' => true]);
-    }
+        // Remove all default priorities
+        $this->defaultPriorities()->delete();
 
-    /**
-     * Add a priority to the priority set.
-     */
-    public function addPriority(IssuePriority $priority, int $order = 0, bool $isDefault = false): void
-    {
-        $this->priorities()->attach($priority->id, ['order' => $order, 'is_default' => $isDefault]);
+        // Add the new default priorities
+        foreach ($priorities as $priority) {
+            $this->defaultPriorities()->create(['priority_set_issue_pair' => $priority]);
+        }
     }
 
     /**

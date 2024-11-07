@@ -10,6 +10,8 @@ use App\Traits\IsPermissable;
 use App\Models\Icon;
 use App\Models\PrioritySet;
 use App\Models\PivotModels\PrioritySetPriorities;
+use App\Models\PivotModels\PrioritySetDefault;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Class IssuePriority
@@ -108,6 +110,20 @@ class IssuePriority extends Model
     public function prioritySets()
     {
         return $this->belongsToMany(PrioritySet::class)->using(PrioritySetPriorities::class)->withPivot('order', 'is_default')->withTimestamps();
+    }
+
+    /**
+     * Sets the default values for the priority.
+     *
+     * This method is responsible for initializing or resetting the default
+     * priority values for an issue. It ensures that the priority is set to
+     * a predefined state when called.
+     *
+     * @return void
+     */
+    public function prioritySetDefaults()
+    {
+        return $this->hasManyThrough(PrioritySetDefault::class, PrioritySetPriorities::class, 'issue_priority_id', 'priority_set_issue_pair');
     }
 
     /**
