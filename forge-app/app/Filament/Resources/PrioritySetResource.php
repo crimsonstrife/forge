@@ -69,7 +69,7 @@ class PrioritySetResource extends Resource
                         Forms\Components\Select::make('issue_priority_id')
                             ->label('Issue Priority')
                             ->options(
-                                fn() => (new IssuePriority())->pluck('name', 'id')
+                                fn () => (new IssuePriority())->pluck('name', 'id')
                             ) // Lazy load to avoid pre-loading interference
                             ->required()
                             ->searchable()
