@@ -93,4 +93,39 @@ class PrioritySetPriorities extends Pivot
             ['is_default' => true]
         );
     }
+
+    /**
+     * This method is used to unset the default priority.
+     *
+     * @return bool
+     */
+    public function unsetAsDefault()
+    {
+        return $this->default()->delete();
+    }
+
+    /**
+     * This method is used to check if the current priority is the default priority.
+     *
+     * @return bool
+     */
+    public function isDefault(): bool
+    {
+        return $this->default()->exists();
+    }
+
+    /**
+     * Delete the priority set priority.
+     *
+     * @return bool|null
+     */
+    public function delete()
+    {
+        // If the priority is the default, unset it as the default
+        if ($this->isDefault()) {
+            $this->unsetAsDefault();
+        }
+
+        return parent::delete();
+    }
 }

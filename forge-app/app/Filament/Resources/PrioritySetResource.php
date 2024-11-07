@@ -21,6 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class PrioritySetResource
@@ -32,6 +33,8 @@ use Illuminate\Support\Facades\Log;
  */
 class PrioritySetResource extends Resource
 {
+    use SoftDeletes;
+
     protected static ?string $model = PrioritySet::class;
 
     protected static ?string $pivotModel = PrioritySetPriorities::class;
@@ -69,7 +72,7 @@ class PrioritySetResource extends Resource
                         Forms\Components\Select::make('issue_priority_id')
                             ->label('Issue Priority')
                             ->options(
-                                fn () => (new IssuePriority())->pluck('name', 'id')
+                                fn() => (new IssuePriority())->pluck('name', 'id')
                             ) // Lazy load to avoid pre-loading interference
                             ->required()
                             ->searchable()
@@ -85,12 +88,19 @@ class PrioritySetResource extends Resource
                                         session()->flash('error', 'Each priority must be unique within the set.');
                                     }
                                 }
+                            })
+                            ->afterStateHydrated(function ($set, $record, $get) {
+                                // If the record is being edited, set the selected priority
+                                if ($record) {
+                                    // Set the selected priority by order
+                                    $set('issue_priority_id', $record->issue_priority_id);
+                                }
                             }),
 
                         Forms\Components\TextInput::make('order')
                             ->label('Order')
                             ->numeric()
-                            //->hidden() // Hides the order field from the form
+                            ->hidden() // Hides the order field from the form
                             ->required()
                             ->default(0),  // Sets default order based on index
 
@@ -106,7 +116,48 @@ class PrioritySetResource extends Resource
                                     $set('is_default', true);
                                 }
                             })
-                            ->inline(false),
+                            ->inline(false)
+                            ->afterStateUpdated(function ($state, $set, $get, $record) {
+                                $prioritySetId = $record->id;
+                                $issuePriorityId = $get('issue_priority_id');
+
+                                // Step 1: Find the `priority_set_issue_pair` ID in the pivot table `issue_priority_priority_set`
+                                $prioritySetIssuePairId = \DB::table('issue_priority_priority_set')
+                                    ->where('priority_set_id', $prioritySetId)
+                                    ->where('issue_priority_id', $issuePriorityId)
+                                    ->value('id'); // This is the pivot ID
+
+                                if ($prioritySetIssuePairId) {
+                                    if ($state) {
+                                        // If checked, clear other defaults for the set and set this priority as the default
+                                        PrioritySetDefault::where('priority_set_issue_pair', $prioritySetIssuePairId)
+                                            ->update(['is_default' => false]);
+
+                                        PrioritySetDefault::updateOrCreate(
+                                            ['priority_set_issue_pair' => $prioritySetIssuePairId],
+                                            ['is_default' => true]
+                                        );
+                                    } else {
+                                        // If unchecked, remove the default entry for this priority
+                                        PrioritySetDefault::where('priority_set_issue_pair', $prioritySetIssuePairId)
+                                            ->delete();
+                                    }
+                                } else {
+                                    \Log::warning('Priority set issue pair not found.', [
+                                        'priority_set_id' => $prioritySetId,
+                                        'issue_priority_id' => $issuePriorityId,
+                                    ]);
+                                }
+                            }),
+
+                        // Hidden field to capture repeater data as JSON
+                        Forms\Components\Hidden::make('prioritySetPrioritiesData')
+                            ->dehydrated()
+                            ->afterStateHydrated(function ($state, callable $set, $get) {
+                                // Set hidden field to JSON of prioritySetPriorities
+                                $set('prioritySetPrioritiesData', json_encode($get('prioritySetPriorities') ?? []));
+                            })
+                            ->reactive(),
                     ])
                     ->label('Issue Priorities')
                     ->columns(2)
@@ -114,24 +165,11 @@ class PrioritySetResource extends Resource
                     ->collapsible(true)
                     ->reorderableWithButtons(true)
                     ->reorderableWithDragAndDrop(true)
+                    ->afterStateHydrated(function ($state) {
+                        \Log::debug('Repeater afterStateHydrated', ['state' => $state]);
+                    })
                     ->addActionLabel('Add Priority'),
             ]);
-    }
-
-    /**
-     * After saving the form, ensure the default priority is properly set or cleared.
-     */
-    public static function saved($record)
-    {
-        foreach ($record->prioritySetPriorities as $priority) {
-            // Check if this priority should be default, and update PrioritySetDefault accordingly
-            if ($priority->is_default) {
-                PrioritySetDefault::setDefaultForPrioritySet($record->id, $priority->issue_priority_id);
-            } else {
-                // If is_default is false, remove any existing default for this priority set and priority
-                PrioritySetDefault::where('priority_set_issue_pair', $priority->id)->delete();
-            }
-        }
     }
 
     /**
@@ -145,11 +183,34 @@ class PrioritySetResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Priority Set Name'),
-                Tables\Columns\TextColumn::make('priorities_count')
+                // Column to display the number of priorities in the set, only count the non-deleted priorities, soft-deleted rows are excluded
+                Tables\Columns\TextColumn::make('active_priorities_count')
                     ->label('Number of Priorities')
-                    ->counts('priorities'),
+                    ->counts('activePriorities'),
             ])
             ->defaultSort('name');
+    }
+
+    /**
+     * Handle the "saved" event for the given record.
+     *
+     * @param mixed $record The record that was saved.
+     * @return void
+     */
+    public static function saved($record)
+    {
+        // Ensure a default priority is set on new records
+        $defaultPriorityData = collect(request()->input('prioritySetPriorities', []))
+            ->firstWhere('is_default', true);
+
+        if ($defaultPriorityData) {
+            $issuePriorityId = $defaultPriorityData['issue_priority_id'];
+
+            PrioritySetDefault::updateOrCreate(
+                ['priority_set_issue_pair' => $record->id, 'issue_priority_id' => $issuePriorityId],
+                ['is_default' => true]
+            );
+        }
     }
 
 

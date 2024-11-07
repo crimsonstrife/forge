@@ -40,8 +40,16 @@ class PrioritySet extends Model
     {
         parent::boot();
 
-        // Clear the cache when Priority Sets are saved or deleted
-        static::saved(function () {
+        /**
+         * The "saved" event listener for the PrioritySet model.
+         *
+         * This static method is triggered after a record is saved.
+         *
+         * @param \Illuminate\Database\Eloquent\Model $record The saved record instance.
+         * @return void
+         */
+        static::saved(function ($record) {
+            // Clear the cache when Priority Sets are saved
             cache()->forget('priority_sets.all');
         });
 
@@ -49,33 +57,6 @@ class PrioritySet extends Model
         static::deleted(function () {
             cache()->forget('priority_sets.all');
         });
-
-        static::saving(function ($model) {
-            $query = static::where('name', $model->name);
-
-            if ($model->exists) {
-                $query->where('id', '!=', $model->id); // Exclude the current model from the query
-            }
-
-            // If a priority set with the same name already exists, prevent the model from being saved
-            if ($query->exists()) {
-                return false; // Prevent the model from being saved
-            }
-
-            // If the model is being saved, return true to allow the save operation to continue
-            return true;
-        });
-    }
-
-    /**
-     * Before saving the PrioritySet
-     * This method is used to ensure the priority set is setup correctly before saving it.
-     *
-     * @param $record
-     */
-    public function beforeSave($record): void
-    {
-        // If the priority set is being created,
     }
 
     /**
@@ -88,11 +69,26 @@ class PrioritySet extends Model
     {
         // The IssuePriority model is used as the related model, and the pivot table is issue_priority_priority_set
         return $this->belongsToMany(IssuePriority::class, 'issue_priority_priority_set', 'priority_set_id', 'issue_priority_id')
-                    ->using(PrioritySetPriorities::class)
-                    ->withPivot('order')
-                    ->orderBy('order');
+            ->using(PrioritySetPriorities::class)
+            ->withPivot('order')
+            ->orderBy('order');
     }
 
+    /**
+     * Get the active priorities.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function activePriorities(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PrioritySetPriorities::class, 'priority_set_id')->whereNull('deleted_at');
+    }
+
+    /**
+     * Get the priority set priorities.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function prioritySetPriorities(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(PrioritySetPriorities::class);

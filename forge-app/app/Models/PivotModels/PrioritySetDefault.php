@@ -66,4 +66,20 @@ class PrioritySetDefault extends Pivot
             'is_default' => true,
         ]);
     }
+
+    /**
+     * Update or create a default for a given priority set issue pair.
+     *
+     * @param int $prioritySetId The ID of the priority set.
+     * @param int $issuePriorityId The ID of the issue priority.
+     * @return void
+     */
+    public static function updateOrCreate($prioritySetId, $issuePriorityId, $isDefault = true)
+    {
+        self::updateOrCreate(
+            ['priority_set_issue_pair' => $prioritySetId],
+            ['issue_priority_id' => $issuePriorityId],
+            ['is_default' => $isDefault]
+        );
+    }
 }

@@ -54,16 +54,6 @@ return new class () extends Migration {
             $table->foreign('deleted_by')->references('id')->on('users');
         });
 
-        // Ensure that priorities are unique within a set, i.e. there can't be two of the same priority in a set
-        Schema::table('issue_priority_priority_set', function (Blueprint $table) {
-            $table->unique(['priority_set_id', 'issue_priority_id'], 'priority_set_unique');
-        });
-
-        // Ensure that the order is unique within a set, i.e. there can't be two priorities with the same order in a set
-        Schema::table('issue_priority_priority_set', function (Blueprint $table) {
-            $table->unique(['priority_set_id', 'order'], 'priority_order_unique');
-        });
-
         /*
         Ensure only one priority is the default for a set
         Unique constraints on boolean columns (where the result is true/false and not true/null) are not supported in MySQL, so we can't enforce this constraint
@@ -75,11 +65,6 @@ return new class () extends Migration {
             $table->boolean('is_default')->default(false);
             $table->softDeletes();
             $table->timestamps();
-        });
-
-        // Make sure that the priority_set_issue_pair is unique with the is_default flag
-        Schema::table('priority_set_defaults', function (Blueprint $table) {
-            $table->unique(['priority_set_issue_pair', 'is_default'], 'priority_default_unique');
         });
 
         // Migration update for Projects
