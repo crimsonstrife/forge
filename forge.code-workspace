@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
-		"laraphense.disableFeatures": []
+		"laraphense.disableFeatures": [],
+		"laravelLogViewer.isLaravelProject": true
 	}
 }
