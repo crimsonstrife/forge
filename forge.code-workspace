@@ -7,6 +7,14 @@
 	"settings": {
 		"laraphense.disableFeatures": [],
 		"laravelLogViewer.isLaravelProject": true,
-		"laravelLogViewer.logPath": "storage/logs"
+		"laravelLogViewer.logPath": "storage/logs",
+		"logViewer.logLevel": "debug",
+		"logViewer.showStatusBarItemOnChange": true,
+		"logViewer.watch": [
+			"storage/logs/*.log"
+		],
+		"logViewer.options": {
+			
+		}
 	}
 }
