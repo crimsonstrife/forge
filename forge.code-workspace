@@ -6,6 +6,7 @@
 	],
 	"settings": {
 		"laraphense.disableFeatures": [],
-		"laravelLogViewer.isLaravelProject": true
+		"laravelLogViewer.isLaravelProject": true,
+		"laravelLogViewer.logPath": "storage/logs"
 	}
 }
