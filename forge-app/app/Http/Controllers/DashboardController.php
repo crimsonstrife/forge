@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Dashboard;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class DashboardController extends Controller
+{
+    /**
+     * Display the dashboard index page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index()
+    {
+        $dashboards = Auth::user()?->dashboards ?? collect();
+
+        if ($dashboards->isEmpty()) {
+            return view('landing-page'); // General landing page when no dashboards are available
+        }
+
+        return view('dashboards.index', ['dashboards' => $dashboards]);
+    }
+
+    /**
+     * Display the general landing page or the first available dashboard.
+     */
+    public function landingPage()
+    {
+        $user = Auth::user();
+
+        // Check if the user has any dashboards
+        $dashboard = $user->dashboards()->first();
+
+        if ($dashboard) {
+            // Redirect to the first dashboard as the default behavior
+            return redirect()->route('dashboards.view', $dashboard->id);
+        }
+
+        // Fallback: Render the general landing page
+        return view('dashboards.landing');
+    }
+
+    /**
+     * Show a specific dashboard.
+     */
+    public function show($id)
+    {
+        $dashboard = Dashboard::findOrFail($id);
+
+        // Ensure the user has access to the dashboard
+        if ($dashboard->owner_id !== Auth::id() && !$dashboard->is_shared) {
+            abort(403);
+        }
+
+        return view('dashboards.show', compact('dashboard'));
+    }
+
+    /**
+     * Manage the dashboard view and related functionalities.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function manage()
+    {
+        $dashboards = Auth::user()?->dashboards ?? collect();
+
+        return view('dashboards.manage', compact('dashboards'));
+    }
+}

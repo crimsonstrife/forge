@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Horizon\Http\Controllers\HomeController;
 use App\Http\Controllers\DiscordController;
 use App\Http\Controllers\Auth\DiscordAuthController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\File;
 
 /**
@@ -44,9 +45,9 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'landingPage'])->name('dashboard');
+    Route::get('/dashboard/{id}', [DashboardController::class, 'show'])->name('dashboards.view');
+    Route::get('/dashboard/manage', [DashboardController::class, 'manage'])->name('dashboards.manage');
 });
 
 /**

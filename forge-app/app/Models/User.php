@@ -417,6 +417,22 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     }
 
     /**
+     * Get the dashboards owned by the user.
+     */
+    public function dashboards()
+    {
+        return $this->belongsToMany(Dashboard::class, 'user_dashboard')->withTimestamps();
+    }
+
+    /**
+     * Get all reports accessible to the user (via dashboards).
+     */
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
+
+    /**
      * Get the full name of the user.
      * @return string
      */
