@@ -19,16 +19,6 @@ class Report extends Model
     }
 
     /**
-     * Define the project relationship.
-     *
-     * @return mixed The project data.
-     */
-    public function project()
-    {
-        return $this->belongsTo(Project::class, 'project_id');
-    }
-
-    /**
      * Define the owner relationship.
      *
      * @return mixed The owner data.

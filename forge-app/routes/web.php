@@ -58,6 +58,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+    // Dashboard routes
     //Specific routes for authenticated users
     Route::get('/dashboard/manage', [DashboardController::class, 'manage'])->name('dashboards.manage');
     Route::get('/dashboard/create', [DashboardController::class, 'create'])->name('dashboards.create');
@@ -70,6 +71,12 @@ Route::middleware([
 
     // Route to store the dashboard when creating a new one
     Route::post('/dashboard', [DashboardController::class, 'store'])->name('dashboards.store');
+
+    // Report routes
+    Route::get('/dashboard/{dashboardId}/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/dashboard/{dashboardId}/reports/create', [ReportController::class, 'create'])->name('reports.create');
+    Route::post('/dashboard/{dashboardId}/reports', [ReportController::class, 'store'])->name('reports.store');
+    Route::get('/dashboard/{dashboardId}/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
 });
 
 /**

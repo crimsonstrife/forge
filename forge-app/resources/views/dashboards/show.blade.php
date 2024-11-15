@@ -12,15 +12,24 @@
                     <p>{{ $dashboard->description }}</p>
                 </div>
                 <div class="p-6 bg-gray-100 border-t">
-                    <h3 class="mb-4 text-lg font-semibold text-gray-800">Reports</h3>
-                    @forelse ($dashboard->reports as $report)
-                        <div class="mb-4">
-                            <h4 class="text-lg font-medium">{{ $report->title }}</h4>
-                            <p class="text-sm text-gray-500">{{ $report->description }}</p>
-                        </div>
-                    @empty
-                        <p class="text-sm text-gray-500">{{ __('No reports available for this dashboard.') }}</p>
-                    @endforelse
+                    <div class="mt-6">
+                        <h2 class="text-lg font-semibold leading-6 text-gray-900">Reports</h2>
+
+                        @if($dashboard->reports->isEmpty())
+                            <p class="text-gray-600">No reports found. <a href="{{ route('reports.create', $dashboard->id) }}" class="text-blue-600">Create a report</a>.</p>
+                        @else
+                            <ul>
+                                @foreach($dashboard->reports as $report)
+                                    <li class="py-2">
+                                        <a href="{{ route('reports.show', [$dashboard->id, $report->id]) }}" class="text-blue-600">
+                                            {{ $report->title }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                            <a href="{{ route('reports.create', $dashboard->id) }}" class="inline-block mt-4 text-blue-600">Create another report</a>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
