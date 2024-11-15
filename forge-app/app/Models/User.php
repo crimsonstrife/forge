@@ -36,9 +36,17 @@ use Illuminate\Support\Facades\Log;
  *
  * Represents a user in the application.
  * @property int $id
- * @property string $first-name
- * @property string $last-name
+ * @property string $first_name
+ * @property string $last_name
  * @property string $username
+ * @property string $email
+ * @property string $password
+ * @property string $creation_token
+ * @property string $type
+ * @property string $email_verified_at
+ * @property string $discord_id
+ * @property array $discord_roles
+ * @property string $profile_photo_url
  * @package App\Models
  */
 class User extends Authenticatable implements MustVerifyEmail, FilamentUser
@@ -201,7 +209,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function getFilamentName(): string
     {
         // Ensure this returns a valid string, like the user's username, full name, or email address
-        return $this->username ?? $this->email ?? $this->full_name;
+        return $this->username ?? $this->email ?? $this->getFullNameAttribute();
     }
 
     /**
@@ -286,7 +294,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     {
         return new Attribute(
             get: function () {
-                return $this->hours->sum('value'); // get the sum of all the hours logged by the user in the issue hours table
+                return $this->hours()->sum('value'); // get the sum of all the hours logged by the user in the issue hours table
             }
         );
     }
@@ -326,7 +334,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         $tokens = $this->passportTokens();
 
         // If there are no tokens found, or there is an error, try to get the tokens from Sanctum
-        if (empty($tokens)) {
+        $tokensCollection = $tokens->get();
+        if ($tokensCollection->isEmpty()) {
             $tokens = $this->sanctumTokens();
         }
 
@@ -365,7 +374,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         $this->passportWithAccessToken($accessToken);
 
         // If there is an error, or the access token is not set, try to set the access token with Sanctum
-        if (empty($this->accessToken)) {
+        if ($this->accessToken === null) {
             $this->sanctumWithAccessToken($accessToken);
         }
 
@@ -483,7 +492,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function getNameAttribute(): string
     {
-        return $this->getFullNameAttribute() ?? $this->getUsernameAttribute() ?? $this->getEmailAttribute();
+        return $this->getFullNameAttribute() ?: $this->getUsernameAttribute() ?: $this->getEmailAttribute();
     }
 
     /**

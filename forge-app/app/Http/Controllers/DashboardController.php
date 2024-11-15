@@ -11,7 +11,7 @@ class DashboardController extends Controller
     /**
      * Display the dashboard index page.
      *
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
@@ -26,6 +26,8 @@ class DashboardController extends Controller
 
     /**
      * Display the general landing page or the first available dashboard.
+     *
+     * @return \Illuminate\Contracts\View\View | \Illuminate\Http\RedirectResponse
      */
     public function landingPage()
     {
