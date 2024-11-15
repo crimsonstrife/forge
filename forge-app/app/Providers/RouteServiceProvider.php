@@ -23,6 +23,16 @@ class RouteServiceProvider extends ServiceProvider
     public const HOME = '/home';
 
     /**
+     * The namespace to assume when generating URLs to actions.
+     *
+     * This namespace is automatically applied to your controller routes.
+     * Additionally, it is set as the root namespace for URL generation.
+     *
+     * @var string
+     */
+    protected $namespace = 'App\\Http\\Controllers';
+
+    /**
      * Define your route model bindings, pattern filters, and other route configuration.
      *
      * @return void
@@ -37,6 +47,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('web')
+                ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
 
             Route::middlewareGroup('passport-api', [

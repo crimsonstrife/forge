@@ -34,6 +34,19 @@ Route::get('/auth/discord/callback', [DiscordAuthController::class, 'handleDisco
 Route::get('/auth/discord/unlink', [DiscordAuthController::class, 'unlinkDiscord'])->name('auth.discord.unlink');
 Route::get('/discord/user/{id}', [DiscordAuthController::class, 'getUserDiscordId']);
 
+/**
+ * Route group for authenticated users with elevated permissions using the RoleMiddleware.
+ * This group is accessible via admin subdirectory of the /dashboard URL.
+ * The RoleMiddleware will check if the user has the 'admin' role.
+ */
+Route::group([
+    'middleware' => ['auth:sanctum', config('jetstream.auth_session'), 'verified', 'role:admin'],
+    'prefix' => 'admin',
+], function () {
+    Route::get('/dashboard/admin', function () {
+        return view('dashboards.admin');
+    })->name('dashboards.admin');
+});
 
 /**
  * Route group for authenticated users with sanctum middleware, jetstream auth session, and verified user.
@@ -45,23 +58,18 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'landingPage'])->name('dashboard');
-    Route::get('/dashboard/{id}', [DashboardController::class, 'show'])->name('dashboards.view');
+    //Specific routes for authenticated users
     Route::get('/dashboard/manage', [DashboardController::class, 'manage'])->name('dashboards.manage');
-});
+    Route::get('/dashboard/create', [DashboardController::class, 'create'])->name('dashboards.create');
 
-/**
- * Route group for authenticated users with elevated permissions using the RoleMiddleware.
- * This group is accessible via admin subdirectory of the /dashboard URL.
- * The RoleMiddleware will check if the user has the 'admin' role.
- */
-Route::group([
-    'middleware' => ['auth:sanctum', config('jetstream.auth_session'), 'verified', 'role:admin'],
-    'prefix' => 'admin',
-], function () {
-    Route::get('/dashboard/admin', function () {
-        return view('dashboard.admin');
-    })->name('dashboard.admin');
+    // Route to catch-all the dashboard ids
+    Route::get('/dashboard/{id}', [DashboardController::class, 'show'])->name('dashboards.view');
+
+    // General dashboard route
+    Route::get('/dashboard', [DashboardController::class, 'landingPage'])->name('dashboard');
+
+    // Route to store the dashboard when creating a new one
+    Route::post('/dashboard', [DashboardController::class, 'store'])->name('dashboards.store');
 });
 
 /**
@@ -123,3 +131,12 @@ Route::get('public/{path}', function ($path) {
     }
     return response()->json(['message' => 'File not found.'], 404);
 })->where('path', 'icons.*');
+
+/**
+ * Define a fallback route that will be executed when no other routes match.
+ * This is useful for handling 404 errors and displaying a custom error page.
+ */
+Route::fallback(function () {
+    \Log::error('Fallback route triggered', ['url' => request()->url()]);
+    abort(404);
+});

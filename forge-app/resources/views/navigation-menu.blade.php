@@ -29,7 +29,7 @@
                             <x-slot name="content">
                                 @if ($dashboards = Auth::user()->dashboards)
                                     @forelse ($dashboards as $dashboard)
-                                        <x-dropdown-link href="{{ route('dashboard.view', $dashboard->id) }}">
+                                        <x-dropdown-link href="{{ route('dashboards.view', $dashboard->id) }}">
                                             {{ $dashboard->name }}
                                         </x-dropdown-link>
                                     @empty

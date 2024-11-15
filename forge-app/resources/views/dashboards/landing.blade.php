@@ -11,7 +11,7 @@
                 <div class="p-6 text-gray-500">
                     <p>{{ __('You currently have no dashboards configured.') }}</p>
                     <p>
-                        <a href="{{ route('dashboards.manage') }}" class="text-blue-500 underline">
+                        <a href="{{ route('dashboards.create') }}" class="text-blue-500 underline">
                             {{ __('Create your first dashboard now') }}
                         </a>
                     </p>

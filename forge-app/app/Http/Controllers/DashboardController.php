@@ -6,6 +6,14 @@ use App\Models\Dashboard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class DashboardController
+ *
+ * This controller handles the dashboard functionalities for the application.
+ * It extends the base Controller class provided by the framework.
+ *
+ * @package App\Http\Controllers
+ */
 class DashboardController extends Controller
 {
     /**
@@ -70,5 +78,36 @@ class DashboardController extends Controller
         $dashboards = Auth::user()?->dashboards ?? collect();
 
         return view('dashboards.manage', compact('dashboards'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $dashboard = Dashboard::create([
+            'name' => $validated['name'],
+        ]);
+
+        Auth::user()->dashboards()->attach($dashboard->id);
+
+        return redirect()->route('dashboards.manage')->with('success', 'Dashboard created successfully.');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('dashboards.create');
     }
 }
