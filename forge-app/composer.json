@@ -17,6 +17,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "blade-ui-kit/blade-ui-kit": "^0.6.2",
         "calebporzio/sushi": "^2.5",
         "cocur/slugify": "^4.5",
         "czproject/git-php": "^4.2",
@@ -63,8 +64,8 @@
         "symfony/polyfill-php83": "^1.30",
         "symfony/process": "^7.1",
         "symfony/uid": "^7.1",
-        "webcreate/vcs": "^1.3.2",
         "webcreate/util": "^1.0.3",
+        "webcreate/vcs": "^1.3.2",
         "xetaio/xetaravel-mentions": "^11.0"
     },
     "repositories": {
