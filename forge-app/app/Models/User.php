@@ -151,6 +151,17 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     }
 
     /**
+     * Find a user by their ID.
+     *
+     * @param int $id
+     * @return User
+     */
+    public static function find($id)
+    {
+        return static::query()->findOrFail($id);
+    }
+
+    /**
      * Check if the user can do something.
      * Override the method from the Authorizable trait.
      *

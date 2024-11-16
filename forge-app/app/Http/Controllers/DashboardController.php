@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dashboard;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,7 +40,19 @@ class DashboardController extends Controller
      */
     public function landingPage()
     {
-        $user = Auth::user();
+        // Intialize the user model
+        $userModel = new User;
+
+        // Initialize the user variable
+        $user = null;
+
+        // Get the authenticated user
+        $user = $userModel->find(Auth::id());
+
+        if ($user == null) {
+            // Redirect to the login page if the user is not authenticated
+            return redirect()->route('login');
+        }
 
         // Check if the user has any dashboards
         $dashboard = $user->dashboards()->first();
