@@ -110,7 +110,7 @@ class DashboardController extends Controller
         ]);
 
         // Intialize the user model
-        $userModel = new User;
+        $userModel = new User();
 
         // Initialize the user variable
         $user = null;
