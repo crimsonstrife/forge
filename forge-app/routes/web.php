@@ -5,6 +5,8 @@ use Laravel\Horizon\Http\Controllers\HomeController;
 use App\Http\Controllers\DiscordController;
 use App\Http\Controllers\Auth\DiscordAuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReportTemplateController;
 use Illuminate\Support\Facades\File;
 
 /**
@@ -77,6 +79,22 @@ Route::middleware([
     Route::get('/dashboard/{dashboardId}/reports/create', [ReportController::class, 'create'])->name('reports.create');
     Route::post('/dashboard/{dashboardId}/reports', [ReportController::class, 'store'])->name('reports.store');
     Route::get('/dashboard/{dashboardId}/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
+
+    // Template routes
+    Route::prefix('templates')->group(function () {
+        // Report template routes
+        Route::prefix('reports')->name('templates.reports.')->group(function () {
+            Route::get('/', [ReportTemplateController::class, 'index'])->name('index');
+            Route::get('/create', [ReportTemplateController::class, 'create'])->name('create');
+            Route::post('/', [ReportTemplateController::class, 'store'])->name('store');
+            Route::get('/{id}', [ReportTemplateController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [ReportTemplateController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [ReportTemplateController::class, 'update'])->name('update');
+            Route::delete('/{id}', [ReportTemplateController::class, 'destroy'])->name('destroy');
+        });
+
+        // Other template routes can be added here
+    });
 });
 
 /**

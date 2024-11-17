@@ -8,28 +8,35 @@
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="bg-white shadow sm:rounded-lg">
-                <form action="{{ route('reports.store', $dashboard->id) }}" method="POST" class="p-6">
+                <form action="{{ route('reports.store') }}" method="POST">
                     @csrf
-                    <div>
-                        <x-label for="title" value="{{ __('Report Title') }}" />
-                        <x-input id="title" name="title" type="text" class="block w-full mt-1" required />
-                    </div>
+                    <label for="name">Report Name:</label>
+                    <input type="text" name="name" id="name" required>
 
-                    <div class="mt-4">
-                        <x-label for="description" value="{{ __('Description') }}" />
-                        <textarea id="description" name="description" class="block w-full mt-1"></textarea>
-                    </div>
+                    <label for="template">Select Template:</label>
+                    <select name="template_id" id="template">
+                        <option value="">None</option>
+                        @foreach ($templates as $template)
+                            <option value="{{ $template->id }}">{{ $template->name }}</option>
+                        @endforeach
+                    </select>
 
-                    <div class="mt-4">
-                        <x-label for="settings" value="{{ __('Settings (Optional JSON)') }}" />
-                        <textarea id="settings" name="settings" class="block w-full mt-1"></textarea>
-                    </div>
+                    <label for="filters">Filters (JSON):</label>
+                    <textarea name="filters" id="filters"></textarea>
 
-                    <div class="mt-6">
-                        <x-button>{{ __('Create Report') }}</x-button>
-                    </div>
+                    <button type="submit">Create Report</button>
                 </form>
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('template_id').addEventListener('change', function() {
+            const selectedTemplate = this.options[this.selectedIndex];
+            const settings = selectedTemplate.dataset.settings;
+
+            if (settings) {
+                // Populate fields dynamically using JSON.parse(settings)
+            }
+        });
+    </script>
 </x-app-layout>

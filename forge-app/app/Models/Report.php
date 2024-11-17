@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Templates\ReportTemplate;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Report extends Model
 {
-    protected $fillable = ['title', 'description', 'content', 'dashboard_id'];
+    use SoftDeletes;
+
+    protected $fillable = ['title', 'description', 'content', 'settings', 'filters', 'dashboard_id', 'template_id', 'order'];
 
     /**
      * Define the Dashboard relationship.
@@ -36,5 +40,43 @@ class Report extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the template associated with the report.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function template()
+    {
+        return $this->belongsTo(ReportTemplate::class);
+    }
+
+    /**
+     * Get the dashboards associated with the report.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function dashboards()
+    {
+        return $this->belongsToMany(Dashboard::class, 'dashboard_report');
+    }
+
+    /**
+     * Display the specified report.
+     *
+     * @param int $dashboardId The ID of the dashboard.
+     * @param int $reportId The ID of the report.
+     * @return \Illuminate\Http\Response
+     */
+    public function show($dashboardId, $reportId)
+    {
+        $report = Report::findOrFail($reportId);
+
+        if (!$report->is_shared && $report->dashboard_id != $dashboardId) {
+            abort(403);
+        }
+
+        return response()->view('reports.show', compact('report'));
     }
 }

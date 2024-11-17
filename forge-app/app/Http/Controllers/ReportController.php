@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dashboard;
+use App\Models\Report;
+use App\Models\Templates\ReportTemplate;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -20,20 +23,39 @@ class ReportController extends Controller
         return view('reports.create', compact('dashboard'));
     }
 
-    public function store(Request $request, $dashboardId)
+    public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'content' => 'nullable|array',
-            'settings' => 'nullable|array',
-            'is_shared' => 'required|boolean',
+            'name' => 'required|string|max:255',
+            'template_id' => 'nullable|exists:report_templates,id',
+            'filters' => 'nullable|json',
         ]);
 
-        $dashboard = Dashboard::findOrFail($dashboardId);
+        $template = ReportTemplate::find($validated['template_id']);
+        $reportContent = $template ? $template->content : [];
 
-        $dashboard->reports()->create($validated);
+        $report = Report::create([
+            'name' => $validated['name'],
+            'content' => $reportContent,
+            'filters' => $validated['filters'],
+        ]);
 
-        return redirect()->route('reports.index', $dashboardId)->with('success', 'Report created successfully.');
+        return redirect()->route('reports.index')->with('success', 'Report created.');
+    }
+
+    /**
+     * Clone a report by its ID.
+     *
+     * @param int $id The ID of the report to clone.
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function clone($id)
+    {
+        $report = Report::findOrFail($id);
+        $clonedReport = $report->replicate();
+        $clonedReport->title = $report->title . ' (Copy)';
+        $clonedReport->save();
+
+        return redirect()->route('reports.show', $clonedReport->id)->with('success', 'Report cloned successfully.');
     }
 }

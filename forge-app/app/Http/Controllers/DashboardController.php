@@ -138,4 +138,25 @@ class DashboardController extends Controller
     {
         return view('dashboards.create');
     }
+
+    /**
+     * Add reports to the specified dashboard.
+     *
+     * @param \Illuminate\Http\Request $request The request object containing the report data.
+     * @param int $dashboardId The ID of the dashboard to which the reports will be added.
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function addReports(Request $request, $dashboardId)
+    {
+        $dashboard = Dashboard::findOrFail($dashboardId);
+
+        $validated = $request->validate([
+            'report_ids' => 'required|array',
+            'report_ids.*' => 'exists:reports,id',
+        ]);
+
+        $dashboard->reports()->syncWithoutDetaching($validated['report_ids']);
+
+        return redirect()->route('dashboards.manage', $dashboardId)->with('success', 'Reports added.');
+    }
 }
