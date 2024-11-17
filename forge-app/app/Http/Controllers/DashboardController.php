@@ -97,7 +97,7 @@ class DashboardController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response | \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -109,7 +109,22 @@ class DashboardController extends Controller
             'name' => $validated['name'],
         ]);
 
-        Auth::user()->dashboards()->attach($dashboard->id);
+        // Intialize the user model
+        $userModel = new User;
+
+        // Initialize the user variable
+        $user = null;
+
+        // Get the authenticated user
+        $user = $userModel->find(Auth::id());
+
+        if ($user == null) {
+            // Redirect to the login page if the user is not authenticated
+            return redirect()->route('login');
+        }
+
+        // Attach the dashboard to the user
+        $user->dashboards()->attach($dashboard->id);
 
         return redirect()->route('dashboards.manage')->with('success', 'Dashboard created successfully.');
     }
@@ -117,7 +132,7 @@ class DashboardController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function create()
     {
