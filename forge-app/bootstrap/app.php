@@ -76,6 +76,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'throttle' => ThrottleRequests::class,
             'verified' => EnsureEmailIsVerified::class,
             'auth.permissionSet' => PermissionSet::class,
+            'ensureMockMode' => EnsureMockMode::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

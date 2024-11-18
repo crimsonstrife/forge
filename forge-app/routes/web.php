@@ -59,6 +59,7 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
+    'ensureMockMode',
 ])->group(function () {
     // Dashboard routes
     //Specific routes for authenticated users
