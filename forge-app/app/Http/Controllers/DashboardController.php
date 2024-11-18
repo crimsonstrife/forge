@@ -40,7 +40,7 @@ class DashboardController extends Controller
      */
     public function landingPage()
     {
-        // Intialize the user model
+        // Initialize the user model
         $userModel = new User();
 
         // Initialize the user variable
@@ -59,7 +59,7 @@ class DashboardController extends Controller
 
         if ($dashboard) {
             // Redirect to the first dashboard as the default behavior
-            return redirect()->route('dashboards.view', $dashboard->id);
+            return redirect()->route('dashboards.show', $dashboard->id);
         }
 
         // Fallback: Render the general landing page
@@ -101,30 +101,32 @@ class DashboardController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate the request
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'is_shared' => 'nullable|boolean',
         ]);
-
-        $dashboard = Dashboard::create([
-            'name' => $validated['name'],
-        ]);
-
-        // Intialize the user model
-        $userModel = new User();
-
-        // Initialize the user variable
-        $user = null;
 
         // Get the authenticated user
-        $user = $userModel->find(Auth::id());
+        $user = Auth::user();
 
-        if ($user == null) {
-            // Redirect to the login page if the user is not authenticated
-            return redirect()->route('login');
+        if (!$user) {
+            return redirect()->route('login')->withErrors('You must be logged in to create a dashboard.');
         }
 
-        // Attach the dashboard to the user
-        $user->dashboards()->attach($dashboard->id);
+        // Create the new dashboard
+        $dashboard = Dashboard::create([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? '',
+            'is_shared' => $validated['is_shared'] ?? false,
+            'owner_id' => $user->id,
+        ]);
+
+        // Attach the dashboard to the user if a pivot table is used
+        if (method_exists($user, 'dashboards')) {
+            $user->dashboards()->attach($dashboard->id);
+        }
 
         return redirect()->route('dashboards.manage')->with('success', 'Dashboard created successfully.');
     }

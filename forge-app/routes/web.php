@@ -28,7 +28,7 @@ Route::post('/discord/issue/{id}/approve', [DiscordController::class, 'approveIs
 Route::post('/discord/issue/{id}/reject', [DiscordController::class, 'rejectIssue']); // Reject an issue
 
 /**
- * Define routes for Discord acount linking.
+ * Define routes for Discord account linking.
  * These routes are accessible via the '/discord' URL.
  */
 Route::get('/auth/discord', [DiscordAuthController::class, 'redirectToDiscord'])->name('auth.discord');
@@ -66,13 +66,13 @@ Route::middleware([
     Route::get('/dashboard/create', [DashboardController::class, 'create'])->name('dashboards.create');
 
     // Route to catch-all the dashboard ids
-    Route::get('/dashboard/{id}', [DashboardController::class, 'show'])->name('dashboards.view');
+    Route::get('/dashboard/{id}', [DashboardController::class, 'show'])->name('dashboards.show');
+
+    // Route to store the dashboard when creating a new one
+    Route::post('/dashboards', [DashboardController::class, 'store'])->name('dashboards.store');
 
     // General dashboard route
     Route::get('/dashboard', [DashboardController::class, 'landingPage'])->name('dashboard');
-
-    // Route to store the dashboard when creating a new one
-    Route::post('/dashboard', [DashboardController::class, 'store'])->name('dashboards.store');
 
     // Report routes
     Route::get('/dashboard/{dashboardId}/reports', [ReportController::class, 'index'])->name('reports.index');
