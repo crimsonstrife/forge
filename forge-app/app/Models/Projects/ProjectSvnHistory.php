@@ -14,4 +14,14 @@ use Illuminate\Database\Eloquent\Model;
 class ProjectSvnHistory extends Model
 {
     use HasFactory;
+
+    /**
+     * Get the repository associated with the project SVN history.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function repository()
+    {
+        return $this->belongsTo(ProjectRepository::class);
+    }
 }

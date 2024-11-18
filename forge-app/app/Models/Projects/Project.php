@@ -53,7 +53,7 @@ class Project extends Model implements HasMedia
         'start_date',
         'end_date',
         'user_id',
-        'has_repository',
+        'repository_id',
     ];
 
     protected $dates = [
@@ -73,7 +73,7 @@ class Project extends Model implements HasMedia
      */
     public function owner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'owner_id', 'id');
+        return $this->belongsTo(User::class, 'owner_id');
     }
 
     /**
@@ -82,10 +82,43 @@ class Project extends Model implements HasMedia
      */
     public function status(): BelongsTo
     {
-        $relation = $this->belongsTo(ProjectStatus::class, 'status_id', 'id');
-        $relation->withDefault();
-        $relation->withTrashed();
-        return $relation;
+        return $this->belongsTo(ProjectStatus::class, 'status_id')->withDefault()->withTrashed();
+    }
+
+    /**
+     * Get the Project Type of the Project
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(ProjectType::class, 'type_id');
+    }
+
+    /**
+     * Get the Repository of the Project, if the Project has a Repository.
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne | null
+     */
+    public function repository(): HasOne
+    {
+        return $this->hasOne(ProjectRepository::class);
+    }
+
+    /**
+     * Get the Users of the Project
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'project_users')->withPivot('project_role');
+    }
+
+    /**
+     * Get the Issues of the Project
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function issues(): HasMany
+    {
+        return $this->hasMany(Issue::class);
     }
 
     /**
@@ -118,24 +151,6 @@ class Project extends Model implements HasMedia
     }
 
     /**
-     * Get the Users of the Project
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function users(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'project_users', 'project_id', 'user_id')->withPivot('project_role');
-    }
-
-    /**
-     * Get the Issues of the Project
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function issues(): HasMany
-    {
-        return $this->hasMany(Issue::class, 'project_id', 'id');
-    }
-
-    /**
      * Get the Stories of the Project
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -150,7 +165,7 @@ class Project extends Model implements HasMedia
      */
     public function statuses(): HasMany
     {
-        return $this->hasMany(ProjectStatus::class, 'project_id', 'id');
+        return $this->hasMany(ProjectStatus::class);
     }
 
     /**
@@ -159,7 +174,7 @@ class Project extends Model implements HasMedia
      */
     public function epics(): HasMany
     {
-        return $this->hasMany(Epic::class, 'project_id', 'id');
+        return $this->hasMany(Epic::class);
     }
 
     /**
@@ -168,7 +183,7 @@ class Project extends Model implements HasMedia
      */
     public function sprints(): HasMany
     {
-        return $this->hasMany(Sprint::class, 'project_id', 'id');
+        return $this->hasMany(Sprint::class);
     }
 
     /**
@@ -211,12 +226,19 @@ class Project extends Model implements HasMedia
      */
     public function contributors(): Attribute
     {
-        return new Attribute(
-            get: function () {
-                $users = $this->users;
-                $users->push($this->owner);
-                return $users->unique('id');
-            }
+        return Attribute::make(
+            get: fn () => $this->users->push($this->owner)->unique('id') // Add the owner to the contributors list
+        );
+    }
+
+    /**
+     * Get the Repository URL of the Project, if the Project has a Repository.
+     * @return Attribute
+     */
+    public function repositoryUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->repository?->url
         );
     }
 
@@ -284,64 +306,6 @@ class Project extends Model implements HasMedia
             get: fn () => $this->media('icon')?->first()?->getFullUrl()
                 ??
                 'https://ui-avatars.com/api/?background=' . $this->color . '&color=' . $this->font_color . '&name=' . $this->name
-        );
-    }
-
-    /**
-     * Get the Project Type of the Project
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function type(): BelongsTo
-    {
-        return $this->belongsTo(ProjectType::class, 'type_id', 'id');
-    }
-
-    /**
-     * Get if the Project has a Repository
-     * @return bool
-     */
-    public function hasRepository(): bool
-    {
-        return $this->has_repository;
-    }
-
-    /**
-     * Get the Repository of the Project, if the Project has a Repository.
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne | null
-     */
-    public function repository(): HasOne | null
-    {
-        //check if the project has a repository
-        if ($this->hasRepository()) {
-            //return the repository
-            return $this->hasOne(ProjectRepository::class, 'project_id', 'id');
-        }
-
-        //return null if the project does not have a repository
-        return null;
-    }
-
-    /**
-     * Get the Repository URL of the Project, if the Project has a Repository.
-     * @return Attribute
-     */
-    public function repositoryUrl(): Attribute
-    {
-        //check if the project has a repository
-        if ($this->hasRepository()) {
-            //return the repository URL
-            return new Attribute(
-                get: function () {
-                    return $this->repository->url;
-                }
-            );
-        }
-
-        //return null if the project does not have a repository
-        return new Attribute(
-            get: function () {
-                return null;
-            }
         );
     }
 
@@ -442,5 +406,36 @@ class Project extends Model implements HasMedia
                 return $progress . '%';
             }
         );
+    }
+
+    /** Crucible-Related Methods **/
+
+    /**
+     * Sync repository with Crucible.
+     *
+     * @param string $url
+     * @return bool
+     */
+    public function syncRepository(string $url): bool
+    {
+        $crucibleService = app(CrucibleService::class);
+        $repositoryData = $crucibleService->fetchAndCacheRepository($url);
+
+        if ($repositoryData) {
+            $this->repository()->updateOrCreate([], $repositoryData->toArray());
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if repository exists in Crucible.
+     *
+     * @return bool
+     */
+    public function hasValidRepository(): bool
+    {
+        return !is_null($this->repository) && app(CrucibleService::class)->verifyRepository($this->repository->url);
     }
 }

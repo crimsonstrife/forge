@@ -7,6 +7,10 @@ use App\Http\Controllers\Auth\DiscordAuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReportTemplateController;
+use App\Http\Controllers\ProjectController;
+use App\Livewire\DashboardCreate;
+use App\Livewire\ReportCreate;
+use App\Livewire\ProjectCreate;
 use Illuminate\Support\Facades\File;
 
 /**
@@ -96,6 +100,13 @@ Route::middleware([
 
         // Other template routes can be added here
     });
+
+    // Project routes
+    Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+    Route::get('/project/create', [ProjectController::class, 'create'])->name('projects.create');
+    Route::post('/project', [ProjectController::class, 'store'])->name('projects.store');
+    Route::get('/project/{id}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::get('/project/{id}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
 });
 
 /**

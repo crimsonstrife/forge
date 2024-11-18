@@ -181,4 +181,14 @@ class ProjectRepository extends Model
 
         return false;
     }
+
+    /**
+     * This method defines the polymorphic nature of this model, as a repository can either be a GitRepository or a SvnRepository.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function repositoryable()
+    {
+        return $this->morphTo();
+    }
 }

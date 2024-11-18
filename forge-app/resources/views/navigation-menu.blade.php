@@ -48,9 +48,62 @@
                             </x-slot>
                         </x-dropdown>
                     </div>
-                    {{-- <x-nav-link href="{{ route('projects.index') }}" :active="request()->routeIs('projects.*')">
-                        {{ __('Projects') }}
-                    </x-nav-link> --}}
+                    <!-- Projects Dropdown -->
+                    <div class="hidden space-x-8 sm:flex sm:ml-10">
+                        <div class="flex items-center shrink-0 ms-3">
+                            <x-dropdown align="right" width="60">
+                                <x-slot name="trigger">
+                                    <span class="inline-flex rounded-md">
+                                        <button type="button"
+                                            class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50">
+                                            {{ __('Projects') }}
+
+                                            <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                                            </svg>
+                                        </button>
+                                    </span>
+                                </x-slot>
+
+                                <x-slot name="content">
+                                    <div class="w-60">
+                                        <!-- Recent Projects -->
+                                        <div class="block px-4 py-2 text-xs text-gray-400">
+                                            {{ __('Recent Projects') }}
+                                        </div>
+                                        @php
+                                            // Get the user's recent projects
+                                            $recentProjects = Auth::user()->recentProjects()->take(5)->get();
+                                            // Sort the projects by the most recently updated, or created if never updated
+                                            $recentProjects = $recentProjects->sortByDesc(function ($project) {
+                                                return $project->updated_at ?? $project->created_at;
+                                            });
+                                        @endphp
+
+                                        @forelse ($recentProjects as $project)
+                                            <x-dropdown-link href="{{ route('projects.show', $project->id) }}">
+                                                {{ $project->name }}
+                                            </x-dropdown-link>
+                                        @empty
+                                            <div class="block px-4 py-2 text-sm text-gray-500">
+                                                {{ __('No recent projects') }}
+                                            </div>
+                                        @endforelse
+
+                                        <div class="border-t border-gray-200"></div>
+
+                                        <!-- View All Projects -->
+                                        <x-dropdown-link href="{{ route('projects.index') }}">
+                                            {{ __('View All Projects') }}
+                                        </x-dropdown-link>
+                                    </div>
+                                </x-slot>
+                            </x-dropdown>
+                        </div>
+                    </div>
                     {{-- <x-nav-link href="{{ route('issues.index') }}" :active="request()->routeIs('issues.*')">
                         {{ __('Issues') }}
                     </x-nav-link> --}}

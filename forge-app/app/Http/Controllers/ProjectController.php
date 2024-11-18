@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Projects\Project;
+use App\Models\Projects\ProjectType;
+use App\Models\Projects\ProjectStatus;
+use App\Models\ProjectView;
 use App\Http\Controllers\Controller;
+use App\Services\CrucibleService;
+use Illuminate\Support\Facades\Auth;
 use Xetaio\Mentions\Parser\MentionParser;
 
 /**
@@ -21,37 +26,59 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return response()->json(Project::all());
+        // Retrieve all projects for the authenticated user
+        $projects = auth()->user()->projects;
+
+        return view('projects.index', compact('projects'));
+    }
+
+
+    /**
+     * Display the form for creating a new project.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function create()
+    {
+        return view('projects.create', [
+            'projectTypes' => ProjectType::all(),
+            'projectStatuses' => ProjectStatus::all(),
+        ]);
     }
 
     /**
      * Store a newly created project.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:projects',
-            'description' => 'nullable|longText',
-            'owner_id' => 'required|exists:users,id',
-            'status_id' => 'required|exists:project_statuses,id',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
             'type_id' => 'required|exists:project_types,id',
+            'status_id' => 'required|exists:project_statuses,id',
+            'repository_url' => 'nullable|url',
         ]);
 
-        // Create a new project
-        $project = Project::create($request->only(['name', 'description', 'owner_id', 'status_id', 'type_id']));
+        $project = Project::create([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'type_id' => $validated['type_id'],
+            'status_id' => $validated['status_id'],
+            'owner_id' => Auth::id(),
+        ]);
 
-        // Register a new Parser and parse the content.
-        $parser = new MentionParser($project);
-        $content = $parser->parse($project->description);
+        // Handle repository syncing if a URL is provided
+        if (!empty($validated['repository_url'])) {
+            $success = $project->syncRepository($validated['repository_url']);
+            if (!$success) {
+                return redirect()->route('projects.create')->withErrors('Failed to sync repository. Check the URL or Crucible settings.');
+            }
+        }
 
-        // Re-assign the parsed content and save it.
-        $project->description = $content;
-        $project->save();
-
-        return response()->json($project, 201);
+        return redirect()->route('dashboard')->with('success', 'Project created successfully!');
     }
 
     /**
@@ -62,13 +89,22 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
-        //get the project
         $project = Project::findOrFail($id);
 
-        //get the details of the project
-        $project->load('owner', 'status', 'type', 'repositories');
+        // Ensure the user has access to this project
+        if (!$project->users->contains(auth()->user()) && $project->owner_id !== auth()->id()) {
+            abort(403, 'You do not have access to this project.');
+        }
 
-        return response()->json($project);
+        // Track the view
+        if (Auth::check()) {
+            ProjectView::updateOrCreate(
+                ['user_id' => Auth::id(), 'project_id' => $project->id],
+                ['updated_at' => now()]
+            );
+        }
+
+        return view('projects.show', compact('project'));
     }
 
     /**

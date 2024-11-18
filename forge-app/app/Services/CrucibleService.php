@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http; // Import the Http facade for making HTTP requests
 use Illuminate\Support\Facades\Log; // Import the Log facade for logging
 use App\Settings\CrucibleSettings; // Import the CrucibleSettings class
+use App\Models\Projects\ProjectRepository; // Import the ProjectRepository model
 
 /**
  * Class CrucibleService
@@ -151,6 +152,58 @@ class CrucibleService
     }
 
     /**
+     * Fetches the commits for a given repository.
+     *
+     * @param int $repositoryId The ID of the repository.
+     * @param string $commitHash The hash of the commit.
+     * @return array The list of commits.
+     */
+    public function fetchRepositoryCommits($repositoryId, $commitHash)
+    {
+        if (!$this->isEnabled()) {
+            if ($this->isMockMode()) {
+                return $this->mockFetchRepositoryCommits($repositoryId, $commitHash);
+            }
+            Log::warning('Crucible connection is disabled or not configured properly.');
+            return null;
+        }
+
+        $response = Http::withToken($this->apiToken)->get("{$this->baseUrl}/api/repositories/{$repositoryId}/commits", [
+            'commit' => $commitHash,
+        ]);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return null;
+    }
+
+    public function fetchAndCacheRepository($url)
+    {
+        $repository = ProjectRepository::where('http_url', $url)->first();
+
+        if (!$repository) {
+            $repository = new ProjectRepository();
+            $repository->http_url = $url;
+        }
+
+        $data = $this->fetchRepositoryMetadata($url);
+
+        if ($data) {
+            $repository->metadata = $data['metadata'] ?? [];
+            $repository->history = $data['history'] ?? [];
+            $result = $repository->save();
+
+            if ($result) {
+                return $repository;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Mocks the verification of a repository given its URL.
      *
      * @param string $url The URL of the repository to verify.
@@ -179,6 +232,15 @@ class CrucibleService
             'url' => $url,
             'type' => 'git',
             'name' => 'Mock Repository',
+            'metadata' => [
+                'description' => 'Mock repository for testing purposes.',
+                'created_at' => '2024-08-01',
+                'updated_at' => '2024-08-02',
+            ],
+            'history' => [
+                ['commit' => 'abc123', 'message' => 'Mock: Initial commit', 'date' => '2024-08-01'],
+                ['commit' => 'def456', 'message' => 'Mock: Added feature X', 'date' => '2024-08-02'],
+            ],
         ];
     }
 
@@ -206,6 +268,14 @@ class CrucibleService
      * @return array The mocked history data for the repository.
      */
     private function mockFetchHistory($repositoryId)
+    {
+        return [
+            ['commit' => 'abc123', 'message' => 'Mock: Initial commit', 'date' => '2024-08-01'],
+            ['commit' => 'def456', 'message' => 'Mock: Added feature X', 'date' => '2024-08-02'],
+        ];
+    }
+
+    private function mockFetchRepositoryCommits($repositoryId, $commitHash)
     {
         return [
             ['commit' => 'abc123', 'message' => 'Mock: Initial commit', 'date' => '2024-08-01'],

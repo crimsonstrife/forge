@@ -23,6 +23,7 @@ use Illuminate\Http\Middleware\SetCacheHeaders;
 use Illuminate\Auth\Middleware\Authorize;
 use App\Http\Middleware\Redirect;
 use App\Http\Middleware\SignatureValidation;
+use App\Http\Middleware\EnsureMockMode;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;

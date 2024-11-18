@@ -262,6 +262,15 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     }
 
     /**
+     * Get the projects that the user is a member of.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class);
+    }
+
+    /**
      * Get the projects that the user has starred (is a favorite).
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -541,5 +550,18 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function isCreatingWithPassword(): bool
     {
         return $this->isCreating() && !empty($this->password);
+    }
+
+
+    /**
+     * Get up to (X, default of 5) of the authenticated user's most recently viewed projects.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function recentProjects($limit = 5)
+    {
+        return $this->belongsToMany(Project::class, 'project_views')
+                ->withPivot('updated_at')
+                ->orderByPivot('updated_at', 'desc');
     }
 }

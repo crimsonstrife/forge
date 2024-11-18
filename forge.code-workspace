@@ -17,8 +17,10 @@
 			
 		},
 		"cSpell.words": [
+			"hexcode",
 			"jetstream",
-			"Livewire"
+			"Livewire",
+			"repositoryable"
 		]
 	}
 }
