@@ -15,6 +15,10 @@
 		],
 		"logViewer.options": {
 			
-		}
+		},
+		"cSpell.words": [
+			"jetstream",
+			"Livewire"
+		]
 	}
 }

@@ -22,7 +22,7 @@ use App\Models\PrioritySet as IssuePrioritySet;
 use App\Models\Projects\ProjectStatus;
 use App\Models\Projects\ProjectType;
 use App\Models\Projects\ProjectRepository;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 
 /**
  * Class Project
@@ -40,7 +40,7 @@ class Project extends Model implements HasMedia
     use SoftDeletes;
     use InteractsWithMedia;
     use HasMentions;
-    use IsPermissable;
+    use IsPermissible;
 
     protected $fillable = [
         'name',

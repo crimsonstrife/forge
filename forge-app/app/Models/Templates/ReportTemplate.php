@@ -5,6 +5,7 @@ namespace App\Models\Templates;
 use App\Models\Report;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\IsPermissible;
 
 /**
  * Class ReportTemplate
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ReportTemplate extends Model
 {
     use SoftDeletes;
+    use IsPermissible;
 
     protected $fillable = ['name', 'description', 'content', 'settings', 'filters'];
 

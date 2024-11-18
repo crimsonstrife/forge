@@ -11,7 +11,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens as SanctumApiTokens;
 use Laravel\Passport\HasApiTokens as PassportApiTokens;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 use App\Traits\HasAdvancedPermissions;
 use Spatie\Permission\Traits\HasRoles;
 use Filament\Models\Contracts\FilamentUser;
@@ -70,7 +70,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     use HasAdvancedPermissions, HasRoles {
         HasAdvancedPermissions::hasPermissionTo insteadof HasRoles;
     }
-    use IsPermissable;
+    use IsPermissible;
     use MustVerifyNewEmail;
     use SoftDeletes;
 
@@ -441,7 +441,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function dashboards()
     {
-        return $this->belongsToMany(Dashboard::class, 'user_dashboard')->withTimestamps();
+        return $this->belongsToMany(Dashboard::class, 'user_dashboard', 'user_id', 'dashboard_id')->withTimestamps();
     }
 
     /**

@@ -4,7 +4,7 @@ namespace App\Models\Projects;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 
 /**
  * Represents a project role in the application.
@@ -15,5 +15,5 @@ use App\Traits\IsPermissable;
 class ProjectRole extends Model
 {
     use HasFactory;
-    use IsPermissable;
+    use IsPermissible;
 }

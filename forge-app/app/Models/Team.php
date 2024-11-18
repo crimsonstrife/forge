@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Auth\PermissionGroup;
 use App\Traits\HasAdvancedPermissions;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 
 /**
  * Class Team
@@ -18,7 +18,7 @@ class Team extends Model
 {
     use HasFactory;
     use HasAdvancedPermissions;
-    use IsPermissable;
+    use IsPermissible;
 
     /**
      * Get the permission groups associated with the team.
