@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReportTemplateController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\FavoriteProjectController;
 use App\Livewire\DashboardCreate;
 use App\Livewire\ReportCreate;
 use App\Livewire\ProjectCreate;
@@ -107,6 +108,9 @@ Route::middleware([
     Route::post('/project', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('/project/{id}', [ProjectController::class, 'show'])->name('projects.show');
     Route::get('/project/{id}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
+    Route::post('/project/{id}/favorite', [FavoriteProjectController::class, 'toggleFavorite'])
+    ->middleware('auth')
+    ->name('projects.toggleFavorite');
 });
 
 Route::middleware(['auth', 'track.project.view'])->group(function () {

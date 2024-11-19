@@ -24,9 +24,16 @@
                                 <td class="px-4 py-2 border">{{ $project->type->name ?? 'N/A' }}</td>
                                 <td class="px-4 py-2 border">{{ $project->status->name ?? 'N/A' }}</td>
                                 <td class="px-4 py-2 border">
-                                    <a href="{{ route('projects.view', $project->id) }}" class="text-blue-500 hover:underline">
+                                    <a href="{{ route('projects.view', $project->id) }}"
+                                        class="text-blue-500 hover:underline">
                                         {{ __('View') }}
                                     </a>
+                                </td>
+                                <td class="px-4 py-2 border">
+                                    <button class="favorite-button" data-project-id="{{ $project->id }}"
+                                        onclick="toggleFavorite({{ $project->id }})">
+                                        {{ auth()->user()->favoriteProjects->contains($project->id)? 'Unfavorite': 'Favorite' }}
+                                    </button>
                                 </td>
                             </tr>
                         @empty
@@ -41,4 +48,23 @@
             </div>
         </div>
     </div>
+    <script>
+        async function toggleFavorite(projectId) {
+            try {
+                const response = await fetch(`/project/${projectId}/favorite`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const result = await response.json();
+                alert(result.message);
+                location.reload(); // Optional: reload to reflect changes
+            } catch (error) {
+                console.error('Error toggling favorite:', error);
+            }
+        }
+    </script>
 </x-app-layout>

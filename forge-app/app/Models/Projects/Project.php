@@ -248,7 +248,7 @@ class Project extends Model implements HasMedia
     public function contributors(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->users->push($this->owner)->unique('id') // Add the owner to the contributors list
+            get: fn() => $this->users->push($this->owner)->unique('id') // Add the owner to the contributors list
         );
     }
 
@@ -259,7 +259,7 @@ class Project extends Model implements HasMedia
     public function repositoryUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->repository?->url
+            get: fn() => $this->repository?->url
         );
     }
 
@@ -270,7 +270,7 @@ class Project extends Model implements HasMedia
     public function viewCount(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->view_count
+            get: fn() => $this->view_count
         );
     }
 
@@ -286,7 +286,7 @@ class Project extends Model implements HasMedia
                 $color = '';
 
                 //get the project type color
-                $color = $this->type->getColor() ?? '#3f84f3'; //default color if the project type does not have a color
+                $color = optional($this->type)->getColor() ?? '#3f84f3'; //default color if the project type does not have a color
 
                 //trim the pound sign/hash (#) from the color, if it is a hexcode
                 $color = ltrim($color, '#');
@@ -335,7 +335,7 @@ class Project extends Model implements HasMedia
 
         return new Attribute(
             //get the project icon
-            get: fn () => $this->media('icon')?->first()?->getFullUrl()
+            get: fn() => $this->media('icon')?->first()?->getFullUrl()
                 ??
                 'https://ui-avatars.com/api/?background=' . $this->color . '&color=' . $this->font_color . '&name=' . $this->name
         );
@@ -348,7 +348,7 @@ class Project extends Model implements HasMedia
     public function currentSprint(): Attribute
     {
         return new Attribute(
-            get: fn () => $this->sprints()
+            get: fn() => $this->sprints()
                 ->whereNotNull('started_at')
                 ->whereNull('ended_at')
                 ->first()
@@ -469,5 +469,27 @@ class Project extends Model implements HasMedia
     public function hasValidRepository(): bool
     {
         return !is_null($this->repository) && app(CrucibleService::class)->verifyRepository($this->repository->url);
+    }
+
+    /**
+     * Get the users who have favorited this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'project_favorites', 'project_id', 'user_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if the project is favorited by the given user.
+     *
+     * @param User $user The user to check against.
+     * @return bool True if the project is favorited by the user, false otherwise.
+     */
+    public function isFavoritedBy(User $user): bool
+    {
+        return $this->favoritedBy()->where('user_id', $user->id)->exists();
     }
 }

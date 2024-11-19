@@ -276,7 +276,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function favoriteProjects(): BelongsToMany
     {
-        return $this->belongsToMany(Project::class, 'project_favorites', 'user_id', 'project_id');
+        return $this->belongsToMany(Project::class, 'project_favorites', 'user_id', 'project_id')->withTimestamps();
     }
 
     /**

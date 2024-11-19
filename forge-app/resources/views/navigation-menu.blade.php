@@ -95,6 +95,23 @@
 
                                         <div class="border-t border-gray-200"></div>
 
+                                        <div class="block px-4 py-2 text-xs text-gray-400">
+                                            {{ __('Favorite Projects') }}
+                                        </div>
+                                        <ul>
+                                            @forelse (auth()->user()->favoriteProjects as $project)
+                                                <li>
+                                                    <a href="{{ route('projects.show', $project) }}">{{ $project->name }}</a>
+                                                </li>
+                                            @empty
+                                            <div class="block px-4 py-2 text-sm text-gray-500">
+                                                {{ __('No Favorited projects') }}
+                                            </div>
+                                            @endforelse
+                                        </ul>
+
+                                        <div class="border-t border-gray-200"></div>
+
                                         <!-- View All Projects -->
                                         <x-dropdown-link href="{{ route('projects.index') }}">
                                             {{ __('View All Projects') }}
