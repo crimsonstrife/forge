@@ -23,6 +23,7 @@ use App\Models\Projects\ProjectStatus;
 use App\Models\Projects\ProjectType;
 use App\Models\Projects\ProjectRepository;
 use App\Models\PivotModels\ProjectFavorite;
+use App\Models\PivotModels\ProjectUser;
 use App\Models\Tag;
 use App\Traits\IsPermissible;
 use App\Services\CrucibleService;
@@ -133,7 +134,21 @@ class Project extends Model implements HasMedia
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'project_users')->withPivot('project_role');
+        return $this->belongsToMany(User::class, 'project_users')
+            ->using(ProjectUser::class)
+            ->withPivot(['role_id'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if the project has a specific user.
+     *
+     * @param int $userId The ID of the user to check.
+     * @return bool True if the user is associated with the project, false otherwise.
+     */
+    public function hasUser($userId): bool
+    {
+        return $this->users()->where('user_id', $userId)->exists();
     }
 
     /**
@@ -518,5 +533,47 @@ class Project extends Model implements HasMedia
         return $query->whereHas('tags', function ($q) use ($tags) {
             $q->whereIn('id', $tags);
         });
+    }
+
+    /**
+     * Get the teams that belong to the project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, 'project_teams', 'project_id', 'team_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if the project has a team with the given team ID.
+     *
+     * @param int $teamId The ID of the team to check.
+     * @return bool True if the team is associated with the project, false otherwise.
+     */
+    public function hasTeam($teamId): bool
+    {
+        return $this->teams()->where('team_id', $teamId)->exists();
+    }
+
+    /**
+     * Get the roles associated with the project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function roles()
+    {
+        return $this->hasMany(ProjectRole::class);
+    }
+
+    /**
+     * Get the permissions associated with the project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function permissions()
+    {
+        return $this->hasMany(ProjectPermission::class);
     }
 }

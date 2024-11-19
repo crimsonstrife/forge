@@ -28,6 +28,7 @@ use App\Models\Auth\PermissionGroup;
 use App\Models\Projects\Project;
 use App\Models\Issues\Issue;
 use App\Models\Issues\IssueHour;
+use App\Models\PivotModels\ProjectUser;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\Log;
 
@@ -267,7 +268,10 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function projects(): BelongsToMany
     {
-        return $this->belongsToMany(Project::class, 'project_users', 'user_id', 'project_id')->withPivot(['role']);
+        return $this->belongsToMany(Project::class, 'project_users')
+            ->using(ProjectUser::class)
+            ->withPivot(['role_id'])
+            ->withTimestamps();
     }
 
     /**
@@ -563,5 +567,18 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         return $this->belongsToMany(Project::class, 'project_views')
                 ->withPivot('updated_at')
                 ->orderByPivot('updated_at', 'desc');
+    }
+
+    /**
+     * Get the teams that the user belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, 'team_members')
+            ->using(TeamMember::class)
+            ->withPivot(['role_id'])
+            ->withTimestamps();
     }
 }
