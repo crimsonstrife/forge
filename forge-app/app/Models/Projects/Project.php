@@ -248,7 +248,7 @@ class Project extends Model implements HasMedia
     public function contributors(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->users->push($this->owner)->unique('id') // Add the owner to the contributors list
+            get: fn () => $this->users->push($this->owner)->unique('id') // Add the owner to the contributors list
         );
     }
 
@@ -259,7 +259,7 @@ class Project extends Model implements HasMedia
     public function repositoryUrl(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->repository?->url
+            get: fn () => $this->repository?->url
         );
     }
 
@@ -270,7 +270,7 @@ class Project extends Model implements HasMedia
     public function viewCount(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->view_count
+            get: fn () => $this->view_count
         );
     }
 
@@ -335,7 +335,7 @@ class Project extends Model implements HasMedia
 
         return new Attribute(
             //get the project icon
-            get: fn() => $this->media('icon')?->first()?->getFullUrl()
+            get: fn () => $this->media('icon')?->first()?->getFullUrl()
                 ??
                 'https://ui-avatars.com/api/?background=' . $this->color . '&color=' . $this->font_color . '&name=' . $this->name
         );
@@ -348,7 +348,7 @@ class Project extends Model implements HasMedia
     public function currentSprint(): Attribute
     {
         return new Attribute(
-            get: fn() => $this->sprints()
+            get: fn () => $this->sprints()
                 ->whereNotNull('started_at')
                 ->whereNull('ended_at')
                 ->first()
