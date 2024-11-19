@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Teams;
+namespace App\Models\PivotModels;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
