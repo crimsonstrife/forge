@@ -234,9 +234,9 @@ class Issue extends Model implements HasMedia
      * Get the tags of the issue.
      * @return HasMany
      */
-    public function tags(): HasMany
+    public function tags()
     {
-        return $this->hasMany(Tags::class, 'issue_id', 'id');
+        return $this->belongsToMany(Tag::class, 'issue_has_tags', 'issue_id', 'tag_id')->withTimestamps();
     }
 
     /**
@@ -391,7 +391,7 @@ class Issue extends Model implements HasMedia
     public function completedPercentage(): Attribute
     {
         return new Attribute(
-            get: fn () => $this->estimationProgress
+            get: fn() => $this->estimationProgress
         );
     }
 
@@ -420,5 +420,19 @@ class Issue extends Model implements HasMedia
                 return $this->estimationInSeconds - $this->totalLoggedSeconds;
             }
         );
+    }
+
+    /**
+     * Scope a query to include projects with specific tags.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param array|string $tags
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithTags($query, $tags)
+    {
+        return $query->whereHas('tags', function ($q) use ($tags) {
+            $q->whereIn('id', $tags);
+        });
     }
 }

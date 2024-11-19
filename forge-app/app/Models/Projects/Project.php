@@ -22,7 +22,10 @@ use App\Models\PrioritySet as IssuePrioritySet;
 use App\Models\Projects\ProjectStatus;
 use App\Models\Projects\ProjectType;
 use App\Models\Projects\ProjectRepository;
+use App\Models\PivotModels\ProjectFavorite;
+use App\Models\Tag;
 use App\Traits\IsPermissible;
+use App\Services\CrucibleService;
 
 /**
  * Class Project
@@ -248,7 +251,7 @@ class Project extends Model implements HasMedia
     public function contributors(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->users->push($this->owner)->unique('id') // Add the owner to the contributors list
+            get: fn() => $this->users->push($this->owner)->unique('id') // Add the owner to the contributors list
         );
     }
 
@@ -259,7 +262,7 @@ class Project extends Model implements HasMedia
     public function repositoryUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->repository?->url
+            get: fn() => $this->repository?->url
         );
     }
 
@@ -270,7 +273,7 @@ class Project extends Model implements HasMedia
     public function viewCount(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->view_count
+            get: fn() => $this->view_count
         );
     }
 
@@ -335,7 +338,7 @@ class Project extends Model implements HasMedia
 
         return new Attribute(
             //get the project icon
-            get: fn () => $this->media('icon')?->first()?->getFullUrl()
+            get: fn() => $this->media('icon')?->first()?->getFullUrl()
                 ??
                 'https://ui-avatars.com/api/?background=' . $this->color . '&color=' . $this->font_color . '&name=' . $this->name
         );
@@ -348,7 +351,7 @@ class Project extends Model implements HasMedia
     public function currentSprint(): Attribute
     {
         return new Attribute(
-            get: fn () => $this->sprints()
+            get: fn() => $this->sprints()
                 ->whereNotNull('started_at')
                 ->whereNull('ended_at')
                 ->first()
@@ -491,5 +494,29 @@ class Project extends Model implements HasMedia
     public function isFavoritedBy(User $user): bool
     {
         return $this->favoritedBy()->where('user_id', $user->id)->exists();
+    }
+
+    /**
+     * Get the tags associated with the project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'project_has_tags', 'project_id', 'tag_id')->withTimestamps();
+    }
+
+    /**
+     * Scope a query to include projects with specific tags.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param array|string $tags
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithTags($query, $tags)
+    {
+        return $query->whereHas('tags', function ($q) use ($tags) {
+            $q->whereIn('id', $tags);
+        });
     }
 }

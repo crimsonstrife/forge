@@ -65,6 +65,9 @@ class ProjectCreate extends Component
             'owner_id' => Auth::id(),
         ]);
 
+        // Add tags to the project
+        $project->tags()->sync($this->tags);
+
         // Handle repository syncing if a URL is provided
         if (!empty($this->repository_url)) {
             $success = $project->syncRepository($this->repository_url);
