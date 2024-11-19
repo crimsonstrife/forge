@@ -32,6 +32,13 @@ use App\Traits\IsPermissible;
  * @property int status_id
  * @property int owner_id
  * @property string issue_prefix
+ * @property string status_type
+ * @property string type
+ * @property string start_date
+ * @property string end_date
+ * @property int user_id
+ * @property int repository_id
+ * @property int view_count
  * @package App\Models\Projects
  */
 class Project extends Model implements HasMedia
@@ -54,6 +61,7 @@ class Project extends Model implements HasMedia
         'end_date',
         'user_id',
         'repository_id',
+        'view_count'
     ];
 
     protected $dates = [
@@ -65,6 +73,19 @@ class Project extends Model implements HasMedia
         'icon',
         'color',
         'font_color',
+    ];
+
+    protected $with = [
+        'owner',
+        'status',
+        'type',
+        'repository',
+        'users',
+        'prioritySet',
+    ];
+
+    protected $casts = [
+        'view_count' => 'integer',
     ];
 
     /**
@@ -239,6 +260,17 @@ class Project extends Model implements HasMedia
     {
         return Attribute::make(
             get: fn () => $this->repository?->url
+        );
+    }
+
+    /**
+     * Get the View Count of the Project
+     * @return Attribute
+     */
+    public function viewCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->view_count
         );
     }
 

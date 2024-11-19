@@ -104,6 +104,9 @@ class ProjectController extends Controller
             );
         }
 
+        // Increment the global view count for the project
+        $project->increment('view_count');
+
         return view('projects.show', compact('project'));
     }
 

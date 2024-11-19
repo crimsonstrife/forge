@@ -28,6 +28,7 @@ use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use App\Http\Middleware\PermissionSet;
+use App\Http\Middleware\TrackProjectView;
 
 /**
  * Configures the application and returns an instance of the Application class.
@@ -78,6 +79,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => EnsureEmailIsVerified::class,
             'auth.permissionSet' => PermissionSet::class,
             'ensureMockMode' => EnsureMockMode::class,
+            'track.project.view' => TrackProjectView::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

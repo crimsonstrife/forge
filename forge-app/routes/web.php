@@ -109,6 +109,10 @@ Route::middleware([
     Route::get('/project/{id}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
 });
 
+Route::middleware(['auth', 'track.project.view'])->group(function () {
+    Route::get('/project/{id}', [ProjectController::class, 'show'])->name('projects.show');
+});
+
 /**
  * Route for verifying email address after registration.
  * uses the 'verification.verify' middleware.

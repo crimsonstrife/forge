@@ -21,6 +21,11 @@
                         <h4 class="font-bold">{{ __('Status') }}</h4>
                         <p>{{ $project->status->name ?? 'N/A' }}</p>
                     </div>
+
+                    <div class="mt-4">
+                        <h4 class="font-bold">{{ __('Views') }}</h4>
+                        <p>{{ $project->view_count ?? '0' }}</p>
+                    </div>
                 </div>
             </div>
         </div>
