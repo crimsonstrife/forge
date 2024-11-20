@@ -565,8 +565,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function recentProjects($limit = 5)
     {
         return $this->belongsToMany(Project::class, 'project_views')
-                ->withPivot('updated_at')
-                ->orderByPivot('updated_at', 'desc');
+            ->withPivot('updated_at')
+            ->orderByPivot('updated_at', 'desc');
     }
 
     /**
@@ -580,5 +580,21 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
             ->using(TeamMember::class)
             ->withPivot(['role_id'])
             ->withTimestamps();
+    }
+
+    /**
+     * Get the recent collaborators for the user.
+     * TODO:// Expand this to include more specific collaborators, based on recent activity or viewed projects.
+     * @param int $limit The maximum number of collaborators to retrieve. Default is 5.
+     * @return \Illuminate\Database\Eloquent\Collection The collection of recent collaborators.
+     */
+    public function recentCollaborators($limit = 5)
+    {
+        return User::whereHas('projects', function ($query) {
+            $query->whereIn('projects.id', $this->projects->pluck('id'));
+        })->where('id', '!=', $this->id)
+            ->distinct()
+            ->limit($limit)
+            ->get();
     }
 }

@@ -111,9 +111,39 @@ Route::middleware([
     Route::post('/project/{id}/favorite', [FavoriteProjectController::class, 'toggleFavorite'])
     ->middleware('auth')
     ->name('projects.toggleFavorite');
+
+    // Project Role routes
+    Route::prefix('project/{id}')->group(function () {
+        Route::get('/roles', [ProjectRoleController::class, 'index'])->name('projects.roles.index');
+        Route::get('/roles/create', [ProjectRoleController::class, 'create'])->name('projects.roles.create');
+        Route::post('/roles', [ProjectRoleController::class, 'store'])->name('projects.roles.store');
+        Route::get('/roles/{role}/edit', [ProjectRoleController::class, 'edit'])->name('projects.roles.edit');
+        Route::put('/roles/{role}', [ProjectRoleController::class, 'update'])->name('projects.roles.update');
+        Route::delete('/roles/{role}', [ProjectRoleController::class, 'destroy'])->name('projects.roles.destroy');
+    });
+
+    // Team Roles routes
+    Route::prefix('teams/{team}')->group(function () {
+        Route::get('/roles', [TeamRoleController::class, 'index'])->name('teams.roles.index');
+        Route::get('/roles/create', [TeamRoleController::class, 'create'])->name('teams.roles.create');
+        Route::post('/roles', [TeamRoleController::class, 'store'])->name('teams.roles.store');
+        Route::get('/roles/{role}/edit', [TeamRoleController::class, 'edit'])->name('teams.roles.edit');
+        Route::put('/roles/{role}', [TeamRoleController::class, 'update'])->name('teams.roles.update');
+        Route::delete('/roles/{role}', [TeamRoleController::class, 'destroy'])->name('teams.roles.destroy');
+    });
 });
 
-Route::middleware(['auth', 'track.project.view'])->group(function () {
+
+/**
+ * Define a route group that applies middleware for authentication, session management,
+ * and project view tracking.
+ *
+ * Middleware applied:
+ * - 'auth:sanctum': Ensures the user is authenticated using Sanctum.
+ * - config('jetstream.auth_session'): Manages the authentication session using Jetstream.
+ * - 'track.project.view': Custom middleware to track project views.
+ */
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'),'track.project.view'])->group(function () {
     Route::get('/project/{id}', [ProjectController::class, 'show'])->name('projects.show');
 });
 

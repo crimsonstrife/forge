@@ -59,6 +59,6 @@ class ProjectUser extends Pivot
      */
     public function role()
     {
-        return $this->belongsTo(ProjectRole::class, 'role_id');
+        return $this->belongsTo(ProjectRole::class, 'project_user_role_pivot', 'project_user_id', 'role_id');
     }
 }
