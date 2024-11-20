@@ -25,8 +25,7 @@ class TeamMember extends Pivot
 
     protected $fillable = [
         'team_id',
-        'user_id',
-        'role_id',
+        'user_id'
     ];
 
     /**
@@ -56,6 +55,6 @@ class TeamMember extends Pivot
      */
     public function role()
     {
-        return $this->belongsTo(TeamRole::class, 'role_id');
+        return $this->belongsTo(TeamRole::class, 'team_user_role_pivot', 'team_member_id', 'role_id');
     }
 }

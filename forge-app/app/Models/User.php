@@ -590,7 +590,18 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     {
         return $this->belongsToMany(Team::class, 'team_members')
             ->using(TeamMember::class)
-            ->withPivot(['role_id'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the roles that the user has for a specific team.
+     * @param int $teamId
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function teamsRoles($teamId)
+    {
+        return $this->belongsToMany(TeamRole::class, 'team_member_role_pivot', 'user_id', 'team_role_id')
+            ->wherePivot('team_id', $teamId)
             ->withTimestamps();
     }
 
