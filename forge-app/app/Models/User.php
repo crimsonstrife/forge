@@ -29,6 +29,7 @@ use App\Models\Projects\Project;
 use App\Models\Issues\Issue;
 use App\Models\Issues\IssueHour;
 use App\Models\PivotModels\ProjectUser;
+use App\Models\Teams\Team;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\Log;
 
@@ -270,7 +271,18 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     {
         return $this->belongsToMany(Project::class, 'project_users')
             ->using(ProjectUser::class)
-            ->withPivot(['role_id'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the roles that the user has for a specific project.
+     * @param int $projectId
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function projectRoles($projectId)
+    {
+        return $this->belongsToMany(ProjectRole::class, 'project_user_role_pivot', 'user_id', 'project_role_id')
+            ->wherePivot('project_id', $projectId)
             ->withTimestamps();
     }
 
@@ -592,7 +604,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     {
         return User::whereHas('projects', function ($query) {
             $query->whereIn('projects.id', $this->projects->pluck('id'));
-        })->where('id', '!=', $this->id)
+        })->where('id', '!=', $this->id) // Exclude the current user from the list of collaborators
             ->distinct()
             ->limit($limit)
             ->get();

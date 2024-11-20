@@ -8,7 +8,10 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReportTemplateController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\FavoriteProjectController;
+use App\Http\Controllers\TeamRoleController;
+use App\Http\Controllers\ProjectRoleController;
 use App\Livewire\DashboardCreate;
 use App\Livewire\ReportCreate;
 use App\Livewire\ProjectCreate;
@@ -121,6 +124,13 @@ Route::middleware([
         Route::put('/roles/{role}', [ProjectRoleController::class, 'update'])->name('projects.roles.update');
         Route::delete('/roles/{role}', [ProjectRoleController::class, 'destroy'])->name('projects.roles.destroy');
     });
+
+    // Team routes
+    Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
+    Route::get('/team/create', [TeamController::class, 'create'])->name('teams.create');
+    Route::post('/team', [TeamController::class, 'store'])->name('teams.store');
+    Route::get('/team/{id}', [TeamController::class, 'show'])->name('teams.show');
+    Route::get('/team/{id}/edit', [TeamController::class, 'edit'])->name('teams.edit');
 
     // Team Roles routes
     Route::prefix('teams/{team}')->group(function () {
