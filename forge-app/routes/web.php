@@ -110,7 +110,9 @@ Route::middleware([
     Route::get('/project/create', [ProjectController::class, 'create'])->name('projects.create');
     Route::post('/project', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('/project/{id}', [ProjectController::class, 'show'])->name('projects.show');
-    Route::get('/project/{id}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
+    Route::get('/project/{id}/edit', [ProjectController::class, 'edit'])
+    ->middleware('project.permission:edit_project')
+    ->name('projects.edit');
     Route::post('/project/{id}/favorite', [FavoriteProjectController::class, 'toggleFavorite'])
     ->middleware('auth')
     ->name('projects.toggleFavorite');

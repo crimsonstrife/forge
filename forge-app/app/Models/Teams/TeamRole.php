@@ -37,4 +37,15 @@ class TeamRole extends Model
     {
         return $this->belongsToMany(TeamPermission::class, 'team_role_permissions', 'role_id', 'permission_id');
     }
+
+    /**
+     * Check if the role has the specified permission.
+     *
+     * @param string $permission
+     * @return bool
+     */
+    public function hasPermission(string $permission): bool
+    {
+        return $this->permissions->contains('name', $permission);
+    }
 }

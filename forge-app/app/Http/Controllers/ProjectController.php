@@ -111,6 +111,19 @@ class ProjectController extends Controller
     }
 
     /**
+     * Display the form for editing a project.
+     *
+     * @param int $projectId The ID of the project to edit.
+     * @return \Illuminate\View\View The view for editing a project.
+     */
+    public function edit($projectId)
+    {
+        $project = Project::findOrFail($projectId);
+
+        return view('projects.edit', compact('project'));
+    }
+
+    /**
      * Update a project.
      *
      * @param \Illuminate\Http\Request $request The request object.

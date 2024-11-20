@@ -29,6 +29,8 @@ use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use App\Http\Middleware\PermissionSet;
 use App\Http\Middleware\TrackProjectView;
+use App\Http\Middleware\CheckProjectPermission;
+use App\Http\Middleware\CheckTeamPermission;
 
 /**
  * Configures the application and returns an instance of the Application class.
@@ -80,6 +82,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.permissionSet' => PermissionSet::class,
             'ensureMockMode' => EnsureMockMode::class,
             'track.project.view' => TrackProjectView::class,
+            'project.permission' => CheckProjectPermission::class,
+            'team.permission' => CheckTeamPermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

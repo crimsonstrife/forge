@@ -279,11 +279,34 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      * @param int $projectId
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function projectRoles($projectId)
+    public function projectRoles()
     {
-        return $this->belongsToMany(ProjectRole::class, 'project_user_role_pivot', 'user_id', 'project_role_id')
-            ->wherePivot('project_id', $projectId)
+        return $this->belongsToMany(ProjectRole::class, 'project_user_roles', 'user_id', 'role_id')
+            ->withPivot('project_id')
             ->withTimestamps();
+    }
+
+    /**
+     * Check if the user has a specific permission for a given project.
+     *
+     * @param int $projectId The ID of the project.
+     * @param string $permissionName The name of the permission to check.
+     * @return bool True if the user has the permission, false otherwise.
+     */
+    public function hasProjectPermission($projectId, $permissionName)
+    {
+        // Get the project role(s) for the user in the project
+        $projectRoleOrRoles = $this->projectRoles()->wherePivot('project_id', $projectId)->get();
+
+        // Check if the user has the permission in any of the project roles
+        foreach ($projectRoleOrRoles as $projectRole) {
+            if ($this->hasProjectRolePermission($projectRole, $permissionName)) {
+                return true;
+            }
+        }
+
+        // The user does not have the permission
+        return false;
     }
 
     /**
@@ -598,6 +621,27 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      * @param int $teamId
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
+    public function hasTeamPermission($teamId, $permissionName)
+    {
+        // Get the team role(s) for the user in the team
+        $teamRoleOrRoles = $this->teamId()->wherePivot('teamId', $teamId)->get();
+
+        // Check if the user has the permission in any of the team roles
+        foreach ($teamRoleOrRoles as $teamRole) {
+            if ($this->hasTeamRolePermission($teamRole, $permissionName)) {
+                return true;
+            }
+        }
+
+        // The user does not have the permission
+        return false;
+    }
+
+    /**
+     * Get the roles that the user has for a specific team.
+     * @param int $teamId
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function teamsRoles($teamId)
     {
         return $this->belongsToMany(TeamRole::class, 'team_member_role_pivot', 'user_id', 'team_role_id')
@@ -619,5 +663,27 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
             ->distinct()
             ->limit($limit)
             ->get();
+    }
+
+    /**
+     * Check if the user has the specified permission.
+     * @param string $permissionName
+     * @return bool
+     */
+    public function hasTeamRolePermission($teamRole, $permissionName)
+    {
+        // Check if the team role has the permission
+        return $teamRole->hasPermission($permissionName);
+    }
+
+    /**
+     * Check if the user has the specified permission.
+     * @param string $permissionName
+     * @return bool
+     */
+    public function hasProjectRolePermission($projectRole, $permissionName)
+    {
+        // Check if the project role has the permission
+        return $projectRole->hasPermission($permissionName);
     }
 }
