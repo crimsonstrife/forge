@@ -38,7 +38,7 @@
         "laravel-vite-plugin": "^1.0.5",
         "pm2": "^5.4.2",
         "pusher-js": "^8.4.0-rc2",
-        "three": "^0.170.0",
+        "three": "^0.171.0",
         "threepipe": "^0.0.33",
         "tinymce": "^7.4.1",
         "vite": "^5.4.10",
