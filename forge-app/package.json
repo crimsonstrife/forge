@@ -27,7 +27,7 @@
         "@primer/octicons": "^19.11.0",
         "@tabler/icons": "^3.20.0",
         "@types/three": "^0.170.0",
-        "axios": "^1.7.7",
+        "axios": "^1.7.8",
         "bootstrap": "^5.3.3",
         "chart.js": "^4.4.6",
         "discord.js": "^14.16.3",
