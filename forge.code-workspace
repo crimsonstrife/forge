@@ -15,6 +15,15 @@
 		],
 		"logViewer.options": {
 			
-		}
+		},
+		"cSpell.words": [
+			"favorited",
+			"hexcode",
+			"jetstream",
+			"Livewire",
+			"Protone",
+			"repositoryable",
+			"Spatie"
+		]
 	}
 }

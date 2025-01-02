@@ -7,6 +7,14 @@ use App\Http\Controllers\Auth\DiscordAuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReportTemplateController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\FavoriteProjectController;
+use App\Http\Controllers\TeamRoleController;
+use App\Http\Controllers\ProjectRoleController;
+use App\Livewire\DashboardCreate;
+use App\Livewire\ReportCreate;
+use App\Livewire\ProjectCreate;
 use Illuminate\Support\Facades\File;
 
 /**
@@ -28,7 +36,7 @@ Route::post('/discord/issue/{id}/approve', [DiscordController::class, 'approveIs
 Route::post('/discord/issue/{id}/reject', [DiscordController::class, 'rejectIssue']); // Reject an issue
 
 /**
- * Define routes for Discord acount linking.
+ * Define routes for Discord account linking.
  * These routes are accessible via the '/discord' URL.
  */
 Route::get('/auth/discord', [DiscordAuthController::class, 'redirectToDiscord'])->name('auth.discord');
@@ -59,6 +67,7 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
+    'ensureMockMode',
 ])->group(function () {
     // Dashboard routes
     //Specific routes for authenticated users
@@ -66,13 +75,13 @@ Route::middleware([
     Route::get('/dashboard/create', [DashboardController::class, 'create'])->name('dashboards.create');
 
     // Route to catch-all the dashboard ids
-    Route::get('/dashboard/{id}', [DashboardController::class, 'show'])->name('dashboards.view');
+    Route::get('/dashboard/{id}', [DashboardController::class, 'show'])->name('dashboards.show');
+
+    // Route to store the dashboard when creating a new one
+    Route::post('/dashboards', [DashboardController::class, 'store'])->name('dashboards.store');
 
     // General dashboard route
     Route::get('/dashboard', [DashboardController::class, 'landingPage'])->name('dashboard');
-
-    // Route to store the dashboard when creating a new one
-    Route::post('/dashboard', [DashboardController::class, 'store'])->name('dashboards.store');
 
     // Report routes
     Route::get('/dashboard/{dashboardId}/reports', [ReportController::class, 'index'])->name('reports.index');
@@ -95,6 +104,59 @@ Route::middleware([
 
         // Other template routes can be added here
     });
+
+    // Project routes
+    Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+    Route::get('/project/create', [ProjectController::class, 'create'])->name('projects.create');
+    Route::post('/project', [ProjectController::class, 'store'])->name('projects.store');
+    Route::get('/project/{id}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::get('/project/{id}/edit', [ProjectController::class, 'edit'])
+    ->middleware('project.permission:edit_project')
+    ->name('projects.edit');
+    Route::post('/project/{id}/favorite', [FavoriteProjectController::class, 'toggleFavorite'])
+    ->middleware('auth')
+    ->name('projects.toggleFavorite');
+
+    // Project Role routes
+    Route::prefix('project/{id}')->group(function () {
+        Route::get('/roles', [ProjectRoleController::class, 'index'])->name('projects.roles.index');
+        Route::get('/roles/create', [ProjectRoleController::class, 'create'])->name('projects.roles.create');
+        Route::post('/roles', [ProjectRoleController::class, 'store'])->name('projects.roles.store');
+        Route::get('/roles/{role}/edit', [ProjectRoleController::class, 'edit'])->name('projects.roles.edit');
+        Route::put('/roles/{role}', [ProjectRoleController::class, 'update'])->name('projects.roles.update');
+        Route::delete('/roles/{role}', [ProjectRoleController::class, 'destroy'])->name('projects.roles.destroy');
+    });
+
+    // Team routes
+    Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
+    Route::get('/team/create', [TeamController::class, 'create'])->name('teams.create');
+    Route::post('/team', [TeamController::class, 'store'])->name('teams.store');
+    Route::get('/team/{id}', [TeamController::class, 'show'])->name('teams.show');
+    Route::get('/team/{id}/edit', [TeamController::class, 'edit'])->name('teams.edit');
+
+    // Team Roles routes
+    Route::prefix('teams/{team}')->group(function () {
+        Route::get('/roles', [TeamRoleController::class, 'index'])->name('teams.roles.index');
+        Route::get('/roles/create', [TeamRoleController::class, 'create'])->name('teams.roles.create');
+        Route::post('/roles', [TeamRoleController::class, 'store'])->name('teams.roles.store');
+        Route::get('/roles/{role}/edit', [TeamRoleController::class, 'edit'])->name('teams.roles.edit');
+        Route::put('/roles/{role}', [TeamRoleController::class, 'update'])->name('teams.roles.update');
+        Route::delete('/roles/{role}', [TeamRoleController::class, 'destroy'])->name('teams.roles.destroy');
+    });
+});
+
+
+/**
+ * Define a route group that applies middleware for authentication, session management,
+ * and project view tracking.
+ *
+ * Middleware applied:
+ * - 'auth:sanctum': Ensures the user is authenticated using Sanctum.
+ * - config('jetstream.auth_session'): Manages the authentication session using Jetstream.
+ * - 'track.project.view': Custom middleware to track project views.
+ */
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'),'track.project.view'])->group(function () {
+    Route::get('/project/{id}', [ProjectController::class, 'show'])->name('projects.show');
 });
 
 /**

@@ -68,8 +68,8 @@ class ProjectPolicy
                 $project->owner_id === $user->id
                 ||
                 $project->users()->where('users.id', $user->id)
-                    ->where('role', config('system.projects.affectations.roles.can_manage'))
-                    ->count()
+                ->where('role', config('system.projects.affectations.roles.can_manage'))
+                ->count()
             );
     }
 
@@ -83,5 +83,17 @@ class ProjectPolicy
     public function delete(User $user, Project $project)
     {
         return $user->can('delete-project');
+    }
+
+    /**
+     * Determine if the given user can manage roles for the specified project.
+     *
+     * @param User $user The user instance.
+     * @param Project $project The project instance.
+     * @return bool
+     */
+    public function manageRoles(User $user, Project $project)
+    {
+        return $project->owner_id === $user->id || $user->isProjectAdmin($project);
     }
 }

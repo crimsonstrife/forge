@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Config;
 class Icon extends Model
 {
     use HasFactory;
-    use IsPermissable;
+    use IsPermissible;
 
     public $storagePath;
 

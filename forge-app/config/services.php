@@ -59,5 +59,6 @@ return [
         'enabled' => env('CRUCIBLE_CONNECTION_ENABLED') ?? false,
         'base_url' => env('CRUCIBLE_BASE_URL') ?? '',
         'api_token' => env('CRUCIBLE_API_TOKEN') ?? '',
+        'mock_mode' => env('CRUCIBLE_MOCK_MODE') ?? false,
     ],
 ];

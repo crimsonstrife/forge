@@ -34,7 +34,10 @@
                 "Team Management",
                 "Team Member Management",
                 "Icon Management",
-                "Priority Set Management"
+                "Priority Set Management",
+                "Dashboard Management",
+                "Report Management",
+                "Report Template Management"
             ],
             "permissions": [
                 "manage-settings",

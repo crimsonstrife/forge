@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
 use App\Models\Activity;
 use App\Models\Issues\Issue;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 
 /**
  * Class IssueHour
@@ -34,7 +34,7 @@ use App\Traits\IsPermissable;
 class IssueHour extends Model
 {
     use HasFactory;
-    use IsPermissable;
+    use IsPermissible;
 
     protected $fillable = [
         'user_id',

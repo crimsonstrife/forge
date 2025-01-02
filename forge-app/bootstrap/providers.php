@@ -57,6 +57,7 @@ return [
     App\Providers\RouteServiceProvider::class,
     //App\Providers\TelescopeServiceProvider::class, - Commented out to prevent loading of Telescope in production
     App\Providers\IconServiceProvider::class,
+    App\Providers\ViewServiceProvider::class,
 
     /**
      * Custom Module Service Providers...

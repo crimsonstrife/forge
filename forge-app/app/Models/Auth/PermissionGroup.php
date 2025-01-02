@@ -2,7 +2,7 @@
 
 namespace App\Models\Auth;
 
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
@@ -25,7 +25,7 @@ use Spatie\Permission\Models\Permission;
 class PermissionGroup extends Model
 {
     use HasFactory;
-    use IsPermissable;
+    use IsPermissible;
 
     protected $fillable = [
         'name',

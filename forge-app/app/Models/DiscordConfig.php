@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 class DiscordConfig extends Model
 {
     use HasFactory;
-    use IsPermissable;
+    use IsPermissible;
 
     // Specify the table name
     protected $table = 'discord_config';

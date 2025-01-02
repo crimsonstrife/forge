@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 
 /**
  * Class Board
@@ -14,5 +14,5 @@ use App\Traits\IsPermissable;
 class Board extends Model
 {
     use HasFactory;
-    use IsPermissable;
+    use IsPermissible;
 }

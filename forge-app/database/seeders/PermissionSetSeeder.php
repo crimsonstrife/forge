@@ -12,7 +12,7 @@ class PermissionSetSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    private $modelsWithoutIsPermissable = ['permission'];
+    private $modelsWithoutIsPermissible = ['permission'];
 
     /**
      * Run the database seeds.
@@ -34,11 +34,11 @@ class PermissionSetSeeder extends Seeder
      */
     private function createDynamicPermissionSets(): void
     {
-        // Get all models that use the IsPermissable trait
-        $models = ModelUtility::getModelsByTrait('App\Traits\IsPermissable');
+        // Get all models that use the IsPermissible trait
+        $models = ModelUtility::getModelsByTrait('App\Traits\IsPermissible');
 
-        // Add additional models as needed that don't use the IsPermissable trait
-        $models = array_merge($models, $this->modelsWithoutIsPermissable);
+        // Add additional models as needed that don't use the IsPermissible trait
+        $models = array_merge($models, $this->modelsWithoutIsPermissible);
 
         foreach (array_chunk($models, 10) as $modelChunk) {
             // Loop through each model and create a PermissionSet for it

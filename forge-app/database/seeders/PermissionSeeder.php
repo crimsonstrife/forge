@@ -121,17 +121,17 @@ class PermissionSeeder extends Seeder
     {
         // Create CRUD permissions for each type of object, e.g. 'users', 'posts', 'comments'
         try {
-            // Get all models with the IsPermissable trait
-            $models = ModelUtility::getModelsByTrait('App\Traits\IsPermissable');
+            // Get all models with the IsPermissible trait
+            $models = ModelUtility::getModelsByTrait('App\Traits\IsPermissible');
 
             // If no models are found, output a warning and return false
             if (empty($models)) {
-                $this->command->warn('No models found with the IsPermissable trait.');
+                $this->command->warn('No models found with the IsPermissible trait.');
                 return false;
             }
 
             // Count models and output for logging
-            $this->command->info('Found ' . count($models) . ' models with the IsPermissable trait');
+            $this->command->info('Found ' . count($models) . ' models with the IsPermissible trait');
 
             // Loop through the models and add them to the objects array
             foreach ($models as $model) {

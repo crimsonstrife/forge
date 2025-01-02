@@ -5,10 +5,12 @@ namespace App\Models;
 use App\Models\Templates\ReportTemplate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\IsPermissible;
 
 class Report extends Model
 {
     use SoftDeletes;
+    use IsPermissible;
 
     protected $fillable = ['title', 'description', 'content', 'settings', 'filters', 'dashboard_id', 'template_id', 'order'];
 
