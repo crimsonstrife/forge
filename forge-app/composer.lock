@@ -4959,16 +4959,16 @@
         },
         {
             "name": "livewire/livewire",
-            "version": "v3.5.12",
+            "version": "v3.5.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/livewire.git",
-                "reference": "3c8d1f9d7d9098aaea663093ae168f2d5d2ae73d"
+                "reference": "62f0fa6b340a467c25baa590a567d9a134b357da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/livewire/zipball/3c8d1f9d7d9098aaea663093ae168f2d5d2ae73d",
-                "reference": "3c8d1f9d7d9098aaea663093ae168f2d5d2ae73d",
+                "url": "https://api.github.com/repos/livewire/livewire/zipball/62f0fa6b340a467c25baa590a567d9a134b357da",
+                "reference": "62f0fa6b340a467c25baa590a567d9a134b357da",
                 "shasum": ""
             },
             "require": {
@@ -4994,12 +4994,12 @@
             "type": "library",
             "extra": {
                 "laravel": {
-                    "providers": [
-                        "Livewire\\LivewireServiceProvider"
-                    ],
                     "aliases": {
                         "Livewire": "Livewire\\Livewire"
-                    }
+                    },
+                    "providers": [
+                        "Livewire\\LivewireServiceProvider"
+                    ]
                 }
             },
             "autoload": {
@@ -5023,7 +5023,7 @@
             "description": "A front-end framework for Laravel.",
             "support": {
                 "issues": "https://github.com/livewire/livewire/issues",
-                "source": "https://github.com/livewire/livewire/tree/v3.5.12"
+                "source": "https://github.com/livewire/livewire/tree/v3.5.18"
             },
             "funding": [
                 {
@@ -5031,7 +5031,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-10-15T19:35:06+00:00"
+            "time": "2024-12-23T15:05:02+00:00"
         },
         {
             "name": "maatwebsite/excel",
@@ -8434,16 +8434,16 @@
         },
         {
             "name": "spatie/browsershot",
-            "version": "4.3.0",
+            "version": "4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/browsershot.git",
-                "reference": "601f2758191d8c46b2ea587eea935a87da4f39e8"
+                "reference": "3ff350cd0a36943759e2932a27d8cd18c11e5fdc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/browsershot/zipball/601f2758191d8c46b2ea587eea935a87da4f39e8",
-                "reference": "601f2758191d8c46b2ea587eea935a87da4f39e8",
+                "url": "https://api.github.com/repos/spatie/browsershot/zipball/3ff350cd0a36943759e2932a27d8cd18c11e5fdc",
+                "reference": "3ff350cd0a36943759e2932a27d8cd18c11e5fdc",
                 "shasum": ""
             },
             "require": {
@@ -8490,7 +8490,7 @@
                 "webpage"
             ],
             "support": {
-                "source": "https://github.com/spatie/browsershot/tree/4.3.0"
+                "source": "https://github.com/spatie/browsershot/tree/4.4.0"
             },
             "funding": [
                 {
@@ -8498,7 +8498,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-08-22T09:14:07+00:00"
+            "time": "2024-11-25T16:02:22+00:00"
         },
         {
             "name": "spatie/color",
@@ -13953,16 +13953,16 @@
         },
         {
             "name": "laravel/pulse",
-            "version": "v1.2.5",
+            "version": "v1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pulse.git",
-                "reference": "0c0c91fd05acc537f6324b271709670ffc201e59"
+                "reference": "d1a5bf2eca36c6e3bedb4ceecd45df7d002a1ebc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pulse/zipball/0c0c91fd05acc537f6324b271709670ffc201e59",
-                "reference": "0c0c91fd05acc537f6324b271709670ffc201e59",
+                "url": "https://api.github.com/repos/laravel/pulse/zipball/d1a5bf2eca36c6e3bedb4ceecd45df7d002a1ebc",
+                "reference": "d1a5bf2eca36c6e3bedb4ceecd45df7d002a1ebc",
                 "shasum": ""
             },
             "require": {
@@ -14000,16 +14000,16 @@
             },
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "1.x-dev"
-                },
                 "laravel": {
-                    "providers": [
-                        "Laravel\\Pulse\\PulseServiceProvider"
-                    ],
                     "aliases": {
                         "Pulse": "Laravel\\Pulse\\Facades\\Pulse"
-                    }
+                    },
+                    "providers": [
+                        "Laravel\\Pulse\\PulseServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
                 }
             },
             "autoload": {
@@ -14036,7 +14036,7 @@
                 "issues": "https://github.com/laravel/pulse/issues",
                 "source": "https://github.com/laravel/pulse"
             },
-            "time": "2024-09-03T09:21:52+00:00"
+            "time": "2024-12-11T22:59:06+00:00"
         },
         {
             "name": "laravel/sail",
