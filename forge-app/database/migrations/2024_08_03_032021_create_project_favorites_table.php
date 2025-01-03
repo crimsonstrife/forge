@@ -20,20 +20,13 @@ return new class () extends Migration {
     {
         Schema::create('project_favorites', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->unsigned();
-            $table->bigInteger('project_id')->unsigned();
-            $table->softDeletes();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
 
         Schema::table('project_favorites', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('project_id')->references('id')->on('projects');
-        });
-
-        //set constraints
-        Schema::table('project_favorites', function (Blueprint $table) {
-            $table->unique(['user_id', 'project_id']);
+            $table->unique(['user_id', 'project_id'], 'user_fav_project_unique');
         });
     }
 

@@ -11,7 +11,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens as SanctumApiTokens;
 use Laravel\Passport\HasApiTokens as PassportApiTokens;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 use App\Traits\HasAdvancedPermissions;
 use Spatie\Permission\Traits\HasRoles;
 use Filament\Models\Contracts\FilamentUser;
@@ -28,6 +28,8 @@ use App\Models\Auth\PermissionGroup;
 use App\Models\Projects\Project;
 use App\Models\Issues\Issue;
 use App\Models\Issues\IssueHour;
+use App\Models\PivotModels\ProjectUser;
+use App\Models\Teams\Team;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\Log;
 
@@ -70,7 +72,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     use HasAdvancedPermissions, HasRoles {
         HasAdvancedPermissions::hasPermissionTo insteadof HasRoles;
     }
-    use IsPermissable;
+    use IsPermissible;
     use MustVerifyNewEmail;
     use SoftDeletes;
 
@@ -262,12 +264,58 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     }
 
     /**
+     * Get the projects that the user is a member of.
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'project_users')
+            ->using(ProjectUser::class)
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the roles that the user has for a specific project.
+     * @param int $projectId
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function projectRoles()
+    {
+        return $this->belongsToMany(ProjectRole::class, 'project_user_roles', 'user_id', 'role_id')
+            ->withPivot('project_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if the user has a specific permission for a given project.
+     *
+     * @param int $projectId The ID of the project.
+     * @param string $permissionName The name of the permission to check.
+     * @return bool True if the user has the permission, false otherwise.
+     */
+    public function hasProjectPermission($projectId, $permissionName)
+    {
+        // Get the project role(s) for the user in the project
+        $projectRoleOrRoles = $this->projectRoles()->wherePivot('project_id', $projectId)->get();
+
+        // Check if the user has the permission in any of the project roles
+        foreach ($projectRoleOrRoles as $projectRole) {
+            if ($this->hasProjectRolePermission($projectRole, $permissionName)) {
+                return true;
+            }
+        }
+
+        // The user does not have the permission
+        return false;
+    }
+
+    /**
      * Get the projects that the user has starred (is a favorite).
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function favoriteProjects(): BelongsToMany
     {
-        return $this->belongsToMany(Project::class, 'project_favorites', 'user_id', 'project_id');
+        return $this->belongsToMany(Project::class, 'project_favorites', 'user_id', 'project_id')->withTimestamps();
     }
 
     /**
@@ -441,7 +489,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      */
     public function dashboards()
     {
-        return $this->belongsToMany(Dashboard::class, 'user_dashboard')->withTimestamps();
+        return $this->belongsToMany(Dashboard::class, 'user_dashboard', 'user_id', 'dashboard_id')->withTimestamps();
     }
 
     /**
@@ -541,5 +589,101 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function isCreatingWithPassword(): bool
     {
         return $this->isCreating() && !empty($this->password);
+    }
+
+
+    /**
+     * Get up to (X, default of 5) of the authenticated user's most recently viewed projects.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function recentProjects($limit = 5)
+    {
+        return $this->belongsToMany(Project::class, 'project_views')
+            ->withPivot('updated_at')
+            ->orderByPivot('updated_at', 'desc');
+    }
+
+    /**
+     * Get the teams that the user belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, 'team_members')
+            ->using(TeamMember::class)
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the roles that the user has for a specific team.
+     * @param int $teamId
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function hasTeamPermission($teamId, $permissionName)
+    {
+        // Get the team role(s) for the user in the team
+        $teamRoleOrRoles = $this->teamId()->wherePivot('teamId', $teamId)->get();
+
+        // Check if the user has the permission in any of the team roles
+        foreach ($teamRoleOrRoles as $teamRole) {
+            if ($this->hasTeamRolePermission($teamRole, $permissionName)) {
+                return true;
+            }
+        }
+
+        // The user does not have the permission
+        return false;
+    }
+
+    /**
+     * Get the roles that the user has for a specific team.
+     * @param int $teamId
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function teamsRoles($teamId)
+    {
+        return $this->belongsToMany(TeamRole::class, 'team_member_role_pivot', 'user_id', 'team_role_id')
+            ->wherePivot('team_id', $teamId)
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the recent collaborators for the user.
+     * TODO:// Expand this to include more specific collaborators, based on recent activity or viewed projects.
+     * @param int $limit The maximum number of collaborators to retrieve. Default is 5.
+     * @return \Illuminate\Database\Eloquent\Collection The collection of recent collaborators.
+     */
+    public function recentCollaborators($limit = 5)
+    {
+        return User::whereHas('projects', function ($query) {
+            $query->whereIn('projects.id', $this->projects->pluck('id'));
+        })->where('id', '!=', $this->id) // Exclude the current user from the list of collaborators
+            ->distinct()
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * Check if the user has the specified permission.
+     * @param string $permissionName
+     * @return bool
+     */
+    public function hasTeamRolePermission($teamRole, $permissionName)
+    {
+        // Check if the team role has the permission
+        return $teamRole->hasPermission($permissionName);
+    }
+
+    /**
+     * Check if the user has the specified permission.
+     * @param string $permissionName
+     * @return bool
+     */
+    public function hasProjectRolePermission($projectRole, $permissionName)
+    {
+        // Check if the project role has the permission
+        return $projectRole->hasPermission($permissionName);
     }
 }

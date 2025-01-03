@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Facades\Log;
 use App\Models\Issues\Issue;
 use App\Models\Icon;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -50,7 +50,7 @@ class IssueType extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use IsPermissable;
+    use IsPermissible;
 
     protected $fillable = [
         'name',

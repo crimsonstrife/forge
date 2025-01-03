@@ -8,14 +8,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Projects\Project;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 
 /**
  * Class IssueStatus
  * The IssueStatus model represents the status of an issue in a project.
  *
  * This class extends the base Model class and uses the HasFactory and SoftDeletes traits.
- * It also uses the IsPermissable trait to determine if the current user has permission to perform certain actions.
+ * It also uses the IsPermissible trait to determine if the current user has permission to perform certain actions.
  *
  * @package App\Models\Issues\IssueStatus
  */
@@ -23,7 +23,7 @@ class IssueStatus extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use IsPermissable;
+    use IsPermissible;
 
     protected $fillable = [
         'name',

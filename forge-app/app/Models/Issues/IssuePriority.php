@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 use App\Models\Icon;
 use App\Models\PrioritySet;
 use App\Models\PivotModels\PrioritySetPriorities;
@@ -25,7 +25,7 @@ class IssuePriority extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use IsPermissable;
+    use IsPermissible;
 
     protected $fillable = [
         'name',

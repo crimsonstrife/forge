@@ -22,7 +22,11 @@ use App\Models\PrioritySet as IssuePrioritySet;
 use App\Models\Projects\ProjectStatus;
 use App\Models\Projects\ProjectType;
 use App\Models\Projects\ProjectRepository;
-use App\Traits\IsPermissable;
+use App\Models\PivotModels\ProjectFavorite;
+use App\Models\PivotModels\ProjectUser;
+use App\Models\Tag;
+use App\Traits\IsPermissible;
+use App\Services\CrucibleService;
 
 /**
  * Class Project
@@ -32,6 +36,13 @@ use App\Traits\IsPermissable;
  * @property int status_id
  * @property int owner_id
  * @property string issue_prefix
+ * @property string status_type
+ * @property string type
+ * @property string start_date
+ * @property string end_date
+ * @property int user_id
+ * @property int repository_id
+ * @property int view_count
  * @package App\Models\Projects
  */
 class Project extends Model implements HasMedia
@@ -40,7 +51,7 @@ class Project extends Model implements HasMedia
     use SoftDeletes;
     use InteractsWithMedia;
     use HasMentions;
-    use IsPermissable;
+    use IsPermissible;
 
     protected $fillable = [
         'name',
@@ -53,7 +64,8 @@ class Project extends Model implements HasMedia
         'start_date',
         'end_date',
         'user_id',
-        'has_repository',
+        'repository_id',
+        'view_count'
     ];
 
     protected $dates = [
@@ -67,13 +79,26 @@ class Project extends Model implements HasMedia
         'font_color',
     ];
 
+    protected $with = [
+        'owner',
+        'status',
+        'type',
+        'repository',
+        'users',
+        'prioritySet',
+    ];
+
+    protected $casts = [
+        'view_count' => 'integer',
+    ];
+
     /**
      * Get the Owning User of the Project
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function owner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'owner_id', 'id');
+        return $this->belongsTo(User::class, 'owner_id');
     }
 
     /**
@@ -82,10 +107,57 @@ class Project extends Model implements HasMedia
      */
     public function status(): BelongsTo
     {
-        $relation = $this->belongsTo(ProjectStatus::class, 'status_id', 'id');
-        $relation->withDefault();
-        $relation->withTrashed();
-        return $relation;
+        return $this->belongsTo(ProjectStatus::class, 'status_id')->withDefault()->withTrashed();
+    }
+
+    /**
+     * Get the Project Type of the Project
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(ProjectType::class, 'type_id');
+    }
+
+    /**
+     * Get the Repository of the Project, if the Project has a Repository.
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne | null
+     */
+    public function repository(): HasOne
+    {
+        return $this->hasOne(ProjectRepository::class);
+    }
+
+    /**
+     * Get the Users of the Project
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'project_users')
+            ->using(ProjectUser::class)
+            ->withPivot(['role_id'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if the project has a specific user.
+     *
+     * @param int $userId The ID of the user to check.
+     * @return bool True if the user is associated with the project, false otherwise.
+     */
+    public function hasUser($userId): bool
+    {
+        return $this->users()->where('user_id', $userId)->exists();
+    }
+
+    /**
+     * Get the Issues of the Project
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function issues(): HasMany
+    {
+        return $this->hasMany(Issue::class);
     }
 
     /**
@@ -118,24 +190,6 @@ class Project extends Model implements HasMedia
     }
 
     /**
-     * Get the Users of the Project
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function users(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'project_users', 'project_id', 'user_id')->withPivot('project_role');
-    }
-
-    /**
-     * Get the Issues of the Project
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function issues(): HasMany
-    {
-        return $this->hasMany(Issue::class, 'project_id', 'id');
-    }
-
-    /**
      * Get the Stories of the Project
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -150,7 +204,7 @@ class Project extends Model implements HasMedia
      */
     public function statuses(): HasMany
     {
-        return $this->hasMany(ProjectStatus::class, 'project_id', 'id');
+        return $this->hasMany(ProjectStatus::class);
     }
 
     /**
@@ -159,7 +213,7 @@ class Project extends Model implements HasMedia
      */
     public function epics(): HasMany
     {
-        return $this->hasMany(Epic::class, 'project_id', 'id');
+        return $this->hasMany(Epic::class);
     }
 
     /**
@@ -168,7 +222,7 @@ class Project extends Model implements HasMedia
      */
     public function sprints(): HasMany
     {
-        return $this->hasMany(Sprint::class, 'project_id', 'id');
+        return $this->hasMany(Sprint::class);
     }
 
     /**
@@ -211,12 +265,30 @@ class Project extends Model implements HasMedia
      */
     public function contributors(): Attribute
     {
-        return new Attribute(
-            get: function () {
-                $users = $this->users;
-                $users->push($this->owner);
-                return $users->unique('id');
-            }
+        return Attribute::make(
+            get: fn () => $this->users->push($this->owner)->unique('id') // Add the owner to the contributors list
+        );
+    }
+
+    /**
+     * Get the Repository URL of the Project, if the Project has a Repository.
+     * @return Attribute
+     */
+    public function repositoryUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->repository?->url
+        );
+    }
+
+    /**
+     * Get the View Count of the Project
+     * @return Attribute
+     */
+    public function viewCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->view_count
         );
     }
 
@@ -232,7 +304,7 @@ class Project extends Model implements HasMedia
                 $color = '';
 
                 //get the project type color
-                $color = $this->type->getColor() ?? '#3f84f3'; //default color if the project type does not have a color
+                $color = optional($this->type)->getColor() ?? '#3f84f3'; //default color if the project type does not have a color
 
                 //trim the pound sign/hash (#) from the color, if it is a hexcode
                 $color = ltrim($color, '#');
@@ -284,64 +356,6 @@ class Project extends Model implements HasMedia
             get: fn () => $this->media('icon')?->first()?->getFullUrl()
                 ??
                 'https://ui-avatars.com/api/?background=' . $this->color . '&color=' . $this->font_color . '&name=' . $this->name
-        );
-    }
-
-    /**
-     * Get the Project Type of the Project
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function type(): BelongsTo
-    {
-        return $this->belongsTo(ProjectType::class, 'type_id', 'id');
-    }
-
-    /**
-     * Get if the Project has a Repository
-     * @return bool
-     */
-    public function hasRepository(): bool
-    {
-        return $this->has_repository;
-    }
-
-    /**
-     * Get the Repository of the Project, if the Project has a Repository.
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne | null
-     */
-    public function repository(): HasOne | null
-    {
-        //check if the project has a repository
-        if ($this->hasRepository()) {
-            //return the repository
-            return $this->hasOne(ProjectRepository::class, 'project_id', 'id');
-        }
-
-        //return null if the project does not have a repository
-        return null;
-    }
-
-    /**
-     * Get the Repository URL of the Project, if the Project has a Repository.
-     * @return Attribute
-     */
-    public function repositoryUrl(): Attribute
-    {
-        //check if the project has a repository
-        if ($this->hasRepository()) {
-            //return the repository URL
-            return new Attribute(
-                get: function () {
-                    return $this->repository->url;
-                }
-            );
-        }
-
-        //return null if the project does not have a repository
-        return new Attribute(
-            get: function () {
-                return null;
-            }
         );
     }
 
@@ -442,5 +456,124 @@ class Project extends Model implements HasMedia
                 return $progress . '%';
             }
         );
+    }
+
+    /** Crucible-Related Methods **/
+
+    /**
+     * Sync repository with Crucible.
+     *
+     * @param string $url
+     * @return bool
+     */
+    public function syncRepository(string $url): bool
+    {
+        $crucibleService = app(CrucibleService::class);
+        $repositoryData = $crucibleService->fetchAndCacheRepository($url);
+
+        if ($repositoryData) {
+            $this->repository()->updateOrCreate([], $repositoryData->toArray());
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if repository exists in Crucible.
+     *
+     * @return bool
+     */
+    public function hasValidRepository(): bool
+    {
+        return !is_null($this->repository) && app(CrucibleService::class)->verifyRepository($this->repository->url);
+    }
+
+    /**
+     * Get the users who have favorited this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'project_favorites', 'project_id', 'user_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if the project is favorited by the given user.
+     *
+     * @param User $user The user to check against.
+     * @return bool True if the project is favorited by the user, false otherwise.
+     */
+    public function isFavoritedBy(User $user): bool
+    {
+        return $this->favoritedBy()->where('user_id', $user->id)->exists();
+    }
+
+    /**
+     * Get the tags associated with the project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'project_has_tags', 'project_id', 'tag_id')->withTimestamps();
+    }
+
+    /**
+     * Scope a query to include projects with specific tags.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param array|string $tags
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithTags($query, $tags)
+    {
+        return $query->whereHas('tags', function ($q) use ($tags) {
+            $q->whereIn('id', $tags);
+        });
+    }
+
+    /**
+     * Get the teams that belong to the project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, 'project_teams', 'project_id', 'team_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if the project has a team with the given team ID.
+     *
+     * @param int $teamId The ID of the team to check.
+     * @return bool True if the team is associated with the project, false otherwise.
+     */
+    public function hasTeam($teamId): bool
+    {
+        return $this->teams()->where('team_id', $teamId)->exists();
+    }
+
+    /**
+     * Get the roles associated with the project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function roles()
+    {
+        return $this->hasMany(ProjectRole::class);
+    }
+
+    /**
+     * Get the permissions associated with the project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function permissions()
+    {
+        return $this->hasMany(ProjectPermission::class);
     }
 }

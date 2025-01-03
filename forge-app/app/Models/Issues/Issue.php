@@ -15,7 +15,7 @@ use App\Models\Epic;
 use App\Models\Issues\IssueType;
 use App\Models\Issues\IssueStatus;
 use App\Models\Issues\IssuePriority;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,7 +41,7 @@ class Issue extends Model implements HasMedia
     use SoftDeletes;
     use InteractsWithMedia;
     use HasMentions;
-    use IsPermissable;
+    use IsPermissible;
 
     protected $fillable = [
         'title',
@@ -234,9 +234,9 @@ class Issue extends Model implements HasMedia
      * Get the tags of the issue.
      * @return HasMany
      */
-    public function tags(): HasMany
+    public function tags()
     {
-        return $this->hasMany(Tags::class, 'issue_id', 'id');
+        return $this->belongsToMany(Tag::class, 'issue_has_tags', 'issue_id', 'tag_id')->withTimestamps();
     }
 
     /**
@@ -420,5 +420,19 @@ class Issue extends Model implements HasMedia
                 return $this->estimationInSeconds - $this->totalLoggedSeconds;
             }
         );
+    }
+
+    /**
+     * Scope a query to include projects with specific tags.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param array|string $tags
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithTags($query, $tags)
+    {
+        return $query->whereHas('tags', function ($q) use ($tags) {
+            $q->whereIn('id', $tags);
+        });
     }
 }

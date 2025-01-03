@@ -2,7 +2,7 @@
 
 namespace App\Models\Auth;
 
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Permission\Models\Role as SpatieRole;
 use App\Contracts\Role as RoleContract;
@@ -25,7 +25,7 @@ use Spatie\Permission\Traits\RefreshesPermissionCache;
  */
 class Role extends SpatieRole implements RoleContract
 {
-    use IsPermissable;
+    use IsPermissible;
     use HasAdvancedPermissions;
     use RefreshesPermissionCache;
 

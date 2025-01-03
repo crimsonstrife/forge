@@ -12,6 +12,7 @@
 
                 <!-- Main Navigation Links -->
                 <div class="hidden space-x-8 sm:flex sm:ml-10">
+                    <!-- Dashboard Dropdown -->
                     <div class="flex items-center shrink-0 ms-3">
                         <x-dropdown align="right" width="60">
                             <x-slot name="trigger">
@@ -29,7 +30,7 @@
                             <x-slot name="content">
                                 @if ($dashboards = Auth::user()->dashboards)
                                     @forelse ($dashboards as $dashboard)
-                                        <x-dropdown-link href="{{ route('dashboards.view', $dashboard->id) }}">
+                                        <x-dropdown-link href="{{ route('dashboards.show', $dashboard->id) }}">
                                             {{ $dashboard->name }}
                                         </x-dropdown-link>
                                     @empty
@@ -48,12 +49,128 @@
                             </x-slot>
                         </x-dropdown>
                     </div>
-                    {{-- <x-nav-link href="{{ route('projects.index') }}" :active="request()->routeIs('projects.*')">
-                        {{ __('Projects') }}
-                    </x-nav-link> --}}
+                    <!-- Projects Dropdown -->
+                    <div class="hidden space-x-8 sm:flex sm:ml-10">
+                        <div class="flex items-center shrink-0 ms-3">
+                            <x-dropdown align="right" width="60">
+                                <x-slot name="trigger">
+                                    <span class="inline-flex rounded-md">
+                                        <button type="button"
+                                            class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50">
+                                            {{ __('Projects') }}
+
+                                            <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                                            </svg>
+                                        </button>
+                                    </span>
+                                </x-slot>
+
+                                <x-slot name="content">
+                                    <div class="w-60">
+                                        <!-- Recent Projects -->
+                                        <div class="block px-4 py-2 text-xs text-gray-400">
+                                            {{ __('Recent Projects') }}
+                                        </div>
+                                        @php
+                                            // Get the user's recent projects
+                                            $recentProjects = Auth::user()->recentProjects()->take(5)->get();
+                                            // Sort the projects by the most recently updated, or created if never updated
+                                            $recentProjects = $recentProjects->sortByDesc(function ($project) {
+                                                return $project->updated_at ?? $project->created_at;
+                                            });
+                                        @endphp
+
+                                        @forelse ($recentProjects as $project)
+                                            <x-dropdown-link href="{{ route('projects.show', $project->id) }}">
+                                                {{ $project->name }}
+                                            </x-dropdown-link>
+                                        @empty
+                                            <div class="block px-4 py-2 text-sm text-gray-500">
+                                                {{ __('No recent projects') }}
+                                            </div>
+                                        @endforelse
+
+                                        <div class="border-t border-gray-200"></div>
+
+                                        <div class="block px-4 py-2 text-xs text-gray-400">
+                                            {{ __('Favorite Projects') }}
+                                        </div>
+                                        <ul>
+                                            @forelse (auth()->user()->favoriteProjects as $project)
+                                                <li>
+                                                    <a
+                                                        href="{{ route('projects.show', $project) }}">{{ $project->name }}</a>
+                                                </li>
+                                            @empty
+                                                <div class="block px-4 py-2 text-sm text-gray-500">
+                                                    {{ __('No Favorited projects') }}
+                                                </div>
+                                            @endforelse
+                                        </ul>
+
+                                        <div class="border-t border-gray-200"></div>
+
+                                        <!-- View All Projects -->
+                                        <x-dropdown-link href="{{ route('projects.index') }}">
+                                            {{ __('View All Projects') }}
+                                        </x-dropdown-link>
+                                    </div>
+                                </x-slot>
+                            </x-dropdown>
+                        </div>
+                    </div>
+                    <!-- Teams Dropdown -->
+                    <div class="hidden space-x-8 sm:flex sm:ml-10">
+                        <div class="flex items-center shrink-0 ms-3">
+                            <x-dropdown align="right" width="60">
+                                <x-slot name="trigger">
+                                    <button
+                                        class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500">
+                                        {{ __('Teams') }}
+                                        <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                            fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                                        </svg>
+                                    </button>
+                                </x-slot>
+
+                                <x-slot name="content">
+                                    <div class="w-60">
+                                        <!-- Recent Collaborators -->
+                                        <div class="block px-4 py-2 text-xs text-gray-400">
+                                            {{ __('Recent Collaborators') }}
+                                        </div>
+                                        @forelse ($recentCollaborators as $collaborator)
+                                            <x-dropdown-link href="{{ route('users.show', $collaborator->id) }}">
+                                                {{ $collaborator->name }}
+                                            </x-dropdown-link>
+                                        @empty
+                                            <div class="block px-4 py-2 text-gray-500">
+                                                {{ __('No recent collaborators') }}
+                                            </div>
+                                        @endforelse
+
+                                        <div class="border-t border-gray-200"></div>
+
+                                        <!-- Manage Teams -->
+                                        <x-dropdown-link href="{{ route('teams.index') }}">
+                                            {{ __('Manage Teams') }}
+                                        </x-dropdown-link>
+                                    </div>
+                                </x-slot>
+                            </x-dropdown>
+                        </div>
+                    </div>
+                    <!-- Issues Dropdown -->
                     {{-- <x-nav-link href="{{ route('issues.index') }}" :active="request()->routeIs('issues.*')">
                         {{ __('Issues') }}
                     </x-nav-link> --}}
+                    <!-- Reports Dropdown -->
                     {{-- <x-nav-link href="{{ route('reports.index') }}" :active="request()->routeIs('reports.*')">
                         {{ __('Reports') }}
                     </x-nav-link> --}}
@@ -124,7 +241,8 @@
                                 <button
                                     class="flex text-sm transition border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300">
                                     <img class="object-cover w-8 h-8 rounded-full"
-                                        src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
+                                        src="{{ Auth::user()->profile_photo_url }}"
+                                        alt="{{ Auth::user()->name }}" />
                                 </button>
                             @else
                                 <span class="inline-flex rounded-md">
@@ -133,7 +251,8 @@
                                         {{ Auth::user()->username }}
 
                                         <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                            fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                            stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                 d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                                         </svg>

@@ -14,4 +14,14 @@ use Illuminate\Database\Eloquent\Model;
 class ProjectGitHistory extends Model
 {
     use HasFactory;
+
+    /**
+     * Get the repository associated with the project.
+     *
+     * @return \App\Models\Repository
+     */
+    public function repository()
+    {
+        return $this->belongsTo(ProjectRepository::class);
+    }
 }

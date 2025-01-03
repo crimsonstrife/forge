@@ -10,7 +10,7 @@ use App\Models\Issues\IssuePriority;
 use App\Models\Projects\Project;
 use App\Models\PivotModels\PrioritySetPriorities;
 use App\Models\PivotModels\PrioritySetDefault;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -27,7 +27,7 @@ class PrioritySet extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use IsPermissable;
+    use IsPermissible;
 
     protected $fillable = ['name'];
 

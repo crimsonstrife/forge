@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -18,15 +17,17 @@ return new class extends Migration
             $table->string('color')->nullable()->default('#c3c3c3');
             $table->string('icon')->nullable();
             $table->boolean('display_only_on_item_cards')->default(false);
-            $table->bigInteger('project_id')->unsigned();
-            $table->bigInteger('created_by')->unsigned();
+            $table->bigInteger('created_by')->unsigned()->nullable();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
+            $table->bigInteger('deleted_by')->unsigned()->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
 
         Schema::table('tags', function (Blueprint $table) {
-            $table->foreign('project_id')->references('id')->on('projects');
             $table->foreign('created_by')->references('id')->on('users');
+            $table->foreign('updated_by')->references('id')->on('users');
+            $table->foreign('deleted_by')->references('id')->on('users');
         });
     }
 

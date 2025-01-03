@@ -4,7 +4,7 @@ namespace App\Models\Projects;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 
 /**
  * Represents a project role in the application.
@@ -15,5 +15,27 @@ use App\Traits\IsPermissable;
 class ProjectRole extends Model
 {
     use HasFactory;
-    use IsPermissable;
+    use IsPermissible;
+
+    protected $fillable = ['project_id', 'name', 'description'];
+
+    /**
+     * Get the project associated with the project role.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * Get the permissions associated with the project role.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function permissions()
+    {
+        return $this->belongsToMany(ProjectPermission::class, 'project_role_permissions', 'role_id', 'permission_id');
+    }
 }

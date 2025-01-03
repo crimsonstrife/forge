@@ -12,7 +12,7 @@ use Carbon\Carbon;
 use App\Models\Issues\Issue;
 use App\Models\Projects\Project;
 use App\Models\Epic;
-use App\Traits\IsPermissable;
+use App\Traits\IsPermissible;
 
 /**
  * Sprint Model
@@ -57,7 +57,7 @@ class Sprint extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use IsPermissable;
+    use IsPermissible;
 
     protected $fillable = [
         'name',
