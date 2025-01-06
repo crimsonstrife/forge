@@ -29,7 +29,7 @@
         "@types/three": "^0.170.0",
         "axios": "^1.7.8",
         "bootstrap": "^5.3.3",
-        "chart.js": "^4.4.6",
+        "chart.js": "^4.4.7",
         "discord.js": "^14.17.2",
         "dotenv": "^16.4.5",
         "jquery": "^3.7.1",
