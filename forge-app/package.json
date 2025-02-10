@@ -31,7 +31,7 @@
         "bootstrap": "^5.3.3",
         "chart.js": "^4.4.6",
         "discord.js": "^14.17.2",
-        "dotenv": "^16.4.5",
+        "dotenv": "^16.4.7",
         "jquery": "^3.7.1",
         "jquery-ui": "^1.14.0",
         "laravel-echo": "^1.16.1",
