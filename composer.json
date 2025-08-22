@@ -14,7 +14,8 @@
         "laravel/tinker": "^2.10.1",
         "livewire/flux": "^2.1.1",
         "livewire/livewire": "^3.6",
-        "livewire/volt": "^1.7"
+        "livewire/volt": "^1.7",
+        "metalogico/laravel-formello": "^1.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

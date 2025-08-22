@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fc1dc79240f3028ba8add26c47c21974",
+    "content-hash": "2e566c6479e3d11ffe7a6c8dd3c8687f",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -3740,6 +3740,70 @@
                 "source": "https://github.com/Masterminds/html5-php/tree/2.10.0"
             },
             "time": "2025-07-25T09:04:22+00:00"
+        },
+        {
+            "name": "metalogico/laravel-formello",
+            "version": "v1.2.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/metalogico/laravel-formello.git",
+                "reference": "cf52c90872dc133d1defe14e32489b12a23c15af"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/metalogico/laravel-formello/zipball/cf52c90872dc133d1defe14e32489b12a23c15af",
+                "reference": "cf52c90872dc133d1defe14e32489b12a23c15af",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^9.0|^10.0|^11.0|^12.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.4",
+                "pestphp/pest": "^3.8",
+                "pestphp/pest-plugin-laravel": "^3.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Formello": "Metalogico\\Formello\\Facades\\Formello"
+                    },
+                    "providers": [
+                        "Metalogico\\Formello\\FormelloServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Metalogico\\Formello\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Metalogico",
+                    "email": "michele.brandolin@gmail.com"
+                }
+            ],
+            "description": "A Laravel package for generating Bootstrap 5 forms based on models",
+            "homepage": "https://github.com/metalogico/laravel-formello",
+            "keywords": [
+                "Forms",
+                "bootstrap",
+                "form-builder",
+                "laravel",
+                "metalogico"
+            ],
+            "support": {
+                "issues": "https://github.com/metalogico/laravel-formello/issues",
+                "source": "https://github.com/metalogico/laravel-formello/tree/v1.2.6"
+            },
+            "time": "2025-08-06T08:56:48+00:00"
         },
         {
             "name": "mobiledetect/mobiledetectlib",
