@@ -1,1 +1,13 @@
-var o=()=>({isSticky:!1,init(){this.evaluatePageScrollPosition()},evaluatePageScrollPosition(){let i=this.$el.getBoundingClientRect(),t=i.top>window.innerHeight,e=i.top<window.innerHeight&&i.bottom>window.innerHeight;this.isSticky=t||e}});export{o as default};
+const o = () => ({
+    isSticky: !1,
+    init() {
+        this.evaluatePageScrollPosition();
+    },
+    evaluatePageScrollPosition() {
+        const i = this.$el.getBoundingClientRect();
+        const t = i.top > window.innerHeight;
+        const e = i.top < window.innerHeight && i.bottom > window.innerHeight;
+        this.isSticky = t || e;
+    },
+});
+export { o as default };
