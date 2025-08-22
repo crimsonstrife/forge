@@ -1,0 +1,20 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "/Applications/MAMP/bin/php/php8.3.0/bin/php",
+            "args": [
+                "/Users/pbarnhardt/GitHub/Repositories/forge/artisan",
+                "boost:mcp"
+            ]
+        },
+        "herd": {
+            "command": "/Applications/MAMP/bin/php/php8.3.0/bin/php",
+            "args": [
+                "/Applications/Herd.app/Contents/Resources/herd-mcp.phar"
+            ],
+            "env": {
+                "SITE_PATH": "/Users/pbarnhardt/GitHub/Repositories/forge"
+            }
+        }
+    }
+}
