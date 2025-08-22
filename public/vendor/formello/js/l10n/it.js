@@ -1,16 +1,23 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-        typeof define === 'function' && define.amd ? define(['exports'], factory) :
-            (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.it = {}));
-}(this, (function (exports) {
-    'use strict';
+    typeof exports === "object" && typeof module !== "undefined"
+        ? factory(exports)
+        : typeof define === "function" && define.amd
+          ? define(["exports"], factory)
+          : ((global =
+                typeof globalThis !== "undefined"
+                    ? globalThis
+                    : global || self),
+            factory((global.it = {})));
+})(this, function (exports) {
+    "use strict";
 
-    var fp = typeof window !== "undefined" && window.flatpickr !== undefined
-        ? window.flatpickr
-        : {
-            l10ns: {},
-        };
-    var Italian = {
+    const fp =
+        typeof window !== "undefined" && window.flatpickr !== undefined
+            ? window.flatpickr
+            : {
+                  l10ns: {},
+              };
+    const Italian = {
         weekdays: {
             shorthand: ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"],
             longhand: [
@@ -54,7 +61,9 @@
             ],
         },
         firstDayOfWeek: 1,
-        ordinal: function () { return "°"; },
+        ordinal: function () {
+            return "°";
+        },
         rangeSeparator: " al ",
         weekAbbreviation: "Se",
         scrollTitle: "Scrolla per aumentare",
@@ -62,11 +71,10 @@
         time_24hr: true,
     };
     fp.l10ns.it = Italian;
-    var it = fp.l10ns;
+    const it = fp.l10ns;
 
     exports.Italian = Italian;
     exports.default = it;
 
-    Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
+    Object.defineProperty(exports, "__esModule", { value: true });
+});
