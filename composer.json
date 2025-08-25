@@ -14,6 +14,7 @@
         "laravel/framework": "^12.0",
         "laravel/horizon": "*",
         "laravel/jetstream": "^5.3",
+        "laravel/pennant": "^1.18",
         "laravel/pulse": "*",
         "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
