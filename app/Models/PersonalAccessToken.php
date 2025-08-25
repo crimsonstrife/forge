@@ -13,8 +13,8 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
     use HasUuids;
 
     public $keyType = 'string';
-
     public $incrementing = false;
+    protected $casts = ['id' => 'string'];
 
     public static function boot(): void
     {

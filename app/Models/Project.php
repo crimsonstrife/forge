@@ -12,6 +12,7 @@ class Project extends Model
 
     protected $keyType = 'string';
     public $incrementing = false;
+    protected $casts = ['id' => 'string'];
 
     public static function boot(): void
     {

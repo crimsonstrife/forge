@@ -15,7 +15,8 @@ class PermissionSetGroup extends Model
     public $incrementing = false;
 
     protected $fillable = ['name', 'description', 'is_system'];
-    protected $casts = ['is_system' => 'bool'];
+    protected $casts = ['is_system' => 'bool',
+        'id' => 'string'];
 
     public static function boot(): void
     {
