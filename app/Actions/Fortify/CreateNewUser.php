@@ -17,7 +17,8 @@ class CreateNewUser implements CreatesNewUsers
     /**
      * Create a newly registered user.
      *
-     * @param  array<string, string>  $input
+     * @param array<string, string> $input
+     * @throws \Throwable
      */
     public function create(array $input): User
     {

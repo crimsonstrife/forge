@@ -31,8 +31,7 @@ class RemoveTeamMember implements RemovesTeamMembers
      */
     protected function authorize(User $user, Team $team, User $teamMember): void
     {
-        if (! Gate::forUser($user)->check('removeTeamMember', $team) &&
-            $user->id !== $teamMember->id) {
+        if (! $user->id !== $teamMember->id && Gate::forUser($user)->check('removeTeamMember', $team)) {
             throw new AuthorizationException;
         }
     }
