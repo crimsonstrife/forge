@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('issue_statuses', function (Blueprint $table) {
+        Schema::create('issue_statuses', static function (Blueprint $table) {
             $table->id();
+            $table->string('name')->unique();
+            $table->integer('order');
+            $table->enum('category', ['TODO','INPROGRESS', 'DONE']);
+            $table->boolean('is_done')->default(false);
             $table->timestamps();
         });
     }

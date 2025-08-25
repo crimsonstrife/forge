@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('issue_types', static function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->string('icon');
-            $table->boolean('is_default')->default(false);
-            $table->timestamps();
+        Schema::table('issues', static function (Blueprint $table) {
+            $table->foreignUuid('parent_id')->nullable()->references('id')->on('issues')->nullOnDelete();
         });
     }
 
@@ -25,6 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('issue_types');
+        Schema::table('issues', static function (Blueprint $table) {
+            $table->dropForeign(['parent_id']);
+            $table->dropColumn(['parent_id']);
+        });
     }
 };
