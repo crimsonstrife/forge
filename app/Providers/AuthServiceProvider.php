@@ -41,7 +41,7 @@ class AuthServiceProvider extends ServiceProvider
 
                     // Also include mutes from sets attached to the user's roles
                     $roleMutes = PermissionSet::query()
-                        ->whereHas('roles', fn($q) => $q->whereIn('id', $user->roles->pluck('id')))
+                        ->whereHas('roles', fn ($q) => $q->whereIn('id', $user->roles->pluck('id')))
                         ->with('mutedPermissions:id,name,guard_name')
                         ->get();
 
