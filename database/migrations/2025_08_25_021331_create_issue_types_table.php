@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('team_user', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('team_id');
-            $table->foreignUuid('user_id');
-            $table->string('role')->nullable();
+        Schema::create('issue_types', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
-
-            $table->unique(['team_id', 'user_id']);
         });
     }
 
@@ -27,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('team_user');
+        Schema::dropIfExists('issue_types');
     }
 };
