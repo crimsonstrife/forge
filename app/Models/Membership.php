@@ -11,5 +11,5 @@ class Membership extends JetstreamMembership
      *
      * @var bool
      */
-    public $incrementing = true;
+    public $incrementing = false;
 }
