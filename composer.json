@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/livewire-starter-kit",
+    "name": "crimsonstrife/forge",
     "type": "project",
     "description": "The official Laravel starter kit for Livewire.",
     "keywords": ["laravel", "framework"],
@@ -11,7 +11,9 @@
         "knuckleswtf/scribe": "^5.3",
         "laravel/framework": "^12.0",
         "laravel/jetstream": "^5.3",
+        "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
+        "laravel/telescope": "^5.11",
         "laravel/tinker": "^2.10.1",
         "livewire/flux": "^2.1.1",
         "livewire/livewire": "^3.6",
@@ -79,7 +81,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "laravel/telescope"
+            ]
         }
     },
     "config": {
