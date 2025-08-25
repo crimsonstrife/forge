@@ -6,6 +6,7 @@ use App\Models\Permission;
 use App\Models\PermissionSet;
 use App\Models\PermissionSetGroup;
 use App\Models\Role;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,41 +19,52 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
+        $Role = app(config('permission.models.role'));
+        $Permission = app(config('permission.models.permission'));
+
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        // Permissions
-        $perms = [
-            'projects.view', 'projects.manage',
-            'issues.view', 'issues.create', 'issues.update', 'issues.delete', 'issues.transition',
-            'comments.create', 'comments.update', 'comments.delete',
+        /** create permissions (guard MUST match) */
+        $names = [
+            'projects.view',
+            'projects.manage',
+            'issues.view',
+            'issues.create',
+            'issues.update',
+            'issues.delete',
+            'issues.transition',
+            'comments.create',
+            'comments.update',
+            'comments.delete',
             'attachments.manage',
-            'admin.panel.access', 'admin.connectors.manage', 'admin.mappings.manage',
-            'is-admin', 'is-super-admin',
-        ];
-
-        $permModels = collect($perms)->mapWithKeys(function (string $name) {
-            $p = Permission::query()->firstOrCreate(['name' => $name, 'guard_name' => 'web']);
-            return [$name => $p];
-        });
+            'admin.panel.access',
+            'admin.connectors.manage',
+            'admin.mappings.manage',
+            'is-admin',
+            'is-super-admin'];
+        foreach ($names as $n) {
+            $Permission::firstOrCreate(['name' => $n, 'guard_name' => 'web']);
+        }
 
         // Roles
-        $super = Role::query()->firstOrCreate(['name' => 'SuperAdmin', 'guard_name' => 'web']);
-        $admin = Role::query()->firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
-        $proj  = Role::query()->firstOrCreate(['name' => 'ProjectAdmin', 'guard_name' => 'web']);
-        $member= Role::query()->firstOrCreate(['name' => 'Member', 'guard_name' => 'web']);
-        $viewer= Role::query()->firstOrCreate(['name' => 'Viewer', 'guard_name' => 'web']);
+        $super  = $Role::firstOrCreate(['name' => 'SuperAdmin', 'guard_name' => 'web']);
+        $admin  = $Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
+        $member = $Role::firstOrCreate(['name' => 'Member', 'guard_name' => 'web']);
+        $viewer = $Role::firstOrCreate(['name' => 'Viewer', 'guard_name' => 'web']);
+        $proj = $Role::firstOrCreate(['name' => 'ProjectAdmin', 'guard_name' => 'web']);
 
-        $super->givePermissionTo(['is-super-admin']);
-        $admin->givePermissionTo(['is-admin','admin.panel.access','admin.connectors.manage','admin.mappings.manage',
+        $super->syncPermissions(['is-super-admin']);
+        $admin->syncPermissions(['is-admin','admin.panel.access','admin.connectors.manage','admin.mappings.manage',
             'projects.view','projects.manage','issues.view','issues.create','issues.update','issues.transition','comments.create','attachments.manage']);
-        $proj->givePermissionTo(['projects.view','projects.manage','issues.view','issues.create','issues.update','issues.transition','comments.create','attachments.manage']);
-        $member->givePermissionTo(['projects.view','issues.view','issues.create','issues.update','issues.transition','comments.create','attachments.manage']);
-        $viewer->givePermissionTo(['projects.view','issues.view']);
+        $proj->syncPermissions(['projects.view','projects.manage','issues.view','issues.create','issues.update','issues.transition','comments.create','attachments.manage']);
+        $member->syncPermissions(['projects.view','issues.view','issues.create','issues.update','issues.transition','comments.create','attachments.manage']);
+        $viewer->syncPermissions(['projects.view','issues.view']);
 
         // Permission Sets
         $developer = PermissionSet::query()->firstOrCreate(['name' => 'Developer'], [
             'description' => 'Typical engineer capabilities',
         ]);
+
         $developer->permissions()->syncWithoutDetaching(
             Permission::query()->whereIn('name', [
                 'projects.view','issues.view','issues.create','issues.update','issues.transition','comments.create','attachments.manage'
@@ -77,10 +89,20 @@ class RolesAndPermissionsSeeder extends Seeder
         $engineering = PermissionSetGroup::query()->firstOrCreate(['name' => 'Engineering']);
         $engineering->permissionSets()->syncWithoutDetaching([$developer->id]);
 
-        // First user bootstrap (if desired)
+        // First user bootstrap
         $firstUser = User::query()->oldest('id')->first();
         if ($firstUser && ! $firstUser->hasRole('SuperAdmin')) {
+            // With Teams enabled, set the team context before assigning:
+            $registrar = app(PermissionRegistrar::class);
+
+            // Pick/create a team id that exists:
+            $teamId = class_exists(Team::class)
+                ? (Team::query()->value('id') ?? Team::factory()->create(['name' => 'Default'])->id)
+                : 1; // fallback if you use a custom team table/key
+
+            $registrar->setPermissionsTeamId($teamId);
             $firstUser->assignRole('SuperAdmin');
+            $registrar->setPermissionsTeamId(null);
         }
 
         app(PermissionRegistrar::class)->forgetCachedPermissions();

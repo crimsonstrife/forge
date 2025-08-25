@@ -59,8 +59,8 @@ class PermissionSet extends Model
         return $this->belongsToMany(
             Role::class,
             'role_permission_sets',
-            config('permission.column_names.role_pivot_key', 'role_id'),
-            'permission_set_id'
+            'permission_set_id',
+            config('permission.column_names.role_pivot_key', 'role_id')
         );
     }
 }
