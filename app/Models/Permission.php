@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Permission as SpatiePermission;
 
-class Issue extends Model
+class Permission extends SpatiePermission
 {
     use HasUuids;
 

@@ -11,8 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('projects', function (Blueprint $table) {
+        Schema::create('projects', static function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->foreignUuid('organization_id')->constrained();
+            $table->string('name')->unique();
+            $table->string('key')->unique();
+            $table->longtext('description');
+            $table->foreignUuid('lead_id')->references('id')->on('users');
+            $table->json('settings');
             $table->timestamps();
         });
     }

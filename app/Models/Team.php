@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
 use Laravel\Jetstream\Events\TeamCreated;
@@ -13,7 +14,7 @@ class Team extends JetstreamTeam
 {
     /** @use HasFactory<\Database\Factories\TeamFactory> */
     use HasFactory;
-
+    use HasUuids;
     protected $keyType = 'string';
     public $incrementing = false;
 

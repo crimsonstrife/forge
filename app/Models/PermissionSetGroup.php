@@ -4,17 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
-use Spatie\Sluggable\HasSlug;
-use Spatie\Sluggable\SlugOptions;
 
-class Organization extends Model
+class PermissionSetGroup extends Model
 {
-    use HasSlug;
     use HasUuids;
 
     protected $keyType = 'string';
     public $incrementing = false;
+
+    protected $fillable = ['name', 'description', 'is_system'];
+    protected $casts = ['is_system' => 'bool'];
 
     public static function boot(): void
     {
@@ -25,15 +26,12 @@ class Organization extends Model
         });
     }
 
-    /**
-     * Get the options for generating the slug.
-     */
-    public function getSlugOptions() : SlugOptions
+    /** @return BelongsToMany<PermissionSet> */
+    public function permissionSets(): BelongsToMany
     {
-        return SlugOptions::create()
-            ->generateSlugsFrom('name')
-            ->saveSlugsTo('slug')
-            ->usingSeparator('-')
-            ->doNotGenerateSlugsOnUpdate();
+        return $this->belongsToMany(
+            PermissionSet::class,
+            'group_permission_sets'
+        );
     }
 }

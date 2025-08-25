@@ -26,6 +26,7 @@
         "spatie/laravel-medialibrary": "^11.14",
         "spatie/laravel-permission": "^6.21",
         "spatie/laravel-settings": "^3.4",
+        "spatie/laravel-sluggable": "^3.7",
         "spatie/laravel-tags": "^4.10",
         "spatie/laravel-webhook-client": "^3.4",
         "spatie/laravel-webhook-server": "^3.8",

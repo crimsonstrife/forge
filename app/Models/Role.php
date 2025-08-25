@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\HasPermissionSets;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role as SpatieRole;
+use Spatie\Permission\Traits\HasPermissions;
 
-class Issue extends Model
+class Role extends SpatieRole
 {
     use HasUuids;
+    use HasPermissionSets;
+    use HasPermissions;
 
     protected $keyType = 'string';
     public $incrementing = false;
