@@ -63,12 +63,33 @@ class Issue extends Model
         }
     }
 
-    public function parent(): BelongsTo { return $this->belongsTo(__CLASS__, 'parent_id'); }
-    public function children(): HasMany { return $this->hasMany(__CLASS__, 'parent_id'); }
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(__CLASS__, 'parent_id');
+    }
+    public function children(): HasMany
+    {
+        return $this->hasMany(__CLASS__, 'parent_id');
+    }
 
-    public function scopeEpics($q) { return $q->whereHas('type', fn($t) => $t->where('key','EPIC')); }
-    public function scopeStories($q) { return $q->whereHas('type', fn($t) => $t->where('key', 'STORY')); }
-    public function scopeBugs($q) { return $q->whereHas('type', fn($t) => $t->where('key', 'BUG')); }
-    public function scopeTasks($q) { return $q->whereHas('type', fn($t) => $t->where('key', 'TASK')); }
-    public function scopeSubTasks($q) { return $q->whereHas('type', fn($t) => $t->where('key', 'SUBTASK')); }
+    public function scopeEpics($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'EPIC'));
+    }
+    public function scopeStories($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'STORY'));
+    }
+    public function scopeBugs($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'BUG'));
+    }
+    public function scopeTasks($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'TASK'));
+    }
+    public function scopeSubTasks($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'SUBTASK'));
+    }
 }
