@@ -35,7 +35,10 @@ class CreateNewUser implements CreatesNewUsers
                 'email' => $input['email'],
                 'password' => Hash::make($input['password']),
             ]), function (User $user) {
-                $this->createTeam($user);
+                if (config('teams.create_personal_team_on_signup')) {
+                    $this->createTeam($user); // creates a personal team, as before
+                }
+                // else: do nothing — user will have no current team until they create/join one
             });
         });
     }
