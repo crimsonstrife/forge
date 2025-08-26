@@ -96,31 +96,38 @@ class Issue extends Model implements HasMedia
         }
     }
 
-    public function parent(): BelongsTo {
+    public function parent(): BelongsTo
+    {
         return $this->belongsTo(__CLASS__, 'parent_id');
     }
 
-    public function children(): HasMany {
+    public function children(): HasMany
+    {
         return $this->hasMany(__CLASS__, 'parent_id');
     }
 
-    public function type(): HasOne {
+    public function type(): HasOne
+    {
         return $this->HasOne(IssueType::class, 'issue_type_id');
     }
 
-    public function status(): HasOne {
+    public function status(): HasOne
+    {
         return $this->HasOne(IssueStatus::class, 'issue_status_id');
     }
 
-    public function priority(): HasOne {
+    public function priority(): HasOne
+    {
         return $this->HasOne(IssuePriority::class, 'issue_priority_id');
     }
 
-    public function project(): BelongsTo {
+    public function project(): BelongsTo
+    {
         return $this->belongsTo(Project::class, 'project_id');
     }
 
-    public function reporter(): HasOne {
+    public function reporter(): HasOne
+    {
         return $this->HasOne(User::class, 'reporter_id');
     }
 
@@ -129,28 +136,34 @@ class Issue extends Model implements HasMedia
         return $this->morphMany(Comment::class, 'commentable')->orderBy('created_at');
     }
 
-    public function assignee(): HasOne {
+    public function assignee(): HasOne
+    {
         return $this->HasOne(User::class, 'assignee_id');
     }
 
-    public function scopeEpics($q) {
-        return $q->whereHas('type', fn($t) => $t->where('key','EPIC'));
+    public function scopeEpics($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'EPIC'));
     }
 
-    public function scopeStories($q) {
-        return $q->whereHas('type', fn($t) => $t->where('key', 'STORY'));
+    public function scopeStories($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'STORY'));
     }
 
-    public function scopeBugs($q) {
-        return $q->whereHas('type', fn($t) => $t->where('key', 'BUG'));
+    public function scopeBugs($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'BUG'));
     }
 
-    public function scopeTasks($q) {
-        return $q->whereHas('type', fn($t) => $t->where('key', 'TASK'));
+    public function scopeTasks($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'TASK'));
     }
 
-    public function scopeSubTasks($q) {
-        return $q->whereHas('type', fn($t) => $t->where('key', 'SUBTASK'));
+    public function scopeSubTasks($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'SUBTASK'));
     }
 
     public function registerMediaCollections(): void
