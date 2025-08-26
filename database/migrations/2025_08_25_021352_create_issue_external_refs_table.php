@@ -12,7 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('issue_external_refs', function (Blueprint $table) {
-            $table->id();
+            $table->uuid();
+            $table->foreignUuid('issue_id')->constrained('issues', 'id');
+            $table->string('provider')->default('github');
+            $table->string('external_id');
+            $table->unique(['provider', 'external_id']);
+            $table->boolean('read_only')->default(false);
+            $table->json('meta')->nullable();
             $table->timestamps();
         });
     }
