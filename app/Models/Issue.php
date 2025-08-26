@@ -26,7 +26,7 @@ class Issue extends Model implements HasMedia
     protected $keyType = 'string';
     public $incrementing = false;
 
-    protected $attributes = [
+    protected $fillable = [
         'project_id',
         'parent_id',
         'issue_type_id',

@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('project_status_transitions', static function (Blueprint $t) {
             $t->uuid('id')->primary();
             $t->foreignUuid('project_id');
-            $t->foreignUuid('from_status_id'); // -> issue_statuses.id
-            $t->foreignUuid('to_status_id');   // -> issue_statuses.id
+            $t->foreignId('from_status_id'); // -> issue_statuses.id
+            $t->foreignId('to_status_id');   // -> issue_statuses.id
             $t->boolean('is_global')->default(true); // apply to all types unless scoped
-            $t->foreignUuid('issue_type_id')->nullable(); // nullable = all types
+            $t->foreignId('issue_type_id')->nullable(); // nullable = all types
             $t->timestamps();
             $t->unique(['project_id','from_status_id','to_status_id','issue_type_id'],'proj_transitions_unique');
         });

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('project_issue_types', static function (Blueprint $t) {
             $t->uuid('id')->primary();
             $t->foreignUuid('project_id');
-            $t->foreignUuid('issue_type_id');
+            $t->foreignId('issue_type_id');
             $t->unsignedInteger('order')->default(0);
             $t->boolean('is_default')->default(false);
             $t->timestamps();

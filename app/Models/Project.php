@@ -19,7 +19,7 @@ class Project extends Model
     protected $keyType = 'string';
     public $incrementing = false;
 
-    protected $attributes = [
+    protected $fillable = [
         'name',
         'description',
         'settings',
@@ -98,28 +98,42 @@ class Project extends Model
     /** IDs / selections (with global fallback) */
     public function allowedTypeIds(): array
     {
-        $ids = $this->issueTypes()->pluck('issue_types.id')->map(fn($id)=>(string)$id)->all();
-        return $ids ?: IssueType::query()->pluck('id')->map(fn($id)=>(string)$id)->all();
+        $ids = $this->issueTypes()->pluck('issue_types.id')->map(fn($id)=>(int)$id)->all();
+        return $ids ?: IssueType::query()->pluck('id')->map(fn($id)=>(int)$id)->all();
     }
 
     public function allowedStatusIds(): array
     {
-        $ids = $this->issueStatuses()->pluck('issue_statuses.id')->map(fn($id)=>(string)$id)->all();
-        return $ids ?: IssueStatus::query()->pluck('id')->map(fn($id)=>(string)$id)->all();
+        $ids = $this->issueStatuses()->pluck('issue_statuses.id')->map(fn($id)=>(int)$id)->all();
+        return $ids ?: IssueStatus::query()->pluck('id')->map(fn($id)=>(int)$id)->all();
     }
 
     public function allowedPriorityIds(): array
     {
-        $ids = $this->issuePriorities()->pluck('issue_priorities.id')->map(fn($id)=>(string)$id)->all();
-        return $ids ?: IssuePriority::query()->pluck('id')->map(fn($id)=>(string)$id)->all();
+        $ids = $this->issuePriorities()->pluck('issue_priorities.id')->map(fn($id)=>(int)$id)->all();
+        return $ids ?: IssuePriority::query()->pluck('id')->map(fn($id)=>(int)$id)->all();
     }
 
-    public function initialStatusId(): ?string
+    public function defaultTypeId(): ?int
+    {
+        return $this->issueTypes()->wherePivot('is_default', true)->value('issue_types.id')
+            ?? (int) IssueType::query()->where('is_default', true)->value('id');
+    }
+
+    public function defaultPriorityId(): ?int
+    {
+        return $this->issuePriorities()->wherePivot('is_default', true)->value('issue_priorities.id')
+            ?? (int) IssuePriority::query()->where('weight', 50)->orWhere('is_default', true)->value('id');
+    }
+
+    public function initialStatusId(): ?int
     {
         $id = $this->issueStatuses()->wherePivot('is_initial', true)->value('issue_statuses.id');
-        if ($id) { return (string) $id; }
-        // fallback: first non-done global status by order
-        return (string) IssueStatus::query()->where('is_done', false)->orderBy('order')->value('id');
+        if ($id) { return (int) $id; }
+
+        // global fallback, but only if it's included in project’s allowed set
+        $fallback = IssueStatus::query()->where('is_done', false)->orderBy('order')->value('id');
+        return in_array((int)$fallback, $this->allowedStatusIds(), true) ? (int)$fallback : null;
     }
 
     public function canTransition(string $fromStatusId, string $toStatusId, ?string $issueTypeId = null): bool

@@ -2,9 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Comment;
 use App\Models\Issue;
 use App\Models\PersonalAccessToken;
+use App\Models\Project;
+use App\Observers\CommentObserver;
 use App\Observers\IssueObserver;
+use App\Observers\ProjectObserver;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 use Laravel\Telescope\TelescopeServiceProvider;
@@ -29,5 +33,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
         Issue::observe(IssueObserver::class);
+        Project::observe(ProjectObserver::class);
+        Comment::observe(CommentObserver::class);
     }
 }

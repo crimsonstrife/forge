@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('project_issue_statuses', static function (Blueprint $t) {
             $t->uuid('id')->primary();
             $t->foreignUuid('project_id');
-            $t->foreignUuid('issue_status_id');
+            $t->foreignId('issue_status_id');
             $t->unsignedInteger('order')->default(0);
             $t->boolean('is_initial')->default(false); // starting status
             $t->boolean('is_default_done')->default(false); // optional quick lookup
