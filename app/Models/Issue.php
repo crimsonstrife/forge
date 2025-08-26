@@ -8,16 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Tags\HasTags;
 
-class Issue extends Model
+class Issue extends Model implements HasMedia
 {
     use HasUuids;
     use HasTags;
     use LogsActivity;
+    use InteractsWithMedia;
 
     protected $keyType = 'string';
     public $incrementing = false;
@@ -120,6 +124,11 @@ class Issue extends Model
         return $this->HasOne(User::class, 'reporter_id');
     }
 
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable')->orderBy('created_at');
+    }
+
     public function assignee(): HasOne {
         return $this->HasOne(User::class, 'assignee_id');
     }
@@ -142,6 +151,13 @@ class Issue extends Model
 
     public function scopeSubTasks($q) {
         return $q->whereHas('type', fn($t) => $t->where('key', 'SUBTASK'));
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('attachments')
+            ->useDisk('attachments')       // private
+            ->singleFile(false);
     }
 
     /** Percent as float 0..1 for charts */

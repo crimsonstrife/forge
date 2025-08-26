@@ -60,6 +60,12 @@ return [
             'report' => false,
         ],
 
+        'attachments' => [
+            'driver' => 'local',            // or 's3'
+            'root' => storage_path('app/attachments'),
+            'visibility' => 'private',      // Filament v4 default is private; keep it explicit here
+            'throw' => false,
+        ],
     ],
 
     /*
