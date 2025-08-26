@@ -28,7 +28,6 @@ return new class extends Migration
             $table->longText('body');
 
             // Fast filtering
-            $table->index(['commentable_type', 'commentable_id']);
             $table->index(['parent_id', 'created_at']);
 
             $table->timestamps();
