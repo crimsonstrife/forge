@@ -20,11 +20,13 @@ class IssuePriority extends Model
         'weight' => 'int',
     ];
 
-    public function scopeOrdered($q){
+    public function scopeOrdered($q)
+    {
         return $q->orderBy('order');
     }
 
-    public function scopeWeighting($q){
+    public function scopeWeighting($q)
+    {
         return $q->orderBy('weight');
     }
 }

@@ -9,12 +9,14 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 class RecalculateIssueRollups implements ShouldQueue
 {
-    use Dispatchable, Queueable;
+    use Dispatchable;
+    use Queueable;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(private readonly string $parentIssueId) {
+    public function __construct(private readonly string $parentIssueId)
+    {
         //
     }
 

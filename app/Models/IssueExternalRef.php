@@ -36,7 +36,8 @@ class IssueExternalRef extends Model
         });
     }
 
-    public function issue(): BelongsTo {
+    public function issue(): BelongsTo
+    {
         return $this->belongsTo(Issue::class);
     }
 }

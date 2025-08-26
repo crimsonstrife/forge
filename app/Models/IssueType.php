@@ -15,7 +15,7 @@ class IssueType extends Model
     ];
 
     protected $casts = [
-        'is_hierarchical'=>'bool',
+        'is_hierarchical' => 'bool',
         'is_default' => 'bool'
     ];
 }
