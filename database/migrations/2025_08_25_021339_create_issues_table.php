@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('issues', static function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('project_id')->constrained('projects', 'id');
-            $table->foreignUuid('parent_id')->constrained('issues', 'id');
             $table->foreignId('issue_type_id');
             $table->foreignId('issue_status_id');
             $table->foreignId('issue_priority_id');
