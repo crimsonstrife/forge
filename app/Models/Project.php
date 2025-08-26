@@ -4,9 +4,13 @@ namespace App\Models;
 
 use App\Enums\ProjectStage;
 use App\Support\ActivityContext;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
@@ -69,6 +73,30 @@ class Project extends Model
         $activity->description = 'project.' . $activity->event;
     }
 
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, 'project_team', 'team_id')
+            ->withPivot(['role'])
+            ->withTimestamps();
+    }
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'project_user','user_id')
+            ->withPivot(['role'])
+            ->withTimestamps();
+    }
+
+    public function lead(): HasOne
+    {
+        return $this->hasOne(User::class, 'lead_id');
+    }
+
     public function issueTypes(): BelongsToMany
     {
         return $this->belongsToMany(IssueType::class, 'project_issue_types')
@@ -90,7 +118,7 @@ class Project extends Model
             ->orderBy('project_issue_priorities.order');
     }
 
-    public function statusTransitions()
+    public function statusTransitions(): HasMany
     {
         return $this->hasMany(ProjectStatusTransition::class);
     }
@@ -147,5 +175,39 @@ class Project extends Model
         }
 
         return $q->exists();
+    }
+
+    /** Quick access check */
+    public function isAccessibleBy(User $user): bool
+    {
+        if ($user->hasPermissionTo('is-super-admin')) {
+            return true;
+        }
+        if ((string) $this->lead_id === (string) $user->id) {
+            return true;
+        }
+        if ($this->users()->whereKey($user->id)->exists()) {
+            return true;
+        }
+        // Jetstream pivot is team_user (team_id, user_id)
+        return $this->teams()->whereHas('allUsers', fn ($q) => $q->where('users.id', $user->id))->exists();
+    }
+
+    /** Scope: projects visible to a user (lead, direct member, or member of any attached team) */
+    public function scopeVisibleTo(Builder $q, User $user): Builder
+    {
+        return $q->where(function ($w) use ($user) {
+            // Lead always sees
+            $w->where('lead_id', $user->id)
+
+                // Direct project members (only if you created project_user)
+                ->orWhereHas('users', fn ($u) => $u->whereKey($user->id))
+
+                // Any attached team where the user is owner OR a member
+                ->orWhereHas('teams', function ($t) use ($user) {
+                    $t->where('teams.user_id', $user->id) // team owner
+                    ->orWhereHas('users', fn ($u) => $u->whereKey($user->id)); // team_user membership
+                });
+        });
     }
 }

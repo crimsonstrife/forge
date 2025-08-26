@@ -4,11 +4,15 @@ namespace App\Providers;
 
 use App\Models\Comment;
 use App\Models\Issue;
+use App\Models\PermissionSet;
 use App\Models\PersonalAccessToken;
 use App\Models\Project;
+use App\Models\Role;
 use App\Observers\CommentObserver;
 use App\Observers\IssueObserver;
+use App\Observers\PermissionSetObserver;
 use App\Observers\ProjectObserver;
+use App\Observers\RoleObserver;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 use Laravel\Telescope\TelescopeServiceProvider;
@@ -35,5 +39,7 @@ class AppServiceProvider extends ServiceProvider
         Issue::observe(IssueObserver::class);
         Project::observe(ProjectObserver::class);
         Comment::observe(CommentObserver::class);
+        Role::observe(RoleObserver::class);
+        PermissionSet::observe(PermissionSetObserver::class);
     }
 }
