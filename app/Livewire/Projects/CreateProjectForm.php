@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Policies\ProjectPolicy;
 use App\Services\Projects\ProjectSchemeCloner;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -15,6 +16,8 @@ use Illuminate\Support\Str;
 
 final class CreateProjectForm extends Component
 {
+    use AuthorizesRequests;
+
     #[Validate('required|string|max:120')]
     public string $name = '';
 
@@ -37,6 +40,9 @@ final class CreateProjectForm extends Component
     public array $teamMembers = [];
 
     /** @var array<int, array{id:string,name:string}> */
+    public array $teamOptions = [];
+
+    /** @var array<int, array{id:string,name:string}> */
     public array $attach_team_ids = []; // uuids as strings
 
     /** @return array<string, mixed> */
@@ -54,11 +60,21 @@ final class CreateProjectForm extends Component
 
     public function mount(): void
     {
-        $this->authorize('create', Project::class);
+        $this->authorize('create', \App\Models\Project::class);
 
+        // Team options for multiselect
         $teams = auth()->user()?->allTeams() ?? collect();
-        $this->teamOptions = $teams->map(fn($t)=>['id'=>(string)$t->id,'name'=>$t->name])->values()->all();
+        $this->teamOptions = $teams
+            ->map(fn ($t) => ['id' => (string) $t->id, 'name' => $t->name])
+            ->values()
+            ->all();
 
+        // Lead select options (current team’s users if you like, or just the current user)
+        $this->teamMembers = $teams->first()
+            ? $teams->first()->allUsers()->map(fn ($u) => ['id' => (string) $u->id, 'name' => $u->name])->all()
+            : [['id' => (string) auth()->id(), 'name' => auth()->user()->name]];
+
+        // Preselect current team if present
         if (auth()->user()?->currentTeam) {
             $this->attach_team_ids = [(string) auth()->user()->currentTeam->id];
         }
@@ -82,13 +98,12 @@ final class CreateProjectForm extends Component
         $project->description = $data['description'] ?? null;
         $project->lead_id = $data['lead_id'] ?? auth()->id();
         $project->stage = ProjectStage::from($data['stage']);
-        // attach selected teams (many-to-many)
+        $project->save();
+
         if (! empty($this->attach_team_ids)) {
             $project->teams()->syncWithPivotValues($this->attach_team_ids, ['role' => 'Contributor'], false);
         }
-        // also add creator as direct member
         $project->users()->syncWithoutDetaching([auth()->id() => ['role' => 'Owner']]);
-        $project->save();
 
         // Optionally clone schemes from another project; otherwise ProjectObserver seeds defaults.
         if ($this->copy_from_project_id) {
@@ -105,9 +120,9 @@ final class CreateProjectForm extends Component
     {
         return view('livewire.projects.create-project-form', [
             'stages' => ProjectStage::cases(),
-            'projectsForCopy' => \App\Models\Project::query()
-                ->when(auth()->user()?->currentTeam, fn($q, $team) => $q->where('team_id', $team->id))
-                ->orderBy('name')->get(['id', 'name']),
+            'projectsForCopy' => Project::query()
+                ->visibleTo(auth()->user())
+                ->orderBy('name')->get(['id','name']),
         ]);
     }
 }
