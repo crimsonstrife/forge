@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -23,6 +24,7 @@ class Issue extends Model
 
     protected $attributes = [
         'project_id',
+        'parent_id',
         'issue_type_id',
         'issue_status_id',
         'issue_priority_id',
@@ -36,6 +38,7 @@ class Issue extends Model
 
     protected $casts = [
         'id' => 'string',
+        'parent_id' => 'string',
         'project_id' => 'string',
         'reporter_id' => 'string',
         'assignee_id' => 'string',
@@ -95,6 +98,30 @@ class Issue extends Model
 
     public function children(): HasMany {
         return $this->hasMany(__CLASS__, 'parent_id');
+    }
+
+    public function type(): HasOne {
+        return $this->HasOne(IssueType::class, 'issue_type_id');
+    }
+
+    public function status(): HasOne {
+        return $this->HasOne(IssueStatus::class, 'issue_status_id');
+    }
+
+    public function priority(): HasOne {
+        return $this->HasOne(IssuePriority::class, 'issue_priority_id');
+    }
+
+    public function project(): BelongsTo {
+        return $this->belongsTo(Project::class, 'project_id');
+    }
+
+    public function reporter(): HasOne {
+        return $this->HasOne(User::class, 'reporter_id');
+    }
+
+    public function assignee(): HasOne {
+        return $this->HasOne(User::class, 'assignee_id');
     }
 
     public function scopeEpics($q) {

@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('issue_priorities', static function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name');
+            $table->string('key')->unique();
             $table->integer('order');
             $table->string('color');
+            $table->string('icon');
             $table->timestamps();
         });
     }

@@ -10,8 +10,7 @@ class IssueStatus extends Model
         'name',
         'key',
         'order',
-        'is_done',
-        'category'
+        'is_done'
     ];
 
     protected $casts = [

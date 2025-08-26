@@ -8,8 +8,10 @@ class IssuePriority extends Model
 {
     protected $fillable = [
         'name',
+        'key',
         'order',
-        'color'
+        'color',
+        'icon'
     ];
 
     protected $casts = [
