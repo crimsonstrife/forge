@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('key')->unique();
             $table->string('icon');
             $table->boolean('is_default')->default(false);
-            $table->boolean('is_hierarchical')->default(false);
             $table->timestamps();
         });
     }
