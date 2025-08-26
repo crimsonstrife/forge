@@ -4,6 +4,7 @@ namespace App\Livewire\Projects;
 
 use App\Enums\ProjectStage;
 use App\Models\Project;
+use App\Models\Team;
 use App\Models\User;
 use App\Policies\ProjectPolicy;
 use App\Services\Projects\ProjectSchemeCloner;
@@ -98,12 +99,16 @@ final class CreateProjectForm extends Component
         $project->description = $data['description'] ?? null;
         $project->lead_id = $data['lead_id'] ?? auth()->id();
         $project->stage = ProjectStage::from($data['stage']);
+        $project->settings = $project->settings ?? $data['settings'] ?? [];
         $project->save();
 
         if (! empty($this->attach_team_ids)) {
             $project->teams()->syncWithPivotValues($this->attach_team_ids, ['role' => 'Contributor'], false);
         }
+
         $project->users()->syncWithoutDetaching([auth()->id() => ['role' => 'Owner']]);
+
+        $project->save();
 
         // Optionally clone schemes from another project; otherwise ProjectObserver seeds defaults.
         if ($this->copy_from_project_id) {
@@ -113,7 +118,7 @@ final class CreateProjectForm extends Component
         session()->flash('flash.banner', 'Project created.');
         session()->flash('flash.bannerStyle', 'success');
 
-        return redirect()->route('projects.show', $project);
+        return redirect()->route('projects.show', ['project' => $project]);
     }
 
     public function render(): mixed

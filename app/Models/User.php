@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Traits\HasPermissionSets;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -87,4 +88,12 @@ class User extends Authenticatable
             $model->id = Str::uuid();
         });
     }
+
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'project_user', 'user_id', 'project_id')
+            ->withPivot(['role'])
+            ->withTimestamps();
+    }
+
 }

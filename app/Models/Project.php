@@ -35,11 +35,15 @@ class Project extends Model
         'id' => 'string',
         'organization_id' => 'string',
         'lead_id' => 'string',
-        'settings' => 'json',
+        'settings' => 'array',
         'stage' => ProjectStage::class,
         'started_at' => 'datetime',
         'ended_at' => 'datetime',
         'archived_at' => 'datetime',
+    ];
+
+    protected $attributes = [
+        'settings' => '{}',
     ];
 
     public static function boot(): void
@@ -80,14 +84,14 @@ class Project extends Model
 
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class, 'project_team', 'team_id')
+        return $this->belongsToMany(\App\Models\Team::class, 'project_team', 'project_id', 'team_id')
             ->withPivot(['role'])
             ->withTimestamps();
     }
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'project_user','user_id')
+        return $this->belongsToMany(\App\Models\User::class, 'project_user', 'project_id', 'user_id')
             ->withPivot(['role'])
             ->withTimestamps();
     }

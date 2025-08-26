@@ -37,7 +37,7 @@ render(function (View $view) {
         <div class="mx-auto max-w-7xl space-y-6">
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 @forelse($projects as $project)
-                    <a href="{{ route('projects.show', $project) }}"
+                    <a href="{{ route('projects.show', ['project' => $project]) }}"
                        class="rounded-xl border border-gray-200/60 dark:border-gray-700/60 p-4 hover:bg-gray-50 dark:hover:bg-gray-800">
                         <div class="flex items-center justify-between">
                             <div class="text-sm uppercase tracking-wide text-gray-500">{{ $project->key }}</div>

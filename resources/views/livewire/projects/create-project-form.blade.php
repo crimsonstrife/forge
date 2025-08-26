@@ -3,17 +3,17 @@
         <div>
             <x-label for="name" value="Name"/>
             <x-input wire:model.defer="name" id="name" type="text" class="mt-1 block w-full" autofocus/>
-            <x-input-error for="name" :messages="$errors->get('name')" class="mt-2"/>
+            <x-input-error for="name" class="mt-2"/>
         </div>
         <div>
             <x-label for="key" value="Key (2–10 A–Z/0–9)"/>
             <x-input wire:model.defer="key" id="key" type="text" class="mt-1 block w-full uppercase"/>
-            <x-input-error for="key" :messages="$errors->get('key')" class="mt-2"/>
+            <x-input-error for="key" class="mt-2"/>
         </div>
         <div class="sm:col-span-2">
             <x-label for="description" value="Description"/>
-            <x-input wire:model.defer="description" id="description" rows="4" class="mt-1 block w-full"/>
-            <x-input-error for="description" :messages="$errors->get('description')" class="mt-2"/>
+            <x-textarea wire:model.defer="description" id="description" type="text" rows="4" class="mt-1 block w-full"/>
+            <x-input-error for="description" class="mt-2"/>
         </div>
         <div>
             <x-label for="lead_id" value="Project Lead"/>
@@ -24,7 +24,7 @@
                     <option value="{{ $m['id'] }}">{{ $m['name'] }}</option>
                 @endforeach
             </select>
-            <x-input-error for="lead_id" :messages="$errors->get('lead_id')" class="mt-2"/>
+            <x-input-error for="lead_id" class="mt-2"/>
         </div>
         <div>
             <x-label for="stage" value="Stage"/>
@@ -34,7 +34,7 @@
                     <option value="{{ $s->value }}">{{ ucfirst($s->value) }}</option>
                 @endforeach
             </select>
-            <x-input-error for="stage" :messages="$errors->get('stage')" class="mt-2"/>
+            <x-input-error for="stage" class="mt-2"/>
         </div>
 
         <div class="sm:col-span-2">
@@ -45,7 +45,7 @@
                     <option value="{{ $t['id'] }}">{{ $t['name'] }}</option>
                 @endforeach
             </select>
-            <x-input-error for="attach_team_ids" :messages="$errors->get('attach_team_ids')" class="mt-2"/>
+            <x-input-error for="attach_team_ids" class="mt-2"/>
         </div>
 
         <div class="sm:col-span-2">
@@ -58,7 +58,7 @@
                 @endforeach
             </select>
             <p class="mt-1 text-xs text-gray-500">Types, statuses, priorities, and transitions will be copied.</p>
-            <x-input-error for="copy" :messages="$errors->get('copy_from_project_id')" class="mt-2"/>
+            <x-input-error for="copy" class="mt-2"/>
         </div>
     </div>
 
