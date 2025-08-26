@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('key')->unique();
             $table->integer('order');
+            $table->integer('weight');
             $table->string('color');
             $table->string('icon');
             $table->timestamps();

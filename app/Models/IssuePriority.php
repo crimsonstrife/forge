@@ -10,13 +10,21 @@ class IssuePriority extends Model
         'name',
         'key',
         'order',
+        'weight',
         'color',
         'icon'
     ];
 
     protected $casts = [
         'order' => 'int',
+        'weight' => 'int',
     ];
 
-    public function scopeOrdered($q){ return $q->orderBy('order'); }
+    public function scopeOrdered($q){
+        return $q->orderBy('order');
+    }
+
+    public function scopeWeighting($q){
+        return $q->orderBy('weight');
+    }
 }
