@@ -10,6 +10,7 @@ class IssueStatus extends Model
         'name',
         'key',
         'order',
+        'color',
         'is_done'
     ];
 
