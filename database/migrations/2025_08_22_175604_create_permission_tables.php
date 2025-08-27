@@ -72,16 +72,12 @@ return new class extends Migration
         });
 
         Schema::create($tableNames['model_has_roles'], static function (Blueprint $table) use ($tableNames, $columnNames, $pivotRole, $teams) {
-            $table->uuid($pivotRole);
+            $table->uuid($pivotRole)->nullable();
 
             $table->string('model_type');
             $table->foreignUuid($columnNames['model_morph_key']);
             $table->index([$columnNames['model_morph_key'], 'model_type'], 'model_has_roles_model_id_model_type_index');
 
-            $table->foreign($pivotRole)
-                ->references('id') // role id
-                ->on($tableNames['roles'])
-                ->onDelete('cascade');
             if ($teams) {
                 $table->foreignUuid($columnNames['team_foreign_key'])->nullable();
                 $table->index($columnNames['team_foreign_key'], 'model_has_roles_team_foreign_key_index');
@@ -168,10 +164,10 @@ return new class extends Migration
         });
 
         // Pivot: users <-> sets
-        Schema::create('user_permission_sets', static function (Blueprint $table) {
+        Schema::create('user_permission_sets', static function (Blueprint $table) use ($pivotRole) {
             // If your users use ULIDs: switch to foreignUlid('user_id')
             $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
-
+            $table->uuid($pivotRole)->nullable();
             $table->uuid('permission_set_id');
             $table->primary(['user_id', 'permission_set_id'], 'user_permission_sets_primary');
 

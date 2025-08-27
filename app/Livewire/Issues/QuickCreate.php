@@ -30,8 +30,9 @@ final class QuickCreate extends Component
         $issue = new Issue();
         $issue->project_id = $this->project->id;
         $issue->summary    = $this->summary;
-        $issue->status_id  = $this->project->initialStatusId();
-        $issue->reporter_id = auth()->id();
+        $issue->issue_status_id  = $this->project->initialStatusId();
+        $issue->issue_reporter_id = auth()->id();
+        $issue->issue_priority_id = $this->project->defaultPriorityId();
         $issue->save();
 
         $this->summary = '';

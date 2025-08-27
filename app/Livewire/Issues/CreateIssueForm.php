@@ -60,9 +60,9 @@ final class CreateIssueForm extends Component
         $issue->project_id  = $this->project->id;
         $issue->summary     = $data['summary'];
         $issue->description = $data['description'] ?? null;
-        $issue->type_id     = $this->type_id;
-        $issue->priority_id = $this->priority_id;
-        $issue->status_id   = session('project.initial_status.'.$this->project->id);
+        $issue->issue_type_id     = $this->type_id;
+        $issue->issue_priority_id = $this->priority_id;
+        $issue->issue_status_id   = session('project.initial_status.'.$this->project->id);
 
         $issue->reporter_id = auth()->id();
         $issue->save();
