@@ -28,7 +28,11 @@ class ProjectsTable
             ->columns([
                 Tables\Columns\TextColumn::make('key')->searchable()->badge(),
                 Tables\Columns\TextColumn::make('name')->searchable()->wrap(),
-                Tables\Columns\TextColumn::make('stage')->formatStateUsing(fn($s)=>ucfirst($s?->value ?? ''))->badge(),
+                Tables\Columns\TextColumn::make('stage_label')
+                    ->label('Stage')
+                    ->badge()
+                    ->placeholder('—')
+                    ->color(fn (Project $r) => $r->stage instanceof ProjectStage ? $r->stage->color() : 'gray'),
                 Tables\Columns\TextColumn::make('started_at')->date(),
                 Tables\Columns\TextColumn::make('due_at')->date(),
                 Tables\Columns\TextColumn::make('created_at')->dateTime()->toggleable(isToggledHiddenByDefault:true),

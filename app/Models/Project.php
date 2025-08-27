@@ -286,4 +286,10 @@ class Project extends Model
                 });
         });
     }
+
+    public function getStageLabelAttribute(): string
+    {
+        $s = $this->stage;
+        return $s instanceof ProjectStage ? $s->label() : ucfirst((string) ($s ?? ''));
+    }
 }
