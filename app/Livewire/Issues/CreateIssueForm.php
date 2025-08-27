@@ -37,11 +37,11 @@ final class CreateIssueForm extends Component
 
         $this->typeOptions = $project->issueTypes()->orderBy('project_issue_types.order')
             ->get(['issue_types.id','issue_types.name'])
-            ->map(fn($t)=>['id'=>(string)$t->id,'name'=>$t->name])->all();
+            ->map(fn ($t) => ['id' => (string)$t->id,'name' => $t->name])->all();
 
         $this->priorityOptions = $project->issuePriorities()->orderBy('project_issue_priorities.order')
             ->get(['issue_priorities.id','issue_priorities.name'])
-            ->map(fn($p)=>['id'=>(string)$p->id,'name'=>$p->name])->all();
+            ->map(fn ($p) => ['id' => (string)$p->id,'name' => $p->name])->all();
 
         $initialStatusId = $project->initialStatusId();
 
@@ -72,7 +72,7 @@ final class CreateIssueForm extends Component
         session()->flash('flash.banner', 'Issue created');
         session()->flash('flash.bannerStyle', 'success');
 
-        return redirect()->route('issues.show', ['project'=>$this->project, 'issue'=>$issue]);
+        return redirect()->route('issues.show', ['project' => $this->project, 'issue' => $issue]);
     }
 
     public function render()
