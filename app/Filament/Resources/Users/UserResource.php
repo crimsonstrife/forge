@@ -11,6 +11,7 @@ use App\Filament\Resources\Users\Schemas\UserInfolist;
 use App\Filament\Resources\Users\Tables\UsersTable;
 use App\Models\User;
 use BackedEnum;
+use Exception;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -19,19 +20,28 @@ use Filament\Tables\Table;
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
+    protected static string|null|\UnitEnum $navigationGroup = 'Administration';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Users;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
+    /**
+     * @throws Exception
+     */
     public static function form(Schema $schema): Schema
     {
         return UserForm::configure($schema);
     }
 
+    /**
+     * @throws Exception
+     */
     public static function infolist(Schema $schema): Schema
     {
         return UserInfolist::configure($schema);
     }
 
+    /**
+     * @throws Exception
+     */
     public static function table(Table $table): Table
     {
         return UsersTable::configure($table);
