@@ -2,7 +2,8 @@
 
 namespace App\Enums;
 
-enum ProjectStage: string {
+enum ProjectStage: string
+{
     case Planning = 'planning';
     case Active   = 'active';
     case OnHold   = 'on_hold';

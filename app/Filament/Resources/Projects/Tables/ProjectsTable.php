@@ -39,7 +39,7 @@ class ProjectsTable
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('stage')
-                    ->options(collect(ProjectStage::cases())->mapWithKeys(fn($c)=>[$c->value=>ucfirst($c->value)])->all()),
+                    ->options(collect(ProjectStage::cases())->mapWithKeys(fn ($c) => [$c->value => ucfirst($c->value)])->all()),
             ])
             ->defaultSort('created_at', 'desc')
             ->recordActions([

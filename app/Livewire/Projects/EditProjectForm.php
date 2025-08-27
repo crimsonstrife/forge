@@ -42,10 +42,10 @@ final class EditProjectForm extends Component
     {
         return [
             'name' => 'required|string|max:120',
-            'key'  => ['required','string','alpha_num:ascii','min:2','max:10', Rule::unique('projects','key')->ignore($this->project->id)],
+            'key'  => ['required','string','alpha_num:ascii','min:2','max:10', Rule::unique('projects', 'key')->ignore($this->project->id)],
             'description' => 'nullable|string|max:10000',
             'lead_id' => 'nullable|uuid|exists:users,id',
-            'stage' => ['required', Rule::in(array_column(ProjectStage::cases(),'value'))],
+            'stage' => ['required', Rule::in(array_column(ProjectStage::cases(), 'value'))],
             'started_at' => 'nullable|date',
             'due_at' => 'nullable|date',
             'ended_at' => 'nullable|date',

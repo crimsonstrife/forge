@@ -23,7 +23,7 @@ final class UsersRelationManager extends RelationManager
     {
         return $schema->schema([
             Forms\Components\Select::make('pivot.role')
-                ->options(['Owner'=>'Owner','Maintainer'=>'Maintainer','Contributor'=>'Contributor'])
+                ->options(['Owner' => 'Owner','Maintainer' => 'Maintainer','Contributor' => 'Contributor'])
                 ->required(),
         ]);
     }

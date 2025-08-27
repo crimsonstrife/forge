@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -30,9 +29,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('projects', static function (Blueprint $table) {
-            if (Schema::hasColumn('projects', 'started_at')) { $table->dropColumn('started_at'); }
-            if (Schema::hasColumn('projects', 'due_at'))     { $table->dropColumn('due_at'); }
-            if (Schema::hasColumn('projects', 'ended_at'))   { $table->dropColumn('ended_at'); }
+            if (Schema::hasColumn('projects', 'started_at')) {
+                $table->dropColumn('started_at');
+            }
+            if (Schema::hasColumn('projects', 'due_at')) {
+                $table->dropColumn('due_at');
+            }
+            if (Schema::hasColumn('projects', 'ended_at')) {
+                $table->dropColumn('ended_at');
+            }
         });
     }
 };

@@ -33,7 +33,7 @@ class ProjectForm
                         Forms\Components\TextInput::make('key')->unique(ignoreRecord: true)->required()->regex('/^[A-Z0-9]{2,10}$/')->helperText('2–10 uppercase A–Z/0–9'),
                         Forms\Components\Textarea::make('description')->rows(4)->columnSpanFull(),
                         Forms\Components\Select::make('stage')
-                            ->options(collect(ProjectStage::cases())->mapWithKeys(fn($c)=>[$c->value=>ucfirst($c->value)])->all())
+                            ->options(collect(ProjectStage::cases())->mapWithKeys(fn ($c) => [$c->value => ucfirst($c->value)])->all())
                             ->required(),
                         Forms\Components\Select::make('lead_id')
                             ->label('Project Lead')
