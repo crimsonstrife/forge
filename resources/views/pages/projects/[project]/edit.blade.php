@@ -1,5 +1,6 @@
 <?php
 use App\Models\Project;
+
 use function Laravel\Folio\{name, middleware};
 
 name('projects.edit');

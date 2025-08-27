@@ -3,6 +3,7 @@
 use App\Models\Project;
 use App\Models\Issue;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('issues.index');
@@ -15,7 +16,7 @@ render(function (View $view, Project $project) {
         ->paginate(20)
         ->withQueryString();
 
-    return $view->with(compact('project','issues'));
+    return $view->with(compact('project', 'issues'));
 });
 ?>
 

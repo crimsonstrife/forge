@@ -11,7 +11,8 @@ use InvalidArgumentException;
 
 final class BelongsToProjectSet implements ValidationRule
 {
-    public function __construct(private readonly Project $project, private readonly ProjectSet $set) {
+    public function __construct(private readonly Project $project, private readonly ProjectSet $set)
+    {
         if (! $project || ! $set instanceof ProjectSet) {
             throw new InvalidArgumentException('Invalid Project or ProjectSet provided.');
         }

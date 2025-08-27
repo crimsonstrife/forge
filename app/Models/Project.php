@@ -130,20 +130,20 @@ class Project extends Model
     /** IDs / selections (with global fallback) */
     public function allowedTypeIds(): array
     {
-        $ids = $this->issueTypes()->pluck('issue_types.id')->map(fn($id)=>(int)$id)->all();
-        return $ids ?: IssueType::query()->pluck('id')->map(fn($id)=>(int)$id)->all();
+        $ids = $this->issueTypes()->pluck('issue_types.id')->map(fn ($id) => (int)$id)->all();
+        return $ids ?: IssueType::query()->pluck('id')->map(fn ($id) => (int)$id)->all();
     }
 
     public function allowedStatusIds(): array
     {
-        $ids = $this->issueStatuses()->pluck('issue_statuses.id')->map(fn($id)=>(int)$id)->all();
-        return $ids ?: IssueStatus::query()->pluck('id')->map(fn($id)=>(int)$id)->all();
+        $ids = $this->issueStatuses()->pluck('issue_statuses.id')->map(fn ($id) => (int)$id)->all();
+        return $ids ?: IssueStatus::query()->pluck('id')->map(fn ($id) => (int)$id)->all();
     }
 
     public function allowedPriorityIds(): array
     {
-        $ids = $this->issuePriorities()->pluck('issue_priorities.id')->map(fn($id)=>(int)$id)->all();
-        return $ids ?: IssuePriority::query()->pluck('id')->map(fn($id)=>(int)$id)->all();
+        $ids = $this->issuePriorities()->pluck('issue_priorities.id')->map(fn ($id) => (int)$id)->all();
+        return $ids ?: IssuePriority::query()->pluck('id')->map(fn ($id) => (int)$id)->all();
     }
 
     public function defaultTypeId(): ?int
@@ -161,7 +161,9 @@ class Project extends Model
     public function initialStatusId(): ?int
     {
         $id = $this->issueStatuses()->wherePivot('is_initial', true)->value('issue_statuses.id');
-        if ($id) { return (int) $id; }
+        if ($id) {
+            return (int) $id;
+        }
 
         // global fallback, but only if it's included in project’s allowed set
         $fallback = IssueStatus::query()->where('is_done', false)->orderBy('order')->value('id');
@@ -175,7 +177,7 @@ class Project extends Model
             ->where('to_status_id', $toStatusId);
 
         if ($issueTypeId) {
-            $q->where(fn($w)=> $w->where('issue_type_id', $issueTypeId)->orWhereNull('issue_type_id'));
+            $q->where(fn ($w) => $w->where('issue_type_id', $issueTypeId)->orWhereNull('issue_type_id'));
         }
 
         return $q->exists();
