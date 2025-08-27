@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
@@ -58,6 +59,72 @@ class Project extends Model
         static::creating(static function ($model) {
             $model->id = Str::uuid();
         });
+    }
+
+    public function defaultSettings(): array
+    {
+        return [
+            'ui' => ['color' => null, 'icon' => null, 'pinned_fields' => []],
+            'issues' => [
+                'default_type_id' => null,
+                'default_priority_id' => null,
+                'allow_subtasks' => true,
+                'require_estimate' => false,
+                'estimate_unit' => 'story_points',
+                'templates' => [],
+                'custom_fields' => [],
+            ],
+            'workflow' => [
+                'enforce_transitions' => true,
+                'allow_backwards' => false,
+                'wip_limits' => [],
+            ],
+            'sprints' => [
+                'default_length_days' => 14,
+                'auto_start_on_first_issue' => false,
+                'velocity_target' => null,
+            ],
+            'notifications' => [
+                'on_issue_created' => [],
+                'on_status_changed' => [],
+            ],
+            'automation' => [
+                'branch_pattern' => 'feature/{issueKey}-{slug}',
+                'pr_title_template' => '[{issueKey}] {summary}',
+                'auto_close_on_merge' => null, // null = inherit global
+                'commit_keywords' => [],
+            ],
+            'attachments' => [
+                'max_mb' => 50,
+                'allowed_mime' => ['image/*','application/pdf'],
+            ],
+            'comments' => [
+                'mentions_enabled' => true,
+                'require_membership' => true,
+            ],
+            'webhooks' => [],
+            '_v' => 1, // schema version for future migrations
+        ];
+    }
+
+    public function setting(string $key, mixed $default = null): mixed
+    {
+        $merged = array_replace_recursive($this->defaultSettings(), $this->settings ?? []);
+        return Arr::get($merged, $key, $default);
+    }
+
+    public function setSetting(string $key, mixed $value): static
+    {
+        $settings = $this->settings ?? [];
+        Arr::set($settings, $key, $value);
+        $this->settings = $settings;
+        return $this;
+    }
+
+    public function updateSettings(array $values): static
+    {
+        $this->settings = array_replace_recursive($this->settings ?? [], $values);
+        return $this;
     }
 
     public function getActivitylogOptions(): LogOptions
