@@ -222,6 +222,13 @@ render(function (View $view, Project $project) {
                         </ul>
                     </div>
                 @endcan
+
+                @can('issues.create')
+                    {{-- Quick create Issues --}}
+                    <div class="rounded-xl border border-gray-200/60 dark:border-gray-700/60 p-4">
+                        <livewire:issues.quick-create :project="$project" />
+                    </div>
+                @endcan
             </aside>
         </div>
     </div>

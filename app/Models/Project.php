@@ -28,7 +28,11 @@ class Project extends Model
         'description',
         'settings',
         'organization_id',
-        'lead_id'
+        'lead_id',
+        'started_at',
+        'due_at',
+        'ended_at',
+        'archived_at'
     ];
 
     protected $casts = [
@@ -38,6 +42,7 @@ class Project extends Model
         'settings' => 'array',
         'stage' => ProjectStage::class,
         'started_at' => 'datetime',
+        'due_at' => 'datetime',
         'ended_at' => 'datetime',
         'archived_at' => 'datetime',
     ];
