@@ -4,11 +4,68 @@ namespace App\Observers;
 
 use App\Jobs\RecalculateIssueRollups;
 use App\Models\Issue;
+use App\Models\Project;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
+use Throwable;
 
 class IssueObserver
 {
+    /**
+     * @throws Throwable
+     */
+    public function creating(Issue $issue): void
+    {
+        // If already set (e.g., import), skip.
+        if ($issue->key && $issue->number) {
+            return;
+        }
+
+        if (! $issue->project_id) {
+            throw new RuntimeException('Issue requires a project_id to generate a key.');
+        }
+
+        // Generate number & key atomically.
+        $attempts = 0;
+        retry:
+        $attempts++;
+        try {
+            DB::transaction(static function () use ($issue) {
+                /** @var Project $project */
+                $project = Project::query()->lockForUpdate()->findOrFail($issue->project_id);
+
+                $next = (int) $project->next_issue_number + 1;
+
+                // Assign
+                $issue->number = $next;
+                $issue->key = sprintf('%s-%d', strtoupper($project->key), $next);
+
+                // Bump counter
+                $project->next_issue_number = $next;
+                $project->save();
+            }, 3);
+        } catch (\Illuminate\Database\QueryException|Throwable $e) {
+             if ($attempts < 3) { goto retry; }
+             throw $e;
+        }
+    }
+
+    public function updating(Issue $issue): void
+    {
+        // Make key/number immutable after creation.
+        if ($issue->isDirty('key') || $issue->isDirty('number')) {
+            $issue->key = $issue->getOriginal('key');
+            $issue->number = $issue->getOriginal('number');
+        }
+    }
+
     public function created(Issue $issue): void
     {
+        // ensure counter is never behind the created number
+        Project::whereKey($issue->project_id)
+            ->where('next_issue_number', '<', $issue->number)
+            ->update(['next_issue_number' => $issue->number]);
+
         if ($issue->parent_id) {
             RecalculateIssueRollups::dispatch((string) $issue->parent_id);
         }

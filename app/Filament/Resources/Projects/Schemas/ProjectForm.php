@@ -8,6 +8,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use App\Models\Project;
@@ -29,8 +30,19 @@ class ProjectForm
             ->components([
                 Grid::make(1)->schema([
                     Section::make('Details')->schema([
-                        Forms\Components\TextInput::make('name')->required()->maxLength(120),
-                        Forms\Components\TextInput::make('key')->unique(ignoreRecord: true)->required()->regex('/^[A-Z0-9]{2,10}$/')->helperText('2–10 uppercase A–Z/0–9'),
+                        Forms\Components\TextInput::make('name')
+                            ->required()->maxLength(120)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn ($state, Set $set) => $set('key', app(\App\Support\Keys\ProjectKeyGenerator::class)->suggest((string) $state, 3))
+                            ),
+                        Forms\Components\TextInput::make('key')
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->rule('alpha_num:ascii|min:2|max:10|unique:projects,key')
+                            ->maxLength(10)
+                            ->regex('/^[A-Z0-9]{2,10}$/')
+                            ->helperText('2–10 uppercase A–Z/0–9')
+                            ->formatStateUsing(fn ($state) => \Illuminate\Support\Str::upper($state)),
                         Forms\Components\Textarea::make('description')->rows(4)->columnSpanFull(),
                         Forms\Components\Select::make('stage')
                             ->options(collect(ProjectStage::cases())->mapWithKeys(fn($c)=>[$c->value=>ucfirst($c->value)])->all())

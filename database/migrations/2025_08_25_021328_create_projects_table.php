@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('organization_id')->constrained();
             $table->string('name')->unique();
-            $table->string('key')->unique();
+            $table->string('key', 10)->unique();
             $table->longtext('description');
             $table->foreignUuid('lead_id')->references('id')->on('users');
             $table->json('settings');

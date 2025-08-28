@@ -38,11 +38,13 @@ class Issue extends Model implements HasMedia
         'estimate_minutes',
         'description',
         'summary',
-        'key'
     ];
+
+    protected $guarded = ['id', 'key', 'number'];
 
     protected $casts = [
         'id' => 'string',
+        'number' => 'integer',
         'parent_id' => 'string',
         'project_id' => 'string',
         'reporter_id' => 'string',
@@ -165,5 +167,10 @@ class Issue extends Model implements HasMedia
     public function progress(): float
     {
         return max(0, min(1, $this->progress_percent / 100));
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'key';
     }
 }

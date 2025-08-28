@@ -8,12 +8,14 @@ use App\Models\Team;
 use App\Models\User;
 use App\Policies\ProjectPolicy;
 use App\Services\Projects\ProjectSchemeCloner;
+use App\Support\Keys\ProjectKeyGenerator;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Illuminate\Support\Str;
+use Throwable;
 
 final class CreateProjectForm extends Component
 {
@@ -83,12 +85,15 @@ final class CreateProjectForm extends Component
 
     public function updatedName(string $value): void
     {
-        if ($this->key === '' && strlen($value) >= 2) {
-            $this->key = Str::upper(Str::of($value)->replaceMatches('/[^A-Za-z0-9]/', '')->substr(0, 6)->toString());
+        if ($this->key === '') {
+            $this->key = app(ProjectKeyGenerator::class)->suggest($value, 3);
         }
     }
 
-    public function save(ProjectSchemeCloner $cloner): mixed
+    /**
+     * @throws Throwable
+     */
+    public function save(ProjectSchemeCloner $cloner): \Illuminate\Http\RedirectResponse
     {
         $this->authorize('create', Project::class);
         $data = $this->validate();
