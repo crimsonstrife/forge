@@ -31,10 +31,14 @@ final class ProjectKeyGenerator
             while (mb_strlen($acronym) < $targetLen) {
                 foreach ($words as $w) {
                     $acronym .= Str::upper(mb_substr($w, $i, 1) ?: '');
-                    if (mb_strlen($acronym) >= $targetLen) break 2;
+                    if (mb_strlen($acronym) >= $targetLen) {
+                        break 2;
+                    }
                 }
                 $i++;
-                if ($i > 6) break; // avoid runaway
+                if ($i > 6) {
+                    break;
+                } // avoid runaway
             }
         }
 
@@ -59,7 +63,9 @@ final class ProjectKeyGenerator
             if ($i > 9999) {
                 // Extremely defensive fallback
                 $key = Str::upper(Str::random(4));
-                if (! $this->exists($key)) break;
+                if (! $this->exists($key)) {
+                    break;
+                }
             }
         }
 

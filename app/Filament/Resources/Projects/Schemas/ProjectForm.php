@@ -33,7 +33,8 @@ class ProjectForm
                         Forms\Components\TextInput::make('name')
                             ->required()->maxLength(120)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn ($state, Set $set) => $set('key', app(\App\Support\Keys\ProjectKeyGenerator::class)->suggest((string) $state, 3))
+                            ->afterStateUpdated(
+                                fn ($state, Set $set) => $set('key', app(\App\Support\Keys\ProjectKeyGenerator::class)->suggest((string) $state, 3))
                             ),
                         Forms\Components\TextInput::make('key')
                             ->required()
@@ -45,7 +46,7 @@ class ProjectForm
                             ->formatStateUsing(fn ($state) => \Illuminate\Support\Str::upper($state)),
                         Forms\Components\Textarea::make('description')->rows(4)->columnSpanFull(),
                         Forms\Components\Select::make('stage')
-                            ->options(collect(ProjectStage::cases())->mapWithKeys(fn($c)=>[$c->value=>ucfirst($c->value)])->all())
+                            ->options(collect(ProjectStage::cases())->mapWithKeys(fn ($c) => [$c->value => ucfirst($c->value)])->all())
                             ->required(),
                         Forms\Components\Select::make('lead_id')
                             ->label('Project Lead')
