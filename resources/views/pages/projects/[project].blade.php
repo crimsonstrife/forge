@@ -4,6 +4,7 @@ use App\Models\Project;
 use App\Models\Issue;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('projects.show');
