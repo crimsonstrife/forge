@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\ActivityContext;
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,6 +22,7 @@ class Issue extends BaseModel implements HasMedia
     use HasTags;
     use LogsActivity;
     use InteractsWithMedia;
+    use IsPermissible;
 
     protected $keyType = 'string';
     public $incrementing = false;

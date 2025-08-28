@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Str;
 use Spatie\Sluggable\HasSlug;
@@ -11,6 +12,7 @@ class Organization extends BaseModel
 {
     use HasSlug;
     use HasUuids;
+    use IsPermissible;
 
     protected $keyType = 'string';
     public $incrementing = false;

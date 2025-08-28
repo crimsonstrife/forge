@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\ActivityContext;
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,7 @@ class Comment extends BaseModel implements HasMedia
     use HasUuids;
     use LogsActivity;
     use InteractsWithMedia;
+    use IsPermissible;
 
     protected $keyType = 'string';
     public $incrementing = false;

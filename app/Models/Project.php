@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ProjectStage;
 use App\Support\ActivityContext;
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,6 +20,7 @@ class Project extends BaseModel
 {
     use HasUuids;
     use LogsActivity;
+    use IsPermissible;
 
     protected $keyType = 'string';
     public $incrementing = false;

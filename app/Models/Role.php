@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasPermissionSets;
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
@@ -13,6 +14,7 @@ class Role extends SpatieRole
 {
     use HasUuids;
     use HasPermissionSets;
+    use IsPermissible;
 
     protected $keyType = 'string';
     public $incrementing = false;

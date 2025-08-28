@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Model;
 
 class IssueStatus extends Model
 {
+    use IsPermissible;
+
     protected $fillable = [
         'name',
         'key',

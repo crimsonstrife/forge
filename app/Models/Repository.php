@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -9,6 +10,7 @@ use Illuminate\Support\Str;
 class Repository extends BaseModel
 {
     use HasUuids;
+    use IsPermissible;
 
     protected $keyType = 'string';
     public $incrementing = false;

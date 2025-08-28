@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
@@ -11,6 +12,7 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
 {
     use HasFactory;
     use HasUuids;
+    use IsPermissible;
 
     public $keyType = 'string';
     public $incrementing = false;

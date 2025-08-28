@@ -26,6 +26,7 @@
         "livewire/volt": "^1.7",
         "meilisearch/meilisearch-php": "^1.15",
         "metalogico/laravel-formello": "^1.2",
+        "mews/purifier": "^3.4",
         "spatie/ignition": "^1.15",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-data": "^4.17",

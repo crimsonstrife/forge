@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\ActivityContext;
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -13,6 +14,7 @@ class ProjectStatusTransition extends Model
 {
     use HasUuids;
     use LogsActivity;
+    use IsPermissible;
 
     protected $keyType = 'string';
     public $incrementing = false;

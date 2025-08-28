@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -10,6 +11,7 @@ use Illuminate\Support\Str;
 class PermissionSet extends Model
 {
     use HasUuids;
+    use IsPermissible;
 
     protected $keyType = 'string';
     public $incrementing = false;
