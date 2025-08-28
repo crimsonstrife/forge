@@ -19,6 +19,7 @@ return new class extends Migration
             $table->longtext('description');
             $table->foreignUuid('lead_id')->references('id')->on('users');
             $table->json('settings');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

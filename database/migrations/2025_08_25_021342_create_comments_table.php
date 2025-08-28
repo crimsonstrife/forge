@@ -29,7 +29,7 @@ return new class extends Migration
 
             // Fast filtering
             $table->index(['parent_id', 'created_at']);
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }

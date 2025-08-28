@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Support\ActivityContext;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -16,7 +15,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Tags\HasTags;
 
-class Issue extends Model implements HasMedia
+class Issue extends BaseModel implements HasMedia
 {
     use HasUuids;
     use HasTags;

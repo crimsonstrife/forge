@@ -15,7 +15,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Comment extends Model implements HasMedia
+class Comment extends BaseModel implements HasMedia
 {
     use HasUuids;
     use LogsActivity;

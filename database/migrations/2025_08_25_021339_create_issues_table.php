@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('estimate_minutes')->nullable();
             $table->longText('description')->nullable();
             $table->text('summary')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
