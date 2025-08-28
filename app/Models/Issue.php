@@ -37,7 +37,8 @@ class Issue extends Model implements HasMedia
         'story_points',
         'estimate_minutes',
         'description',
-        'summary'
+        'summary',
+        'key'
     ];
 
     protected $casts = [
@@ -68,7 +69,7 @@ class Issue extends Model implements HasMedia
         return LogOptions::defaults()
             ->useLogName('forge.issue')
             ->logOnly([
-                'summary','description','issue_status_id','type_id','priority_id',
+                'summary','description','issue_status_id','issue_type_id','priority_id',
                 'assignee_id','reporter_id','story_points','estimate_minutes','parent_id'
             ])
             ->logOnlyDirty()
@@ -105,15 +106,15 @@ class Issue extends Model implements HasMedia
     }
 
     public function type(): HasOne {
-        return $this->HasOne(IssueType::class, 'issue_type_id');
+        return $this->HasOne(IssueType::class, 'id');
     }
 
     public function status(): HasOne {
-        return $this->HasOne(IssueStatus::class, 'issue_status_id');
+        return $this->HasOne(IssueStatus::class, 'id');
     }
 
     public function priority(): HasOne {
-        return $this->HasOne(IssuePriority::class, 'issue_priority_id');
+        return $this->HasOne(IssuePriority::class, 'id');
     }
 
     public function project(): BelongsTo {
@@ -121,7 +122,7 @@ class Issue extends Model implements HasMedia
     }
 
     public function reporter(): HasOne {
-        return $this->HasOne(User::class, 'reporter_id');
+        return $this->HasOne(User::class, 'id', 'reporter_id');
     }
 
     public function comments(): MorphMany
@@ -130,7 +131,7 @@ class Issue extends Model implements HasMedia
     }
 
     public function assignee(): HasOne {
-        return $this->HasOne(User::class, 'assignee_id');
+        return $this->HasOne(User::class, 'id', 'assignee_id');
     }
 
     public function scopeEpics($q) {
