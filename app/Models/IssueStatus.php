@@ -22,11 +22,13 @@ class IssueStatus extends Model
         'order' => 'int'
     ];
 
-    public function scopeDone($q){
+    public function scopeDone($q)
+    {
         return $q->where('is_done', true);
     }
 
-    public function scopeOrdered($q){
+    public function scopeOrdered($q)
+    {
         return $q->orderBy('order');
     }
 }
