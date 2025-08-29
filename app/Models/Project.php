@@ -175,6 +175,11 @@ class Project extends BaseModel
         return $this->hasOne(User::class, 'lead_id');
     }
 
+    public function sprints(): HasMany
+    {
+        return $this->hasMany(Sprint::class);
+    }
+
     public function issueTypes(): BelongsToMany
     {
         return $this->belongsToMany(IssueType::class, 'project_issue_types')

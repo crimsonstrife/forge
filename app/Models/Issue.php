@@ -133,6 +133,11 @@ class Issue extends BaseModel implements HasMedia
         return $this->morphMany(Comment::class, 'commentable')->orderBy('created_at');
     }
 
+    public function sprint(): BelongsTo
+    {
+        return $this->belongsTo(Sprint::class);
+    }
+
     public function assignee(): HasOne {
         return $this->HasOne(User::class, 'id', 'assignee_id');
     }
