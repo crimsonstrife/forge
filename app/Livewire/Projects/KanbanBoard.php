@@ -73,7 +73,7 @@ final class KanbanBoard extends Component
         }
 
         foreach ($issues as $i) {
-            $grouped[$i->status_id][] = [
+            $grouped[(int) $i->issue_status_id][] = [
                 'id'       => (string) $i->id,
                 'key'      => (string) ($i->key ?? ''),
                 'summary'  => (string) $i->summary,
@@ -99,12 +99,12 @@ final class KanbanBoard extends Component
             $this->dispatch('notify', type: 'error', message: 'You do not have permission to transition issues.');
             return;
         }
-        if ($fromStatusId && ! $this->project->canTransition((string)$fromStatusId, (string)$toStatusId, (string)$issue->type_id)) {
+        if ($fromStatusId && ! $this->project->canTransition((string)$fromStatusId, (string)$toStatusId, (string)$issue->issue_type_id)) {
             $this->dispatch('notify', type: 'error', message: 'Transition not allowed by project workflow.');
             return;
         }
 
-        $issue->status_id = $toStatusId;
+        $issue->issue_status_id = $toStatusId;
 
         if ($this->hasOrderColumn) {
             // Reindex target column (simple approach)
