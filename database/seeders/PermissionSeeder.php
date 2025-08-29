@@ -3,228 +3,114 @@
 namespace Database\Seeders;
 
 use App\Utilities\DynamicModelUtility as ModelUtility;
-use Exception;
-use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Spatie\Permission\PermissionRegistrar;
 
-/**
- * Class PermissionSeeder
- *
- * The PermissionSeeder class is responsible for seeding the database with various types of permissions.
- * This includes basic, CRUD, advanced, and special permissions. The class ensures that permissions
- * are created only if they do not already exist, and it handles the caching of permissions as well.
- */
 class PermissionSeeder extends Seeder
 {
-    use WithoutModelEvents;
+    /** Actions we want for most resources */
+    private array $crud = ['view', 'create', 'update', 'delete'];
 
-    private array $basicActions = [
-        'view',
-        'viewAny',
+    private array $extras = [
+        'view_any', 'delete_any', 'restore', 'restore_any',
+        'force_delete', 'force_delete_any', 'replicate', 'reorder',
+        'export', 'import', 'manage', 'list',
     ];
 
-    private array $crudActions = [
-        'create',
-        'read',
-        'update',
-        'delete',
-        'deleteAny',
+    /** Map model base name => permission "domain" (plural snake) */
+    private array $nameMap = [
+        'User'          => 'users',
+        'Team'          => 'teams',
+        'Project'       => 'projects',
+        'Issue'         => 'issues',
+        'Comment'       => 'comments',
+        'Permission'    => 'permissions',
+        'Role'          => 'roles',
+        'IssueType'     => 'issue_types',
+        'IssueStatus'   => 'issue_statuses',
+        'IssuePriority' => 'issue_priorities',
     ];
 
-    private array $advancedActions = [
-        'list',
-        'restore',
-        'force-delete',
-        'force-deleteAny',
-        'export',
-        'import',
-        'replicate',
-        'reorder',
-        'restoreAny'];
-
-    private $specialPermissions = [
-        'access-filament',
-        'access-jetstream',
-        'access-horizon',
-        'access-telescope',
-        'manage-settings',
-        'view-analytics',
-        'view-settings',
+    /** Feature/flag permissions (mutes ignore these) */
+    private array $flags = [
         'is-admin',
         'is-super-admin',
         'is-panel-user',
     ];
 
-    /**
-     * Run the database seeds.
-     *
-     * @throws BindingResolutionException
-     */
+    /** Special capability permissions (dot style so mutes can work) */
+    private array $specials = [
+        'attachments.manage',
+        'admin.panel.access',
+        'admin.connectors.manage',
+        'admin.mappings.manage',
+        'projects.transition',
+        'issues.transition',
+        'filament.access',
+        'jetstream.access',
+        'horizon.access',
+        'telescope.access',
+        'settings.manage',
+        'settings.view',
+        'analytics.view',
+    ];
+
     public function run(): void
     {
-        // Reset cached roles and permissions
-        app()['cache']->forget('spatie.permission.cache');
+        // Clear Spatie cache
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        // Create basic permissions
-        $this->createBasicPermissions();
+        // Use the model from config (UUID-safe)
+        $Permission = app(config('permission.models.permission'));
 
-        // Create specialty permissions
-        $this->createSpecialPermissions();
+        // 1) Flags (e.g., is-super-admin)
+        foreach ($this->flags as $name) {
+            $Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
+        }
 
-        // Create permissions dynamically based on models
-        $this->generatePermissions();
+        // 2) Specials (dot style)
+        foreach (array_chunk($this->specials, 20) as $chunk) {
+            foreach ($chunk as $name) {
+                $Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
+            }
+        }
 
-        // Re-cache permissions
-        app()->make(PermissionRegistrar::class)->forgetCachedPermissions();
+        // 3) Generate for permissible models
+        $models = ModelUtility::getModelsByTrait('App\Traits\IsPermissible');
+
+        foreach ($models as $fqcn) {
+            $domain = $this->domainFromModel($fqcn);
+
+            // CRUD
+            foreach ($this->crud as $action) {
+                $Permission::firstOrCreate(['name' => "{$domain}.{$action}", 'guard_name' => 'web']);
+            }
+
+            // Extras
+            foreach ($this->extras as $action) {
+                $Permission::firstOrCreate(['name' => "{$domain}.{$action}", 'guard_name' => 'web']);
+            }
+        }
+
+        // Ensure we have CRUD/extras for the permissions resource itself
+        foreach (array_merge($this->crud, $this->extras) as $action) {
+            $Permission::firstOrCreate(['name' => "permissions.{$action}", 'guard_name' => 'web']);
+        }
+
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
-    /**
-     * Create basic permissions.
-     */
-    private function createBasicPermissions(): void
+    /** Turn FQCN into a plural snake "domain" used in permission names. */
+    private function domainFromModel(string $fqcn): string
     {
-        // Loop through each basic action and create a permission for it
-        foreach (array_chunk($this->basicActions, 10) as $actionChunk) {
-            foreach ($actionChunk as $action) {
-                // Use firstOrCreate to ensure permissions are only created if they don't exist
-                $createdPermission = Permission::firstOrCreate(['name' => $action, 'guard_name' => 'web']);
+        $base = class_basename($fqcn);
 
-                // Log whether the permission was created or already existed
-                if ($createdPermission->wasRecentlyCreated) {
-                    $this->command->info("Basic permission created: {$action}");
-                } else {
-                    $this->command->comment("Basic permission already exists: {$action}, skipping");
-                }
-            }
-
-            // Free memory after each chunk
-            gc_collect_cycles();
-        }
-    }
-
-    /**
-     * Create specialty permissions.
-     */
-    private function createSpecialPermissions(): void
-    {
-        if (empty($this->specialPermissions)) {
-            $this->command->warn('No special permissions found to create.');
-
-            return;
+        if ($mapped = Arr::get($this->nameMap, $base)) {
+            return $mapped;
         }
 
-        foreach (array_chunk($this->specialPermissions, 10) as $permissionChunk) {
-            foreach ($this->specialPermissions as $permission) {
-                $createdPermission = Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
-
-                if ($createdPermission->wasRecentlyCreated) {
-                    $this->command->info("Special permission created: {$permission}");
-                } else {
-                    $this->command->comment("Special permission already exists: {$permission}, skipping");
-                }
-            }
-
-            // Free memory after each chunk
-            gc_collect_cycles();
-        }
-    }
-
-    /**
-     * Generate permissions for the application based on models.
-     *
-     * @return bool True if the permissions were generated successfully, false otherwise.
-     */
-    private function generatePermissions(): bool
-    {
-        // Create CRUD permissions for each type of object, e.g. 'users', 'posts', 'comments'
-        try {
-            // Get all models with the IsPermissible trait
-            $models = ModelUtility::getModelsByTrait('App\Traits\IsPermissible');
-
-            // If no models are found, output a warning and return false
-            if (empty($models)) {
-                $this->command->warn('No models found with the IsPermissible trait.');
-
-                return false;
-            }
-
-            // Count models and output for logging
-            $this->command->info('Found '.count($models).' models with the IsPermissible trait');
-
-            // Loop through the models and add them to the objects array
-            foreach ($models as $model) {
-                // Format the model name for the permission
-                $modelName = ModelUtility::getNameForPermission($model);
-                $modelName = strtolower(str_replace(' ', '-', trim($modelName)));  // Normalize the model name
-
-                // Create CRUD permissions for the model
-                $this->createCrudPermissions($modelName);
-
-                // Create advanced permissions for the model
-                $this->createAdvancedPermissions($modelName);
-            }
-
-            // Create permissions for the permissions model
-            $this->createCrudPermissions('permission');
-
-            // Create advanced permissions for the permissions model
-            $this->createAdvancedPermissions('permission');
-
-            return true;
-        } catch (Exception $e) {
-            // Log the exception for debugging
-            $this->command->error('Error while generating permissions: '.$e->getMessage());
-
-            return false;
-        }
-    }
-
-    /**
-     * Create a permission for each CRUD operation.
-     *
-     * @example $this->createCrudPermissions('user');
-     */
-    private function createCrudPermissions(string $object): void
-    {
-        // Loop through each CRUD action and create a permission for it
-        foreach ($this->crudActions as $action) {
-            $permissionName = "{$action}-{$object}";
-
-            // Use firstOrCreate to ensure permissions are only created if they don't exist
-            $permission = Permission::firstOrCreate(['name' => $permissionName, 'guard_name' => 'web']);
-
-            // Log whether the permission was created or already existed
-            if ($permission->wasRecentlyCreated) {
-                $this->command->info("Permission created: {$permissionName}");
-            } else {
-                $this->command->comment("Permission already exists: {$permissionName}, skipping");
-            }
-        }
-    }
-
-    /**
-     * Create advanced permissions for each object.
-     *
-     * @example $this->createAdvancedPermissions('user');
-     */
-    private function createAdvancedPermissions(string $object): void
-    {
-        // Loop through each advanced action and create a permission for it
-        foreach ($this->advancedActions as $action) {
-            $permissionName = "{$action}-{$object}";
-
-            // Use firstOrCreate to ensure permissions are only created if they don't exist
-            $permission = Permission::firstOrCreate(['name' => $permissionName, 'guard_name' => 'web']);
-
-            // Log whether the permission was created or already existed
-            if ($permission->wasRecentlyCreated) {
-                $this->command->info("Permission created: {$permissionName}");
-            } else {
-                $this->command->comment("Permission already exists: {$permissionName}, skipping");
-            }
-        }
+        return Str::plural(Str::snake($base)); // sensible default
     }
 }
