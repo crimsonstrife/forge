@@ -17,7 +17,7 @@ class PermissionSetSeeder extends Seeder
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
         // Helper to fetch permission IDs by name
-        $ids = static fn(array $names) => $Permission::query()
+        $ids = static fn (array $names) => $Permission::query()
             ->whereIn('name', $names)
             ->pluck('id')
             ->all();

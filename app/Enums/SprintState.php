@@ -2,7 +2,8 @@
 
 namespace App\Enums;
 
-enum SprintState: string {
+enum SprintState: string
+{
     case Planned = 'planned';
     case Active   = 'active';
     case Closed     = 'closed';

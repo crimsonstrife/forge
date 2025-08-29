@@ -19,12 +19,12 @@ class RoleSeeder extends Seeder
         // Ensure roles exist
         $super       = $Role::firstOrCreate(['name' => 'SuperAdmin',   'guard_name' => 'web']);
         $admin       = $Role::firstOrCreate(['name' => 'Admin',        'guard_name' => 'web']);
-        $projectAdmin= $Role::firstOrCreate(['name' => 'ProjectAdmin', 'guard_name' => 'web']);
+        $projectAdmin = $Role::firstOrCreate(['name' => 'ProjectAdmin', 'guard_name' => 'web']);
         $member      = $Role::firstOrCreate(['name' => 'Member',       'guard_name' => 'web']);
         $viewer      = $Role::firstOrCreate(['name' => 'Viewer',       'guard_name' => 'web']);
 
         // Helper to fetch permission names safely (created by PermissionSeeder)
-        $get = static fn(array $names) => $Permission::query()
+        $get = static fn (array $names) => $Permission::query()
             ->whereIn('name', $names)
             ->pluck('name')
             ->all();
@@ -70,7 +70,7 @@ class RoleSeeder extends Seeder
         // Auto-assign SuperAdmin to first user (global/no team)
         $firstUser = User::query()->oldest('id')->first();
         if ($firstUser && ! $firstUser->hasRole('SuperAdmin')) {
-             $firstUser->assignRole('SuperAdmin');
+            $firstUser->assignRole('SuperAdmin');
         }
     }
 }
