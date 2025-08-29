@@ -11,14 +11,111 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden sm:-my-px sm:ms-10 sm:flex sm:items-center gap-2">
+                    {{-- Dashboard --}}
                     <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    {{-- Projects --}}
+                    <x-dropdown align="left" width="56">
+                        <x-slot name="trigger">
+                            <button type="button" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md
+                text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/60">
+                                Projects
+                                <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round"
+                                                                                    d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg>
+                            </button>
+                        </x-slot>
+                        <x-slot name="content">
+                            <x-dropdown-link href="{{ Route::has('projects.index') ? route('projects.index') : url('/projects') }}">
+                                Browse projects
+                            </x-dropdown-link>
+                            <x-dropdown-link href="{{ Route::has('projects.mine') ? route('projects.mine') : url('/projects?filter=mine') }}">
+                                My projects
+                            </x-dropdown-link>
+                            @can('create', \App\Models\Project::class)
+                                <div class="border-t border-gray-200 dark:border-gray-600"></div>
+                                <x-dropdown-link href="{{ Route::has('projects.create') ? route('projects.create') : url('/projects/create') }}">
+                                    New project
+                                </x-dropdown-link>
+                            @endcan
+                        </x-slot>
+                    </x-dropdown>
+
+                    {{-- Organizations --}}
+                    <x-dropdown align="left" width="56">
+                        <x-slot name="trigger">
+                            <button type="button" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md
+                text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/60">
+                                Organizations
+                                <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round"
+                                                                                    d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg>
+                            </button>
+                        </x-slot>
+                        <x-slot name="content">
+                            <x-dropdown-link href="{{ Route::has('organizations.index') ? route('organizations.index') : url('/organizations') }}">
+                                Browse organizations
+                            </x-dropdown-link>
+                            @can('create', \App\Models\Organization::class)
+                                <div class="border-t border-gray-200 dark:border-gray-600"></div>
+                                <x-dropdown-link href="{{ Route::has('organizations.create') ? route('organizations.create') : url('/organizations/create') }}">
+                                    New organization
+                                </x-dropdown-link>
+                            @endcan
+                        </x-slot>
+                    </x-dropdown>
                 </div>
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                {{-- Global search --}}
+                <form action="{{ Route::has('search') ? route('search') : url('/search') }}" method="GET"
+                      class="hidden md:flex items-center me-3">
+                    <label for="global-search" class="sr-only">Search</label>
+                    <div class="relative">
+                        <input id="global-search" name="q" type="search" placeholder="Search projects, issues, people…"
+                               class="w-64 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800
+                      px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                        <span class="pointer-events-none absolute right-2 top-1.5 text-xs text-gray-400"></span>
+                    </div>
+                </form>
+
+                {{-- Create dropdown --}}
+                <div class="me-2">
+                    <x-dropdown align="right" width="56">
+                        <x-slot name="trigger">
+                            <button type="button"
+                                    class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md
+                           bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none">
+                                Create
+                                <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M12 4.5v15m7.5-7.5h-15"/>
+                                </svg>
+                            </button>
+                        </x-slot>
+                        <x-slot name="content">
+                            @can('create', \App\Models\Issue::class)
+                                <x-dropdown-link href="{{ Route::has('issues.create') ? route('issues.create') : url('/issues/create') }}">
+                                    New issue
+                                </x-dropdown-link>
+                            @endcan
+                            @can('create', \App\Models\Project::class)
+                                <x-dropdown-link href="{{ Route::has('projects.create') ? route('projects.create') : url('/projects/create') }}">
+                                    New project
+                                </x-dropdown-link>
+                            @endcan
+                            @can('create', \App\Models\Organization::class)
+                                <x-dropdown-link href="{{ Route::has('organizations.create') ? route('organizations.create') : url('/organizations/create') }}">
+                                    New organization
+                                </x-dropdown-link>
+                            @endcan
+                        </x-slot>
+                    </x-dropdown>
+                </div>
                 <!-- Teams Dropdown -->
                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
                     @php($currentTeam = Auth::user()->currentTeam)
@@ -156,6 +253,32 @@
             <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            {{-- Projects --}}
+            <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+            <div class="px-4 py-2 text-xs text-gray-400">Projects</div>
+            <x-responsive-nav-link href="{{ Route::has('projects.index') ? route('projects.index') : '#' }}">
+                Browse projects
+            </x-responsive-nav-link>
+            <x-responsive-nav-link href="{{ Route::has('projects.mine') ? route('projects.mine') : (Route::has('projects.index') ? route('projects.index', ['filter' => 'mine']) : '#') }}">
+                My projects
+            </x-responsive-nav-link>
+            @can('create', \App\Models\Project::class)
+                <x-responsive-nav-link href="{{ Route::has('projects.create') ? route('projects.create') : '#' }}">
+                    New project
+                </x-responsive-nav-link>
+            @endcan
+
+            {{-- Organizations --}}
+            <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+            <div class="px-4 py-2 text-xs text-gray-400">Organizations</div>
+            <x-responsive-nav-link href="{{ Route::has('organizations.index') ? route('organizations.index') : '#' }}">
+                Browse organizations
+            </x-responsive-nav-link>
+            @can('create', \App\Models\Organization::class)
+                <x-responsive-nav-link href="{{ Route::has('organizations.create') ? route('organizations.create') : '#' }}">
+                    New organization
+                </x-responsive-nav-link>
+            @endcan
         </div>
 
         <!-- Responsive Settings Options -->
@@ -239,3 +362,13 @@
         </div>
     </div>
 </nav>
+<script>
+    document.addEventListener('keydown', (e) => {
+        if (['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+        if (e.key === '/') {
+            e.preventDefault();
+            const el = document.getElementById('global-search');
+            if (el) el.focus();
+        }
+    });
+</script>

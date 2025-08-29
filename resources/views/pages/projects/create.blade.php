@@ -1,9 +1,9 @@
 <?php
 
-use function Laravel\Folio\name;
+use function Laravel\Folio\{name, middleware};
 
 name('projects.create');
-
+middleware(['auth','verified']);
 ?>
 
 <x-app-layout>
