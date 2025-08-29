@@ -15,6 +15,7 @@ use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Illuminate\Support\Str;
+use Livewire\Features\SupportRedirects\Redirector;
 use Throwable;
 
 final class CreateProjectForm extends Component
@@ -93,7 +94,7 @@ final class CreateProjectForm extends Component
     /**
      * @throws Throwable
      */
-    public function save(ProjectSchemeCloner $cloner): \Illuminate\Http\RedirectResponse
+    public function save(ProjectSchemeCloner $cloner): Redirector
     {
         $this->authorize('create', Project::class);
         $data = $this->validate();
