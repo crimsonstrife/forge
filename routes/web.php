@@ -32,7 +32,8 @@ Route::middleware([
     Route::get('/dashboard', static function () {
         return view('dashboard');
     })->name('dashboard');
-    Route::get('/projects/{project}/issues/{issue}/attachments/{media}',
+    Route::get(
+        '/projects/{project}/issues/{issue}/attachments/{media}',
         IssueAttachmentDownloadController::class
     )->name('issues.attachments.download');
 });

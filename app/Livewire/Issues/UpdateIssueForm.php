@@ -68,7 +68,7 @@ final class UpdateIssueForm extends Component
 
         // Options
         $this->typeOptions = IssueType::query()
-            ->select('id','name')->orderBy('name')->get()->toArray();
+            ->select('id', 'name')->orderBy('name')->get()->toArray();
 
         $this->statusOptions = \App\Models\IssueStatus::query()
             ->select('issue_statuses.id', 'issue_statuses.name')
@@ -79,22 +79,22 @@ final class UpdateIssueForm extends Component
 
         if (empty($this->statusOptions)) {
             $this->statusOptions = \App\Models\IssueStatus::query()
-                ->select('id','name')->orderBy('name')->get()->toArray();
+                ->select('id', 'name')->orderBy('name')->get()->toArray();
         }
 
         $this->priorityOptions = IssuePriority::query()
-            ->select('id','name')->orderBy('name')->get()->toArray();
+            ->select('id', 'name')->orderBy('name')->get()->toArray();
 
         // You may want to scope to project members; for now list active users.
         $this->assigneeOptions = User::query()
-            ->select('id','name')->orderBy('name')->limit(200)->get()->toArray();
+            ->select('id', 'name')->orderBy('name')->limit(200)->get()->toArray();
 
         // Seed fields
         $this->summary          = (string) $issue->summary;
         $this->description      = $issue->description;
         $this->issue_type_id    = (string) $issue->issue_type_id;
         $this->issue_status_id  = (string) $issue->issue_status_id;
-        $this->issue_priority_id= $issue->issue_priority_id ?: null;
+        $this->issue_priority_id = $issue->issue_priority_id ?: null;
         $this->assignee_id      = $issue->assignee_id ?: null;
         $this->story_points     = $issue->story_points;
         $this->estimate_minutes = $issue->estimate_minutes;

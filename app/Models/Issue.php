@@ -115,11 +115,13 @@ class Issue extends BaseModel implements HasMedia
         }
     }
 
-    public function parent(): BelongsTo {
+    public function parent(): BelongsTo
+    {
         return $this->belongsTo(self::class, 'parent_id');
     }
 
-    public function children(): HasMany {
+    public function children(): HasMany
+    {
         return $this->hasMany(self::class, 'parent_id');
     }
 
@@ -163,24 +165,29 @@ class Issue extends BaseModel implements HasMedia
         return $this->belongsTo(Sprint::class);
     }
 
-    public function scopeEpics($q) {
-        return $q->whereHas('type', fn($t) => $t->where('key','EPIC'));
+    public function scopeEpics($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'EPIC'));
     }
 
-    public function scopeStories($q) {
-        return $q->whereHas('type', fn($t) => $t->where('key', 'STORY'));
+    public function scopeStories($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'STORY'));
     }
 
-    public function scopeBugs($q) {
-        return $q->whereHas('type', fn($t) => $t->where('key', 'BUG'));
+    public function scopeBugs($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'BUG'));
     }
 
-    public function scopeTasks($q) {
-        return $q->whereHas('type', fn($t) => $t->where('key', 'TASK'));
+    public function scopeTasks($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'TASK'));
     }
 
-    public function scopeSubTasks($q) {
-        return $q->whereHas('type', fn($t) => $t->where('key', 'SUBTASK'));
+    public function scopeSubTasks($q)
+    {
+        return $q->whereHas('type', fn ($t) => $t->where('key', 'SUBTASK'));
     }
 
     public function scopeWithMeta($q)

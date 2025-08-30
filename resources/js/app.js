@@ -4,5 +4,5 @@
  * allow your team to quickly build robust real-time web applications.
  */
 
-import './echo';
-import './kanban.js';
+import './echo'
+import './kanban.js'

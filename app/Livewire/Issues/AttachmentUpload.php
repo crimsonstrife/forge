@@ -56,4 +56,3 @@ final class AttachmentUpload extends Component
         return view('livewire.issues.attachment-upload');
     }
 }
-
