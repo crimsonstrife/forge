@@ -48,7 +48,7 @@ render(function (View $view, Project $project) {
         ->where('assignee_id', $user->id)
         ->latest()
         ->limit(8)
-        ->get(['id', 'summary', 'issue_status_id', 'issue_priority_id', 'updated_at']);
+        ->get(['id', 'key', 'summary', 'issue_status_id', 'issue_priority_id', 'updated_at']);
 
     // Recent activity touching this project (project subject OR issue props reference)
     $activity = \Spatie\Activitylog\Models\Activity::query()

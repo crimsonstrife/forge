@@ -62,8 +62,23 @@ class Issue extends BaseModel implements HasMedia
     {
         parent::boot();
 
-        static::creating(static function ($model) {
-            $model->id = Str::uuid();
+        static::creating(static function (Issue $model): void {
+            if (empty($model->id)) {
+                $model->id = (string) Str::uuid();
+            }
+
+            // Generate sequential number per project and human key: {PROJECTKEY}-{number}
+            // Races are prevented by DB unique constraints; in rare collision, let the controller retry.
+            if (empty($model->number) || empty($model->key)) {
+                $projectKey = $model->project()->value('key'); // lightweight single column query
+
+                $next = (int) (static::query()
+                        ->where('project_id', $model->project_id)
+                        ->max('number') ?? 0) + 1;
+
+                $model->number = $model->number ?: $next;
+                $model->key = $model->key ?: "{$projectKey}-{$model->number}";
+            }
         });
     }
 
@@ -101,31 +116,41 @@ class Issue extends BaseModel implements HasMedia
     }
 
     public function parent(): BelongsTo {
-        return $this->belongsTo(__CLASS__, 'parent_id');
+        return $this->belongsTo(self::class, 'parent_id');
     }
 
     public function children(): HasMany {
-        return $this->hasMany(__CLASS__, 'parent_id');
+        return $this->hasMany(self::class, 'parent_id');
     }
 
-    public function type(): HasOne {
-        return $this->HasOne(IssueType::class, 'id');
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(IssueType::class, 'issue_type_id');
     }
 
-    public function status(): HasOne {
-        return $this->HasOne(IssueStatus::class, 'id');
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(IssueStatus::class, 'issue_status_id');
     }
 
-    public function priority(): HasOne {
-        return $this->HasOne(IssuePriority::class, 'id');
+    public function priority(): BelongsTo
+    {
+        return $this->belongsTo(IssuePriority::class, 'issue_priority_id');
     }
 
-    public function project(): BelongsTo {
+    public function project(): BelongsTo
+    {
         return $this->belongsTo(Project::class, 'project_id');
     }
 
-    public function reporter(): HasOne {
-        return $this->HasOne(User::class, 'id', 'reporter_id');
+    public function reporter(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reporter_id');
+    }
+
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assignee_id');
     }
 
     public function comments(): MorphMany
@@ -136,10 +161,6 @@ class Issue extends BaseModel implements HasMedia
     public function sprint(): BelongsTo
     {
         return $this->belongsTo(Sprint::class);
-    }
-
-    public function assignee(): HasOne {
-        return $this->HasOne(User::class, 'id', 'assignee_id');
     }
 
     public function scopeEpics($q) {
@@ -160,6 +181,23 @@ class Issue extends BaseModel implements HasMedia
 
     public function scopeSubTasks($q) {
         return $q->whereHas('type', fn($t) => $t->where('key', 'SUBTASK'));
+    }
+
+    public function scopeWithMeta($q)
+    {
+        return $q->with([
+            'status:id,name,color,is_done',
+            'type:id,key,name',
+            'priority:id,name',
+            'assignee:id,name,profile_photo_path',
+            'reporter:id,name,profile_photo_path',
+            'project:id,key',
+            'tags',
+        ])->withCount([
+            'comments',
+            // Count only 'attachments' collection in media
+            'media as attachments_count' => fn ($m) => $m->where('collection_name', 'attachments'),
+        ]);
     }
 
     public function registerMediaCollections(): void

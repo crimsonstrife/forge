@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class IssueStatus extends Model
 {
@@ -28,5 +29,11 @@ class IssueStatus extends Model
 
     public function scopeOrdered($q){
         return $q->orderBy('order');
+    }
+
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'project_issue_statuses')
+            ->withTimestamps();
     }
 }

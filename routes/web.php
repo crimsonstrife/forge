@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\IssueAttachmentDownloadController;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -28,7 +29,10 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
+    Route::get('/dashboard', static function () {
         return view('dashboard');
     })->name('dashboard');
+    Route::get('/projects/{project}/issues/{issue}/attachments/{media}',
+        IssueAttachmentDownloadController::class
+    )->name('issues.attachments.download');
 });
