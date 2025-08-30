@@ -5,10 +5,10 @@ namespace App\Livewire\Projects;
 use App\Models\Issue;
 use App\Models\IssueStatus;
 use App\Models\Project;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Livewire\Attributes\On;
 use Livewire\Component;
+use Throwable;
 
 final class KanbanBoard extends Component
 {
@@ -17,13 +17,10 @@ final class KanbanBoard extends Component
     /** @var array<int, array{id:int,name:string,color:string,is_done:bool}> */
     public array $columns = [];
 
-    /** @var array<string,int> map status_id => index */
-    public array $columnIndex = [];
-
-    /** @var array<int, array<int, array{id:string,summary:string,key?:string,type?:string,assignee?:string}>> */
+    /** @var array<int, array<int, array{id:int,summary:string,description?:string}>> */
     public array $lists = [];
 
-    public bool $hasOrderColumn = false;
+    public string $viewMode = 'kanban';
 
     public function mount(Project $project): void
     {
@@ -31,99 +28,76 @@ final class KanbanBoard extends Component
 
         $this->project = $project;
 
-        // Build columns from project scheme in display order
-        $statuses = $project->issueStatuses()
-            ->orderBy('project_issue_statuses.order')
-            ->get(['issue_statuses.id','issue_statuses.name','issue_statuses.color','issue_statuses.is_done']);
+        $statusHasOrder = Schema::hasColumn('issue_statuses', 'order');
 
-        $this->columns = $statuses->map(fn ($s) => [
-            'id'      => (int) $s->id,
-            'name'    => (string) $s->name,
-            'color'   => (string) $s->color,
+        $statuses = $project->issueStatuses()
+            ->when($statusHasOrder, fn ($q) => $q->orderBy('order')->orderBy('name'))
+            ->when(! $statusHasOrder, fn ($q) => $q->orderBy('name'))
+            ->get(['id','name','color','is_done']);
+
+        $this->columns = $statuses->map(fn (IssueStatus $s) => [
+            'id' => $s->id,
+            'name' => $s->name,
+            'color' => $s->color ?: '#78909C',
             'is_done' => (bool) $s->is_done,
         ])->values()->all();
 
-        $this->columnIndex = collect($this->columns)->pluck('id')->flip()->all();
+        $this->lists = [];
 
-        // Optional per-column ordering support
-        $this->hasOrderColumn = Schema::hasColumn('issues', 'order_in_status');
+        $issueHasOrder = Schema::hasColumn('issues', 'order');
 
-        $this->hydrateLists();
+        $issues = Issue::query()
+            ->where('project_id', $project->id)
+            ->when($issueHasOrder, fn ($q) => $q->select(['id', 'summary', 'description', 'issue_status_id', 'order', 'number'])->orderBy('order')->orderBy('number'))
+            ->when(! $issueHasOrder, fn ($q) => $q->select(['id', 'summary', 'description', 'issue_status_id', 'number'])->orderBy('number'))
+            ->get();
+
+        foreach ($statuses as $status) {
+            $this->lists[$status->id] = $issues->where('status_id', $status->id)
+                ->map(fn (Issue $i) => [
+                    'id' => $i->id,
+                    'summary' => $i->summary,
+                    'description' => $i->description,
+                ])->values()->all();
+        }
     }
 
-    private function hydrateLists(): void
-    {
-        $q = Issue::query()
-            ->where('project_id', $this->project->id)
-            ->whereIn('issue_status_id', array_column($this->columns, 'id'))
-            ->with(['type:id,name', 'assignee:id,name'])
-            ->select(['id','key','summary','issue_status_id','issue_type_id','assignee_id','updated_at']);
-
-        if ($this->hasOrderColumn) {
-            $q->orderBy('order_in_status');
-        } else {
-            $q->latest('updated_at');
-        }
-
-        $issues = $q->get();
-
-        $grouped = [];
-        foreach ($this->columns as $col) {
-            $grouped[$col['id']] = [];
-        }
-
-        foreach ($issues as $i) {
-            $grouped[(int) $i->issue_status_id][] = [
-                'id'       => (string) $i->id,
-                'key'      => (string) ($i->key ?? ''),
-                'summary'  => (string) $i->summary,
-                'type'     => (string) ($i->type?->name ?? ''),
-                'assignee' => (string) ($i->assignee?->name ?? ''),
-            ];
-        }
-
-        $this->lists = $grouped;
-    }
-
-    #[On('kanban:issue-dropped')]
-    public function onIssueDropped(string $issueId, int $toStatusId, int $newIndex, ?int $fromStatusId = null): void
+    /**
+     * Reorder (and optionally re-parent) issues inside a status column.
+     *
+     * @param int $toStatusId
+     * @param array<int> $orderedIssueIds
+     * @throws Throwable
+     */
+    public function reorder(int $toStatusId, array $orderedIssueIds): void
     {
         $this->authorize('update', $this->project);
 
-        $issue = Issue::query()
-            ->where('project_id', $this->project->id)
-            ->findOrFail($issueId);
-
-        // Permission check: transition allowed?
-        if (! auth()->user()->can('issues.transition')) {
-            $this->dispatch('notify', type: 'error', message: 'You do not have permission to transition issues.');
-            return;
-        }
-        if ($fromStatusId && ! $this->project->canTransition((string)$fromStatusId, (string)$toStatusId, (string)$issue->issue_type_id)) {
-            $this->dispatch('notify', type: 'error', message: 'Transition not allowed by project workflow.');
-            return;
-        }
-
-        $issue->issue_status_id = $toStatusId;
-
-        if ($this->hasOrderColumn) {
-            // Reindex target column (simple approach)
-            $target = $this->lists[$toStatusId] ?? [];
-            $ids = array_column($target, 'id');
-            // Insert this issue id at newIndex position
-            array_splice($ids, max(0, $newIndex), 0, [$issue->id]);
-            // Persist new order
-            foreach ($ids as $pos => $id) {
-                Issue::whereKey($id)->update([
-                    'issue_status_id' => $toStatusId,
-                    'order_in_status' => $pos,
-                ]);
+        DB::transaction(function () use ($toStatusId, $orderedIssueIds): void {
+            foreach ($orderedIssueIds as $index => $issueId) {
+                Issue::query()
+                    ->whereKey($issueId)
+                    ->where('project_id', $this->project->id)
+                    ->update([
+                        'status_id' => $toStatusId,
+                        'order' => $index + 1,
+                    ]);
             }
-        }
+        });
 
-        $issue->save();
-        $this->hydrateLists();
-        $this->dispatch('notify', type: 'success', message: 'Issue updated.');
+        // Refresh local lists for the two statuses affected is minimal,
+        // but simplest is to re-mount the board snapshot:
+        $this->mount($this->project);
+    }
+
+    public function openIssue(int $issueId): void
+    {
+        $this->redirectRoute('issues.show', ['issue' => $issueId]);
+    }
+
+    public function createIssue(int $statusId): void
+    {
+        $this->redirectRoute('issues.create', ['project' => $this->project->id, 'status' => $statusId]);
     }
 
     public function render()
