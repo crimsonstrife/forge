@@ -18,7 +18,7 @@
         <!-- Styles -->
         @livewireStyles
     </head>
-    <body class="font-sans antialiased">
+    <body class="font-sans antialiased" x-data="themeSwitcher()" :class="{ 'dark': switchOn }">
         <x-banner />
 
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -43,4 +43,19 @@
 
         @livewireScripts
     </body>
+    <script>
+        window.themeSwitcher = function () {
+            return {
+                switchOn: JSON.parse(localStorage.getItem('isDark')) || false,
+                switchTheme() {
+                    if (this.switchOn) {
+                        document.documentElement.classList.add('dark')
+                    } else {
+                        document.documentElement.classList.remove('dark')
+                    }
+                    localStorage.setItem('isDark', this.switchOn)
+                }
+            }
+        }
+    </script>
 </html>

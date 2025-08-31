@@ -28,12 +28,19 @@ final class KanbanBoard extends Component
 
         $this->project = $project;
 
-        $statusHasOrder = Schema::hasColumn('issue_statuses', 'order');
-
         $statuses = $project->issueStatuses()
-            ->when($statusHasOrder, fn ($q) => $q->orderBy('order')->orderBy('name'))
-            ->when(! $statusHasOrder, fn ($q) => $q->orderBy('name'))
-            ->get(['id','name','color','is_done']);
+            ->select([
+                'issue_statuses.id',
+                'issue_statuses.name',
+                'issue_statuses.color',
+                'issue_statuses.is_done',
+            ])
+            ->when(
+                Schema::hasColumn('project_issue_statuses', 'order'),
+                fn ($q) => $q->orderBy('project_issue_statuses.order'),
+                fn ($q) => $q->orderBy('issue_statuses.order')
+            )
+            ->get();
 
         $this->columns = $statuses->map(fn (IssueStatus $s) => [
             'id' => $s->id,
@@ -48,12 +55,19 @@ final class KanbanBoard extends Component
 
         $issues = Issue::query()
             ->where('project_id', $project->id)
-            ->when($issueHasOrder, fn ($q) => $q->select(['id', 'summary', 'description', 'issue_status_id', 'order', 'number'])->orderBy('order')->orderBy('number'))
-            ->when(! $issueHasOrder, fn ($q) => $q->select(['id', 'summary', 'description', 'issue_status_id', 'number'])->orderBy('number'))
+            ->when(
+                $issueHasOrder,
+                fn ($q) => $q->select(['id','summary','description','issue_status_id','order','number'])
+                    ->orderBy('issues.order')
+                    ->orderBy('issues.number'),
+                fn ($q) => $q->select(['id','summary','description','issue_status_id','number'])
+                    ->orderBy('issues.number')
+            )
             ->get();
 
         foreach ($statuses as $status) {
-            $this->lists[$status->id] = $issues->where('status_id', $status->id)
+            $this->lists[$status->id] = $issues
+                ->where('issue_status_id', $status->id) // <- ensure correct key
                 ->map(fn (Issue $i) => [
                     'id' => $i->id,
                     'summary' => $i->summary,
