@@ -165,4 +165,3 @@ final class FocusTimer extends Component
         return max(0, $now - $start);
     }
 }
-

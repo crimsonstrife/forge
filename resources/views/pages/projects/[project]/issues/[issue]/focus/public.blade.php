@@ -5,6 +5,7 @@ use App\Models\Project;
 use App\Models\TimeEntry;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('issues.focus.public');

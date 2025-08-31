@@ -3,6 +3,7 @@
 use App\Models\Issue;
 use App\Models\Project;
 use Illuminate\Contracts\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('issues.focus');
