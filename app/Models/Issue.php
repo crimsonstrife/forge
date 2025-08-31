@@ -173,6 +173,12 @@ class Issue extends BaseModel implements HasMedia
         return $this->morphToMany(Goal::class, 'linkable', 'goal_links');
     }
 
+    public function timeEntries(): HasMany
+    {
+        /** @return HasMany<TimeEntry> */
+        return $this->hasMany(TimeEntry::class);
+    }
+
     public function scopeEpics($q) {
         return $q->whereHas('type', fn($t) => $t->where('key','EPIC'));
     }
@@ -226,5 +232,23 @@ class Issue extends BaseModel implements HasMedia
     public function getRouteKeyName(): string
     {
         return 'key';
+    }
+
+    /**
+     * Sum of tracked seconds for this issue.
+     * Includes running timers as of "now".
+     */
+    public function totalTrackedSeconds(): int
+    {
+        $ended = $this->timeEntries()
+            ->whereNotNull('ended_at')
+            ->sum('duration_seconds');
+
+        $running = $this->timeEntries()
+            ->whereNull('ended_at')
+            ->get()
+            ->sum(fn ($t) => now()->diffInSeconds($t->started_at));
+
+        return (int) ($ended + $running);
     }
 }

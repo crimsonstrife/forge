@@ -129,7 +129,8 @@ render(function (View $view, Project $project, Issue $issue) {
                     @endforelse
                 </ul>
             </div>
-
+            <livewire:issues.focus-timer :issue="$issue" class="mb-4" />
+            <livewire:issues.time-entries-panel :issue="$issue" />
             <!-- Comments -->
             <div class="rounded-xl border border-gray-200/60 dark:border-gray-700/60 bg-white dark:bg-gray-800 p-6">
                 <h4 class="font-semibold">Comments ({{ $issue->comments_count }})</h4>
