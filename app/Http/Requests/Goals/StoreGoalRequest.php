@@ -6,7 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreGoalRequest extends FormRequest
 {
-    public function authorize(): bool { return $this->user()?->can('goals.create') ?? false; }
+    public function authorize(): bool
+    {
+        return $this->user()?->can('goals.create') ?? false;
+    }
 
     /** @return array<string, mixed> */
     public function rules(): array

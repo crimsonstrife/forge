@@ -1,7 +1,8 @@
 <?php
-use function Laravel\Folio\{name, middleware, render};
 use Illuminate\View\View;
 use App\Models\Goal;
+
+use function Laravel\Folio\{name, middleware, render};
 
 name('goals.index');
 middleware(['auth','verified']);

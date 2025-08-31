@@ -1,5 +1,6 @@
 <?php
 use function Laravel\Folio\{name, middleware};
+
 /** @var \App\Models\Organization $organization */
 name('organizations.edit');
 middleware(['auth', 'verified']);

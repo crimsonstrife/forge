@@ -67,12 +67,12 @@ final class CreateGoalForm extends Component
 
     public function getTypeOptionsProperty(): array
     {
-        return collect(GoalType::cases())->mapWithKeys(fn($c) => [$c->value => ucfirst($c->value)])->all();
+        return collect(GoalType::cases())->mapWithKeys(fn ($c) => [$c->value => ucfirst($c->value)])->all();
     }
 
     public function getStatusOptionsProperty(): array
     {
-        return collect(GoalStatus::cases())->mapWithKeys(fn($c) => [$c->value => ucfirst($c->value)])->all();
+        return collect(GoalStatus::cases())->mapWithKeys(fn ($c) => [$c->value => ucfirst($c->value)])->all();
     }
 
     public function updated(string $name, $value): void
@@ -89,19 +89,19 @@ final class CreateGoalForm extends Component
             Team::class => Team::query()
                 ->orderBy('name')
                 ->get(['id','name'])
-                ->map(fn($m) => ['id' => (string)$m->id, 'name' => $m->name])
+                ->map(fn ($m) => ['id' => (string)$m->id, 'name' => $m->name])
                 ->values()->all(),
 
             Project::class => Project::query()
                 ->orderBy('name')
                 ->get(['id','name'])
-                ->map(fn($m) => ['id' => (string)$m->id, 'name' => $m->name])
+                ->map(fn ($m) => ['id' => (string)$m->id, 'name' => $m->name])
                 ->values()->all(),
 
             Organization::class => Organization::query()
                 ->orderBy('name')
                 ->get(['id','name'])
-                ->map(fn($m) => ['id' => (string)$m->id, 'name' => $m->name])
+                ->map(fn ($m) => ['id' => (string)$m->id, 'name' => $m->name])
                 ->values()->all(),
 
             default => [],

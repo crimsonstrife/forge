@@ -2,6 +2,7 @@
 use App\Models\Project;
 use App\Models\Issue;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('issues.show');
@@ -10,9 +11,9 @@ middleware(['auth','verified']);
 render(function (View $view, Project $project, Issue $issue) {
     $issue->loadMissing(['project:id,key', 'status:id,name,color,is_done', 'type:id,key,name', 'priority:id,name',
         'assignee:id,name,profile_photo_path', 'reporter:id,name,profile_photo_path', 'tags']);
-    $issue->loadCount(['comments', 'media as attachments_count' => fn ($m) => $m->where('collection_name','attachments')]);
+    $issue->loadCount(['comments', 'media as attachments_count' => fn ($m) => $m->where('collection_name', 'attachments')]);
 
-    return $view->with(compact('project','issue'));
+    return $view->with(compact('project', 'issue'));
 });
 ?>
 

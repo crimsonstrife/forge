@@ -36,11 +36,26 @@ class Goal extends Model
         'progress' => 'float',
     ];
 
-    public function owner(): MorphTo { return $this->morphTo(); }
-    public function parent(): BelongsTo { return $this->belongsTo(self::class, 'parent_id'); }
-    public function children(): HasMany { return $this->hasMany(self::class, 'parent_id'); }
-    public function keyResults(): HasMany { return $this->hasMany(GoalKeyResult::class); }
-    public function links(): HasMany { return $this->hasMany(GoalLink::class); }
+    public function owner(): MorphTo
+    {
+        return $this->morphTo();
+    }
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id');
+    }
+    public function keyResults(): HasMany
+    {
+        return $this->hasMany(GoalKeyResult::class);
+    }
+    public function links(): HasMany
+    {
+        return $this->hasMany(GoalLink::class);
+    }
 
     /** @return MorphToMany<Project> */
     public function projects(): MorphToMany

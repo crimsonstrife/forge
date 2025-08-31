@@ -61,7 +61,7 @@ final class ProjectCalendar extends Component
                     'id'    => "issue-{$i->id}",
                     'title' => trim(($i->key ?? '') . ' — ' . $i->summary),
                     'start' => $end,
-                    'allDay'=> true,
+                    'allDay' => true,
                     'url'   => route('issues.show', ['project' => $this->project, 'issue' => $i]), // ← correct route
                     'backgroundColor' => $i->status?->color ?? '#6c757d',
                 ];
@@ -77,7 +77,7 @@ final class ProjectCalendar extends Component
                 'title' => trim(($i->key ?? '') . ' — ' . $i->summary),
                 'start' => $start,
                 'end'   => $end,
-                'allDay'=> false,
+                'allDay' => false,
                 'url'   => route('issues.show', ['project' => $this->project, 'issue' => $i]), // ← correct route
                 'backgroundColor' => $i->status?->color ?? '#6c757d',
             ];
@@ -96,7 +96,7 @@ final class ProjectCalendar extends Component
         $this->authorize('update', $issue);
 
         $issue->starts_at = $startIso ? CarbonImmutable::parse($startIso) : null;
-        $issue->due_at    = $endIso   ? CarbonImmutable::parse($endIso)   : null;
+        $issue->due_at    = $endIso ? CarbonImmutable::parse($endIso) : null;
         $issue->save();
 
         $this->dispatch('toast', [

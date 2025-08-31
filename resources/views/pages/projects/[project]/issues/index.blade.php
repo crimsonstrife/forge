@@ -4,6 +4,7 @@ use App\Models\Project;
 use App\Models\Issue;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('issues.index');
@@ -12,14 +13,14 @@ middleware(['auth','verified']);
 render(function (View $view, Project $project, Request $request) {
     $issues = Issue::query()
         ->where('project_id', $project->id)
-        ->when($request->filled('status'), fn ($q) => $q->whereRelation('status','id',$request->string('status')))
+        ->when($request->filled('status'), fn ($q) => $q->whereRelation('status', 'id', $request->string('status')))
         ->when($request->boolean('assigned_to_me'), fn ($q) => $q->where('assignee_id', auth()->id()))
         ->withMeta()
         ->latest()
         ->paginate(20)
         ->withQueryString();
 
-    return $view->with(compact('project','issues'));
+    return $view->with(compact('project', 'issues'));
 });
 ?>
 

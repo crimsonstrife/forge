@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Organization;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('organizations.show');
