@@ -56,15 +56,24 @@ final class Form extends Component
         if ($this->isEditing) {
             $this->organization->update(['name' => $this->name]);
             session()->flash('status', 'Organization updated.');
-
-            $target = route('organizations.show', ['organization' => $this->organization]); // explicit
-        } else {
-            $org = Organization::query()->create(['name' => $this->name]);
-            session()->flash('status', 'Organization created.');
-
-            $target = route('organizations.show', ['organization' => $org]); // explicit
+            $this->redirectRoute(
+                'organizations.show',
+                ['organization' => $this->organization->slug],
+                navigate: true
+            );
+            return;
         }
 
-        $this->redirect($target, navigate: true);
+        $org = Organization::query()->create(['name' => $this->name]);
+        $org->refresh(); // ensures slug is present on the instance
+
+        session()->flash('status', 'Organization created.');
+        $this->redirectRoute(
+            'organizations.show',
+            ['organization' => $org->slug],
+            navigate: true
+        );
+        return;
     }
+
 }

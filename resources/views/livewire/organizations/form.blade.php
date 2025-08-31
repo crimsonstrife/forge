@@ -10,14 +10,10 @@
             {{ $isEditing ? 'Save Changes' : 'Create Organization' }}
         </button>
 
-        @if ($isEditing && $organization?->exists)
-            <a href="{{ route('organizations.show', ['organization' => $organization]) }}" class="btn btn-ghost">
-                Cancel
-            </a>
+        @if ($isEditing && $organization?->exists && filled($organization->slug))
+            <a href="{{ route('organizations.show', ['organization' => $organization->slug]) }}" class="btn btn-ghost">Cancel</a>
         @else
-            <a href="{{ route('organizations.index') }}" class="btn btn-ghost">
-                Cancel
-            </a>
+            <a href="{{ route('organizations.index') }}" class="btn btn-ghost">Cancel</a>
         @endif
     </div>
 </div>

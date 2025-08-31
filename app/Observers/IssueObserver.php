@@ -3,8 +3,10 @@
 namespace App\Observers;
 
 use App\Jobs\RecalculateIssueRollups;
+use App\Models\Goal;
 use App\Models\Issue;
 use App\Models\Project;
+use App\Services\GoalProgressService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 use Throwable;
@@ -88,6 +90,13 @@ class IssueObserver
 
         if ($touched === []) {
             return;
+        }
+
+        if ($issue->wasChanged('issue_status_id')) {
+            $goals = $issue->goals ?? $issue->morphToMany(Goal::class, 'linkable', 'goal_links')->get();
+            foreach ($goals as $goal) {
+                app(GoalProgressService::class)->recalcGoal($goal);
+            }
         }
 
         // If re-parented, recalc old and new parents

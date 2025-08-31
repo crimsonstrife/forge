@@ -1,8 +1,14 @@
 <?php
-use function Laravel\Folio\{name, middleware};
-/** @var \App\Models\Organization $organization */
+
+use App\Models\Organization;
+use function Laravel\Folio\{name, middleware, render};
+
 name('organizations.show');
 middleware(['auth', 'verified']);
+
+render(function (\Illuminate\View\View $view, Organization $organization) {
+    // ...
+});
 ?>
 
 <x-app-layout>
@@ -11,7 +17,7 @@ middleware(['auth', 'verified']);
             <h2 class="font-semibold text-lg">{{ $organization->name }}</h2>
             <div class="flex items-center gap-2">
                 <a class="btn btn-sm"
-                   href="{{ route('organizations.edit', ['organization' => $organization]) }}">Edit</a>
+                   href="{{ route('organizations.edit', ['organization' => $organization->slug]) }}">Edit</a>
                 <a class="btn btn-sm btn-ghost" href="{{ route('organizations.index') }}">Back</a>
             </div>
         </div>

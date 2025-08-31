@@ -22,17 +22,18 @@
             @forelse($organizations as $org)
                 <div class="flex items-center justify-between p-4">
                     <div>
-                        <a href="{{ route('organizations.show', ['organization' => $org]) }}"
-                           class="font-medium hover:underline">
-                            {{ $org->name }}
-                        </a>
+                        @isset($organization)
+                            <a href="{{ route('organizations.show', ['organization' => $organization->slug]) }}" class="font-medium hover:underline">{{ $org->name }}</a>
+                        @endisset
                         <div class="text-xs opacity-70">slug: {{ $org->slug }}</div>
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <a href="{{ route('organizations.edit', ['organization' => $org]) }}" class="btn btn-sm">
+                        @isset($organization)
+                        <a href="{{ route('organizations.edit', ['organization' => $organization->slug]) }}" class="btn btn-sm">
                             Edit
                         </a>
+                        @endisset
                         <button wire:click="delete('{{ $org->id }}')"
                                 onclick="return confirm('Move this organization to trash?')"
                                 class="btn btn-sm btn-error">
