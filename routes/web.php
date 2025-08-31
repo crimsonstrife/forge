@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\IssueAttachmentDownloadController;
+use App\Http\Controllers\ProjectCalendarController;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -35,4 +36,7 @@ Route::middleware([
     Route::get('/projects/{project}/issues/{issue}/attachments/{media}',
         IssueAttachmentDownloadController::class
     )->name('issues.attachments.download');
+    Route::get('/projects/{project}/calendar.ics', ProjectCalendarController::class)
+        ->middleware(['auth','verified'])
+        ->name('projects.calendar.ics');
 });

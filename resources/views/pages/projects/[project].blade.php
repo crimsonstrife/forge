@@ -90,8 +90,10 @@ render(function (View $view, Project $project) {
             </div>
 
             <div class="flex items-center gap-2">
-                <a href="{{ route('projects.board', ['project' => $project]) }}" class="btn">Kanban</a>
-                <a href="{{ route('projects.scrum', ['project' => $project]) }}" class="btn">Sprint</a>
+                <a href="{{ route('projects.timeline', ['project' => $project]) }}" class="inline-flex items-center rounded-lg px-3 py-2 border">Timeline</a>
+                <a href="{{ route('projects.calendar', ['project' => $project]) }}" class="inline-flex items-center rounded-lg px-3 py-2 border">Calendar</a>
+                <a href="{{ route('projects.board', ['project' => $project]) }}" class="inline-flex items-center rounded-lg px-3 py-2 border">Kanban</a>
+                <a href="{{ route('projects.scrum', ['project' => $project]) }}" class="inline-flex items-center rounded-lg px-3 py-2 border">Sprint</a>
                 @can('issues.create')
                     <a href="{{ route('issues.create', ['project' => $project]) }}"
                        class="inline-flex items-center rounded-lg px-3 py-2 border">
