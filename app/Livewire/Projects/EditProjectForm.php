@@ -4,6 +4,7 @@ namespace App\Livewire\Projects;
 
 use App\Enums\ProjectStage;
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
@@ -61,7 +62,7 @@ final class EditProjectForm extends Component
             'name' => $data['name'],
             'key' => strtoupper($data['key']),
             'description' => $data['description'] ?? null,
-            'lead_id' => $data['lead_id'] ?? $this->project->lead_id,
+            'lead_id' => $data['lead_id'] ?? $this->project->lead_id ?? null,
             'stage' => ProjectStage::from($data['stage']),
             'started_at' => $data['started_at'] ?: null,
             'due_at' => $data['due_at'] ?: null,
@@ -78,6 +79,7 @@ final class EditProjectForm extends Component
     {
         return view('livewire.projects.edit-project-form', [
             'stages' => ProjectStage::cases(),
+            'users'  => User::query()->orderBy('name')->get(['id', 'name']),
         ]);
     }
 }

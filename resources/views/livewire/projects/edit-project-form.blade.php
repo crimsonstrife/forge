@@ -25,8 +25,13 @@
             <x-input-error for="stage" class="mt-2"/>
         </div>
         <div>
-            <x-label for="lead_id" value="Lead (optional)"/>
-            <x-input id="lead_id" type="text" placeholder="UUID" class="mt-1 block w-full" wire:model.defer="lead_id"/>
+            <x-label for="lead_id" value="Project lead (optional)"/>
+            <select id="lead_id" class="mt-1 block w-full" wire:model.defer="lead_id">
+                <option value="">— None —</option>
+                @foreach($users as $u)
+                    <option value="{{ $u->id }}">{{ $u->name }}</option>
+                @endforeach
+            </select>
             <x-input-error for="lead_id" class="mt-2"/>
         </div>
         <div>
