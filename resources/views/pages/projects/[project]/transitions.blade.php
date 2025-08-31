@@ -8,6 +8,7 @@ middleware(['auth','verified']);
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200">
             {{ $project->key }} — Status Transitions
         </h2>
+        <a href="{{ route('projects.show', ['project' => $project]) }}" class="text-sm text-primary-600 hover:underline">Back to project</a>
     </x-slot>
 
     <div class="py-6">

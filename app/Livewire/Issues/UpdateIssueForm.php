@@ -8,6 +8,7 @@ use App\Models\IssueStatus;
 use App\Models\IssueType;
 use App\Models\Project;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Validate;
@@ -59,6 +60,14 @@ final class UpdateIssueForm extends Component
     /** Comma-separated tags input */
     public string $tags = '';
 
+    /** HTML5 datetime-local strings (Y-m-d\TH:i) */
+    #[Validate(['starts_at_input' => 'nullable|date_format:Y-m-d\TH:i'])]
+    public ?string $starts_at_input = null;
+
+    #[Validate(['due_at_input' => 'nullable|date_format:Y-m-d\TH:i'])]
+    public ?string $due_at_input = null;
+
+
     public function mount(Project $project, Issue $issue): void
     {
         $this->authorize('update', $issue);
@@ -99,12 +108,40 @@ final class UpdateIssueForm extends Component
         $this->story_points     = $issue->story_points;
         $this->estimate_minutes = $issue->estimate_minutes;
         $this->tags             = $issue->tags->pluck('name')->implode(', ');
+
+        $tz = auth()->user()->timezone ?? config('app.timezone', 'UTC');
+
+        $this->starts_at_input = $issue->starts_at
+            ? $issue->starts_at->setTimezone($tz)->format('Y-m-d\TH:i')
+            : null;
+
+        $this->due_at_input = $issue->due_at
+            ? $issue->due_at->setTimezone($tz)->format('Y-m-d\TH:i')
+            : null;
     }
 
     public function save(): void
     {
         $this->authorize('update', $this->issue);
-        $this->validate();
+        $this->validate([
+            'starts_at_input' => 'nullable|date_format:Y-m-d\TH:i',
+            'due_at_input'    => 'nullable|date_format:Y-m-d\TH:i',
+        ]);
+
+        $tz = auth()->user()->timezone ?? config('app.timezone', 'UTC');
+
+        $start = $this->starts_at_input
+            ? CarbonImmutable::createFromFormat('Y-m-d\TH:i', $this->starts_at_input, $tz)
+            : null;
+
+        $due = $this->due_at_input
+            ? CarbonImmutable::createFromFormat('Y-m-d\TH:i', $this->due_at_input, $tz)
+            : null;
+
+        if ($start && $due && $due->lessThan($start)) {
+            $this->addError('due_at_input', 'Due date/time must be after or equal to Start.');
+            return;
+        }
 
         $this->issue->fill([
             'summary'           => $this->summary,
@@ -115,6 +152,8 @@ final class UpdateIssueForm extends Component
             'assignee_id'       => $this->assignee_id,
             'story_points'      => $this->story_points,
             'estimate_minutes'  => $this->estimate_minutes,
+            'starts_at'         => $start,
+            'due_at'            => $due,
         ]);
 
         $this->issue->save();
@@ -129,6 +168,16 @@ final class UpdateIssueForm extends Component
 
         $this->dispatch('notify', title: 'Issue updated');
         $this->redirect(route('issues.show', ['project' => $this->project, 'issue' => $this->issue]), navigate: true);
+    }
+
+    public function clearStart(): void
+    {
+        $this->starts_at_input = null;
+    }
+
+    public function clearDue(): void
+    {
+        $this->due_at_input = null;
     }
 
     public function render(): View

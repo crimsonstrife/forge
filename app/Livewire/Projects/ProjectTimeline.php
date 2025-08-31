@@ -39,18 +39,23 @@ final class ProjectTimeline extends Component
         $buckets = [];
 
         foreach ($issues as $i) {
+            // Guard against inverted dates
+            if ($i->due_at->lessThan($i->starts_at)) {
+                [$i->starts_at, $i->due_at] = [$i->due_at, $i->starts_at];
+            }
+
             $label = $this->groupBy === 'assignee'
                 ? ($i->assignee?->name ?? 'Unassigned')
                 : ($i->status?->name ?? 'Unknown');
 
             $buckets[$label][] = [
-                'x' => "{$i->key} — {$i->summary}",
+                'x' => trim(($i->key ?? '') . ' — ' . $i->summary),
                 'y' => [
-                    $i->starts_at->getTimestampMs(),
-                    $i->due_at->getTimestampMs(),
+                    $i->starts_at->valueOf(), // ← ms since epoch
+                    $i->due_at->valueOf(),    // ← ms since epoch
                 ],
                 'issueId' => $i->id,
-                'url' => route('projects.issues.show', ['project' => $this->project, 'issue' => $i]),
+                'url' => route('issues.show', ['project' => $this->project, 'issue' => $i]),
             ];
         }
 
@@ -61,6 +66,7 @@ final class ProjectTimeline extends Component
 
         return ['series' => $series];
     }
+
 
     public function render()
     {

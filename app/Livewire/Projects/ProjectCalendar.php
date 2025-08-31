@@ -37,9 +37,11 @@ final class ProjectCalendar extends Component
     {
         $query = Issue::query()
             ->where('project_id', $this->project->id)
+            ->where(function ($q) {
+                $q->whereNotNull('starts_at')->orWhereNotNull('due_at');   // ← only dated issues
+            })
             ->with(['assignee:id,name', 'status:id,name,color']);
 
-        // Optional filters (status, assignees)
         if (! empty($this->filters['status'])) {
             $query->whereIn('issue_status_id', $this->filters['status']);
         }
@@ -47,37 +49,36 @@ final class ProjectCalendar extends Component
             $query->whereIn('assignee_id', $this->filters['assignees']);
         }
 
-        /** @var Collection<int,Issue> $issues */
         $issues = $query->get();
 
         return $issues->map(function (Issue $i): array {
             $start = $i->starts_at?->toIso8601String();
             $end   = $i->due_at?->toIso8601String();
 
-            // If only due date, show as all-day on due date:
+            // only due date → all-day
             if (! $start && $end) {
                 return [
                     'id'    => "issue-{$i->id}",
-                    'title' => "{$i->key} — {$i->summary}",
+                    'title' => trim(($i->key ?? '') . ' — ' . $i->summary),
                     'start' => $end,
                     'allDay'=> true,
-                    'url'   => route('issues.show', ['project' => $this->project, 'issue' => $i]),
+                    'url'   => route('issues.show', ['project' => $this->project, 'issue' => $i]), // ← correct route
                     'backgroundColor' => $i->status?->color ?? '#6c757d',
                 ];
             }
 
+            // start only → 1h block
             if ($start && ! $end) {
-                // Default 1-hour block if no end
                 $end = $i->starts_at?->addHour()->toIso8601String();
             }
 
             return [
                 'id'    => "issue-{$i->id}",
-                'title' => "{$i->key} — {$i->summary}",
+                'title' => trim(($i->key ?? '') . ' — ' . $i->summary),
                 'start' => $start,
                 'end'   => $end,
                 'allDay'=> false,
-                'url'   => route('issues.show', ['project' => $this->project, 'issue' => $i]),
+                'url'   => route('issues.show', ['project' => $this->project, 'issue' => $i]), // ← correct route
                 'backgroundColor' => $i->status?->color ?? '#6c757d',
             ];
         })->values()->all();

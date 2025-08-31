@@ -22,7 +22,7 @@ render(function (View $view, Project $project, Issue $issue) {
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200">
                 {{ $project->key }} — {{ $issue->key }}
             </h2>
-
+            <a href="{{ route('projects.show', ['project' => $project]) }}" class="text-sm text-primary-600 hover:underline">Back to project</a>
             @can('update', $issue)
                 <a href="{{ route('issues.edit', ['project'=>$project, 'issue'=>$issue]) }}"
                    class="rounded-lg px-3 py-2 border border-gray-300 dark:border-gray-700">Edit</a>

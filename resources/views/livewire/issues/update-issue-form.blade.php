@@ -77,6 +77,47 @@
         </div>
 
         <div>
+            <label class="block text-sm font-medium mb-1">Start date & time</label>
+            <div class="flex items-center gap-2">
+                <input
+                    type="datetime-local"
+                    wire:model.defer="starts_at_input"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800"
+                />
+                @if($starts_at_input)
+                    <button type="button"
+                            wire:click="clearStart"
+                            class="px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-700">
+                        Clear
+                    </button>
+                @endif
+            </div>
+            @error('starts_at_input') <div class="text-xs text-red-600 mt-1">{{ $message }}</div> @enderror
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium mb-1">Due date & time</label>
+            <div class="flex items-center gap-2">
+                <input
+                    type="datetime-local"
+                    wire:model.defer="due_at_input"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800"
+                />
+                @if($due_at_input)
+                    <button type="button"
+                            wire:click="clearDue"
+                            class="px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-700">
+                        Clear
+                    </button>
+                @endif
+            </div>
+            @error('due_at_input') <div class="text-xs text-red-600 mt-1">{{ $message }}</div> @enderror
+            <p class="text-xs text-gray-500 mt-1">
+                Times interpreted in your timezone ({{ auth()->user()->timezone ?? config('app.timezone', 'UTC') }}).
+            </p>
+        </div>
+
+        <div>
             <label class="block text-sm font-medium mb-1">Tags (comma-separated)</label>
             <input type="text" wire:model.defer="tags"
                    class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800" />

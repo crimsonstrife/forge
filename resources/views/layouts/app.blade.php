@@ -17,6 +17,7 @@
 
         <!-- Styles -->
         @livewireStyles
+        @stack('styles')
     </head>
     <body class="font-sans antialiased" x-data="themeSwitcher()" :class="{ 'dark': switchOn }">
         <x-banner />
@@ -42,6 +43,8 @@
         @stack('modals')
 
         @livewireScripts
+
+        @stack('scripts')
     </body>
     <script>
         window.themeSwitcher = function () {

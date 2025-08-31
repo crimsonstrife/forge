@@ -29,6 +29,7 @@ render(function (View $view, Project $project, Request $request) {
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200">
                 {{ $project->key }} — Issues
             </h2>
+            <a href="{{ route('projects.show', ['project' => $project]) }}" class="text-sm text-primary-600 hover:underline">Back to project</a>
             @can('create', \App\Models\Issue::class)
                 <a href="{{ route('issues.create', ['project' => $project]) }}"
                    class="inline-flex items-center rounded-lg px-3 py-2 bg-primary-600 text-white hover:bg-primary-700">

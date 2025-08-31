@@ -39,6 +39,8 @@ class Issue extends BaseModel implements HasMedia
         'estimate_minutes',
         'description',
         'summary',
+        'starts_at',
+        'due_at',
     ];
 
     protected $guarded = ['id', 'key', 'number'];
