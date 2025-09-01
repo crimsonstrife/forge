@@ -95,10 +95,7 @@ render(function (View $view, Project $project) {
                 <a href="{{ route('projects.board', ['project' => $project]) }}" class="inline-flex items-center rounded-lg px-3 py-2 border">Kanban</a>
                 <a href="{{ route('projects.scrum', ['project' => $project]) }}" class="inline-flex items-center rounded-lg px-3 py-2 border">Sprint</a>
                 @can('issues.create')
-                    <a href="{{ route('issues.create', ['project' => $project]) }}"
-                       class="inline-flex items-center rounded-lg px-3 py-2 border">
-                        New Issue
-                    </a>
+                    <a href="{{ route('issues.create', ['project' => $project]) }}" class="inline-flex items-center rounded-lg px-3 py-2 border">New issue</a>
                 @endcan
                 @can('update', $project)
                     <a href="{{ route('projects.edit', ['project' => $project]) }}"

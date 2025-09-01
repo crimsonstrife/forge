@@ -8,11 +8,48 @@ name('issues.show');
 middleware(['auth','verified']);
 
 render(function (View $view, Project $project, Issue $issue) {
-    $issue->loadMissing(['project:id,key', 'status:id,name,color,is_done', 'type:id,key,name', 'priority:id,name',
-        'assignee:id,name,profile_photo_path', 'reporter:id,name,profile_photo_path', 'tags']);
-    $issue->loadCount(['comments', 'media as attachments_count' => fn ($m) => $m->where('collection_name','attachments')]);
+    $issue->loadMissing([
+        'project:id,key',
+        'status:id,name,color,is_done',
+        'type:id,key,name',
+        'priority:id,name',
+        'assignee:id,name,profile_photo_path',
+        'reporter:id,name,profile_photo_path',
+        'tags',
+        'parent:id,key,summary,project_id',
+        'children' => fn ($q) => $q
+            ->with([
+                'status:id,name,color,is_done',
+                'assignee:id,name,profile_photo_path',
+                'project:id,key',
+                'type:id,key,name',
+                'priority:id,name',
+            ])
+            ->latest(),
+    ]);
 
-    return $view->with(compact('project','issue'));
+    $issue->loadCount([
+        'comments',
+        'media as attachments_count' => fn ($m) => $m->where('collection_name','attachments'),
+    ]);
+
+    $children = $issue->children;
+    $childrenTotal = $children->count();
+    $childrenDone  = $children->filter(fn ($c) => (bool) $c->status?->is_done)->count();
+    $childrenPointsTotal = (int) $children->sum('story_points');
+    $childrenPointsDone  = (int) $children->filter(fn ($c) => (bool) $c->status?->is_done)->sum('story_points');
+    $childrenProgressPct = $childrenTotal > 0 ? (int) round(($childrenDone / $childrenTotal) * 100) : 0;
+
+    return $view->with(compact(
+        'project',
+        'issue',
+        'children',
+        'childrenTotal',
+        'childrenDone',
+        'childrenPointsTotal',
+        'childrenPointsDone',
+        'childrenProgressPct',
+    ));
 });
 ?>
 
@@ -23,6 +60,15 @@ render(function (View $view, Project $project, Issue $issue) {
                 {{ $project->key }} — {{ $issue->key }}
             </h2>
             <a href="{{ route('projects.show', ['project' => $project]) }}" class="text-sm text-primary-600 hover:underline">Back to project</a>
+            @if($issue->parent)
+                <div class="mt-2 text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">Parent:</span>
+                    <a class="underline"
+                       href="{{ route('issues.show', ['project' => $project, 'issue' => $issue->parent]) }}">
+                        {{ $issue->parent->key }} — {{ $issue->parent->summary }}
+                    </a>
+                </div>
+            @endif
             @can('update', $issue)
                 <a href="{{ route('issues.edit', ['project'=>$project, 'issue'=>$issue]) }}"
                    class="rounded-lg px-3 py-2 border border-gray-300 dark:border-gray-700">Edit</a>
@@ -131,6 +177,88 @@ render(function (View $view, Project $project, Issue $issue) {
             </div>
             <livewire:issues.focus-timer :issue="$issue" class="mb-4" />
             <livewire:issues.time-entries-panel :issue="$issue" />
+
+            <!-- Sub-issues -->
+            <div class="rounded-xl border border-gray-200/60 dark:border-gray-700/60 bg-white dark:bg-gray-800 p-6">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <h4 class="font-semibold">Sub-issues ({{ $childrenTotal }})</h4>
+                        @if($childrenTotal > 0)
+                            <div class="mt-2 text-xs text-gray-500">
+                                {{ $childrenDone }} of {{ $childrenTotal }} done
+                                @if($childrenPointsTotal > 0)
+                                    · {{ $childrenPointsDone }}/{{ $childrenPointsTotal }} pts
+                                @endif
+                            </div>
+                            <div class="mt-2 h-2 bg-gray-200 dark:bg-gray-700 rounded">
+                                <div class="h-2 rounded bg-primary-600" style="width: {{ $childrenProgressPct }}%"></div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="shrink-0">
+                        @can('create', [App\Models\Issue::class, $project])
+                            <a href="{{ route('issues.create', ['project' => $project, 'parent' => $issue->key]) }}"
+                               class="inline-flex items-center gap-2 rounded-lg px-3 py-2 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                + New sub-issue
+                            </a>
+                        @endcan
+                    </div>
+                </div>
+
+                @if($childrenTotal === 0)
+                    <p class="mt-4 text-sm text-gray-500">No sub-issues yet.</p>
+                @else
+                    <div class="mt-4 overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead class="text-xs uppercase text-gray-500 dark:text-gray-400">
+                            <tr class="text-left">
+                                <th class="py-2 pr-4">Key</th>
+                                <th class="py-2 pr-4">Summary</th>
+                                <th class="py-2 pr-4">Status</th>
+                                <th class="py-2 pr-4">Assignee</th>
+                                <th class="py-2 pr-4">Type</th>
+                                <th class="py-2 pr-4">Priority</th>
+                                <th class="py-2 pr-0">Pts</th>
+                            </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200/60 dark:divide-gray-700/60">
+                            @foreach($children as $child)
+                                <tr>
+                                    <td class="py-2 pr-4 font-mono">
+                                        <a class="underline" href="{{ route('issues.show', ['project'=>$project, 'issue'=>$child]) }}">
+                                            {{ $child->key }}
+                                        </a>
+                                    </td>
+                                    <td class="py-2 pr-4">{{ $child->summary }}</td>
+                                    <td class="py-2 pr-4">
+                            <span class="inline-flex items-center gap-2">
+                                <span class="h-2 w-2 rounded-full"
+                                      style="background: {{ $child->status?->color ?? '#9ca3af' }}"></span>
+                                {{ $child->status?->name ?? '—' }}
+                            </span>
+                                    </td>
+                                    <td class="py-2 pr-4">
+                                        @if($child->assignee)
+                                            <span class="inline-flex items-center gap-2">
+                                    <img class="h-4 w-4 rounded-full" src="{{ $child->assignee->profile_photo_url }}">
+                                    {{ $child->assignee->name }}
+                                </span>
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
+                                    <td class="py-2 pr-4">{{ $child->type?->name ?? '—' }}</td>
+                                    <td class="py-2 pr-4">{{ $child->priority?->name ?? '—' }}</td>
+                                    <td class="py-2 pr-0 text-right">{{ $child->story_points ?? '—' }}</td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+
             <!-- Comments -->
             <div class="rounded-xl border border-gray-200/60 dark:border-gray-700/60 bg-white dark:bg-gray-800 p-6">
                 <h4 class="font-semibold">Comments ({{ $issue->comments_count }})</h4>
