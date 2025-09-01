@@ -45,19 +45,16 @@ final class IssueRollupService
             $doneStatusIds = IssueStatus::query()
                 ->where('is_done', true)
                 ->pluck('id')
-                ->map(fn ($id) => (string) $id)
+                ->map(static fn ($id) => (string) $id)
                 ->all();
 
-            $doneCount = $children->filter(
-                fn (Issue $c): bool => in_array((string) $c->status_id, $doneStatusIds, true)
-            )->count();
+            $isDone = static fn (Issue $c): bool =>
+            in_array((string) $c->issue_status_id, $doneStatusIds, true);
 
+            $doneCount   = $children->filter($isDone)->count();
             $pointsTotal = (int) $children->sum('story_points');
-            $pointsDone  = (int) $children->filter(
-                fn (Issue $c): bool => in_array((string) $c->status_id, $doneStatusIds, true)
-            )->sum('story_points');
-
-            $percent = (int) round(($doneCount / max(1, $total)) * 100);
+            $pointsDone  = (int) $children->filter($isDone)->sum('story_points');
+            $percent     = (int) round(($doneCount / max(1, $total)) * 100);
         }
 
         // Persist if changed
@@ -72,18 +69,13 @@ final class IssueRollupService
         if ($updates !== $before) {
             Issue::query()->whereKey($parent->getKey())->update($updates);
 
-            // Activity entry (concise)
             activity('forge.issue')
                 ->performedOn($parent)
-                ->withProperties([
-                    'old' => $before,
-                    'new' => $updates,
-                ])
+                ->withProperties(['old' => $before, 'new' => $updates])
                 ->event('progress_updated')
                 ->log('issue.progress_updated');
         }
 
-        // Bubble to parent's parent if you allow deeper trees
         if ($bubble && $parent->parent_id) {
             $this->recalc((string) $parent->parent_id, true);
         }

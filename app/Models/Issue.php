@@ -92,8 +92,8 @@ class Issue extends BaseModel implements HasMedia
         return LogOptions::defaults()
             ->useLogName('forge.issue')
             ->logOnly([
-                'summary','description','issue_status_id','issue_type_id','priority_id',
-                'assignee_id','reporter_id','story_points','estimate_minutes','parent_id'
+                'summary', 'description', 'issue_status_id', 'issue_type_id', 'issue_priority_id',
+                'assignee_id', 'reporter_id', 'story_points', 'estimate_minutes', 'parent_id',
             ])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
@@ -112,7 +112,7 @@ class Issue extends BaseModel implements HasMedia
         ]);
 
         // Make status transitions explicit
-        if ($activity->event === 'updated' && $activity->properties->has('attributes.status_id')) {
+        if ($activity->event === 'updated' && $activity->properties->has('attributes.issue_status_id')) {
             $activity->event = 'status_changed';
             $activity->description = 'issue.status_changed';
         } else {
