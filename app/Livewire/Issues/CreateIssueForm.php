@@ -81,7 +81,7 @@ final class CreateIssueForm extends Component
         $this->assigneeOptions = $this->project->users()
             ->orderBy('name')
             ->get(['users.id','users.name'])
-            ->map(fn($u) => ['id' => (string) $u->id, 'name' => $u->name])
+            ->map(fn ($u) => ['id' => (string) $u->id, 'name' => $u->name])
             ->all();
 
         // Default type: SUBTASK if creating under a parent, otherwise first available
@@ -111,7 +111,7 @@ final class CreateIssueForm extends Component
 
         // Enforce SUBTASK if creating under a parent (can’t be bypassed via devtools)
         if ($this->parent) {
-            $subtaskId = $this->project->issueTypes()->where('issue_types.key','SUBTASK')->value('issue_types.id');
+            $subtaskId = $this->project->issueTypes()->where('issue_types.key', 'SUBTASK')->value('issue_types.id');
             if ($subtaskId) {
                 $this->typeId = (string) $subtaskId;
             }

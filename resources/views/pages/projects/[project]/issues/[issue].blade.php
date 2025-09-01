@@ -2,6 +2,7 @@
 use App\Models\Project;
 use App\Models\Issue;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('issues.show');
@@ -30,7 +31,7 @@ render(function (View $view, Project $project, Issue $issue) {
 
     $issue->loadCount([
         'comments',
-        'media as attachments_count' => fn ($m) => $m->where('collection_name','attachments'),
+        'media as attachments_count' => fn ($m) => $m->where('collection_name', 'attachments'),
     ]);
 
     $children = $issue->children;
