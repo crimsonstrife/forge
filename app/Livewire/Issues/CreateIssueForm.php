@@ -15,11 +15,14 @@ final class CreateIssueForm extends Component
     use AuthorizesRequests;
 
     /** Incoming scalars from Blade */
-    public string $projectId;
+    public ?string $projectId = null;
     public ?string $parentId = null;
 
-    /** Resolved models for internal use */
-    public Project $project;
+    /** Project picker (global page only) */
+    public ?string $selectedProjectId = null;
+
+    /** Resolved models */
+    public ?Project $project = null;
     public ?Issue $parent = null;
 
     #[Validate('required|string|max:200')]
@@ -48,60 +51,50 @@ final class CreateIssueForm extends Component
     /** @var array<int, array{id:string,name:string}> */
     public array $assigneeOptions = [];
 
-    public function mount(string $projectId, ?string $parentId = null): void
+    /** @var array<int, array{id:string,name:string,key:string}> */
+    public array $projectOptions = [];
+
+    public function mount(?string $projectId = null, ?string $parentId = null, array $projectOptions = []): void
     {
-        $this->project   = Project::query()->select(['id', 'key'])->findOrFail($projectId);
-        $this->projectId = $projectId;
+        $this->projectId      = $projectId;
+        $this->parentId       = $parentId;
+        $this->projectOptions = $projectOptions;
 
-        $this->parentId  = $parentId;
-        if ($this->parentId) {
-            // Constrain to same project to be safe
-            $this->parent = Issue::query()
-                ->select(['id', 'key', 'summary', 'project_id'])
-                ->where('project_id', $this->project->id)
-                ->findOrFail($this->parentId);
+        if ($this->projectId) {
+            $this->hydrateProjectAndOptions($this->projectId);
+            $this->hydrateParentIfAny();
+        }
+    }
+
+    public function rules(): array
+    {
+        $rules = [
+            'summary'         => 'required|string|max:200',
+            'description'     => 'nullable|string|max:10000',
+            'assigneeId'      => 'nullable|uuid|exists:users,id',
+            'typeId'          => 'nullable|exists:issue_types,id',
+            'priorityId'      => 'nullable|exists:issue_priorities,id',
+            'storyPoints'     => 'nullable|integer|min:0',
+            'estimateMinutes' => 'nullable|integer|min:0',
+        ];
+
+        if ($this->project === null) {
+            $rules['selectedProjectId'] = 'required|uuid|exists:projects,id';
         }
 
-        $this->authorize('create', [Issue::class, $this->project]);
+        return $rules;
+    }
 
-        // Options
-        $this->typeOptions = $this->project->issueTypes()
-            ->orderBy('project_issue_types.order')
-            ->get(['issue_types.id', 'issue_types.name'])
-            ->map(fn ($t) => ['id' => (string) $t->id, 'name' => $t->name])
-            ->all();
-
-        $this->priorityOptions = $this->project->issuePriorities()
-            ->orderBy('project_issue_priorities.order')
-            ->get(['issue_priorities.id', 'issue_priorities.name'])
-            ->map(fn ($p) => ['id' => (string) $p->id, 'name' => $p->name])
-            ->all();
-
-        // Assignees: users attached to the project
-        $this->assigneeOptions = $this->project->users()
-            ->orderBy('name')
-            ->get(['users.id','users.name'])
-            ->map(fn($u) => ['id' => (string) $u->id, 'name' => $u->name])
-            ->all();
-
-        // Default type: SUBTASK if creating under a parent, otherwise first available
-        $preferredTypeId = null;
-        if ($this->parent) {
-            $preferredTypeId = $this->project->issueTypes()
-                ->where('issue_types.key', 'SUBTASK')
-                ->value('issue_types.id');
-        }
-        $this->typeId     = $preferredTypeId ? (string) $preferredTypeId : ($this->typeOptions[0]['id'] ?? null);
-        $this->priorityId = $this->priorityOptions[0]['id'] ?? null;
-
-        // Initial status (friendly fallback if misconfigured)
-        $initial = $this->project->issueStatuses()->wherePivot('is_initial', true)->value('issue_statuses.id')
-            ?: $this->project->issueStatuses()->orderBy('project_issue_statuses.order')->value('issue_statuses.id');
-
-        if ($initial) {
-            session(['project.initial_status.' . $this->project->id => $initial]);
+    public function updatedSelectedProjectId(?string $value): void
+    {
+        $this->resetErrorBag();
+        if ($value) {
+            $this->hydrateProjectAndOptions($value);
+            $this->hydrateParentIfAny();
         } else {
-            $this->addError('typeId', 'This project has no initial status configured.');
+            $this->project = null;
+            $this->typeOptions = $this->priorityOptions = $this->assigneeOptions = [];
+            $this->typeId = $this->priorityId = null;
         }
     }
 
@@ -109,24 +102,26 @@ final class CreateIssueForm extends Component
     {
         $this->validate();
 
-        // Enforce SUBTASK if creating under a parent (can’t be bypassed via devtools)
+        $project = $this->project ?? Project::query()->select(['id','key'])->findOrFail($this->selectedProjectId);
+        $this->authorize('create', [Issue::class, $project]);
+
         if ($this->parent) {
-            $subtaskId = $this->project->issueTypes()->where('issue_types.key','SUBTASK')->value('issue_types.id');
+            $subtaskId = $project->issueTypes()->where('issue_types.key','SUBTASK')->value('issue_types.id');
             if ($subtaskId) {
                 $this->typeId = (string) $subtaskId;
             }
         }
 
-        $statusId = session('project.initial_status.' . $this->project->id)
-            ?: $this->project->issueStatuses()->orderBy('project_issue_statuses.order')->value('issue_statuses.id');
+        $statusId = session('project.initial_status.' . $project->id)
+            ?: $project->issueStatuses()->orderBy('project_issue_statuses.order')->value('issue_statuses.id');
 
-        if (!$statusId) {
+        if (! $statusId) {
             $this->addError('typeId', 'Cannot create issue: no initial status configured.');
             return;
         }
 
         $issue = new Issue([
-            'project_id'        => $this->project->getKey(),
+            'project_id'        => $project->getKey(),
             'parent_id'         => $this->parent?->getKey(),
             'summary'           => $this->summary,
             'description'       => $this->description,
@@ -141,11 +136,63 @@ final class CreateIssueForm extends Component
 
         $issue->save();
 
-        $this->redirectRoute('issues.show', ['project' => $this->project, 'issue' => $issue]);
+        $this->redirectRoute('issues.show', ['project' => $project, 'issue' => $issue]);
     }
 
     public function render(): View
     {
         return view('livewire.issues.create-issue-form');
+    }
+
+    private function hydrateProjectAndOptions(string $id): void
+    {
+        $this->project   = Project::query()->select(['id','key'])->findOrFail($id);
+        $this->projectId = $id;
+
+        $this->authorize('create', [Issue::class, $this->project]);
+
+        $this->typeOptions = $this->project->issueTypes()
+            ->orderBy('project_issue_types.order')
+            ->get(['issue_types.id','issue_types.name'])
+            ->map(fn ($t) => ['id' => (string) $t->id, 'name' => $t->name])
+            ->all();
+
+        $this->priorityOptions = $this->project->issuePriorities()
+            ->orderBy('project_issue_priorities.order')
+            ->get(['issue_priorities.id','issue_priorities.name'])
+            ->map(fn ($p) => ['id' => (string) $p->id, 'name' => $p->name])
+            ->all();
+
+        $this->assigneeOptions = $this->project->users()
+            ->orderBy('name')
+            ->get(['users.id','users.name'])
+            ->map(fn ($u) => ['id' => (string) $u->id, 'name' => $u->name])
+            ->all();
+
+        $preferredTypeId = null;
+        if ($this->parent) {
+            $preferredTypeId = $this->project->issueTypes()->where('issue_types.key','SUBTASK')->value('issue_types.id');
+        }
+        $this->typeId     = $preferredTypeId ? (string) $preferredTypeId : ($this->typeOptions[0]['id'] ?? null);
+        $this->priorityId = $this->priorityOptions[0]['id'] ?? null;
+
+        $initial = $this->project->issueStatuses()->wherePivot('is_initial', true)->value('issue_statuses.id')
+            ?: $this->project->issueStatuses()->orderBy('project_issue_statuses.order')->value('issue_statuses.id');
+
+        if ($initial) {
+            session(['project.initial_status.' . $this->project->id => $initial]);
+        }
+    }
+
+    private function hydrateParentIfAny(): void
+    {
+        if (! $this->parentId || ! $this->project) {
+            return;
+        }
+
+        $this->parent = Issue::query()
+            ->select(['id','key','summary','project_id'])
+            ->where('project_id', $this->project->id)
+            ->findOrFail($this->parentId);
     }
 }
