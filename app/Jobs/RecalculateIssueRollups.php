@@ -11,12 +11,16 @@ use Illuminate\Queue\SerializesModels;
 
 class RecalculateIssueRollups implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(private readonly string $parentIssueId) {
+    public function __construct(private readonly string $parentIssueId)
+    {
         //
     }
 

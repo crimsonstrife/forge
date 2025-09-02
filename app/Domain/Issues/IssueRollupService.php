@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Domain\Issues;
 
 use App\Models\Issue;

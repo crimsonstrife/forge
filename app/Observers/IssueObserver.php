@@ -50,8 +50,10 @@ class IssueObserver
                 $project->save();
             }, 3);
         } catch (QueryException|Throwable $e) {
-             if ($attempts < 3) { goto retry; }
-             throw $e;
+            if ($attempts < 3) {
+                goto retry;
+            }
+            throw $e;
         }
     }
 

@@ -10,6 +10,7 @@ use App\Models\IssueType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('projects.show');
@@ -39,7 +40,7 @@ render(function (View $view, Project $project) {
         ->orderBy('project_issue_statuses.order')
         ->get(['issue_statuses.id', 'issue_statuses.name', 'issue_statuses.key', 'issue_statuses.color', 'issue_statuses.is_done']);
 
-    $statusSummary = $statuses->map(fn($s) => [
+    $statusSummary = $statuses->map(fn ($s) => [
         'id' => (string)$s->id,
         'name' => $s->name,
         'key' => $s->key,
