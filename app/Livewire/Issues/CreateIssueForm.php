@@ -106,7 +106,7 @@ final class CreateIssueForm extends Component
         $this->authorize('create', [Issue::class, $project]);
 
         if ($this->parent) {
-            $subtaskId = $project->issueTypes()->where('issue_types.key','SUBTASK')->value('issue_types.id');
+            $subtaskId = $project->issueTypes()->where('issue_types.key', 'SUBTASK')->value('issue_types.id');
             if ($subtaskId) {
                 $this->typeId = (string) $subtaskId;
             }
@@ -171,7 +171,7 @@ final class CreateIssueForm extends Component
 
         $preferredTypeId = null;
         if ($this->parent) {
-            $preferredTypeId = $this->project->issueTypes()->where('issue_types.key','SUBTASK')->value('issue_types.id');
+            $preferredTypeId = $this->project->issueTypes()->where('issue_types.key', 'SUBTASK')->value('issue_types.id');
         }
         $this->typeId     = $preferredTypeId ? (string) $preferredTypeId : ($this->typeOptions[0]['id'] ?? null);
         $this->priorityId = $this->priorityOptions[0]['id'] ?? null;

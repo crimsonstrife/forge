@@ -3,6 +3,7 @@
 use App\Models\Issue;
 use App\Models\Project;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('issues.create.global');
@@ -39,7 +40,7 @@ render(function (View $view) {
         ->orderBy('name')
         ->get();
 
-    return $view->with(compact('project','projectOptions','parentId'));
+    return $view->with(compact('project', 'projectOptions', 'parentId'));
 });
 ?>
 <x-app-layout>
