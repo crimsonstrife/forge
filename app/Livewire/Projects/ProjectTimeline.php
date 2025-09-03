@@ -25,7 +25,7 @@ final class ProjectTimeline extends Component
     }
 
     /**
-     * @return array<string,mixed>
+     * @return array{series: array<int, array{name:string, data: array<int, array{x:string, y: array{0:int,1:int}, issueId:string, url:string, fillColor:string}>>>}
      */
     public function getChartData(): array
     {
@@ -33,29 +33,50 @@ final class ProjectTimeline extends Component
             ->where('project_id', $this->project->id)
             ->whereNotNull('starts_at')
             ->whereNotNull('due_at')
-            ->with(['assignee:id,name', 'status:id,name'])
-            ->get();
+            ->with([
+                'assignee:id,name',
+                'status:id,name',
+                'type:id,tier', // <- for tier color
+            ])
+            ->get([
+                'id','key','summary',
+                'assignee_id','issue_status_id','issue_type_id',
+                'starts_at','due_at',
+            ]);
 
         $buckets = [];
 
         foreach ($issues as $i) {
-            // Guard against inverted dates
-            if ($i->due_at->lessThan($i->starts_at)) {
-                [$i->starts_at, $i->due_at] = [$i->due_at, $i->starts_at];
+            // Compute start/end safely
+            $start = $i->starts_at;
+            $end   = $i->due_at;
+            if ($end->lessThan($start)) {
+                [$start, $end] = [$end, $start];
             }
 
+            // Group label
             $label = $this->groupBy === 'assignee'
                 ? ($i->assignee?->name ?? 'Unassigned')
                 : ($i->status?->name ?? 'Unknown');
 
+            // Tier color
+            $tier  = $i->type?->tier?->value ?? 'other';
+            $color = method_exists($i->type, 'badgeColor')
+                ? $i->type->badgeColor()
+                : match ($tier) {
+                    'epic'    => '#7e57c2',
+                    'story'   => '#1e88e5',
+                    'task'    => '#9e9e9e',
+                    'subtask' => '#78909C',
+                    default   => '#607D8B',
+                };
+
             $buckets[$label][] = [
                 'x' => trim(($i->key ?? '') . ' — ' . $i->summary),
-                'y' => [
-                    $i->starts_at->valueOf(), // ← ms since epoch
-                    $i->due_at->valueOf(),    // ← ms since epoch
-                ],
-                'issueId' => $i->id,
-                'url' => route('issues.show', ['project' => $this->project, 'issue' => $i]),
+                'y' => [$start->valueOf(), $end->valueOf()], // ms since epoch
+                'issueId'   => (string) $i->id,
+                'url'       => route('issues.show', ['issue' => $i->key, 'project' => $this->project->id]),
+                'fillColor' => $color, // <- ApexCharts per-point color
             ];
         }
 
