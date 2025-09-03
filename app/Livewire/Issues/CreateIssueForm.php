@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Issues;
 
+use App\Enums\IssueTier;
 use App\Models\Issue;
+use App\Models\IssueType;
 use App\Models\Project;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -54,6 +56,9 @@ final class CreateIssueForm extends Component
     /** @var array<int, array{id:string,name:string,key:string}> */
     public array $projectOptions = [];
 
+    /** @var array<int, string> */
+    private array $allowedTypeIds = [];
+
     public function mount(?string $projectId = null, ?string $parentId = null, array $projectOptions = []): void
     {
         $this->projectId      = $projectId;
@@ -71,15 +76,20 @@ final class CreateIssueForm extends Component
         $rules = [
             'summary'         => 'required|string|max:200',
             'description'     => 'nullable|string|max:10000',
-            'assigneeId'      => 'nullable|uuid|exists:users,id',
-            'typeId'          => 'nullable|exists:issue_types,id',
-            'priorityId'      => 'nullable|exists:issue_priorities,id',
             'storyPoints'     => 'nullable|integer|min:0',
             'estimateMinutes' => 'nullable|integer|min:0',
+            'assigneeId'      => 'nullable|uuid|exists:users,id',
+            'typeId'          => 'required|exists:issue_types,id',
+            'priorityId'      => 'nullable|exists:issue_priorities,id',
         ];
 
         if ($this->project === null) {
             $rules['selectedProjectId'] = 'required|uuid|exists:projects,id';
+        }
+
+        // If parent exists, `typeId` must be one of the allowed set we computed.
+        if ($this->parent) {
+            $rules['typeId'] .= '|in:' . implode(',', $this->allowedTypeIds);
         }
 
         return $rules;
@@ -102,14 +112,13 @@ final class CreateIssueForm extends Component
     {
         $this->validate();
 
-        $project = $this->project ?? Project::query()->select(['id','key'])->findOrFail($this->selectedProjectId);
-        $this->authorize('create', [Issue::class, $project]);
+        $project = $this->project ?? Project::findOrFail($this->selectedProjectId);
 
-        if ($this->parent) {
-            $subtaskId = $project->issueTypes()->where('issue_types.key','SUBTASK')->value('issue_types.id');
-            if ($subtaskId) {
-                $this->typeId = (string) $subtaskId;
-            }
+        $type = IssueType::findOrFail($this->typeId);
+
+        if ($this->parent && !$this->parent->canContainType($type)) {
+            $this->addError('typeId', 'This type is not allowed under the selected parent.');
+            return;
         }
 
         $statusId = session('project.initial_status.' . $project->id)
@@ -191,8 +200,37 @@ final class CreateIssueForm extends Component
         }
 
         $this->parent = Issue::query()
-            ->select(['id','key','summary','project_id'])
+            ->select(['id','key','summary','project_id','issue_type_id'])
+            ->with('type:id,tier')
             ->where('project_id', $this->project->id)
             ->findOrFail($this->parentId);
+
+        // Compute allowed child tiers for the parent's type.
+        $parentType = $this->parent->type;
+        if (! $parentType) {
+            // If parent has no type, be conservative and allow only Sub-Task.
+            $allowedTiers = [IssueTier::SubTask];
+        } else {
+            $allowedTiers = $parentType->allowedChildTiers();
+        }
+
+        // Allowed types for this project scoped by allowed tiers.
+        $allowedTypes = $this->project->issueTypes()
+            ->whereIn('issue_types.tier', array_map(fn($t) => $t->value, $allowedTiers))
+            ->orderBy('project_issue_types.order')
+            ->get(['issue_types.id','issue_types.name','issue_types.tier']);
+
+        $this->typeOptions = $allowedTypes
+            ->map(fn ($t) => ['id' => (string) $t->id, 'name' => $t->name])
+            ->all();
+
+        $this->allowedTypeIds = array_map(static fn ($row) => $row['id'], $this->typeOptions);
+
+        // If there's exactly one valid child type (e.g., Task → Sub-Task), auto-select it.
+        if (count($this->typeOptions) === 1) {
+            $this->typeId = $this->typeOptions[0]['id'];
+        } else if ($this->typeId && ! in_array($this->typeId, $this->allowedTypeIds, true)) {
+            $this->typeId = null;
+        }
     }
 }

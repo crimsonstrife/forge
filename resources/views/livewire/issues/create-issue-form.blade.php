@@ -44,14 +44,19 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-sm font-medium mb-1">Type</label>
-                                <select wire:model="typeId" class="w-full rounded border px-3 py-2 bg-white dark:bg-gray-900" @if($parent) disabled @endif>
+                                <select
+                                    wire:model="typeId"
+                                    class="w-full rounded border px-3 py-2 bg-white dark:bg-gray-900"
+                                    @if (count($typeOptions) === 1) disabled @endif
+                                >
                                     <option value="">Select type…</option>
-                                    @foreach($typeOptions as $opt)
+                                    @foreach ($typeOptions as $opt)
                                         <option value="{{ $opt['id'] }}">{{ $opt['name'] }}</option>
                                     @endforeach
                                 </select>
-                                @if($parent)
+                                @if (count($typeOptions) === 1)
                                     <input type="hidden" wire:model="typeId">
+                                    <p class="mt-1 text-xs text-gray-500">Type is fixed for this parent.</p>
                                 @endif
                                 @error('typeId') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
                             </div>

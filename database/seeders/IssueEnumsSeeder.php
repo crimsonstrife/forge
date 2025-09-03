@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\IssueTier;
 use App\Models\IssuePriority;
 use App\Models\IssueStatus;
 use App\Models\IssueType;
@@ -30,11 +31,11 @@ class IssueEnumsSeeder extends Seeder
 
         // Types
         $types = [
-            ['name'=>'Epic','key'=>'EPIC', 'is_default'=>false,'is_hierarchical'=>true,'icon'=>'lucide-goal'],
-            ['name'=>'Story','key'=>'STORY', 'is_default'=>false,'is_hierarchical'=>false,'icon'=>'lucide-book-open'],
-            ['name'=>'Task','key'=>'TASK', 'is_default'=>true,'is_hierarchical'=>false,'icon'=>'lucide-check-square'],
-            ['name'=>'Sub-task','key'=>'SUBTASK', 'is_default'=>false,'is_hierarchical'=>false,'icon'=>'lucide-square'],
-            ['name'=>'Bug','key'=>'BUG', 'is_default'=>false,'is_hierarchical'=>false,'icon'=>'lucide-bug'],
+            ['name'=>'Epic','key'=>'EPIC', 'tier'=>IssueTier::Epic, 'is_default'=>false,'is_hierarchical'=>true,'icon'=>'lucide-goal'],
+            ['name'=>'Story','key'=>'STORY', 'tier'=>IssueTier::Story, 'is_default'=>false,'is_hierarchical'=>false,'icon'=>'lucide-book-open'],
+            ['name'=>'Task','key'=>'TASK', 'tier'=>IssueTier::Task, 'is_default'=>true,'is_hierarchical'=>false,'icon'=>'lucide-check-square'],
+            ['name'=>'Sub-task','key'=>'SUBTASK', 'tier'=>IssueTier::SubTask, 'is_default'=>false,'is_hierarchical'=>false,'icon'=>'lucide-square'],
+            ['name'=>'Bug','key'=>'BUG', 'tier'=>IssueTier::Task, 'is_default'=>false,'is_hierarchical'=>false,'icon'=>'lucide-bug'],
         ];
         foreach ($types as $t) {
             IssueType::updateOrCreate(['key'=>$t['key']], $t);

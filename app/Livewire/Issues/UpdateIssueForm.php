@@ -73,11 +73,20 @@ final class UpdateIssueForm extends Component
         $this->authorize('update', $issue);
 
         $this->project = $project;
-        $this->issue = $issue;
+        $this->issue = $issue->loadMissing('parent.type');
 
-        // Options
-        $this->typeOptions = IssueType::query()
-            ->select('id','name')->orderBy('name')->get()->toArray();
+        if ($this->issue->parent?->type) {
+            $allowedTiers = $this->issue->parent->type->allowedChildTiers();
+            $types = $this->project->issueTypes()
+                ->whereIn('issue_types.tier', array_map(static fn($t) => $t->value, $allowedTiers))
+                ->orderBy('project_issue_types.order')
+                ->get(['issue_types.id','issue_types.name']);
+
+            $this->typeOptions = $types->map(fn($t) => ['id' => (string) $t->id, 'name' => $t->name])->toArray();
+        } else {
+            $this->typeOptions = IssueType::query()
+                ->select('id','name')->orderBy('name')->get()->toArray();
+        }
 
         $this->statusOptions = \App\Models\IssueStatus::query()
             ->select('issue_statuses.id', 'issue_statuses.name')
@@ -126,6 +135,7 @@ final class UpdateIssueForm extends Component
         $this->validate([
             'starts_at_input' => 'nullable|date_format:Y-m-d\TH:i',
             'due_at_input'    => 'nullable|date_format:Y-m-d\TH:i',
+            'issue_type_id' => 'required|exists:issue_types,id',
         ]);
 
         $tz = auth()->user()->timezone ?? config('app.timezone', 'UTC');

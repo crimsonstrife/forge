@@ -251,4 +251,20 @@ class Issue extends BaseModel implements HasMedia
 
         return (int) ($ended + $running);
     }
+
+    /**
+     * Whether this issue (as a parent) can contain the given child type.
+     */
+    public function canContainType(IssueType $childType): bool
+    {
+        $parentType = $this->relationLoaded('type')
+            ? $this->type
+            : $this->type()->first();
+
+        if (! $parentType instanceof IssueType) {
+            return false;
+        }
+
+        return $parentType->allowsChildType($childType);
+    }
 }
