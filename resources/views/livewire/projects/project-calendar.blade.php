@@ -25,7 +25,30 @@
                 height: 'auto',
                 editable: true,
                 droppable: false,
+
+                // Render chip + title
+                eventContent: function(arg) {
+                    const icon = arg.event.extendedProps?.typeIcon || 'filter_none';
+                    const title = arg.event.title || '';
+                    return {
+                        html: `
+                <div class="fc-issue">
+                    <span class="issue-tier-badge"><i class="material-icons md-14">${icon}</i></span>
+                    <span class="fc-issue-title">${title}</span>
+                </div>
+            `
+                    };
+                },
+
+                // Color rail via CSS var
+                eventDidMount: function(info) {
+                    const color = info.event.extendedProps?.typeColor || '#607D8B';
+                    info.el.style.setProperty('--tier-color', color);
+                    info.el.classList.add('has-tier');
+                },
+
                 events: @json($this->getEvents(), JSON_THROW_ON_ERROR),
+
                 eventClick(info) {
                     if (info.event.url) {
                         info.jsEvent.preventDefault();
@@ -59,4 +82,26 @@
             });
         }
     </script>
+@endpush
+@push('styles')
+    <style>
+        /* Tiny chip (same style as Kanban/Scrum) */
+        .issue-tier-badge{
+            display:inline-flex;align-items:center;gap:.375rem;
+            padding:.125rem .5rem;border-radius:9999px;
+            background: color-mix(in oklab, var(--tier-color) 14%, transparent);
+            border:1px solid color-mix(in oklab, var(--tier-color) 32%, #0000);
+            color: var(--tier-color);
+            font-size:.75rem;line-height:1rem;font-weight:600;
+        }
+        .issue-tier-badge .material-icons.md-14{font-size:14px;line-height:14px}
+
+        .fc-issue{display:flex;align-items:center;gap:.375rem}
+        .fc-issue-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+        /* Left color rail on events */
+        .fc .fc-event.has-tier{
+            border-left: 4px solid var(--tier-color) !important;
+        }
+    </style>
 @endpush
