@@ -57,11 +57,31 @@
                     data-backlog-card
                     data-issue-id="{{ $item['id'] }}"
                     wire:key="backlog-{{ $item['id'] }}"
+                    style="--tier-color: {{ $item['type_color'] ?? '#607D8B' }};"
                 >
-                    <div>
-                        <div class="text-xs text-gray-500">{{ $item['key'] }}</div>
-                        <div class="text-sm">{{ $item['summary'] }}</div>
+                    <div class="pr-3">
+                        <div class="text-xs text-gray-500 flex items-center gap-2">
+                            <span class="font-medium">{{ $item['key'] }}</span>
+                            {{-- Tier chip --}}
+                            <x-issues.tier-badge
+                                :color="$item['type_color'] ?? '#607D8B'"
+                                :icon="$item['type_icon'] ?? 'filter_none'"
+                            />
+                        </div>
+                        <div class="mt-1 text-sm">{{ $item['summary'] }}</div>
+
+                        @if(($item['progress'] ?? null) !== null)
+                            <div class="mt-2">
+                                <div class="w-full h-1.5 rounded bg-gray-200 dark:bg-gray-700">
+                                    <div class="h-1.5 rounded" style="width: {{ $item['progress'] }}%; background: {{ $item['type_color'] }};"></div>
+                                </div>
+                                <div class="mt-1 text-[10px] text-gray-500">
+                                    {{ $item['children_done'] }} / {{ $item['children_total'] }} ({{ $item['progress'] }}%)
+                                </div>
+                            </div>
+                        @endif
                     </div>
+
                     @if ($currentSprintId)
                         <button type="button"
                                 class="text-xs px-2 py-1 border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -93,7 +113,9 @@
                     @foreach (($sprintLists[$col['id']] ?? []) as $card)
                         <div
                             class="rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-3"
-                            data-sprint-card data-issue-id="{{ $card['id'] }}" wire:key="card-{{ $card['id'] }}">
+                            data-sprint-card data-issue-id="{{ $card['id'] }}" wire:key="card-{{ $card['id'] }}"
+                            style="--tier-color: {{ $card['type_color'] ?? '#607D8B' }};"
+                        >
                             <div class="flex items-center justify-between text-xs text-gray-500">
                                 <span class="font-medium">{{ $card['key'] }}</span>
                                 <button type="button"
@@ -102,7 +124,26 @@
                                     ← Backlog
                                 </button>
                             </div>
-                            <div class="mt-1 text-sm">{{ $card['summary'] }}</div>
+
+                            <div class="mt-1 text-sm flex items-center justify-between gap-2">
+                                <span>{{ $card['summary'] }}</span>
+                                {{-- Tier chip --}}
+                                <x-issues.tier-badge
+                                    :color="$card['type_color'] ?? '#607D8B'"
+                                    :icon="$card['type_icon'] ?? 'filter_none'"
+                                />
+                            </div>
+
+                            @if(($card['progress'] ?? null) !== null)
+                                <div class="mt-2">
+                                    <div class="w-full h-1.5 rounded bg-gray-200 dark:bg-gray-700">
+                                        <div class="h-1.5 rounded" style="width: {{ $card['progress'] }}%; background: {{ $card['type_color'] }};"></div>
+                                    </div>
+                                    <div class="mt-1 text-[10px] text-gray-500">
+                                        {{ $card['children_done'] }} / {{ $card['children_total'] }} ({{ $card['progress'] }}%)
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>

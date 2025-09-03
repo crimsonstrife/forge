@@ -6,10 +6,12 @@ use App\Enums\SprintState;
 use App\Models\Issue;
 use App\Models\Project;
 use App\Models\Sprint;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Throwable;
 
 final class ScrumBoard extends Component
 {
@@ -61,17 +63,58 @@ final class ScrumBoard extends Component
     private function loadData(): void
     {
         // Backlog = issues not assigned to any sprint
-        $this->backlog = Issue::query()
+        $backlogIssues = Issue::query()
             ->where('project_id', $this->project->id)
             ->whereNull('sprint_id')
             ->latest()
             ->limit(100)
-            ->get(['id', 'key', 'summary', 'issue_status_id'])
-            ->map(fn ($i) => [
-                'id'      => (string) $i->id,
-                'key'     => $i->key,
-                'summary' => $i->summary,
-            ])->all();
+            ->with([
+                'type:id,name,tier',          // tier chip
+                'status:id,is_done',          // roll-up done calc
+            ])
+            ->withCount([
+                'children as children_total',
+                'children as children_done' => fn (Builder $q) =>
+                $q->whereHas('status', fn (Builder $s) => $s->where('is_done', true)),
+            ])
+            ->get(['id', 'key', 'summary', 'issue_status_id', 'issue_type_id']);
+
+        $this->backlog = $backlogIssues->map(function (Issue $i): array {
+            $type = $i->type;
+            $tier = $type?->tier?->value ?? 'other';
+
+            $typeColor = $type?->badgeColor() ?? match ($tier) {
+                'epic'    => '#7e57c2',
+                'story'   => '#1e88e5',
+                'task'    => '#9e9e9e',
+                'subtask' => '#78909C',
+                default   => '#607D8B',
+            };
+
+            $typeIcon = $type?->iconName() ?? match ($tier) {
+                'epic'    => 'all_inclusive',
+                'story'   => 'menu_book',
+                'task'    => 'check_box',
+                'subtask' => 'subdirectory_arrow_right',
+                default   => 'filter_none',
+            };
+
+            $progress = $i->children_total > 0
+                ? (int) floor(($i->children_done / max(1, $i->children_total)) * 100)
+                : null;
+
+            return [
+                'id'              => (string) $i->id,
+                'key'             => $i->key,
+                'summary'         => $i->summary,
+                'tier'            => $tier,
+                'type_color'      => $typeColor,
+                'type_icon'       => $typeIcon,
+                'children_total'  => (int) $i->children_total,
+                'children_done'   => (int) $i->children_done,
+                'progress'        => $progress,
+            ];
+        })->all();
 
         // Sprint columns = project statuses in defined order
         $statuses = $this->project->issueStatuses()
@@ -95,18 +138,58 @@ final class ScrumBoard extends Component
                 ->where('project_id', $this->project->id)
                 ->where('sprint_id', $this->currentSprintId)
                 ->latest()
-                ->get(['id', 'key', 'summary', 'issue_status_id']);
+                ->with([
+                    'type:id,name,tier',
+                    'status:id,is_done',
+                ])
+                ->withCount([
+                    'children as children_total',
+                    'children as children_done' => fn (Builder $q) =>
+                    $q->whereHas('status', fn (Builder $s) => $s->where('is_done', true)),
+                ])
+                ->get(['id', 'key', 'summary', 'issue_status_id', 'issue_type_id']);
         }
 
         foreach ($sprintIssues as $i) {
             $statusId = (int) $i->issue_status_id;
-            if (isset($lists[$statusId])) {
-                $lists[$statusId][] = [
-                    'id'      => (string) $i->id,
-                    'key'     => $i->key,
-                    'summary' => $i->summary,
-                ];
+            if (! isset($lists[$statusId])) {
+                continue;
             }
+
+            $type = $i->type;
+            $tier = $type?->tier?->value ?? 'other';
+
+            $typeColor = $type?->badgeColor() ?? match ($tier) {
+                'epic'    => '#7e57c2',
+                'story'   => '#1e88e5',
+                'task'    => '#9e9e9e',
+                'subtask' => '#78909C',
+                default   => '#607D8B',
+            };
+
+            $typeIcon = $type?->iconName() ?? match ($tier) {
+                'epic'    => 'all_inclusive',
+                'story'   => 'menu_book',
+                'task'    => 'check_box',
+                'subtask' => 'subdirectory_arrow_right',
+                default   => 'filter_none',
+            };
+
+            $progress = $i->children_total > 0
+                ? (int) floor(($i->children_done / max(1, $i->children_total)) * 100)
+                : null;
+
+            $lists[$statusId][] = [
+                'id'              => (string) $i->id,
+                'key'             => $i->key,
+                'summary'         => $i->summary,
+                'tier'            => $tier,
+                'type_color'      => $typeColor,
+                'type_icon'       => $typeIcon,
+                'children_total'  => (int) $i->children_total,
+                'children_done'   => (int) $i->children_done,
+                'progress'        => $progress,
+            ];
         }
 
         $this->sprintLists = $lists;
@@ -243,7 +326,7 @@ final class ScrumBoard extends Component
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function endCurrentSprint(): void
     {
@@ -289,7 +372,9 @@ final class ScrumBoard extends Component
         $this->showSprintsModal = true;
     }
 
-    /** Start a planned sprint and ensure it’s the only active one. */
+    /** Start a planned sprint and ensure it’s the only active one.
+     * @throws Throwable
+     */
     public function startSprint(string $sprintId): void
     {
         /** @var Sprint $sprint */
