@@ -1,5 +1,6 @@
 <?php
 use function Laravel\Folio\{name, middleware};
+
 name('projects.edit');
 middleware(['auth','verified']);
 ?>

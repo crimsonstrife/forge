@@ -100,7 +100,7 @@ final class ProjectCalendar extends Component
                 'title' => trim(($i->key ?? '') . ' — ' . $i->summary),
                 'start' => $start,
                 'end'   => $end,
-                'allDay'=> $allDay,
+                'allDay' => $allDay,
                 'url'   => route('issues.show', ['project' => $this->project->id, 'issue' => $i->key]),
 
                 // Use tier color for the event; border matches fill
@@ -129,7 +129,7 @@ final class ProjectCalendar extends Component
         $this->authorize('update', $issue);
 
         $issue->starts_at = $startIso ? CarbonImmutable::parse($startIso) : null;
-        $issue->due_at    = $endIso   ? CarbonImmutable::parse($endIso)   : null;
+        $issue->due_at    = $endIso ? CarbonImmutable::parse($endIso) : null;
         $issue->save();
 
         $this->dispatch('toast', [

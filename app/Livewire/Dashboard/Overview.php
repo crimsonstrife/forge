@@ -166,8 +166,15 @@ final class Overview extends Component
         ];
 
         $enriched = $rawActivity->map(function (Activity $a) use (
-            $usersById, $issuesById, $projectsById, $labelMap,
-            $statusMap, $assigneeMap, $priorityMap, $typeMap, $parentMap
+            $usersById,
+            $issuesById,
+            $projectsById,
+            $labelMap,
+            $statusMap,
+            $assigneeMap,
+            $priorityMap,
+            $typeMap,
+            $parentMap
         ) {
             /** @var array<string,mixed> $props */
             $props = (array)($a->properties ?? []);
@@ -222,19 +229,19 @@ final class Overview extends Component
 
                 if ($k === 'issue_status_id') {
                     $from = $from ? ($statusMap->get($from)?->name ?? $from) : null;
-                    $to   = $to   ? ($statusMap->get($to)?->name ?? $to)   : null;
+                    $to   = $to ? ($statusMap->get($to)?->name ?? $to) : null;
                 } elseif ($k === 'assignee_id') {
                     $from = $from ? ($assigneeMap->get($from)?->name ?? $from) : null;
-                    $to   = $to   ? ($assigneeMap->get($to)?->name ?? $to)   : null;
+                    $to   = $to ? ($assigneeMap->get($to)?->name ?? $to) : null;
                 } elseif ($k === 'issue_priority_id') {
                     $from = $from ? ($priorityMap->get($from)?->name ?? $from) : null;
-                    $to   = $to   ? ($priorityMap->get($to)?->name ?? $to)   : null;
+                    $to   = $to ? ($priorityMap->get($to)?->name ?? $to) : null;
                 } elseif ($k === 'issue_type_id') {
                     $from = $from ? ($typeMap->get($from)?->name ?? $from) : null;
-                    $to   = $to   ? ($typeMap->get($to)?->name ?? $to)   : null;
+                    $to   = $to ? ($typeMap->get($to)?->name ?? $to) : null;
                 } elseif ($k === 'parent_id') {
                     $from = $from ? (($p = $parentMap->get($from)) ? "{$p->key}: {$p->summary}" : $from) : null;
-                    $to   = $to   ? (($p = $parentMap->get($to))   ? "{$p->key}: {$p->summary}" : $to)   : null;
+                    $to   = $to ? (($p = $parentMap->get($to)) ? "{$p->key}: {$p->summary}" : $to) : null;
                 }
 
                 if (($from ?? '') === ($to ?? '')) {
@@ -255,10 +262,10 @@ final class Overview extends Component
             return [
                 'id'          => $a->id,
                 'actor_name'  => $actorName,
-                'actor_avatar'=> $actorAvatar,
+                'actor_avatar' => $actorAvatar,
                 'verb'        => (string)$verb,
                 'target_type' => $targetType,
-                'target_label'=> $targetLabel,
+                'target_label' => $targetLabel,
                 'target_url'  => $targetUrl,
                 'changes'     => $changes,
                 'created_at'  => $a->created_at,
