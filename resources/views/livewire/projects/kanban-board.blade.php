@@ -1,4 +1,3 @@
-{{-- name: projects.kanban-board --}}
 <div
     x-data="{
         view: @entangle('viewMode'),

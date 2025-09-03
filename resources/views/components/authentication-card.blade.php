@@ -1,9 +1,11 @@
-<div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-    <div>
+<div class="min-vh-100 d-flex flex-column justify-content-center align-items-center bg-body-tertiary py-5">
+    <div class="mb-3">
         {{ $logo }}
     </div>
 
-    <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-        {{ $slot }}
+    <div class="card shadow-sm" style="max-width: 480px; width: 100%;">
+        <div class="card-body p-4">
+            {{ $slot }}
+        </div>
     </div>
 </div>

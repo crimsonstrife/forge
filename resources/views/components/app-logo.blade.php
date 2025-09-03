@@ -1,6 +1,12 @@
-<div class="flex aspect-square size-8 items-center justify-center rounded-md bg-accent-content text-accent-foreground">
-    <x-app-logo-icon class="size-5 fill-current text-white dark:text-black" />
+<div class="d-flex align-items-center">
+    <div class="d-flex align-items-center justify-content-center rounded bg-primary text-white"
+         style="width: 2rem; height: 2rem;">
+        <x-app-logo-icon class="size-5 fill-current text-white dark:text-black" />
+    </div>
+
+    <div class="ms-2 d-grid flex-grow-1 text-start small">
+        <span class="fw-semibold lh-sm mb-0 text-truncate">Laravel Starter Kit</span>
+    </div>
 </div>
-<div class="ms-1 grid flex-1 text-start text-sm">
-    <span class="mb-0.5 truncate leading-tight font-semibold">Laravel Starter Kit</span>
-</div>
+
+

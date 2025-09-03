@@ -1,58 +1,65 @@
-<div class="rounded-xl border border-gray-200/60 dark:border-gray-700/60 bg-white dark:bg-gray-800 p-6 space-y-6">
-    <div class="grid gap-4 sm:grid-cols-2">
-        <div>
-            <x-label for="name" value="Name"/>
-            <x-input id="name" type="text" class="mt-1 block w-full" wire:model.defer="name" autofocus/>
-            <x-input-error for="name" class="mt-2"/>
-        </div>
-        <div>
-            <x-label for="key" value="Key"/>
-            <x-input id="key" type="text" class="mt-1 block w-full uppercase" wire:model.defer="key"/>
-            <x-input-error for="key" class="mt-2"/>
-        </div>
-        <div class="sm:col-span-2">
-            <x-label for="description" value="Description"/>
-            <x-textarea id="description" rows="5" class="mt-1 block w-full" wire:model.defer="description"/>
-            <x-input-error for="description" class="mt-2"/>
-        </div>
-        <div>
-            <x-label for="stage" value="Stage"/>
-            <select id="stage" class="mt-1 block w-full rounded-md border" wire:model.defer="stage">
-                @foreach($stages as $s)
-                    <option value="{{ $s->value }}">{{ ucfirst($s->value) }}</option>
-                @endforeach
-            </select>
-            <x-input-error for="stage" class="mt-2"/>
-        </div>
-        <div>
-            <x-label for="lead_id" value="Project lead (optional)"/>
-            <select id="lead_id" class="mt-1 block w-full" wire:model.defer="lead_id">
-                <option value="">— None —</option>
-                @foreach($users as $u)
-                    <option value="{{ $u->id }}">{{ $u->name }}</option>
-                @endforeach
-            </select>
-            <x-input-error for="lead_id" class="mt-2"/>
-        </div>
-        <div>
-            <x-label for="started_at" value="Start date"/>
-            <x-input id="started_at" type="date" class="mt-1 block w-full" wire:model.defer="started_at"/>
-            <x-input-error for="started_at" class="mt-2"/>
-        </div>
-        <div>
-            <x-label for="due_at" value="Deadline"/>
-            <x-input id="due_at" type="date" class="mt-1 block w-full" wire:model.defer="due_at"/>
-            <x-input-error for="due_at" class="mt-2"/>
-        </div>
-        <div>
-            <x-label for="ended_at" value="Ended"/>
-            <x-input id="ended_at" type="date" class="mt-1 block w-full" wire:model.defer="ended_at"/>
-            <x-input-error for="ended_at" class="mt-2"/>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-sm-6">
+                <x-label for="name" value="Name"/>
+                <input id="name" type="text" class="form-control" wire:model.defer="name" autofocus>
+                <x-input-error for="name" class="mt-1"/>
+            </div>
+
+            <div class="col-sm-6">
+                <x-label for="key" value="Key"/>
+                <input id="key" type="text" class="form-control text-uppercase" wire:model.defer="key">
+                <x-input-error for="key" class="mt-1"/>
+            </div>
+
+            <div class="col-12">
+                <x-label for="description" value="Description"/>
+                <textarea id="description" rows="5" class="form-control" wire:model.defer="description"></textarea>
+                <x-input-error for="description" class="mt-1"/>
+            </div>
+
+            <div class="col-sm-6">
+                <x-label for="stage" value="Stage"/>
+                <select id="stage" class="form-select" wire:model.defer="stage">
+                    @foreach($stages as $s)
+                        <option value="{{ $s->value }}">{{ ucfirst($s->value) }}</option>
+                    @endforeach
+                </select>
+                <x-input-error for="stage" class="mt-1"/>
+            </div>
+
+            <div class="col-sm-6">
+                <x-label for="lead_id" value="Project lead (optional)"/>
+                <select id="lead_id" class="form-select" wire:model.defer="lead_id">
+                    <option value="">— {{ __('None') }} —</option>
+                    @foreach($users as $u)
+                        <option value="{{ $u->id }}">{{ $u->name }}</option>
+                    @endforeach
+                </select>
+                <x-input-error for="lead_id" class="mt-1"/>
+            </div>
+
+            <div class="col-sm-4">
+                <x-label for="started_at" value="Start date"/>
+                <input id="started_at" type="date" class="form-control" wire:model.defer="started_at">
+                <x-input-error for="started_at" class="mt-1"/>
+            </div>
+            <div class="col-sm-4">
+                <x-label for="due_at" value="Deadline"/>
+                <input id="due_at" type="date" class="form-control" wire:model.defer="due_at">
+                <x-input-error for="due_at" class="mt-1"/>
+            </div>
+            <div class="col-sm-4">
+                <x-label for="ended_at" value="Ended"/>
+                <input id="ended_at" type="date" class="form-control" wire:model.defer="ended_at">
+                <x-input-error for="ended_at" class="mt-1"/>
+            </div>
         </div>
     </div>
 
-    <div class="flex justify-end gap-3">
-        <a href="{{ route('projects.show', ['project'=>$project]) }}" class="px-3 py-2 rounded-lg border">Cancel</a>
-        <x-button wire:click="save">Save</x-button>
+    <div class="card-footer d-flex justify-content-end gap-2">
+        <a href="{{ route('projects.show', ['project'=>$project]) }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
+        <wa-button variant="brand" wire:click="save">{{ __('Save') }}</wa-button>
     </div>
 </div>

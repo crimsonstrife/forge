@@ -1,388 +1,190 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-mark class="block h-9 w-auto" />
-                    </a>
-                </div>
+@php use App\Models\Project; use App\Models\Organization; use App\Models\Issue; @endphp
 
-                <!-- Navigation Links -->
-                <div class="hidden sm:-my-px sm:ms-10 sm:flex sm:items-center gap-2">
-                    {{-- Dashboard --}}
+<nav class="navbar navbar-expand-md bg-body border-bottom" x-data>
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('dashboard') }}">
+            <x-application-mark />
+        </a>
+
+        <!-- Toggler -->
+        <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#appNavbar"
+                aria-controls="appNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Nav contents -->
+        <div class="collapse navbar-collapse d-md-flex" id="appNavbar">
+            <!-- Left: main nav -->
+            <ul class="navbar-nav me-auto mb-2 mb-md-0 align-items-md-center">
+                <li class="nav-item">
                     <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    {{-- Projects --}}
-                    <x-dropdown align="left" width="56">
-                        <x-slot name="trigger">
-                            <button type="button" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md
-                text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/60">
-                                Projects
-                                <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round"
-                                                                                    d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg>
-                            </button>
-                        </x-slot>
-                        <x-slot name="content">
+                </li>
+
+                <!-- Projects -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ __('Projects') }}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="projectsDropdown">
+                        <li>
                             <x-dropdown-link href="{{ Route::has('projects.index') ? route('projects.index') : url('/projects') }}">
-                                Browse projects
+                                {{ __('Browse projects') }}
                             </x-dropdown-link>
+                        </li>
+                        <li>
                             <x-dropdown-link href="{{ Route::has('projects.mine') ? route('projects.mine') : url('/projects?filter=mine') }}">
-                                My projects
+                                {{ __('My projects') }}
                             </x-dropdown-link>
-                            @can('create', \App\Models\Project::class)
-                                <div class="border-t border-gray-200 dark:border-gray-600"></div>
+                        </li>
+                        @can('create', Project::class)
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
                                 <x-dropdown-link href="{{ Route::has('projects.create') ? route('projects.create') : url('/projects/create') }}">
-                                    New project
+                                    {{ __('New project') }}
                                 </x-dropdown-link>
-                            @endcan
-                        </x-slot>
-                    </x-dropdown>
+                            </li>
+                        @endcan
+                    </ul>
+                </li>
 
-                    {{-- Organizations --}}
-                    <x-dropdown align="left" width="56">
-                        <x-slot name="trigger">
-                            <button type="button" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md
-                text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/60">
-                                Organizations
-                                <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round"
-                                                                                    d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg>
-                            </button>
-                        </x-slot>
-                        <x-slot name="content">
+                <!-- Organizations -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="orgDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ __('Organizations') }}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="orgDropdown">
+                        <li>
                             <x-dropdown-link href="{{ Route::has('organizations.index') ? route('organizations.index') : url('/organizations') }}">
-                                Browse organizations
+                                {{ __('Browse organizations') }}
                             </x-dropdown-link>
-                            @can('create', \App\Models\Organization::class)
-                                <div class="border-t border-gray-200 dark:border-gray-600"></div>
+                        </li>
+                        @can('create', Organization::class)
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
                                 <x-dropdown-link href="{{ Route::has('organizations.create') ? route('organizations.create') : url('/organizations/create') }}">
-                                    New organization
+                                    {{ __('New organization') }}
                                 </x-dropdown-link>
-                            @endcan
-                        </x-slot>
-                    </x-dropdown>
-                </div>
-            </div>
+                            </li>
+                        @endcan
+                    </ul>
+                </li>
+            </ul>
 
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                {{-- Global search --}}
-                <form action="{{ Route::has('search') ? route('search') : url('/search') }}" method="GET"
-                      class="hidden md:flex items-center me-3">
-                    <label for="global-search" class="sr-only">Search</label>
-                    <div class="relative">
-                        <input id="global-search" name="q" type="search" placeholder="Search projects, issues, people…"
-                               class="w-64 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800
-                      px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                        <span class="pointer-events-none absolute right-2 top-1.5 text-xs text-gray-400"></span>
-                    </div>
-                </form>
+            <!-- Middle: global search -->
+            <form action="{{ Route::has('search') ? route('search') : url('/search') }}" method="GET"
+                  class="d-none d-md-flex align-items-center me-3">
+                <label for="global-search" class="visually-hidden">{{ __('Search') }}</label>
+                <input id="global-search" name="q" type="search"
+                       class="form-control form-control-sm" style="width: 18rem;"
+                       placeholder="{{ __('Search projects, issues, people…') }}" />
+            </form>
 
-                {{-- Create dropdown --}}
-                <div class="me-2">
-                    <x-dropdown align="right" width="56">
-                        <x-slot name="trigger">
-                            <button type="button"
-                                    class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md
-                           bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none">
-                                Create
-                                <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M12 4.5v15m7.5-7.5h-15"/>
-                                </svg>
-                            </button>
-                        </x-slot>
-                        <x-slot name="content">
-                            @can('create', \App\Models\Issue::class)
-                                <x-dropdown-link href="{{ Route::has('issues.create') ? route('issues.create') : url('/issues/create') }}">
-                                    New issue
-                                </x-dropdown-link>
-                            @endcan
-                            @can('create', \App\Models\Project::class)
-                                <x-dropdown-link href="{{ Route::has('projects.create') ? route('projects.create') : url('/projects/create') }}">
-                                    New project
-                                </x-dropdown-link>
-                            @endcan
-                            @can('create', \App\Models\Organization::class)
-                                <x-dropdown-link href="{{ Route::has('organizations.create') ? route('organizations.create') : url('/organizations/create') }}">
-                                    New organization
-                                </x-dropdown-link>
-                            @endcan
-                        </x-slot>
-                    </x-dropdown>
+            <!-- Right: actions -->
+            <div class="d-flex align-items-center gap-2">
+
+                <!-- Create -->
+                <div class="dropdown">
+                    <wa-button class="dropdown-toggle" variant="brand" data-bs-toggle="dropdown" aria-expanded="false">
+                        <wa-icon slot="start" name="plus"></wa-icon>
+                        {{ __('Create') }}
+                    </wa-button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        @can('create', Issue::class)
+                            <li><x-dropdown-link href="{{ Route::has('issues.create') ? route('issues.create') : url('/issues/create') }}">{{ __('New issue') }}</x-dropdown-link></li>
+                        @endcan
+                        @can('create', Project::class)
+                            <li><x-dropdown-link href="{{ Route::has('projects.create') ? route('projects.create') : url('/projects/create') }}">{{ __('New project') }}</x-dropdown-link></li>
+                        @endcan
+                        @can('create', Organization::class)
+                            <li><x-dropdown-link href="{{ Route::has('organizations.create') ? route('organizations.create') : url('/organizations/create') }}">{{ __('New organization') }}</x-dropdown-link></li>
+                        @endcan
+                    </ul>
                 </div>
-                <!-- Teams Dropdown -->
+
+                <!-- Teams -->
                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
                     @php($currentTeam = Auth::user()->currentTeam)
-                    <div class="ms-3 relative">
-                        <x-dropdown align="right" width="60">
-                            <x-slot name="trigger">
-                <span class="inline-flex rounded-md">
-                    <button type="button"
-                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md
-                               text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300
-                               focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700
-                               transition ease-in-out duration-150">
-                        {{ $currentTeam?->name ?? __('No team selected') }}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="teamsDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ $currentTeam?->name ?? __('No team selected') }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="teamsDropdown">
+                            <li class="px-3 py-2 text-muted small">{{ __('Manage Team') }}</li>
 
-                        <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                             stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
-                        </svg>
-                    </button>
-                </span>
-                            </x-slot>
-
-                            <x-slot name="content">
-                                <div class="w-60">
-                                    <!-- Team Management -->
-                                    <div class="block px-4 py-2 text-xs text-gray-400">
-                                        {{ __('Manage Team') }}
-                                    </div>
-
-                                    @if ($currentTeam)
-                                        <!-- Team Settings -->
-                                        <x-dropdown-link href="{{ route('teams.show', $currentTeam->id) }}">
-                                            {{ __('Team Settings') }}
-                                        </x-dropdown-link>
-                                    @else
-                                        <div class="px-4 py-2 text-sm text-gray-500">
-                                            {{ __('You are not in a team yet.') }}
-                                        </div>
-                                    @endif
-
-                                    @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-                                        <x-dropdown-link href="{{ route('teams.create') }}">
-                                            {{ __('Create New Team') }}
-                                        </x-dropdown-link>
-                                    @endcan
-
-                                    <!-- Team Switcher -->
-                                    @if (Auth::user()->allTeams()->count() > 1 || ($currentTeam === null && Auth::user()->allTeams()->count() >= 1))
-                                        <div class="border-t border-gray-200 dark:border-gray-600"></div>
-
-                                        <div class="block px-4 py-2 text-xs text-gray-400">
-                                            {{ __('Switch Teams') }}
-                                        </div>
-
-                                        @foreach (Auth::user()->allTeams() as $team)
-                                            <x-switchable-team :team="$team" />
-                                        @endforeach
-                                    @endif
-                                </div>
-                            </x-slot>
-                        </x-dropdown>
-                    </div>
-                @endif
-
-
-                <!-- Settings Dropdown -->
-                <div class="ms-3 relative">
-                    <x-dropdown align="right" width="48">
-                        <x-slot name="trigger">
-                            @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                                <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
-                                    <img class="size-8 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
-                                </button>
+                            @if ($currentTeam)
+                                <li>
+                                    <x-dropdown-link href="{{ route('teams.show', $currentTeam->id) }}">{{ __('Team Settings') }}</x-dropdown-link>
+                                </li>
                             @else
-                                <span class="inline-flex rounded-md">
-                                    <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
-                                        {{ Auth::user()->name }}
-
-                                        <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                        </svg>
-                                    </button>
-                                </span>
+                                <li class="px-3 py-2 small text-muted">{{ __('You are not in a team yet.') }}</li>
                             @endif
-                        </x-slot>
 
-                        <x-slot name="content">
-                            <!-- Account Management -->
-                            <div class="block px-4 py-2 text-xs text-gray-400">
-                                {{ __('Manage Account') }}
+                            @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
+                                <li><x-dropdown-link href="{{ route('teams.create') }}">{{ __('Create New Team') }}</x-dropdown-link></li>
+                            @endcan
+
+                            @if (Auth::user()->allTeams()->count() > 1 || ($currentTeam === null && Auth::user()->allTeams()->count() >= 1))
+                                <li><hr class="dropdown-divider"></li>
+                                <li class="px-3 py-2 text-muted small">{{ __('Switch Teams') }}</li>
+                                @foreach (Auth::user()->allTeams() as $team)
+                                    <li><x-switchable-team :team="$team" /></li>
+                                @endforeach
+                            @endif
+                        </ul>
+                    </div>
+                @endif
+
+                <!-- Settings / Profile -->
+                <div class="dropdown">
+                    <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2" type="button"
+                            id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
+                            <img class="rounded-circle" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}"
+                                 style="width: 32px; height: 32px; object-fit: cover;">
+                        @else
+                            <span>{{ Auth::user()->name }}</span>
+                        @endif
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown" style="min-width: 14rem;">
+                        <li class="px-3 py-2 text-muted small">{{ __('Manage Account') }}</li>
+                        <li><x-dropdown-link href="{{ route('profile.show') }}">{{ __('Profile') }}</x-dropdown-link></li>
+                        @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
+                            <li><x-dropdown-link href="{{ route('api-tokens.index') }}">{{ __('API Tokens') }}</x-dropdown-link></li>
+                        @endif
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <!-- Dark mode toggle -->
+                        <li class="px-3 py-2">
+                            <div x-data="window.themeSwitcher()" x-init="switchTheme()" class="d-flex align-items-center justify-content-between">
+                                <span class="small text-muted">{{ __('Dark Mode') }}</span>
+                                <wa-switch :checked="switchOn" @click="switchOn = !switchOn; switchTheme()"></wa-switch>
                             </div>
+                        </li>
 
-                            <x-dropdown-link href="{{ route('profile.show') }}">
-                                {{ __('Profile') }}
-                            </x-dropdown-link>
+                        <li><hr class="dropdown-divider"></li>
 
-                            @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                                <x-dropdown-link href="{{ route('api-tokens.index') }}">
-                                    {{ __('API Tokens') }}
-                                </x-dropdown-link>
-                            @endif
-
-                            <div class="border-t border-gray-200 dark:border-gray-600"></div>
-
-                            <!-- Authentication -->
-                            <form method="POST" action="{{ route('logout') }}" x-data>
+                        <!-- Logout -->
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}" class="m-0">
                                 @csrf
-
-                                <x-dropdown-link href="{{ route('logout') }}"
-                                         @click.prevent="$root.submit();">
-                                    {{ __('Log Out') }}
-                                </x-dropdown-link>
+                                <button type="submit" class="dropdown-item">{{ __('Log Out') }}</button>
                             </form>
-                        </x-slot>
-                        <x-slot name="darkModeToggle">
-                            <div x-data="window.themeSwitcher()" x-init="switchTheme()" @keydown.window.tab="switchOn = false" class="flex items-center justify-center space-x-2">
-                                <input id="thisId" type="checkbox" name="switch" class="hidden" :checked="switchOn">
-
-                                <button
-                                    x-ref="switchButton"
-                                    type="button"
-                                    @click="switchOn = ! switchOn; switchTheme()"
-                                    :class="switchOn ? 'bg-blue-600' : 'bg-neutral-200'"
-                                    class="relative inline-flex h-6 py-0.5 ml-4 focus:outline-none rounded-full w-10">
-                                    <span :class="switchOn ? 'translate-x-[18px]' : 'translate-x-0.5'" class="w-5 h-5 duration-200 ease-in-out bg-white rounded-full shadow-md"></span>
-                                </button>
-
-                                <label @click="$refs.switchButton.click(); $refs.switchButton.focus()" :id="$id('switch')"
-                                       :class="{ 'text-blue-600': switchOn, 'text-gray-400': ! switchOn }"
-                                       class="text-sm select-none">
-                                    Dark Mode
-                                </label>
-                            </div>
-                        </x-slot>
-                    </x-dropdown>
+                        </li>
+                    </ul>
                 </div>
-            </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
-                    <svg class="size-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-            {{-- Projects --}}
-            <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
-            <div class="px-4 py-2 text-xs text-gray-400">Projects</div>
-            <x-responsive-nav-link href="{{ Route::has('projects.index') ? route('projects.index') : '#' }}">
-                Browse projects
-            </x-responsive-nav-link>
-            <x-responsive-nav-link href="{{ Route::has('projects.mine') ? route('projects.mine') : (Route::has('projects.index') ? route('projects.index', ['filter' => 'mine']) : '#') }}">
-                My projects
-            </x-responsive-nav-link>
-            @can('create', \App\Models\Project::class)
-                <x-responsive-nav-link href="{{ Route::has('projects.create') ? route('projects.create') : '#' }}">
-                    New project
-                </x-responsive-nav-link>
-            @endcan
-
-            {{-- Organizations --}}
-            <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
-            <div class="px-4 py-2 text-xs text-gray-400">Organizations</div>
-            <x-responsive-nav-link href="{{ Route::has('organizations.index') ? route('organizations.index') : '#' }}">
-                Browse organizations
-            </x-responsive-nav-link>
-            @can('create', \App\Models\Organization::class)
-                <x-responsive-nav-link href="{{ Route::has('organizations.create') ? route('organizations.create') : '#' }}">
-                    New organization
-                </x-responsive-nav-link>
-            @endcan
-        </div>
-
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-            <div class="flex items-center px-4">
-                @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                    <div class="shrink-0 me-3">
-                        <img class="size-10 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
-                    </div>
-                @endif
-
-                <div>
-                    <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                </div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <!-- Account Management -->
-                <x-responsive-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                    <x-responsive-nav-link href="{{ route('api-tokens.index') }}" :active="request()->routeIs('api-tokens.index')">
-                        {{ __('API Tokens') }}
-                    </x-responsive-nav-link>
-                @endif
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}" x-data>
-                    @csrf
-
-                    <x-responsive-nav-link href="{{ route('logout') }}"
-                                   @click.prevent="$root.submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-
-                <!-- Team Management -->
-                @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
-                    @php($currentTeam = Auth::user()->currentTeam)
-
-                    <div class="border-t border-gray-200 dark:border-gray-600"></div>
-
-                    <div class="block px-4 py-2 text-xs text-gray-400">
-                        {{ __('Manage Team') }}
-                    </div>
-
-                    @if ($currentTeam)
-                        <!-- Team Settings -->
-                        <x-responsive-nav-link href="{{ route('teams.show', $currentTeam->id) }}" :active="request()->routeIs('teams.show')">
-                            {{ __('Team Settings') }}
-                        </x-responsive-nav-link>
-                    @else
-                        <div class="px-4 py-2 text-sm text-gray-500">
-                            {{ __('You are not in a team yet.') }}
-                        </div>
-                    @endif
-
-                    @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-                        <x-responsive-nav-link href="{{ route('teams.create') }}" :active="request()->routeIs('teams.create')">
-                            {{ __('Create New Team') }}
-                        </x-responsive-nav-link>
-                    @endcan
-
-                    <!-- Team Switcher -->
-                    @if (Auth::user()->allTeams()->count() > 1 || ($currentTeam === null && Auth::user()->allTeams()->count() >= 1))
-                        <div class="border-t border-gray-200 dark:border-gray-600"></div>
-
-                        <div class="block px-4 py-2 text-xs text-gray-400">
-                            {{ __('Switch Teams') }}
-                        </div>
-
-                        @foreach (Auth::user()->allTeams() as $team)
-                            <x-switchable-team :team="$team" component="responsive-nav-link" />
-                        @endforeach
-                    @endif
-                @endif
             </div>
         </div>
     </div>
 </nav>
+
 <script>
+    // Quick focus for global search with '/'
     document.addEventListener('keydown', (e) => {
         if (['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
         if (e.key === '/') {

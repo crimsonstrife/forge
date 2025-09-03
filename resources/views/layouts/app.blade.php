@@ -1,64 +1,64 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <!-- Styles -->
-        @livewireStyles
-        @stack('styles')
-    </head>
-    <body class="font-sans antialiased" x-data="themeSwitcher()" :class="{ 'dark': switchOn }">
-        <x-banner />
+    @livewireStyles
+    @stack('styles')
+</head>
+<body x-data="themeSwitcher()" :class="{ 'dark': switchOn }">
+<x-banner />
 
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            @livewire('navigation-menu')
+<div class="min-vh-100 bg-body-tertiary">
+    @livewire('navigation-menu')
 
-            <!-- Page Heading -->
-            @if (isset($header))
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endif
+    @if (isset($header))
+        <header class="bg-body border-bottom">
+            <div class="container py-3">
+                {{ $header }}
+            </div>
+        </header>
+    @endif
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
-        </div>
+    <main>
+        {{ $slot }}
+    </main>
+</div>
 
-        @stack('modals')
+@stack('modals')
 
-        @livewireScripts
+@livewireScripts
+@stack('scripts')
 
-        @stack('scripts')
-    </body>
-    <script>
-        window.themeSwitcher = function () {
-            return {
-                switchOn: JSON.parse(localStorage.getItem('isDark')) || false,
-                switchTheme() {
-                    if (this.switchOn) {
-                        document.documentElement.classList.add('dark')
-                    } else {
-                        document.documentElement.classList.remove('dark')
-                    }
-                    localStorage.setItem('isDark', this.switchOn)
-                }
+<script>
+    // Bootstrap-friendly + WA-friendly theme toggle
+    window.themeSwitcher = function () {
+        return {
+            switchOn: JSON.parse(localStorage.getItem('isDark')) || false,
+            switchTheme() {
+                const isDark = this.switchOn;
+                document.documentElement.classList.toggle('dark', isDark);
+                document.documentElement.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
+                localStorage.setItem('isDark', isDark);
             }
         }
-    </script>
+    }
+    // Initialize data-bs-theme on load
+    document.addEventListener('alpine:init', () => {
+        const isDark = JSON.parse(localStorage.getItem('isDark')) || false;
+        document.documentElement.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
+    });
+</script>
+</body>
 </html>

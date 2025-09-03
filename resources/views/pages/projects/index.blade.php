@@ -22,38 +22,41 @@ render(function (View $view) {
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200">Projects</h2>
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <h2 class="h4 mb-0">{{ __('Projects') }}</h2>
             @can('create', App\Models\Project::class)
-                <a href="{{ route('projects.create') }}"
-                   class="inline-flex items-center rounded-lg px-3 py-2 bg-primary-600 text-white hover:bg-primary-700">
-                    New Project
+                <a href="{{ route('projects.create') }}" class="btn btn-primary btn-sm">
+                    {{ __('New Project') }}
                 </a>
             @endcan
         </div>
     </x-slot>
 
-    <div class="py-6">
-        <div class="mx-auto max-w-7xl space-y-6">
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="py-4">
+        <div class="container d-flex flex-column gap-3">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
                 @forelse($projects as $project)
-                    <a href="{{ route('projects.show', ['project' => $project]) }}"
-                       class="rounded-xl border border-gray-200/60 dark:border-gray-700/60 p-4 hover:bg-gray-50 dark:hover:bg-gray-800">
-                        <div class="flex items-center justify-between">
-                            <div class="text-sm uppercase tracking-wide text-gray-500">{{ $project->key }}</div>
-                            <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700">
-                                {{ $project->stage->value ?? 'planning' }}
-                            </span>
-                        </div>
-                        <div class="mt-2 font-semibold text-gray-900 dark:text-gray-100">{{ $project->name }}</div>
-                        <div class="mt-1 text-sm text-gray-600 line-clamp-2">{{ $project->description }}</div>
-                    </a>
+                    <div class="col">
+                        <a href="{{ route('projects.show', ['project' => $project]) }}" class="card h-100 text-reset text-decoration-none">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="text-uppercase small text-body-secondary">{{ $project->key }}</div>
+                                    <span class="badge bg-body-tertiary text-body text-uppercase">{{ $project->stage->value ?? 'planning' }}</span>
+                                </div>
+                                <div class="fw-semibold mt-2">{{ $project->name }}</div>
+                                <div class="small text-body-secondary mt-1">{{ $project->description }}</div>
+                            </div>
+                        </a>
+                    </div>
                 @empty
-                    <div class="col-span-full text-center text-gray-500">No projects yet.</div>
+                    <div class="col-12 text-center text-body-secondary">{{ __('No projects yet.') }}</div>
                 @endforelse
             </div>
 
-            {{ $projects->onEachSide(1)->links() }}
+            <div>
+                {{ $projects->onEachSide(1)->links() }}
+            </div>
         </div>
     </div>
 </x-app-layout>
+
