@@ -21,7 +21,7 @@ class IssueType extends Model
 
     protected $casts = [
         'tier' => IssueTier::class,
-        'is_hierarchical'=>'bool',
+        'is_hierarchical' => 'bool',
         'is_default' => 'bool'
     ];
 

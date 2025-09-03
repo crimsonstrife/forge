@@ -273,7 +273,7 @@ final class ScrumBoard extends Component
     {
         $this->authorize('create', [Sprint::class, $this->project]);
         $this->resetValidation();
-        $this->newSprint = ['name'=>'','goal'=>'','start_date'=>'','end_date'=>'','start_now'=>false];
+        $this->newSprint = ['name' => '','goal' => '','start_date' => '','end_date' => '','start_now' => false];
         $this->showCreateSprint = true;
     }
 

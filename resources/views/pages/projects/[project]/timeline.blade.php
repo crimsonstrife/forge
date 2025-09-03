@@ -2,6 +2,7 @@
 
 use App\Models\Project;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('projects.timeline');

@@ -78,14 +78,14 @@ final class UpdateIssueForm extends Component
         if ($this->issue->parent?->type) {
             $allowedTiers = $this->issue->parent->type->allowedChildTiers();
             $types = $this->project->issueTypes()
-                ->whereIn('issue_types.tier', array_map(static fn($t) => $t->value, $allowedTiers))
+                ->whereIn('issue_types.tier', array_map(static fn ($t) => $t->value, $allowedTiers))
                 ->orderBy('project_issue_types.order')
                 ->get(['issue_types.id','issue_types.name']);
 
-            $this->typeOptions = $types->map(fn($t) => ['id' => (string) $t->id, 'name' => $t->name])->toArray();
+            $this->typeOptions = $types->map(fn ($t) => ['id' => (string) $t->id, 'name' => $t->name])->toArray();
         } else {
             $this->typeOptions = IssueType::query()
-                ->select('id','name')->orderBy('name')->get()->toArray();
+                ->select('id', 'name')->orderBy('name')->get()->toArray();
         }
 
         $this->statusOptions = \App\Models\IssueStatus::query()
@@ -97,22 +97,22 @@ final class UpdateIssueForm extends Component
 
         if (empty($this->statusOptions)) {
             $this->statusOptions = \App\Models\IssueStatus::query()
-                ->select('id','name')->orderBy('name')->get()->toArray();
+                ->select('id', 'name')->orderBy('name')->get()->toArray();
         }
 
         $this->priorityOptions = IssuePriority::query()
-            ->select('id','name')->orderBy('name')->get()->toArray();
+            ->select('id', 'name')->orderBy('name')->get()->toArray();
 
         // You may want to scope to project members; for now list active users.
         $this->assigneeOptions = User::query()
-            ->select('id','name')->orderBy('name')->limit(200)->get()->toArray();
+            ->select('id', 'name')->orderBy('name')->limit(200)->get()->toArray();
 
         // Seed fields
         $this->summary          = (string) $issue->summary;
         $this->description      = $issue->description;
         $this->issue_type_id    = (string) $issue->issue_type_id;
         $this->issue_status_id  = (string) $issue->issue_status_id;
-        $this->issue_priority_id= $issue->issue_priority_id ?: null;
+        $this->issue_priority_id = $issue->issue_priority_id ?: null;
         $this->assignee_id      = $issue->assignee_id ?: null;
         $this->story_points     = $issue->story_points;
         $this->estimate_minutes = $issue->estimate_minutes;

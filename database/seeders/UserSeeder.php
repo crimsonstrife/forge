@@ -19,9 +19,9 @@ class UserSeeder extends Seeder
     {
         // Safety check in production
         if (!confirm(label: 'You are in production. Continue creating a user?', default: false) && app()->environment('production')) {
-                warning('Aborted.');
-                return;
-            }
+            warning('Aborted.');
+            return;
+        }
 
         // Offer interactive setup
         $interactive = confirm(

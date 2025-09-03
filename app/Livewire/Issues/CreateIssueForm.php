@@ -180,7 +180,7 @@ final class CreateIssueForm extends Component
 
         $preferredTypeId = null;
         if ($this->parent) {
-            $preferredTypeId = $this->project->issueTypes()->where('issue_types.key','SUBTASK')->value('issue_types.id');
+            $preferredTypeId = $this->project->issueTypes()->where('issue_types.key', 'SUBTASK')->value('issue_types.id');
         }
         $this->typeId     = $preferredTypeId ? (string) $preferredTypeId : ($this->typeOptions[0]['id'] ?? null);
         $this->priorityId = $this->priorityOptions[0]['id'] ?? null;
@@ -216,7 +216,7 @@ final class CreateIssueForm extends Component
 
         // Allowed types for this project scoped by allowed tiers.
         $allowedTypes = $this->project->issueTypes()
-            ->whereIn('issue_types.tier', array_map(fn($t) => $t->value, $allowedTiers))
+            ->whereIn('issue_types.tier', array_map(fn ($t) => $t->value, $allowedTiers))
             ->orderBy('project_issue_types.order')
             ->get(['issue_types.id','issue_types.name','issue_types.tier']);
 
@@ -229,7 +229,7 @@ final class CreateIssueForm extends Component
         // If there's exactly one valid child type (e.g., Task → Sub-Task), auto-select it.
         if (count($this->typeOptions) === 1) {
             $this->typeId = $this->typeOptions[0]['id'];
-        } else if ($this->typeId && ! in_array($this->typeId, $this->allowedTypeIds, true)) {
+        } elseif ($this->typeId && ! in_array($this->typeId, $this->allowedTypeIds, true)) {
             $this->typeId = null;
         }
     }
