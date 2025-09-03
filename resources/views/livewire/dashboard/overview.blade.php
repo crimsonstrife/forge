@@ -101,25 +101,108 @@
 
     {{-- Column 3: Activity --}}
     <section class="space-y-4">
-        <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4">
-            <h3 class="text-sm font-semibold text-zinc-700 dark:text-zinc-200 mb-3">Recent activity</h3>
-            @if($recentActivity->isEmpty())
-                <p class="text-sm text-zinc-500 dark:text-zinc-400">No recent activity.</p>
-            @else
-                <ul class="space-y-2">
-                    @foreach($recentActivity as $event)
-                        <li class="text-sm text-zinc-800 dark:text-zinc-100">
-                            <span class="text-zinc-600 dark:text-zinc-400">
-                                {{ $event->created_at->diffForHumans() }}
-                            </span>
-                            — {{ $event->description }}
-                            @if($event->project)
-                                <span class="text-xs text-zinc-500 dark:text-zinc-400">({{ $event->project->key }})</span>
-                            @endif
-                        </li>
-                    @endforeach
-                </ul>
-            @endif
+        <div class="rounded-xl border border-gray-200/60 dark:border-gray-700/60 bg-white dark:bg-gray-800 p-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-medium text-gray-900 dark:text-gray-100">Recent activity</h3>
+            </div>
+
+            <div class="mt-4 space-y-6">
+                @forelse($activityGroups as $groupLabel => $items)
+                    <div>
+                        <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                            {{ $groupLabel }}
+                        </h4>
+
+                        <ul class="mt-2 space-y-3">
+                            @foreach($items as $i)
+                                <li class="rounded-lg border border-gray-200/60 dark:border-gray-700/60 p-3">
+                                    <div class="flex items-start gap-3">
+                                        <img
+                                            src="{{ $i['actor_avatar'] ?? asset('images/default-avatar.png') }}"
+                                            alt=""
+                                            class="h-8 w-8 rounded-full object-cover"
+                                        >
+
+                                        <div class="min-w-0 flex-1">
+                                            <div class="text-sm text-gray-900 dark:text-gray-100">
+                                                <span class="font-medium">{{ $i['actor_name'] }}</span>
+                                                <span class="text-gray-600 dark:text-gray-300">
+                                                {{ strtolower($i['verb']) }}
+                                            </span>
+
+                                                @if($i['target_url'])
+                                                    <a href="{{ $i['target_url'] }}" class="font-medium underline decoration-dotted">
+                                                        {{ $i['target_label'] }}
+                                                    </a>
+                                                @else
+                                                    <span class="font-medium">{{ $i['target_label'] }}</span>
+                                                @endif
+                                            </div>
+
+                                            <div class="mt-0.5 text-xs text-gray-500">
+                                                {{ $i['ago'] }}
+                                            </div>
+
+                                            {{-- Compact “headline” for Status change --}}
+                                            @php
+                                                $statusChange = collect($i['changes'])->firstWhere('key','issue_status_id');
+                                            @endphp
+
+                                            @if($statusChange)
+                                                <div class="mt-2 text-xs flex items-center gap-2">
+                                                    <span class="text-gray-500">{{ $statusChange['label'] }}:</span>
+                                                    <span class="rounded px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800">
+                                                    {{ $statusChange['from'] ?? '—' }}
+                                                </span>
+                                                    <span>→</span>
+                                                    <span class="rounded px-1.5 py-0.5"
+                                                          style="background-color: {{ $statusChange['to_color'] ?? 'transparent' }}20">
+                                                    {{ $statusChange['to'] ?? '—' }}
+                                                </span>
+                                                </div>
+                                            @endif
+
+                                            {{-- Toggle full diff --}}
+                                            @if(!empty($i['changes']))
+                                                <div x-data="{ open: false }" class="mt-2">
+                                                    <button type="button"
+                                                            class="text-xs text-primary-600 hover:underline"
+                                                            @click="open = !open">
+                                                        <span x-show="!open">Show details</span>
+                                                        <span x-show="open">Hide details</span>
+                                                    </button>
+
+                                                    <div x-show="open" x-cloak class="mt-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 p-3 space-y-2 text-xs">
+                                                        @foreach($i['changes'] as $c)
+                                                            <div class="flex items-start gap-2">
+                                                                <div class="shrink-0 w-28 text-gray-500">{{ $c['label'] }}</div>
+                                                                <div class="flex-1">
+                                                                    <div class="inline-flex items-center gap-2">
+                                                                    <span class="rounded px-1.5 py-0.5 bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-gray-700/60">
+                                                                        {{ $c['from'] ?? '—' }}
+                                                                    </span>
+                                                                        <span>→</span>
+                                                                        <span class="rounded px-1.5 py-0.5 border border-gray-200/60 dark:border-gray-700/60"
+                                                                              @if($c['to_color']) style="background-color: {{ $c['to_color'] }}20" @endif>
+                                                                        {{ $c['to'] ?? '—' }}
+                                                                    </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @empty
+                    <p class="text-sm text-gray-500 mt-2">No activity yet.</p>
+                @endforelse
+            </div>
         </div>
     </section>
 </div>
