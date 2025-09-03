@@ -132,6 +132,7 @@ return [
      */
 
     'teams' => true,
+    'teams_strict_check' => false,
 
     /*
      * The class to use to resolve the permissions team id

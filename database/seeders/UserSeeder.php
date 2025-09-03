@@ -123,11 +123,11 @@ class UserSeeder extends Seeder
             // If you want team-scoped roles when a team exists:
             if ($team) {
                 $registrar->setPermissionsTeamId($team->id);
-            } else {
-                $registrar->setPermissionsTeamId(null); // global
+                $user->syncRoles($selected); // syncs in team context
             }
-
+            $registrar->setPermissionsTeamId(null); // sync globally
             $user->syncRoles($selected);
+
 
             // restore context
             $registrar->setPermissionsTeamId($origTeamId);

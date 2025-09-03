@@ -12,6 +12,7 @@ use DB;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
+use Spatie\Permission\PermissionRegistrar;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -38,8 +39,17 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::before(static function (User $user, string $ability) {
+            /** @var PermissionRegistrar $reg */
+            $reg = app(PermissionRegistrar::class);
+            $prev = $reg->getPermissionsTeamId();
+
+            // Temporarily clear team to check global roles/permissions
+            $reg->setPermissionsTeamId(null);
+            $isSuper = $user->hasPermissionTo('is-super-admin');
+            $reg->setPermissionsTeamId($prev);
+
             // Super admin allow (fast path)
-            if ($user->hasPermissionTo('is-super-admin')) {
+            if ($isSuper) {
                 return true; // allow everything
             }
 
