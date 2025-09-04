@@ -4,44 +4,31 @@
         initialElapsed: Math.max(0, Number(@js($elapsedSeconds ?? 0))),
     })"
     x-init="init()"
-    class="rounded-lg border p-4 bg-white dark:bg-gray-800"
+    class="card"
 >
-    <div class="flex items-center justify-between gap-3">
-        <div class="text-3xl font-semibold tabular-nums" x-text="displayTime"></div>
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between gap-3">
+            <div class="fs-2 fw-semibold" x-text="displayTime"></div>
 
-        <div class="flex items-center gap-2">
-            <template x-if="!isRunning">
-                <button type="button" class="px-3 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700" @click="$wire.start()">Start</button>
-            </template>
+            <div class="d-flex align-items-center gap-2">
+                <template x-if="!isRunning">
+                    <button type="button" class="btn btn-primary" @click="$wire.start()">Start</button>
+                </template>
+                <template x-if="isRunning">
+                    <button type="button" class="btn btn-danger" @click="$wire.stop()">Stop</button>
+                </template>
+                <button type="button" class="btn btn-outline-secondary" @click="openPopout()" title="Pop out timer">Pop out</button>
+                <a href="{{ $publicUrl }}" class="btn btn-outline-secondary" target="_blank" rel="noopener">Public URL</a>
+            </div>
+        </div>
 
-            <template x-if="isRunning">
-                <button type="button" class="px-3 py-2 rounded bg-rose-600 text-white hover:bg-rose-700" @click="$wire.stop()">Stop</button>
-            </template>
-
-            <button type="button" class="px-3 py-2 rounded border" @click="openPopout()" title="Pop out timer">Pop out</button>
-
-            <a
-                href="{{ $publicUrl }}"
-                class="px-3 py-2 rounded border"
-                title="View-only URL (signed)"
-                target="_blank" rel="noopener"
-            >Public URL</a>
+        <div class="mt-3">
+            <label class="form-label">Notes</label>
+            <wa-textarea class="form-control" wire:model.debounce.750ms="runningNotes" rows="3" placeholder="What are you focusing on?" x-bind:disabled="!isRunning"></wa-textarea>
+            <div class="form-text">Notes save automatically while the timer runs.</div>
         </div>
     </div>
-
-    <div class="mt-3">
-        <label class="block text-sm font-medium mb-1">Notes</label>
-        <textarea
-            wire:model.debounce.750ms="runningNotes"
-            class="w-full rounded border p-2 bg-white dark:bg-gray-900"
-            rows="2"
-            placeholder="What are you focusing on?"
-            x-bind:disabled="!isRunning"></textarea>
-
-        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Notes save automatically while the timer runs.</p>
-    </div>
 </div>
-
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('focusTimer', (opts) => ({

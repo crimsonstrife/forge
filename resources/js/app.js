@@ -11,7 +11,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 // Web Awesome styles
-import "@awesome.me/webawesome/dist/styles/webawesome.css";
+import "@awesome.me/webawesome/dist/styles/themes/default.css";
 
 // Cherry-pick the WA components
 import "@awesome.me/webawesome/dist/components/button/button.js";
@@ -19,6 +19,12 @@ import "@awesome.me/webawesome/dist/components/icon/icon.js";
 import "@awesome.me/webawesome/dist/components/input/input.js";
 import "@awesome.me/webawesome/dist/components/select/select.js";
 import "@awesome.me/webawesome/dist/components/option/option.js";
+import "@awesome.me/webawesome/dist/components/avatar/avatar.js";
+import "@awesome.me/webawesome/dist/components/checkbox/checkbox.js";
+import "@awesome.me/webawesome/dist/components/badge/badge.js";
+import "@awesome.me/webawesome/dist/components/dropdown/dropdown.js";
+import "@awesome.me/webawesome/dist/components/progress-bar/progress-bar.js";
+import "@awesome.me/webawesome/dist/components/textarea/textarea.js";
 
 // Tell WA where to find its assets (icons, etc.)
 import { setBasePath } from "@awesome.me/webawesome/dist/webawesome.js";

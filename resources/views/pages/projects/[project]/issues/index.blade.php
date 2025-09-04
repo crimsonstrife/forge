@@ -1,5 +1,4 @@
 <?php
-
 use App\Models\Project;
 use App\Models\Issue;
 use Illuminate\Http\Request;
@@ -22,80 +21,53 @@ render(function (View $view, Project $project, Request $request) {
     return $view->with(compact('project','issues'));
 });
 ?>
-
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between gap-3">
+        <div class="d-flex align-items-center justify-content-between gap-3">
             <div>
-                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200">
-                    {{ $project->key }} — Issues
-                </h2>
-                <a href="{{ route('projects.show', ['project' => $project]) }}" class="text-sm text-primary-600 hover:underline">Back to project</a>
-                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400 flex flex-wrap gap-3">
-                    <span class="inline-flex items-center gap-2">
-                        <span class="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-xs">
-                            {{ ucfirst($project->stage->value ?? 'planning') }}
-                        </span>
-                    </span>
-                    @if ($project->organization?->name)
-                        <span>Org: {{ $project->organization->name }}</span>
-                    @endif
-                    @if ($project->teams->isNotEmpty())
-                        <span>Teams:
-                            {{ $project->teams->pluck('name')->implode(', ') }}
-                        </span>
-                    @endif
-                </div>
+                <h2 class="h4 mb-1">{{ $project->key }} — {{ __('Issues') }}</h2>
+                <a href="{{ route('projects.show', ['project' => $project]) }}" class="link-primary small">{{ __('Back to project') }}</a>
             </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('projects.timeline', ['project' => $project]) }}" class="inline-flex items-center rounded-lg px-3 py-2 border">Timeline</a>
-                <a href="{{ route('projects.calendar', ['project' => $project]) }}" class="inline-flex items-center rounded-lg px-3 py-2 border">Calendar</a>
-                <a href="{{ route('projects.board', ['project' => $project]) }}" class="inline-flex items-center rounded-lg px-3 py-2 border">Kanban</a>
-                <a href="{{ route('projects.scrum', ['project' => $project]) }}" class="inline-flex items-center rounded-lg px-3 py-2 border">Sprint</a>
+            <div class="d-flex gap-2">
+                <a href="{{ route('projects.timeline', ['project' => $project]) }}" class="btn btn-outline-secondary btn-sm">Timeline</a>
+                <a href="{{ route('projects.calendar', ['project' => $project]) }}" class="btn btn-outline-secondary btn-sm">Calendar</a>
+                <a href="{{ route('projects.board', ['project' => $project]) }}" class="btn btn-outline-secondary btn-sm">Kanban</a>
+                <a href="{{ route('projects.scrum', ['project' => $project]) }}" class="btn btn-outline-secondary btn-sm">Sprint</a>
                 @can('issues.create')
-                    <a href="{{ route('issues.create', ['project' => $project]) }}" class="inline-flex items-center rounded-lg px-3 py-2 border">New issue</a>
-                @endcan
-                @can('update', $project)
-                    <a href="{{ route('projects.edit', ['project' => $project]) }}"
-                       class="inline-flex items-center rounded-lg px-3 py-2 border">
-                        Edit Project
-                    </a>
+                    <a href="{{ route('issues.create', ['project' => $project]) }}" class="btn btn-primary btn-sm">New issue</a>
                 @endcan
             </div>
         </div>
     </x-slot>
 
-    <div class="py-6">
-        <div class="mx-auto max-w-7xl space-y-4">
-            <form class="mt-3 flex gap-2" method="get">
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search summary..."
-                       class="rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 px-3 py-2 w-64">
-                <label class="inline-flex items-center gap-2 text-sm">
-                    <input type="checkbox" name="assigned_to_me" value="1" @checked(request('assigned_to_me'))>
-                    Assigned to me
-                </label>
-                <button class="rounded-lg px-3 py-2 border border-gray-300 dark:border-gray-700">Filter</button>
+    <div class="py-4">
+        <div class="container">
+            <form class="d-flex align-items-center gap-2 mb-3" method="get">
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search summary…" class="form-control w-auto" style="min-width: 18rem;">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="assigned_to_me" value="1" id="me" @checked(request('assigned_to_me'))>
+                    <label class="form-check-label" for="me">Assigned to me</label>
+                </div>
+                <button class="btn btn-outline-secondary">Filter</button>
             </form>
-            <div class="divide-y divide-gray-200/60 dark:divide-gray-700/60 rounded-xl border border-gray-200/60 dark:border-gray-700/60 bg-white dark:bg-gray-800">
+
+            <div class="list-group">
                 @forelse($issues as $issue)
-                    <a class="block p-4 hover:bg-gray-50 dark:hover:bg-gray-800/60"
-                       href="{{ route('issues.show', ['project'=>$project, 'issue'=>$issue]) }}">
-                        <div class="flex items-center justify-between gap-4">
-                            <div class="flex items-center gap-3">
-                                <span class="text-xs font-mono px-2 py-1 rounded bg-gray-100 dark:bg-gray-700">
-                                    {{ $issue->key }}
-                                </span>
-                                <div class="font-medium">{{ $issue->summary }}</div>
+                    <a class="list-group-item list-group-item-action" href="{{ route('issues.show', ['project'=>$project, 'issue'=>$issue]) }}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge text-bg-light font-monospace">{{ $issue->key }}</span>
+                                <strong>{{ $issue->summary }}</strong>
                             </div>
-                            <div class="flex items-center gap-3 text-xs text-gray-500">
-                                <span class="inline-flex items-center gap-1">
-                                    <span class="h-2 w-2 rounded-full" style="background: {{ $issue->status?->color ?? '#9ca3af' }}"></span>
+                            <div class="d-flex align-items-center gap-3 small text-body-secondary">
+                                <span class="d-inline-flex align-items-center gap-1">
+                                    <span class="rounded-circle d-inline-block" style="width:.5rem;height:.5rem;background: {{ $issue->status?->color ?? '#9ca3af' }}"></span>
                                     {{ $issue->status?->name }}
                                 </span>
                                 <span>{{ $issue->priority?->name }}</span>
                                 @if($issue->assignee)
-                                    <span class="inline-flex items-center gap-2">
-                                        <img src="{{ $issue->assignee->profile_photo_url }}" class="h-5 w-5 rounded-full" alt="">
+                                    <span class="d-inline-flex align-items-center gap-2">
+                                        <img src="{{ $issue->assignee->profile_photo_url }}" class="rounded-circle" style="width:20px;height:20px;object-fit:cover" alt="">
                                         {{ $issue->assignee->name }}
                                     </span>
                                 @endif
@@ -104,16 +76,20 @@ render(function (View $view, Project $project, Request $request) {
                                 <span>{{ $issue->updated_at?->diffForHumans() }}</span>
                             </div>
                         </div>
-                        <div class="mt-1 text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
-                            {{ $issue->description }}
-                        </div>
+                        @if($issue->description)
+                            <div class="mt-1 small text-body-secondary text-truncate">
+                                {{ strip_tags($issue->description) }}
+                            </div>
+                        @endif
                     </a>
                 @empty
-                    <div class="p-6 text-center text-gray-500">No issues yet.</div>
+                    <div class="text-center text-body-secondary py-4">No issues yet.</div>
                 @endforelse
             </div>
 
-            {{ $issues->onEachSide(1)->links() }}
+            <div class="mt-3">
+                {{ $issues->onEachSide(1)->links() }}
+            </div>
         </div>
     </div>
 </x-app-layout>

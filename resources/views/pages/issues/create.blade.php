@@ -1,7 +1,6 @@
 <?php
-
-use App\Models\Issue;
 use App\Models\Project;
+use App\Models\Issue;
 use Illuminate\View\View;
 use function Laravel\Folio\{name, middleware, render};
 
@@ -44,18 +43,22 @@ render(function (View $view) {
 ?>
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200">
-            Create issue
-        </h2>
+        <div class="d-flex align-items-center justify-content-between">
+            <h2 class="h4 mb-0">{{ __('Create issue') }}</h2>
+        </div>
     </x-slot>
 
-    <div class="py-6">
-        <div class="mx-auto max-w-3xl">
-            <livewire:issues.create-issue-form
-                :project-id="$project?->getKey()"
-                :parent-id="$parentId"
-                :project-options="$projectOptions->map(fn ($p) => ['id' => (string)$p->id, 'name' => $p->name, 'key' => $p->key])->all()"
-            />
+    <div class="py-4">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-8 col-xl-7">
+                    <livewire:issues.create-issue-form
+                        :project-id="$project?->getKey()"
+                        :parent-id="$parentId"
+                        :project-options="$projectOptions->map(fn ($p) => ['id' => (string)$p->id, 'name' => $p->name, 'key' => $p->key])->all()"
+                    />
+                </div>
+            </div>
         </div>
     </div>
 </x-app-layout>

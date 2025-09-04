@@ -1,9 +1,6 @@
-<div class="flex items-center gap-3">
-    <x-input type="text" class="w-full" placeholder="Quick issue summary…" wire:model.defer="summary"
-             wire:keydown.enter="save" />
-    <x-button wire:click="save">Add</x-button>
-    <a href="{{ route('issues.create', ['project'=>$project]) }}" class="text-sm text-gray-600 hover:underline">
-        Advanced…
-    </a>
+<div class="d-flex align-items-center gap-2">
+    <input type="text" class="form-control" placeholder="Quick issue summary…" wire:model.defer="summary" wire:keydown.enter="save">
+    <button class="btn btn-primary" wire:click="save">Add</button>
+    <a href="{{ route('issues.create', ['project'=>$project]) }}" class="small link-secondary">Advanced…</a>
 </div>
 <x-input-error for="summary" class="mt-2"/>

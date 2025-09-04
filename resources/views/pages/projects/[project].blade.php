@@ -350,12 +350,7 @@ render(function (View $view, Project $project) {
                                             @foreach($items as $i)
                                                 <li class="border rounded p-3">
                                                     <div class="d-flex align-items-start gap-3">
-                                                        <img
-                                                            src="{{ $i['actor_avatar'] ?? asset('images/default-avatar.png') }}"
-                                                            alt=""
-                                                            class="rounded-circle object-fit-cover"
-                                                            style="width: 32px; height: 32px;"
-                                                        >
+                                                        <x-avatar :src="$i['actor_avatar'] ?? asset('images/default-avatar.png')" :name="$i['actor_name']" preset="md" />
                                                         <div class="flex-grow-1 min-w-0">
                                                             <div class="small">
                                                                 <span class="fw-medium">{{ $i['actor_name'] }}</span>

@@ -1,116 +1,101 @@
-<div class="rounded-xl border border-gray-200/60 dark:border-gray-700/60 bg-white dark:bg-gray-800 p-6">
-    @if (! $project)
-        <div class="mb-4">
-            <label class="block text-sm font-medium mb-1">Project</label>
-            <select wire:model.live="selectedProjectId" class="w-full rounded border px-3 py-2 bg-white dark:bg-gray-900">
-                <option value="">Select project…</option>
-                @foreach ($projectOptions as $p)
-                    <option value="{{ $p['id'] }}">{{ $p['key'] }} — {{ $p['name'] }}</option>
-                @endforeach
-            </select>
-            @error('selectedProjectId') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
-        </div>
-    @endif
+<div class="card shadow-sm">
+    <div class="card-body">
+        @if (! $project)
+            <div class="mb-3">
+                <x-label for="__proj" value="Project"/>
+                <select id="__proj" wire:model.live="selectedProjectId" class="form-select">
+                    <option value="">Select project…</option>
+                    @foreach ($projectOptions as $p)
+                        <option value="{{ $p['id'] }}">{{ $p['key'] }} — {{ $p['name'] }}</option>
+                    @endforeach
+                </select>
+                @error('selectedProjectId') <div class="form-text text-danger">{{ $message }}</div> @enderror
+            </div>
+        @endif
 
-    @if($parent)
-        <div class="mb-4 rounded-lg border border-gray-200/60 dark:border-gray-700/60 p-3 text-sm bg-gray-50 dark:bg-gray-900/30">
-            Creating as sub-issue of:
-            <a class="underline" href="{{ route('issues.show', ['project' => $project, 'issue' => $parent]) }}">
-                {{ $parent->key }} — {{ $parent->summary }}
-            </a>
-        </div>
-    @endif
+        @if($parent)
+            <div class="alert alert-secondary small mb-3">
+                Creating as sub-issue of
+                <a class="link-primary" href="{{ route('issues.show', ['project' => $project, 'issue' => $parent]) }}">
+                    {{ $parent->key }} — {{ $parent->summary }}
+                </a>
+            </div>
+        @endif
 
-    {{-- Disable the rest of the form until a project is selected --}}
-        <form wire:submit.prevent="save" class="space-y-6">
-            <div wire:key="fieldset-{{ $project?->getKey() ?? 'no-project' }}">
-                @if ($project)
-                    <fieldset class="space-y-6">
-                @else
-                    <fieldset class="space-y-6" disabled>
-                @endif
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Summary</label>
-                            <input type="text" wire:model.defer="summary" class="w-full rounded border px-3 py-2 bg-white dark:bg-gray-900">
-                            @error('summary') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
-                        </div>
+        <form wire:submit.prevent="save">
+            <fieldset @disabled(! $project)>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <x-label for="summary" value="Summary"/>
+                        <input id="summary" type="text" wire:model.defer="summary" class="form-control">
+                        @error('summary') <div class="form-text text-danger">{{ $message }}</div> @enderror
+                    </div>
 
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Description</label>
-                            <textarea wire:model.defer="description" rows="5" class="w-full rounded border px-3 py-2 bg-white dark:bg-gray-900"></textarea>
-                            @error('description') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
-                        </div>
+                    <div class="col-12">
+                        <x-label for="description" value="Description"/>
+                        <textarea id="description" rows="5" wire:model.defer="description" class="form-control"></textarea>
+                        @error('description') <div class="form-text text-danger">{{ $message }}</div> @enderror
+                    </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Type</label>
-                                <select
-                                    wire:model="typeId"
-                                    class="w-full rounded border px-3 py-2 bg-white dark:bg-gray-900"
-                                    @if (count($typeOptions) === 1) disabled @endif
-                                >
-                                    <option value="">Select type…</option>
-                                    @foreach ($typeOptions as $opt)
-                                        <option value="{{ $opt['id'] }}">{{ $opt['name'] }}</option>
-                                    @endforeach
-                                </select>
-                                @if (count($typeOptions) === 1)
-                                    <input type="hidden" wire:model="typeId">
-                                    <p class="mt-1 text-xs text-gray-500">Type is fixed for this parent.</p>
-                                @endif
-                                @error('typeId') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Priority</label>
-                                <select wire:model="priorityId" class="w-full rounded border px-3 py-2 bg-white dark:bg-gray-900">
-                                    <option value="">Select priority…</option>
-                                    @foreach($priorityOptions as $opt)
-                                        <option value="{{ $opt['id'] }}">{{ $opt['name'] }}</option>
-                                    @endforeach
-                                </select>
-                                @error('priorityId') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Assignee</label>
-                                <select wire:model="assigneeId" class="w-full rounded border px-3 py-2 bg-white dark:bg-gray-900">
-                                    <option value="">Unassigned</option>
-                                    @foreach($assigneeOptions as $u)
-                                        <option value="{{ $u['id'] }}">{{ $u['name'] }}</option>
-                                    @endforeach
-                                </select>
-                                @error('assigneeId') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Story points</label>
-                                <input type="number" wire:model.defer="storyPoints" class="w-full rounded border px-3 py-2 bg-white dark:bg-gray-900">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Estimate (minutes)</label>
-                                <input type="number" wire:model.defer="estimateMinutes" class="w-full rounded border px-3 py-2 bg-white dark:bg-gray-900">
-                            </div>
-                        </div>
-                @if ($project)
-                    </fieldset>
-                @else
-                    </fieldset>
-                @endif
-                <div class="flex items-center gap-3 pt-2">
-                        <button type="submit" class="rounded-lg px-4 py-2 border-gray-300 dark:border-gray-700 hover:bg-primary-700" wire:loading.attr="disabled">
-                            <span wire:loading.remove>Save</span>
-                            <span wire:loading>Saving…</span>
-                        </button>
-
-                        @if($project)
-                            <a href="{{ route('projects.show', ['project' => $project]) }}" class="rounded-lg px-4 py-2 border border-gray-300 dark:border-gray-700">Cancel</a>
-                        @else
-                            <a href="{{ route('projects.index') }}" class="rounded-lg px-4 py-2 border border-gray-300 dark:border-gray-700">Cancel</a>
+                    <div class="col-sm-4">
+                        <x-label for="typeId" value="Type"/>
+                        <select id="typeId" wire:model="typeId" class="form-select" @disabled(count($typeOptions)===1)>
+                            <option value="">Select type…</option>
+                            @foreach ($typeOptions as $opt)
+                                <option value="{{ $opt['id'] }}">{{ $opt['name'] }}</option>
+                            @endforeach
+                        </select>
+                        @if (count($typeOptions) === 1)
+                            <input type="hidden" wire:model="typeId">
+                            <div class="form-text">{{ __('Type is fixed for this parent.') }}</div>
                         @endif
+                        @error('typeId') <div class="form-text text-danger">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-sm-4">
+                        <x-label for="priorityId" value="Priority"/>
+                        <select id="priorityId" wire:model="priorityId" class="form-select">
+                            <option value="">Select priority…</option>
+                            @foreach($priorityOptions as $opt)
+                                <option value="{{ $opt['id'] }}">{{ $opt['name'] }}</option>
+                            @endforeach
+                        </select>
+                        @error('priorityId') <div class="form-text text-danger">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-sm-4">
+                        <x-label for="assigneeId" value="Assignee"/>
+                        <select id="assigneeId" wire:model="assigneeId" class="form-select">
+                            <option value="">{{ __('Unassigned') }}</option>
+                            @foreach($assigneeOptions as $u)
+                                <option value="{{ $u['id'] }}">{{ $u['name'] }}</option>
+                            @endforeach
+                        </select>
+                        @error('assigneeId') <div class="form-text text-danger">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-sm-6">
+                        <x-label for="storyPoints" value="Story points"/>
+                        <input id="storyPoints" type="number" wire:model.defer="storyPoints" class="form-control">
+                    </div>
+                    <div class="col-sm-6">
+                        <x-label for="estimateMinutes" value="Estimate (minutes)"/>
+                        <input id="estimateMinutes" type="number" wire:model.defer="estimateMinutes" class="form-control">
+                    </div>
                 </div>
-        </div>
-    </form>
+            </fieldset>
+
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                @if($project)
+                    <a href="{{ route('projects.show', ['project' => $project]) }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
+                @else
+                    <a href="{{ route('projects.index') }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
+                @endif
+                <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
+                    <span wire:loading.remove>{{ __('Save') }}</span>
+                    <span wire:loading>{{ __('Saving…') }}</span>
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
