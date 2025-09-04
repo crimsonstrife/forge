@@ -67,7 +67,7 @@ render(function (View $view, Project $project, Request $request) {
                                 <span>{{ $issue->priority?->name }}</span>
                                 @if($issue->assignee)
                                     <span class="d-inline-flex align-items-center gap-2">
-                                        <img src="{{ $issue->assignee->profile_photo_url }}" class="rounded-circle" style="width:20px;height:20px;object-fit:cover" alt="">
+                                         <x-avatar :src="$issue->assignee->profile_photo_url" :name="$issue->assignee->name" preset="sm" />
                                         {{ $issue->assignee->name }}
                                     </span>
                                 @endif

@@ -168,8 +168,7 @@
                     <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2" type="button"
                             id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                            <img class="rounded-circle" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}"
-                                 style="width: 32px; height: 32px; object-fit: cover;">
+                            <x-avatar :src="Auth::user()->profile_photo_url" :name="Auth::user()->name" preset="md" />
                         @else
                             <span>{{ Auth::user()->name }}</span>
                         @endif
