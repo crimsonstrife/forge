@@ -1,36 +1,37 @@
-<x-form-section submit="createTeam">
-    <x-slot name="title">
-        {{ __('Team Details') }}
-    </x-slot>
-
-    <x-slot name="description">
-        {{ __('Create a new team to collaborate with others on projects.') }}
-    </x-slot>
-
-    <x-slot name="form">
-        <div class="col-span-6">
-            <x-label value="{{ __('Team Owner') }}" />
-
-            <div class="flex items-center mt-2">
-                <img class="size-12 rounded-full object-cover" src="{{ $this->user->profile_photo_url }}" alt="{{ $this->user->name }}">
-
-                <div class="ms-4 leading-tight">
-                    <div class="text-gray-900 dark:text-white">{{ $this->user->name }}</div>
-                    <div class="text-gray-700 dark:text-gray-300 text-sm">{{ $this->user->email }}</div>
-                </div>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="mb-2">
+            <div class="fw-semibold">{{ __('Team Details') }}</div>
+            <div class="text-body-secondary small">
+                {{ __('Create a new team to collaborate with others on projects.') }}
             </div>
         </div>
 
-        <div class="col-span-6 sm:col-span-4">
-            <x-label for="name" value="{{ __('Team Name') }}" />
-            <x-input id="name" type="text" class="mt-1 block w-full" wire:model="state.name" autofocus />
-            <x-input-error for="name" class="mt-2" />
-        </div>
-    </x-slot>
+        <form wire:submit.prevent="createTeam" class="row g-3">
+            <div class="col-12">
+                <label class="form-label">{{ __('Team Owner') }}</label>
+                <div class="d-flex align-items-center gap-3 mt-1">
+                    <x-avatar :src="$this->user->profile_photo_url" :name="$this->user->name" preset="md" />
+                    <div class="lh-sm">
+                        <div class="fw-medium">{{ $this->user->name }}</div>
+                        <div class="text-body-secondary small">{{ $this->user->email }}</div>
+                    </div>
+                </div>
+            </div>
 
-    <x-slot name="actions">
-        <x-button>
-            {{ __('Create') }}
-        </x-button>
-    </x-slot>
-</x-form-section>
+            <div class="col-12 col-sm-8">
+                <label for="name" class="form-label">{{ __('Team Name') }}</label>
+                <input id="name" type="text"
+                       class="form-control @error('name') is-invalid @enderror"
+                       wire:model="state.name" autofocus>
+                @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    {{ __('Create') }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

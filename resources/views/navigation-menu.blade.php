@@ -1,4 +1,4 @@
-@php use App\Models\Project; use App\Models\Organization; use App\Models\Issue; @endphp
+@php use App\Models\Project; use App\Models\Organization; use App\Models\Issue; use App\Models\Goal; @endphp
 
 <nav class="navbar navbar-expand-md bg-body border-bottom" x-data>
     <div class="container">
@@ -71,6 +71,28 @@
                         @endcan
                     </ul>
                 </li>
+
+                <!-- Goals -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="goalDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ __('Goals') }}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="goalDropdown">
+                        <li>
+                            <x-dropdown-link href="{{ Route::has('goals.index') ? route('goals.index') : url('/goals') }}">
+                                {{ __('Browse goals') }}
+                            </x-dropdown-link>
+                        </li>
+                        @can('create', Goal::class)
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <x-dropdown-link href="{{ Route::has('goals.create') ? route('goals.create') : url('/goals/create') }}">
+                                    {{ __('New goal') }}
+                                </x-dropdown-link>
+                            </li>
+                        @endcan
+                    </ul>
+                </li>
             </ul>
 
             <!-- Middle: global search -->
@@ -101,6 +123,9 @@
                         @can('create', Organization::class)
                             <li><x-dropdown-link href="{{ Route::has('organizations.create') ? route('organizations.create') : url('/organizations/create') }}">{{ __('New organization') }}</x-dropdown-link></li>
                         @endcan
+                            @can('create', Goal::class)
+                                <li><x-dropdown-link href="{{ Route::has('goals.create') ? route('goals.create') : url('/goals/create') }}">{{ __('New goal') }}</x-dropdown-link></li>
+                            @endcan
                     </ul>
                 </div>
 

@@ -1,50 +1,48 @@
-<x-form-section submit="updateTeamName">
-    <x-slot name="title">
-        {{ __('Team Name') }}
-    </x-slot>
-
-    <x-slot name="description">
-        {{ __('The team\'s name and owner information.') }}
-    </x-slot>
-
-    <x-slot name="form">
-        <!-- Team Owner Information -->
-        <div class="col-span-6">
-            <x-label value="{{ __('Team Owner') }}" />
-
-            <div class="flex items-center mt-2">
-                <img class="size-12 rounded-full object-cover" src="{{ $team->owner->profile_photo_url }}" alt="{{ $team->owner->name }}">
-
-                <div class="ms-4 leading-tight">
-                    <div class="text-gray-900 dark:text-white">{{ $team->owner->name }}</div>
-                    <div class="text-gray-700 dark:text-gray-300 text-sm">{{ $team->owner->email }}</div>
-                </div>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="mb-2">
+            <div class="fw-semibold">{{ __('Team Name') }}</div>
+            <div class="text-body-secondary small">
+                {{ __('The team\'s name and owner information.') }}
             </div>
         </div>
 
-        <!-- Team Name -->
-        <div class="col-span-6 sm:col-span-4">
-            <x-label for="name" value="{{ __('Team Name') }}" />
+        <form wire:submit.prevent="updateTeamName" class="row g-3">
+            <div class="col-12">
+                <label class="form-label">{{ __('Team Owner') }}</label>
+                <div class="d-flex align-items-center gap-3 mt-1">
+                    <x-avatar :src="$team->owner->profile_photo_url" :name="$team->owner->name" preset="md" />
+                    <div class="lh-sm">
+                        <div class="fw-medium">{{ $team->owner->name }}</div>
+                        <div class="text-body-secondary small">{{ $team->owner->email }}</div>
+                    </div>
+                </div>
+            </div>
 
-            <x-input id="name"
-                        type="text"
-                        class="mt-1 block w-full"
-                        wire:model="state.name"
-                        :disabled="! Gate::check('update', $team)" />
+            <div class="col-12 col-sm-8">
+                <label for="team_name" class="form-label">{{ __('Team Name') }}</label>
+                <input id="team_name" type="text"
+                       class="form-control @error('name') is-invalid @enderror"
+                       wire:model="state.name"
+                    @disabled(! Gate::check('update', $team))>
+                @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
 
-            <x-input-error for="name" class="mt-2" />
-        </div>
-    </x-slot>
+            @if (Gate::check('update', $team))
+                <div class="col-12 d-flex align-items-center gap-2">
+                    <div x-data="{ shown: false, timeout: null }"
+                         x-init="window.Livewire.find('{{ $_instance->getId() }}').on('saved', () => { clearTimeout(timeout); shown = true; timeout = setTimeout(() => { shown = false }, 2000) })"
+                         x-show.transition.out.opacity.duration.1500ms="shown"
+                         style="display:none"
+                         class="small text-success">
+                        {{ __('Saved.') }}
+                    </div>
 
-    @if (Gate::check('update', $team))
-        <x-slot name="actions">
-            <x-action-message class="me-3" on="saved">
-                {{ __('Saved.') }}
-            </x-action-message>
-
-            <x-button>
-                {{ __('Save') }}
-            </x-button>
-        </x-slot>
-    @endif
-</x-form-section>
+                    <button type="submit" class="btn btn-primary">
+                        {{ __('Save') }}
+                    </button>
+                </div>
+            @endif
+        </form>
+    </div>
+</div>

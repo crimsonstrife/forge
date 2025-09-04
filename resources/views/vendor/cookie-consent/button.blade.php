@@ -1,6 +1,6 @@
-<form action="{!! $url !!}" {!! $attributes !!}>
+<form action="{!! $url !!}" method="POST" {!! $attributes !!}>
     @csrf
-    <button type="submit" class="{!! $basename !!}__link">
+    <wa-button type="submit" variant="brand" aria-label="{{ $label }}">
         <span class="{!! $basename !!}__label">{{ $label }}</span>
-    </button>
+    </wa-button>
 </form>

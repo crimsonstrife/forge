@@ -34,11 +34,12 @@
     <main>
         {{ $slot }}
     </main>
+    @cookieconsentview
 </div>
 
 @stack('modals')
-
 @livewireScripts
+@cookieconsentscripts
 @stack('scripts')
 
 <script>

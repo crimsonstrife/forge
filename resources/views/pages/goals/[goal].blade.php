@@ -30,12 +30,14 @@ render(function (View $view, Goal $goal) {
                     {{ ucfirst($goal->goal_type->value) }} • Status: {{ ucfirst($goal->status->value) }}
                     @if($goal->start_date) • {{ $goal->start_date->toFormattedDateString() }}@endif
                     @if($goal->due_date) – {{ $goal->due_date->toFormattedDateString() }}@endif
+                    @if($goal->parent) • Parent:
+                    <a class="link-primary" href="{{ route('goals.show', $goal->parent) }}">{{ $goal->parent->name }}</a>
+                    @endif
                 </small>
             </div>
-            <div class="ms-3">
-                <a href="{{ route('goals.edit', ['goal' => $goal]) }}" class="btn btn-outline-primary">
-                    Edit
-                </a>
+            <div class="ms-3 d-flex gap-2">
+                <a href="{{ route('goals.edit', ['goal' => $goal]) }}" class="btn btn-outline-primary">Edit</a>
+                <a href="{{ route('goals.index') }}" class="btn btn-outline-secondary">All Goals</a>
             </div>
         </div>
     </x-slot>
@@ -46,12 +48,14 @@ render(function (View $view, Goal $goal) {
                 <div class="me-3 fw-semibold">Progress</div>
                 <div class="flex-grow-1">
                     <div class="progress" role="progressbar" aria-valuenow="{{ $goal->progress }}" aria-valuemin="0" aria-valuemax="100">
-                        <div class="progress-bar" style="width: {{ $goal->progress }}%">{{ $goal->progress }}%</div>
+                        <div class="progress-bar" style="width: {{ $goal->progress }}%">{{ (int) $goal->progress }}%</div>
                     </div>
                 </div>
             </div>
             @if($goal->description)
                 <p class="mb-0">{{ $goal->description }}</p>
+            @else
+                <p class="mb-0 text-muted">No description.</p>
             @endif
         </div>
     </div>
@@ -66,9 +70,7 @@ render(function (View $view, Goal $goal) {
                     @else
                         <div class="list-group list-group-flush">
                             @foreach($goal->keyResults as $kr)
-                                @php
-                                    $percent = number_format($kr->percentComplete(), 2);
-                                @endphp
+                                @php $percent = number_format($kr->percentComplete(), 2); @endphp
                                 <div class="list-group-item">
                                     <div class="d-flex justify-content-between">
                                         <div>
@@ -100,6 +102,20 @@ render(function (View $view, Goal $goal) {
                     @endif
                 </div>
             </div>
+
+            @if($goal->children->isNotEmpty())
+                <div class="card mt-4">
+                    <div class="card-header">Sub-goals</div>
+                    <ul class="list-group list-group-flush">
+                        @foreach($goal->children as $child)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a class="link-primary" href="{{ route('goals.show', $child) }}">{{ $child->name }}</a>
+                                <span class="badge bg-secondary">{{ (int) $child->progress }}%</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         </div>
 
         <div class="col-lg-4">
@@ -107,9 +123,7 @@ render(function (View $view, Goal $goal) {
                 <div class="card mb-4">
                     <div class="card-header">Owner</div>
                     <div class="card-body">
-                        <div class="fw-semibold">
-                            {{ class_basename($goal->owner_type) }}
-                        </div>
+                        <div class="fw-semibold">{{ class_basename($goal->owner_type) }}</div>
                         <div>{{ $goal->owner->name ?? '—' }}</div>
                     </div>
                 </div>

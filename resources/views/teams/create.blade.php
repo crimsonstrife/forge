@@ -1,12 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Create Team') }}
-        </h2>
+        <div class="d-flex align-items-center justify-content-between">
+            <h2 class="h4 mb-0">{{ __('Create Team') }}</h2>
+        </div>
     </x-slot>
 
-    <div>
-        <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+    <div class="py-4">
+        <div class="container" style="max-width: 720px">
             @livewire('teams.create-team-form')
         </div>
     </div>

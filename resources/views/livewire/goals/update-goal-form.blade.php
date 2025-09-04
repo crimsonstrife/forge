@@ -6,6 +6,7 @@
                 <input type="text" wire:model.defer="name" class="form-control">
                 @error('name') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
+
             <div class="col-md-4">
                 <label class="form-label">Type</label>
                 <select wire:model="goal_type" class="form-select">
@@ -13,6 +14,7 @@
                         <option value="{{ $val }}">{{ $label }}</option>
                     @endforeach
                 </select>
+                @error('goal_type') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
 
             <div class="col-md-12">
@@ -27,11 +29,14 @@
                         <option value="{{ $val }}">{{ $label }}</option>
                     @endforeach
                 </select>
+                @error('status') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
+
             <div class="col-md-4">
                 <label class="form-label">Start Date</label>
                 <input type="date" wire:model="start_date" class="form-control">
             </div>
+
             <div class="col-md-4">
                 <label class="form-label">Due Date</label>
                 <input type="date" wire:model="due_date" class="form-control">
@@ -40,12 +45,17 @@
 
             <div class="col-md-4">
                 <label class="form-label">Owner Type</label>
-                <select wire:key="owner-{{ $owner_type }}" wire:model.live="owner_id" class="form-select">
+                <select
+                    wire:key="owner-type-{{ $owner_type }}"
+                    wire:model.live="owner_type"
+                    class="form-select">
                     @foreach($ownerTypes as $class => $label)
                         <option value="{{ $class }}">{{ $label }}</option>
                     @endforeach
                 </select>
+                @error('owner_type') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
+
             <div class="col-md-8">
                 <label class="form-label">Owner</label>
                 <select wire:model="owner_id" class="form-select">
@@ -54,6 +64,7 @@
                         <option value="{{ $opt['id'] }}">{{ $opt['name'] }}</option>
                     @endforeach
                 </select>
+                @error('owner_id') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
         </div>
 
