@@ -1,9 +1,10 @@
 <?php
-use function Laravel\Folio\{name, middleware, render};
 use Illuminate\View\View;
 use App\Models\Goal;
 use App\Enums\GoalType;
 use App\Enums\GoalStatus;
+
+use function Laravel\Folio\{name, middleware, render};
 
 name('goals.index');
 middleware(['auth','verified']);
@@ -31,10 +32,10 @@ render(function (View $view) {
     $goals = $goalsQuery->latest()->paginate(20)->withQueryString();
 
     // Simple option arrays for selects
-    $typeOptions = collect(GoalType::cases())->mapWithKeys(fn($c) => [$c->value => ucfirst(str_replace('_',' ', $c->value))])->all();
-    $statusOptions = collect(GoalStatus::cases())->mapWithKeys(fn($c) => [$c->value => ucfirst(str_replace('_',' ', $c->value))])->all();
+    $typeOptions = collect(GoalType::cases())->mapWithKeys(fn ($c) => [$c->value => ucfirst(str_replace('_', ' ', $c->value))])->all();
+    $statusOptions = collect(GoalStatus::cases())->mapWithKeys(fn ($c) => [$c->value => ucfirst(str_replace('_', ' ', $c->value))])->all();
 
-    return $view->with(compact('goals','q','type','status','typeOptions','statusOptions'));
+    return $view->with(compact('goals', 'q', 'type', 'status', 'typeOptions', 'statusOptions'));
 });
 ?>
 

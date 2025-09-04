@@ -1,6 +1,7 @@
 <?php
 use App\Models\Project;
 use App\Models\Issue;
+
 use function Laravel\Folio\{name, middleware};
 
 name('issues.edit');
