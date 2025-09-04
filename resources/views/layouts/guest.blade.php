@@ -41,16 +41,23 @@
 @cookieconsentscripts
 @stack('scripts')
 <script>
+    // Bootstrap-friendly + WA-friendly theme toggle
     window.themeSwitcher = function () {
         return {
             switchOn: JSON.parse(localStorage.getItem('isDark')) || false,
             switchTheme() {
-                if (this.switchOn) { document.documentElement.classList.add('dark') }
-                else { document.documentElement.classList.remove('dark') }
-                localStorage.setItem('isDark', this.switchOn)
+                const isDark = this.switchOn;
+                document.documentElement.classList.toggle('dark', isDark);
+                document.documentElement.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
+                localStorage.setItem('isDark', isDark);
             }
         }
     }
+    // Initialize data-bs-theme on load
+    document.addEventListener('alpine:init', () => {
+        const isDark = JSON.parse(localStorage.getItem('isDark')) || false;
+        document.documentElement.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
+    });
 </script>
 </body>
 </html>
