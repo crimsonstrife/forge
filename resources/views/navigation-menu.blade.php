@@ -101,6 +101,7 @@
                 </li>
             </ul>
 
+            @auth
             <!-- Middle: global search -->
             <form action="{{ Route::has('search') ? route('search') : url('/search') }}" method="GET"
                   class="d-none d-md-flex align-items-center me-3">
@@ -109,6 +110,7 @@
                        class="form-control form-control-sm" style="width: 18rem;"
                        placeholder="{{ __('Search projects, issues, people…') }}" />
             </form>
+            @endauth
 
             <!-- Right: actions -->
             <div class="d-flex align-items-center gap-2">
