@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Providers;
 
 use App\Models\Repository;
@@ -60,17 +61,25 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
     public function normalizeWebhook(array $headers, string $rawPayload): ?array
     {
         $event = $headers['X-GitHub-Event'] ?? null;
-        if ($event !== 'issues') { return null; }
+        if ($event !== 'issues') {
+            return null;
+        }
 
         $payload = json_decode($rawPayload, true, 512, JSON_THROW_ON_ERROR);
-        if (!$payload) { return null; }
+        if (!$payload) {
+            return null;
+        }
 
         $action = $payload['action'] ?? null;
         $issue  = $payload['issue']  ?? null;
         $repo   = $payload['repository'] ?? null;
-        if (!$issue || !$repo) { return null; }
+        if (!$issue || !$repo) {
+            return null;
+        }
 
-        if (!empty($issue['pull_request'])) { return null; } // ignore PRs
+        if (!empty($issue['pull_request'])) {
+            return null;
+        } // ignore PRs
 
         return [
             'provider' => 'github',
@@ -83,8 +92,8 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             'title'  => $issue['title'],
             'body'   => $issue['body'],
             'labels' => collect($issue['labels'] ?? [])->pluck('name')->all(),
-            'assignee_login' => Arr::get($issue,'assignee.login'),
-            'reporter_login' => Arr::get($issue,'user.login'),
+            'assignee_login' => Arr::get($issue, 'assignee.login'),
+            'reporter_login' => Arr::get($issue, 'user.login'),
             'raw' => $payload,
             'action' => $action, // opened|closed|edited|reopened|assigned|unassigned|labeled|unlabeled
         ];
@@ -98,7 +107,9 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         // Optional: validate signature if using GitHub App / webhook secret
         $payload = json_decode($rawPayload, true, 512, JSON_THROW_ON_ERROR);
         $repo = $payload['repository'] ?? null;
-        if (!$repo) { return null; }
+        if (!$repo) {
+            return null;
+        }
 
         return Repository::query()
             ->where('provider', 'github')

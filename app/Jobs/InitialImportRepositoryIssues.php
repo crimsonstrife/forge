@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs;
 
 use App\Models\Issue;
@@ -14,9 +15,12 @@ use Illuminate\Support\Arr;
 
 final class InitialImportRepositoryIssues implements ShouldQueue
 {
-    use Dispatchable, Queueable;
+    use Dispatchable;
+    use Queueable;
 
-    public function __construct(public string $projectRepositoryId) {}
+    public function __construct(public string $projectRepositoryId)
+    {
+    }
 
     public function handle(): void
     {
@@ -37,7 +41,7 @@ final class InitialImportRepositoryIssues implements ShouldQueue
         $issues = $provider->fetchAllIssues($repo, $token);
 
         // quick mapping helpers
-        $map = $repo->statusMappings->keyBy(fn($m) => strtolower($m->external_state));
+        $map = $repo->statusMappings->keyBy(fn ($m) => strtolower($m->external_state));
 
         foreach ($issues as $i) {
             $statusId = optional($map->get(strtolower($i['state']) ?? ''))->issue_status_id;
@@ -45,8 +49,11 @@ final class InitialImportRepositoryIssues implements ShouldQueue
             // Fallback suggestion: open -> first not-done; closed -> any done
             if (!$statusId) {
                 $statusId = IssueStatus::query()
-                    ->when(($i['state'] ?? '') === 'closed', fn($q) => $q->where('is_done', true),
-                        fn($q) => $q->where('is_done', false))
+                    ->when(
+                        ($i['state'] ?? '') === 'closed',
+                        fn ($q) => $q->where('is_done', true),
+                        fn ($q) => $q->where('is_done', false)
+                    )
                     ->orderBy('order')
                     ->value('id');
             }

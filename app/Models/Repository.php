@@ -27,17 +27,20 @@ class Repository extends BaseModel
     }
 
     /** @return HasMany<ProjectRepository> */
-    public function projectLinks(): HasMany {
+    public function projectLinks(): HasMany
+    {
         return $this->hasMany(ProjectRepository::class);
     }
 
     /** @return HasMany<IssueExternalRef> */
-    public function externalIssues(): HasMany {
+    public function externalIssues(): HasMany
+    {
         return $this->hasMany(IssueExternalRef::class);
     }
 
     /** @return HasMany<IssueStatusMapping> */
-    public function statusMappings(): HasMany {
+    public function statusMappings(): HasMany
+    {
         return $this->hasMany(IssueStatusMapping::class);
     }
 }

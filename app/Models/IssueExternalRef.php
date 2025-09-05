@@ -22,8 +22,14 @@ class IssueExternalRef extends Model
         'id' => 'string',
     ];
 
-    public function issue(): BelongsTo { return $this->belongsTo(Issue::class); }
-    public function repository(): BelongsTo { return $this->belongsTo(Repository::class); }
+    public function issue(): BelongsTo
+    {
+        return $this->belongsTo(Issue::class);
+    }
+    public function repository(): BelongsTo
+    {
+        return $this->belongsTo(Repository::class);
+    }
 
     public static function boot(): void
     {
