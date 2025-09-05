@@ -49,9 +49,9 @@
         />
 
         <div class="flex items-center justify-end">
-            <flux:button type="submit" variant="primary" class="w-full">
-                {{ __('Create account') }}
-            </flux:button>
+            <wa-button type="submit" variant="brand" aria-label="{{ __('Create account') }}">
+                <span>{{ __('Create account') }}</span>
+            </wa-button>
         </div>
     </form>
 

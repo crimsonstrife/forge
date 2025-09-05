@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+    @fluxAppearance
     @livewireStyles
     @stack('styles')
 </head>
@@ -38,6 +38,7 @@
 </div>
 
 @stack('modals')
+@fluxScripts
 @livewireScripts
 @cookieconsentscripts
 @stack('scripts')

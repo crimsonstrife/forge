@@ -37,9 +37,9 @@
         />
 
         <div class="flex items-center justify-end">
-            <flux:button type="submit" variant="primary" class="w-full">
-                {{ __('Reset password') }}
-            </flux:button>
+            <wa-button type="submit" variant="brand" aria-label="{{ __('Reset password') }}">
+                <span>{{ __('Reset password') }}</span>
+            </wa-button>
         </div>
     </form>
 </div>

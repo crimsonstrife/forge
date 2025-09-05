@@ -19,6 +19,8 @@
             viewable
         />
 
-        <flux:button variant="primary" type="submit" class="w-full">{{ __('Confirm') }}</flux:button>
+        <wa-button type="submit" variant="brand" aria-label="{{ __('Confirm') }}">
+            <span>{{ __('Confirm') }}</span>
+        </wa-button>
     </form>
 </div>

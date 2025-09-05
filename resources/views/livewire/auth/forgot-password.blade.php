@@ -15,7 +15,9 @@
             placeholder="email@example.com"
         />
 
-        <flux:button variant="primary" type="submit" class="w-full">{{ __('Email password reset link') }}</flux:button>
+        <wa-button type="submit" variant="brand" aria-label="{{ __('Email password reset link') }}">
+            <span>{{ __('Email password reset link') }}</span>
+        </wa-button>
     </form>
 
     <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-400">

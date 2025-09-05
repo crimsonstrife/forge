@@ -39,7 +39,9 @@
         <flux:checkbox wire:model="remember" :label="__('Remember me')" />
 
         <div class="flex items-center justify-end">
-            <flux:button variant="primary" type="submit" class="w-full">{{ __('Log in') }}</flux:button>
+            <wa-button type="submit" variant="brand" aria-label="{{ __('Log in') }}">
+                <span>{{ __('Log in') }}</span>
+            </wa-button>
         </div>
     </form>
 
