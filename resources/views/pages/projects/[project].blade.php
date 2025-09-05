@@ -268,10 +268,32 @@ render(function (View $view, Project $project) {
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('projects.timeline', ['project' => $project]) }}" class="btn btn-outline-secondary btn-sm">Timeline</a>
-                <a href="{{ route('projects.calendar', ['project' => $project]) }}" class="btn btn-outline-secondary btn-sm">Calendar</a>
-                <a href="{{ route('projects.board', ['project' => $project]) }}" class="btn btn-outline-secondary btn-sm">Kanban</a>
-                <a href="{{ route('projects.scrum', ['project' => $project]) }}" class="btn btn-outline-secondary btn-sm">Sprint</a>
+                <div class="nav nav-tabs mb-3">
+                    <a href="{{ route('projects.show', ['project' => $project]) }}"
+                       class="nav-link {{ request()->routeIs('projects.show') ? 'active' : '' }}">
+                        Overview
+                    </a>
+                    <a href="{{ route('projects.board', ['project' => $project]) }}"
+                       class="nav-link {{ request()->routeIs('projects.board') ? 'active' : '' }}">
+                        Board
+                    </a>
+                    <a href="{{ route('projects.scrum', ['project' => $project]) }}"
+                       class="nav-link {{ request()->routeIs('projects.scrum') ? 'active' : '' }}">
+                        Scrum
+                    </a>
+                    <a href="{{ route('projects.calendar', ['project' => $project]) }}"
+                       class="nav-link {{ request()->routeIs('projects.calendar') ? 'active' : '' }}">
+                        Calendar
+                    </a>
+                    <a href="{{ route('projects.timeline', ['project' => $project]) }}"
+                       class="nav-link {{ request()->routeIs('projects.timeline') ? 'active' : '' }}">
+                        Timeline
+                    </a>
+                    <a href="{{ route('projects.transitions', ['project' => $project]) }}"
+                       class="nav-link {{ request()->routeIs('projects.transitions') ? 'active' : '' }}">
+                        Transitions
+                    </a>
+                </div>
                 @can('issues.create')
                     <a href="{{ route('issues.create', ['project' => $project]) }}" class="btn btn-outline-primary btn-sm">New issue</a>
                 @endcan
