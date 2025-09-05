@@ -10,41 +10,21 @@ middleware(['auth','verified']);
     <x-slot name="header">
         <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
             <div>
-                <h2 class="h4 mb-1">{{ $project->key }} — {{ __('Sprint Board') }}</h2>
-                <a href="{{ route('projects.show', ['project' => $project]) }}" class="small text-decoration-underline">{{ __('Back to project') }}</a>
-                <div class="small text-body-secondary d-flex flex-wrap gap-3 mt-1">
-                    <span class="badge bg-body-tertiary text-body">{{ ucfirst($project->stage->value ?? 'planning') }}</span>
-                    @if ($project->organization?->name) <span>Org: {{ $project->organization->name }}</span>@endif
-                    @if ($project->teams->isNotEmpty()) <span>Teams: {{ $project->teams->pluck('name')->implode(', ') }}</span>@endif
+                <h2 class="h4 mb-1">{{ $project->key }} — {{ $project->name }}</h2>
+                <div class="small text-body-secondary d-flex flex-wrap gap-3">
+          <span class="badge bg-body-tertiary text-body">
+            {{ ucfirst($project->stage->value ?? 'planning') }}
+          </span>
+                    @if ($project->organization?->name)
+                        <span>Org: {{ $project->organization->name }}</span>
+                    @endif
+                    @if ($project->teams->isNotEmpty())
+                        <span>Teams: {{ $project->teams->pluck('name')->implode(', ') }}</span>
+                    @endif
                 </div>
             </div>
+
             <div class="d-flex align-items-center gap-2">
-                <div class="nav nav-tabs mb-3">
-                    <a href="{{ route('projects.show', ['project' => $project]) }}"
-                       class="nav-link {{ request()->routeIs('projects.show') ? 'active' : '' }}">
-                        Overview
-                    </a>
-                    <a href="{{ route('projects.board', ['project' => $project]) }}"
-                       class="nav-link {{ request()->routeIs('projects.board') ? 'active' : '' }}">
-                        Board
-                    </a>
-                    <a href="{{ route('projects.scrum', ['project' => $project]) }}"
-                       class="nav-link {{ request()->routeIs('projects.scrum') ? 'active' : '' }}">
-                        Scrum
-                    </a>
-                    <a href="{{ route('projects.calendar', ['project' => $project]) }}"
-                       class="nav-link {{ request()->routeIs('projects.calendar') ? 'active' : '' }}">
-                        Calendar
-                    </a>
-                    <a href="{{ route('projects.timeline', ['project' => $project]) }}"
-                       class="nav-link {{ request()->routeIs('projects.timeline') ? 'active' : '' }}">
-                        Timeline
-                    </a>
-                    <a href="{{ route('projects.transitions', ['project' => $project]) }}"
-                       class="nav-link {{ request()->routeIs('projects.transitions') ? 'active' : '' }}">
-                        Transitions
-                    </a>
-                </div>
                 @can('issues.create')
                     <a href="{{ route('issues.create', ['project' => $project]) }}" class="btn btn-outline-primary btn-sm">New issue</a>
                 @endcan
@@ -56,8 +36,12 @@ middleware(['auth','verified']);
     </x-slot>
 
     <div class="py-4">
-        <div class="container d-flex flex-column gap-3">
-            <livewire:projects.scrum-board :project="$project" />
+        <div class="container">
+            <x-projects.page-card :project="$project">
+                <x-slot name="actions">
+                </x-slot>
+                <livewire:projects.scrum-board :project="$project" />
+            </x-projects.page-card>
         </div>
     </div>
 </x-app-layout>

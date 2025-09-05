@@ -24,7 +24,7 @@
     </div>
 
     {{-- Columns --}}
-    <div class="dd d-flex flex-wrap gap-3 px-3 pb-3"
+    <div class="dd d-flex flex-nowrap gap-3 px-3 pb-3 overflow-auto"
          x-init="$nextTick(() => window.initKanbanSortables())"
     >
         @foreach ($columns as $col)
@@ -43,16 +43,47 @@
                     data-status-id="{{ $col['id'] }}"
                 >
                     @foreach (($lists[$col['id']] ?? []) as $issue)
+                        {{-- inside each <li class="dd-item" ...> --}}
                         <li class="dd-item"
                             data-issue-id="{{ $issue['id'] }}"
                             wire:key="issue-{{ $issue['id'] }}"
                             style="--tier-color: {{ $issue['type_color'] ?? '#607D8B' }};"
+                            x-data="{
+        editingTitle: false,
+        titleDraft: @js($issue['summary']),
+        editingDesc: false,
+        descDraft: @js($issue['description'] ?? ''),
+        saveTitle(){
+            $wire.updateIssueField('{{ $issue['id'] }}', 'summary', this.titleDraft);
+            this.editingTitle = false;
+        },
+        saveDesc(){
+            $wire.updateIssueField('{{ $issue['id'] }}', 'description', this.descDraft);
+            this.editingDesc = false;
+        }
+    }"
                         >
                             <h3 class="title dd-handle d-flex align-items-start justify-content-between"
                                 :class="view==='kanban' ? 'card--' + '{{ $issue['tier'] ?? 'other' }}' : ''">
-                                <div class="me-2">
-                                    <i class="material-icons me-1 align-text-bottom">filter_none</i>
-                                    {{ $issue['summary'] }}
+                                <div class="me-2 w-100">
+                                    <!-- Display mode -->
+                                    <div x-show="!editingTitle" class="fw-semibold" @click.stop="editingTitle = true" role="button">
+                                        <i class="material-icons me-1 align-text-bottom">filter_none</i>
+                                        <span x-text="titleDraft"></span>
+                                    </div>
+
+                                    <!-- Edit mode -->
+                                    <div x-show="editingTitle" class="js-no-drag w-100">
+                                        <input type="text"
+                                               class="form-control form-control-sm"
+                                               x-model="titleDraft"
+                                               maxlength="200"
+                                               @keydown.enter.prevent="saveTitle()"
+                                               @keydown.escape.prevent="editingTitle=false"
+                                               @blur="saveTitle()"
+                                               autofocus
+                                        />
+                                    </div>
                                 </div>
 
                                 {{-- Tier chip --}}
@@ -62,13 +93,32 @@
                                 />
                             </h3>
 
-                            @if(!empty($issue['description'] ?? null))
-                                <div class="text">
-                                    {{ \Illuminate\Support\Str::limit(strip_tags($issue['description']), 160) }}
+                            {{-- Description --}}
+                            <div class="text">
+                                <!-- Display mode -->
+                                <div x-show="!editingDesc" @click.stop="editingDesc = true" role="button">
+                                    @php($desc = \Illuminate\Support\Str::limit(strip_tags($issue['description'] ?? ''), 160))
+                                    <span x-text="descDraft || @js($desc)"></span>
+                                    <span x-show="!(descDraft?.length) && '{{ $desc }}' === ''" class="text-muted">Add a description…</span>
                                 </div>
-                            @endif
 
-                            {{-- Roll-up progress (only when parent) --}}
+                                <!-- Edit mode -->
+                                <div x-show="editingDesc" class="js-no-drag">
+            <textarea class="form-control form-control-sm"
+                      rows="3"
+                      x-model="descDraft"
+                      maxlength="10000"
+                      @keydown.meta.enter.prevent="saveDesc()"
+                      @keydown.ctrl.enter.prevent="saveDesc()"
+                      @keydown.escape.prevent="editingDesc=false"
+                      @blur="saveDesc()"
+                      autofocus
+            ></textarea>
+                                    <div class="form-text">Press ⌘/Ctrl+Enter to save, Esc to cancel.</div>
+                                </div>
+                            </div>
+
+                            {{-- Roll-up progress (unchanged) --}}
                             @if(($issue['progress'] ?? null) !== null)
                                 <div class="mt-2">
                                     <div class="progress" style="height: 6px;">
@@ -86,13 +136,14 @@
 
                             <div class="actions d-flex gap-2 mt-2">
                                 <button type="button" class="btn btn-sm btn-light"
-                                        wire:click="openIssue({{ $issue['id'] }})"
+                                        wire:click="openIssue('{{ $issue['key'] }}')"
                                         title="Open">
                                     <i class="material-icons">edit</i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-light"
-                                        wire:click="quickColor({{ $issue['id'] }})"
-                                        title="Label">
+
+                                <button type="button" class="btn btn-sm btn-light js-no-drag" title="Label"
+                                        {{-- keep passing UUID string if quickColor expects id --}}
+                                        wire:click="quickColor('{{ $issue['id'] }}')">
                                     <i class="material-icons">label</i>
                                 </button>
                             </div>

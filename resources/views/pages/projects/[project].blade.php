@@ -268,32 +268,6 @@ render(function (View $view, Project $project) {
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                <div class="nav nav-tabs mb-3">
-                    <a href="{{ route('projects.show', ['project' => $project]) }}"
-                       class="nav-link {{ request()->routeIs('projects.show') ? 'active' : '' }}">
-                        Overview
-                    </a>
-                    <a href="{{ route('projects.board', ['project' => $project]) }}"
-                       class="nav-link {{ request()->routeIs('projects.board') ? 'active' : '' }}">
-                        Board
-                    </a>
-                    <a href="{{ route('projects.scrum', ['project' => $project]) }}"
-                       class="nav-link {{ request()->routeIs('projects.scrum') ? 'active' : '' }}">
-                        Scrum
-                    </a>
-                    <a href="{{ route('projects.calendar', ['project' => $project]) }}"
-                       class="nav-link {{ request()->routeIs('projects.calendar') ? 'active' : '' }}">
-                        Calendar
-                    </a>
-                    <a href="{{ route('projects.timeline', ['project' => $project]) }}"
-                       class="nav-link {{ request()->routeIs('projects.timeline') ? 'active' : '' }}">
-                        Timeline
-                    </a>
-                    <a href="{{ route('projects.transitions', ['project' => $project]) }}"
-                       class="nav-link {{ request()->routeIs('projects.transitions') ? 'active' : '' }}">
-                        Transitions
-                    </a>
-                </div>
                 @can('issues.create')
                     <a href="{{ route('issues.create', ['project' => $project]) }}" class="btn btn-outline-primary btn-sm">New issue</a>
                 @endcan
@@ -306,176 +280,180 @@ render(function (View $view, Project $project) {
 
     <div class="py-4">
         <div class="container">
-            <div class="row g-4">
-                {{-- Left: Overview --}}
-                <div class="col-lg-8 d-flex flex-column gap-4">
-                    {{-- Status summary --}}
-                    <div class="card">
-                        <div class="card-body">
-                            <h3 class="h6 mb-2">{{ __('Issues by status') }}</h3>
-                            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2 mt-1">
-                                @forelse($statusSummary as $s)
-                                    <div class="col">
-                                        <div class="d-flex align-items-center justify-content-between rounded border bg-body-tertiary px-3 py-2">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <span class="rounded-circle d-inline-block" style="width:.5rem;height:.5rem;background:{{ $s['color'] }}"></span>
-                                                <span class="small">{{ $s['name'] }}</span>
+            <x-projects.page-card :project="$project">
+                <x-slot name="actions">
+                </x-slot>
+                <div class="row g-4">
+                    {{-- Left: Overview --}}
+                    <div class="col-lg-8 d-flex flex-column gap-4">
+                        {{-- Status summary --}}
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="h6 mb-2">{{ __('Issues by status') }}</h3>
+                                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2 mt-1">
+                                    @forelse($statusSummary as $s)
+                                        <div class="col">
+                                            <div class="d-flex align-items-center justify-content-between rounded border bg-body-tertiary px-3 py-2">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="rounded-circle d-inline-block" style="width:.5rem;height:.5rem;background:{{ $s['color'] }}"></span>
+                                                    <span class="small">{{ $s['name'] }}</span>
+                                                </div>
+                                                <div class="fw-semibold">{{ $s['count'] }}</div>
                                             </div>
-                                            <div class="fw-semibold">{{ $s['count'] }}</div>
                                         </div>
-                                    </div>
-                                @empty
-                                    <div class="col">
-                                        <p class="small text-body-secondary mb-0">{{ __('No statuses configured.') }}</p>
-                                    </div>
-                                @endforelse
+                                    @empty
+                                        <div class="col">
+                                            <p class="small text-body-secondary mb-0">{{ __('No statuses configured.') }}</p>
+                                        </div>
+                                    @endforelse
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    {{-- My work --}}
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <h3 class="h6 mb-0">{{ __('My assigned issues') }}</h3>
-                                <a href="{{ route('issues.index', ['project' => $project, 'assignee' => auth()->id()]) }}" class="small text-decoration-underline">{{ __('View all') }}</a>
-                            </div>
+                        {{-- My work --}}
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h3 class="h6 mb-0">{{ __('My assigned issues') }}</h3>
+                                    <a href="{{ route('issues.index', ['project' => $project, 'assignee' => auth()->id()]) }}" class="small text-decoration-underline">{{ __('View all') }}</a>
+                                </div>
 
-                            <div class="mt-2">
-                                @forelse($myIssues as $issue)
-                                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-start"
-                                       href="{{ route('issues.show', ['project' => $project, 'issue' => $issue]) }}">
-                                        <div class="me-3">
-                                            <div class="fw-medium">{{ $issue->summary }}</div>
-                                        </div>
-                                        <div class="small text-body-secondary">{{ $issue->updated_at->diffForHumans() }}</div>
-                                    </a>
-                                @empty
-                                    <p class="small text-body-secondary mb-0">{{ __('No issues assigned to you yet.') }}</p>
-                                @endforelse
+                                <div class="mt-2">
+                                    @forelse($myIssues as $issue)
+                                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-start"
+                                           href="{{ route('issues.show', ['project' => $project, 'issue' => $issue]) }}">
+                                            <div class="me-3">
+                                                <div class="fw-medium">{{ $issue->summary }}</div>
+                                            </div>
+                                            <div class="small text-body-secondary">{{ $issue->updated_at->diffForHumans() }}</div>
+                                        </a>
+                                    @empty
+                                        <p class="small text-body-secondary mb-0">{{ __('No issues assigned to you yet.') }}</p>
+                                    @endforelse
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    {{-- Activity --}}
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <h3 class="h6 mb-0">{{ __('Recent activity') }}</h3>
-                            </div>
+                        {{-- Activity --}}
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h3 class="h6 mb-0">{{ __('Recent activity') }}</h3>
+                                </div>
 
-                            <div class="mt-3 d-flex flex-column gap-4">
-                                @forelse($activityGroups as $groupLabel => $items)
-                                    <div>
-                                        <div class="text-uppercase small fw-semibold text-body-secondary">{{ $groupLabel }}</div>
-                                        <ul class="list-unstyled mt-2 d-flex flex-column gap-2">
-                                            @foreach($items as $i)
-                                                <li class="border rounded p-3">
-                                                    <div class="d-flex align-items-start gap-3">
-                                                        <x-avatar :src="$i['actor_avatar'] ?? asset('images/default-avatar.png')" :name="$i['actor_name']" preset="md" />
-                                                        <div class="flex-grow-1 min-w-0">
-                                                            <div class="small">
-                                                                <span class="fw-medium">{{ $i['actor_name'] }}</span>
-                                                                <span class="text-body-secondary">{{ strtolower($i['verb']) }}</span>
-                                                                @if($i['target_url'])
-                                                                    <a href="{{ $i['target_url'] }}" class="fw-medium text-decoration-underline">
-                                                                        {{ $i['target_label'] }}
-                                                                    </a>
-                                                                @else
-                                                                    <span class="fw-medium">{{ $i['target_label'] }}</span>
-                                                                @endif
-                                                            </div>
-                                                            <div class="small text-body-secondary mt-1">{{ $i['ago'] }}</div>
+                                <div class="mt-3 d-flex flex-column gap-4">
+                                    @forelse($activityGroups as $groupLabel => $items)
+                                        <div>
+                                            <div class="text-uppercase small fw-semibold text-body-secondary">{{ $groupLabel }}</div>
+                                            <ul class="list-unstyled mt-2 d-flex flex-column gap-2">
+                                                @foreach($items as $i)
+                                                    <li class="border rounded p-3">
+                                                        <div class="d-flex align-items-start gap-3">
+                                                            <x-avatar :src="$i['actor_avatar'] ?? asset('images/default-avatar.png')" :name="$i['actor_name']" preset="md" />
+                                                            <div class="flex-grow-1 min-w-0">
+                                                                <div class="small">
+                                                                    <span class="fw-medium">{{ $i['actor_name'] }}</span>
+                                                                    <span class="text-body-secondary">{{ strtolower($i['verb']) }}</span>
+                                                                    @if($i['target_url'])
+                                                                        <a href="{{ $i['target_url'] }}" class="fw-medium text-decoration-underline">
+                                                                            {{ $i['target_label'] }}
+                                                                        </a>
+                                                                    @else
+                                                                        <span class="fw-medium">{{ $i['target_label'] }}</span>
+                                                                    @endif
+                                                                </div>
+                                                                <div class="small text-body-secondary mt-1">{{ $i['ago'] }}</div>
 
-                                                            @php $statusChange = collect($i['changes'])->firstWhere('key','issue_status_id'); @endphp
-                                                            @if($statusChange)
-                                                                <div class="small d-flex align-items-center gap-2 mt-2">
-                                                                    <span class="text-body-secondary">{{ $statusChange['label'] }}:</span>
-                                                                    <span class="badge bg-body-secondary text-body">{{ $statusChange['from'] ?? '—' }}</span>
-                                                                    <span>→</span>
-                                                                    <span class="badge" style="background-color: {{ $statusChange['to_color'] ?? 'transparent' }}20;">
+                                                                @php $statusChange = collect($i['changes'])->firstWhere('key','issue_status_id'); @endphp
+                                                                @if($statusChange)
+                                                                    <div class="small d-flex align-items-center gap-2 mt-2">
+                                                                        <span class="text-body-secondary">{{ $statusChange['label'] }}:</span>
+                                                                        <span class="badge bg-body-secondary text-body">{{ $statusChange['from'] ?? '—' }}</span>
+                                                                        <span>→</span>
+                                                                        <span class="badge" style="background-color: {{ $statusChange['to_color'] ?? 'transparent' }}20;">
                                     {{ $statusChange['to'] ?? '—' }}
                                   </span>
-                                                                </div>
-                                                            @endif
+                                                                    </div>
+                                                                @endif
 
-                                                            @if(!empty($i['changes']))
-                                                                <div x-data="{ open: false }" class="mt-2">
-                                                                    <button type="button" class="btn btn-link btn-sm p-0 text-decoration-underline" @click="open = !open">
-                                                                        <span x-show="!open">{{ __('Show details') }}</span>
-                                                                        <span x-show="open">{{ __('Hide details') }}</span>
-                                                                    </button>
-                                                                    <div x-show="open" x-cloak class="mt-2 rounded p-3 bg-body-tertiary d-flex flex-column gap-2 small">
-                                                                        @foreach($i['changes'] as $c)
-                                                                            <div class="d-flex align-items-start gap-2">
-                                                                                <div class="flex-shrink-0 text-body-secondary" style="width:7rem">{{ $c['label'] }}</div>
-                                                                                <div class="flex-grow-1">
-                                                                                    <div class="d-inline-flex align-items-center gap-2">
-                                                                                        <span class="badge bg-white text-body border">{{ $c['from'] ?? '—' }}</span>
-                                                                                        <span>→</span>
-                                                                                        <span class="badge border" @if($c['to_color']) style="background-color: {{ $c['to_color'] }}20" @endif>
+                                                                @if(!empty($i['changes']))
+                                                                    <div x-data="{ open: false }" class="mt-2">
+                                                                        <button type="button" class="btn btn-link btn-sm p-0 text-decoration-underline" @click="open = !open">
+                                                                            <span x-show="!open">{{ __('Show details') }}</span>
+                                                                            <span x-show="open">{{ __('Hide details') }}</span>
+                                                                        </button>
+                                                                        <div x-show="open" x-cloak class="mt-2 rounded p-3 bg-body-tertiary d-flex flex-column gap-2 small">
+                                                                            @foreach($i['changes'] as $c)
+                                                                                <div class="d-flex align-items-start gap-2">
+                                                                                    <div class="flex-shrink-0 text-body-secondary" style="width:7rem">{{ $c['label'] }}</div>
+                                                                                    <div class="flex-grow-1">
+                                                                                        <div class="d-inline-flex align-items-center gap-2">
+                                                                                            <span class="badge bg-white text-body border">{{ $c['from'] ?? '—' }}</span>
+                                                                                            <span>→</span>
+                                                                                            <span class="badge border" @if($c['to_color']) style="background-color: {{ $c['to_color'] }}20" @endif>
                                               {{ $c['to'] ?? '—' }}
                                             </span>
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        @endforeach
+                                                                            @endforeach
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                            @endif
+                                                                @endif
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @empty
-                                    <p class="small text-body-secondary mb-0">{{ __('No activity yet.') }}</p>
-                                @endforelse
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @empty
+                                        <p class="small text-body-secondary mb-0">{{ __('No activity yet.') }}</p>
+                                    @endforelse
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    {{-- Right: Sidebar --}}
+                    <aside class="col-lg-4 d-flex flex-column gap-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="h6 mb-2">{{ __('Project info') }}</h3>
+                                <dl class="row small mb-0">
+                                    @if($project->lead_id)
+                                        <dt class="col-5 text-body-secondary">{{ __('Lead') }}</dt>
+                                        <dd class="col-7 mb-2">{{ optional($project->users->firstWhere('id', $project->lead_id))->name ?? '—' }}</dd>
+                                    @endif
+                                    <dt class="col-5 text-body-secondary">{{ __('Created') }}</dt>
+                                    <dd class="col-7 mb-2">{{ $project->created_at?->toFormattedDateString() ?? '—' }}</dd>
+                                    <dt class="col-5 text-body-secondary">{{ __('Teams') }}</dt>
+                                    <dd class="col-7 mb-0">{{ $project->teams->pluck('name')->implode(', ') ?: '—' }}</dd>
+                                </dl>
+                            </div>
+                        </div>
+
+                        @can('update', $project)
+                            <div class="card">
+                                <div class="card-body">
+                                    <h3 class="h6 mb-2">{{ __('Admin') }}</h3>
+                                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                                        <li><a class="link-primary text-decoration-underline" href="{{ route('projects.edit', ['project' => $project]) }}">{{ __('Edit details') }}</a></li>
+                                        <li><a class="link-primary text-decoration-underline" href="{{ route('projects.transitions', ['project' => $project]) }}">{{ __('Status transitions') }}</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        @endcan
+
+                        @can('issues.create')
+                            <div class="card">
+                                <div class="card-body">
+                                    <livewire:issues.quick-create :project="$project"/>
+                                </div>
+                            </div>
+                        @endcan
+                    </aside>
                 </div>
-
-                {{-- Right: Sidebar --}}
-                <aside class="col-lg-4 d-flex flex-column gap-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h3 class="h6 mb-2">{{ __('Project info') }}</h3>
-                            <dl class="row small mb-0">
-                                @if($project->lead_id)
-                                    <dt class="col-5 text-body-secondary">{{ __('Lead') }}</dt>
-                                    <dd class="col-7 mb-2">{{ optional($project->users->firstWhere('id', $project->lead_id))->name ?? '—' }}</dd>
-                                @endif
-                                <dt class="col-5 text-body-secondary">{{ __('Created') }}</dt>
-                                <dd class="col-7 mb-2">{{ $project->created_at?->toFormattedDateString() ?? '—' }}</dd>
-                                <dt class="col-5 text-body-secondary">{{ __('Teams') }}</dt>
-                                <dd class="col-7 mb-0">{{ $project->teams->pluck('name')->implode(', ') ?: '—' }}</dd>
-                            </dl>
-                        </div>
-                    </div>
-
-                    @can('update', $project)
-                        <div class="card">
-                            <div class="card-body">
-                                <h3 class="h6 mb-2">{{ __('Admin') }}</h3>
-                                <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
-                                    <li><a class="link-primary text-decoration-underline" href="{{ route('projects.edit', ['project' => $project]) }}">{{ __('Edit details') }}</a></li>
-                                    <li><a class="link-primary text-decoration-underline" href="{{ route('projects.transitions', ['project' => $project]) }}">{{ __('Status transitions') }}</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    @endcan
-
-                    @can('issues.create')
-                        <div class="card">
-                            <div class="card-body">
-                                <livewire:issues.quick-create :project="$project"/>
-                            </div>
-                        </div>
-                    @endcan
-                </aside>
-            </div>
+            </x-projects.page-card>
         </div>
     </div>
 </x-app-layout>

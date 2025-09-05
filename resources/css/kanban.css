@@ -1,18 +1,23 @@
 /* Typography & header */
-.kanban-h1 { font-family: 'Arbutus Slab', serif; font-size: 1.25rem; }
-.kanban__title h2 { font-family: 'Arbutus Slab', serif; color: #607D8B; font-size: 1rem; }
+.kanban-h1 { font-size: 1.25rem; }
+.kanban__title h2 { color: #607D8B; font-size: 1rem; }
 .kanban__title h2 .material-icons { color: #B0BEC5; }
 
 /* Column shell */
 .kanban-col {
-    --kanban-accent: #78909C; /* fallback */
+    --kanban-accent: #78909C;
     background: #fff;
     border-radius: 4px;
-    box-shadow: 0 2px 2px rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px rgba(0,0,0,.12);
+    box-shadow: 0 2px 2px rgba(0,0,0,.14),
+    0 3px 1px -2px rgba(0,0,0,.2),
+    0 1px 5px rgba(0,0,0,.12);
     padding: 0.75rem;
-    width: min(260px, 22%);
+    width: min(320px, 22%);
+    height: min(900px, 50%);
+    min-height: 500px;
     min-width: 220px;
     border-top: 5px solid var(--kanban-accent);
+    flex: 0 0 auto;
 }
 
 /* Board vs list view */
@@ -49,3 +54,5 @@
 /* Drag ghost / placeholder */
 .dd-placeholder { background: #E0E0E0; border: 1px dashed #b6bcbf; height: 44px; margin: .5rem 0; }
 .dd-dragel { opacity: .9; }
+
+.text [role="button"], .fw-semibold[role="button"] { cursor: text; }
