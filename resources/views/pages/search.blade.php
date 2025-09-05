@@ -3,6 +3,7 @@
 use App\Models\{Project, Issue, Organization, Goal};
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('search');
