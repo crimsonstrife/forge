@@ -11,10 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('repositories', function (Blueprint $table) {
+        Schema::create('repositories', static function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->softDeletes();
+            $table->string('provider');               // github|gitlab|gitea|crucible
+            $table->string('host')->default('github.com'); // e.g., github.com, gitlab.com, gitea.mycorp.com
+            $table->string('owner');                  // org/user
+            $table->string('name');                   // repo name
+            $table->string('external_id')->nullable();// repo id from provider
+            $table->string('default_branch')->nullable();
+            $table->json('meta')->nullable();         // misc provider data
             $table->timestamps();
+            $table->unique(['provider', 'host', 'owner', 'name']);
         });
     }
 

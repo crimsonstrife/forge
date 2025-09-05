@@ -242,6 +242,11 @@ class Project extends BaseModel
             ?? (int) IssuePriority::query()->where('weight', 50)->orWhere('is_default', true)->value('id');
     }
 
+    public function repositoryLink(): HasOne
+    {
+        return $this->hasOne(ProjectRepository::class);
+    }
+
     public function initialStatusId(): ?int
     {
         $id = $this->issueStatuses()->wherePivot('is_initial', true)->value('issue_statuses.id');

@@ -11,15 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('issue_external_refs', function (Blueprint $table) {
-            $table->uuid();
-            $table->foreignUuid('issue_id')->constrained('issues', 'id');
-            $table->string('provider')->default('github');
-            $table->string('external_id');
-            $table->unique(['provider', 'external_id']);
-            $table->boolean('read_only')->default(false);
-            $table->json('meta')->nullable();
+        Schema::create('issue_external_refs', static function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->foreignUuid('issue_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('repository_id')->constrained()->cascadeOnDelete();
+            $table->string('provider');               // github|gitlab|gitea|crucible
+            $table->string('external_issue_id');      // provider issue id
+            $table->unsignedBigInteger('number');     // issue number (#123)
+            $table->string('url')->nullable();
+            $table->string('state')->nullable();      // open|closed|...
+            $table->json('payload')->nullable();      // last seen payload
             $table->timestamps();
+            $table->unique(['repository_id','external_issue_id']);
+            $table->unique(['repository_id','number']); // fast lookup by #number
         });
     }
 

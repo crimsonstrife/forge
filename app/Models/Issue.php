@@ -181,6 +181,11 @@ class Issue extends BaseModel implements HasMedia
         return $this->hasMany(TimeEntry::class);
     }
 
+    public function externalRef(): HasOne
+    {
+        return $this->hasOne(IssueExternalRef::class);
+    }
+
     public function scopeEpics($q)
     {
         return $q->whereHas('type', fn ($t) => $t->where('key', 'EPIC'));

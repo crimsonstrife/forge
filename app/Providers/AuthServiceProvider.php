@@ -2,11 +2,19 @@
 
 namespace App\Providers;
 
+use App\Models\Goal;
+use App\Models\Organization;
 use App\Models\PermissionSet;
 use App\Models\Project;
+use App\Models\ProjectRepository;
+use App\Models\Sprint;
 use App\Models\Team;
 use App\Models\User;
+use App\Policies\GoalPolicy;
+use App\Policies\OrganizationPolicy;
 use App\Policies\ProjectPolicy;
+use App\Policies\ProjectRepositoryPolicy;
+use App\Policies\SprintPolicy;
 use App\Policies\TeamPolicy;
 use DB;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -20,6 +28,10 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Project::class => ProjectPolicy::class,
         Team::class => TeamPolicy::class,
+        Sprint::class => SprintPolicy::class,
+        Goal::class => GoalPolicy::class,
+        Organization::class => OrganizationPolicy::class,
+        ProjectRepository::class => ProjectRepositoryPolicy::class,
     ];
 
     /**
