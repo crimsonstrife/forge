@@ -6,6 +6,7 @@ use App\Models\Issue;
 use App\Models\IssueExternalRef;
 use App\Models\IssueStatus;
 use App\Models\IssueType;
+use App\Models\IssuePriority;
 use App\Models\ProjectRepository;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -62,6 +63,7 @@ final class InitialImportRepositoryIssues implements ShouldQueue
             $statusMap = $repo->statusMappings->keyBy(fn ($m) => strtolower($m->external_state));
 
             [$defaultTypeId, $byKey, $byName, $byTier] = $this->prepareIssueTypeLookups();
+            [$defaultPriorityId, $prioByKey, $prioByName] = $this->preparePriorityLookups();
 
             foreach ($issues as $i) {
                 $state = strtolower($i['state'] ?? '');
@@ -81,6 +83,13 @@ final class InitialImportRepositoryIssues implements ShouldQueue
                     $byName,
                     $byTier,
                     $defaultTypeId
+                );
+
+                $issuePriorityId = $this->inferPriorityIdFromLabels(
+                    $i['labels'] ?? [],
+                    $prioByKey,
+                    $prioByName,
+                    $defaultPriorityId
                 );
 
                 $issue = Issue::query()->create([
@@ -209,4 +218,80 @@ final class InitialImportRepositoryIssues implements ShouldQueue
 
         return $defaultId;
     }
+
+    /**
+     * Priority helpers
+     * @return array{0:string,1:array<string,string>,2:array<string,string>}
+     */
+    private function preparePriorityLookups(): array
+    {
+        // Your seeder defines keys: HIGHEST, HIGH, MEDIUM, LOW, LOWEST
+        $priorities = IssuePriority::query()->get(['id', 'key', 'name']);
+
+        // default: MEDIUM if exists, else first
+        $default = $priorities->firstWhere('key', 'MEDIUM') ?? $priorities->first();
+
+        if (!$default) {
+            throw new \RuntimeException('No IssuePriorities exist; seed IssuePriorities before importing.');
+        }
+
+        $byKey  = [];
+        $byName = [];
+        foreach ($priorities as $p) {
+            if ($p->key)  { $byKey[strtolower((string) $p->key)]   = (string) $p->id; }
+            if ($p->name) { $byName[strtolower((string) $p->name)] = (string) $p->id; }
+        }
+
+        return [(string) $default->id, $byKey, $byName];
+    }
+
+    /**
+     * Infer priority from labels like: p0/p1/p2, blocker, critical, high, medium, low, lowest, trivial, etc.
+     * Falls back to $defaultId when no match.
+     * @param array<int,string> $labels
+     */
+    private function inferPriorityIdFromLabels(
+        array $labels,
+        array $byKey,
+        array $byName,
+        string $defaultId
+    ): string {
+        // Map synonyms → canonical priority keys defined in your seeder
+        $synonyms = [
+            'HIGHEST' => ['p0', 'blocker', 'critical', 'urgent', 'sev1', 'highest'],
+            'HIGH'    => ['p1', 'high', 'important', 'sev2'],
+            'MEDIUM'  => ['p2', 'medium', 'normal', 'default'],
+            'LOW'     => ['p3', 'low', 'minor', 'sev4'],
+            'LOWEST'  => ['p4', 'lowest', 'trivial'],
+        ];
+
+        foreach ($labels as $label) {
+            $l = strtolower((string) $label);
+
+            // direct by key or name (case-insensitive)
+            if (isset($byKey[$l]))  { return $byKey[$l]; }
+            if (isset($byName[$l])) { return $byName[$l]; }
+
+            // numeric patterns like "P0", "p1", "prio: high"
+            if (preg_match('/^p([0-4])$/i', $l, $m)) {
+                $map = ['0' => 'HIGHEST', '1' => 'HIGH', '2' => 'MEDIUM', '3' => 'LOW', '4' => 'LOWEST'];
+                $k = strtolower($map[$m[1]]);
+                if (isset($byKey[$k])) { return $byKey[$k]; }
+            }
+
+            // synonyms
+            foreach ($synonyms as $canonicalKey => $alts) {
+                foreach ($alts as $alt) {
+                    if ($l === strtolower($alt)) {
+                        $k = strtolower($canonicalKey);
+                        if (isset($byKey[$k])) { return $byKey[$k]; }
+                        if (isset($byName[strtolower($canonicalKey)])) { return $byName[strtolower($canonicalKey)]; }
+                    }
+                }
+            }
+        }
+
+        return $defaultId;
+    }
+
 }
