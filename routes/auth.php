@@ -39,6 +39,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::delete('/profile/social/{socialAccount}', [SocialAccountLinkController::class, 'destroy'])
         ->name('social.unlink');
+
+    Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect'])
+        ->name('auth.github.redirect');
+
+    Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback'])
+        ->name('auth.github.callback');
 });
 
 Route::post('logout', App\Livewire\Actions\Logout::class)
