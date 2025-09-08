@@ -61,6 +61,7 @@ class Issue extends BaseModel implements HasMedia
         'progress_percent' => 'int',
         'starts_at' => 'immutable_datetime',
         'due_at'    => 'immutable_datetime',
+        'closed_at' => 'immutable_datetime',
     ];
 
     public static function boot(): void

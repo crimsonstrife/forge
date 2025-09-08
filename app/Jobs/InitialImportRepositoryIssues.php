@@ -4,9 +4,9 @@ namespace App\Jobs;
 
 use App\Models\Issue;
 use App\Models\IssueExternalRef;
+use App\Models\IssuePriority;
 use App\Models\IssueStatus;
 use App\Models\IssueType;
-use App\Models\IssuePriority;
 use App\Models\ProjectRepository;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -60,14 +60,26 @@ final class InitialImportRepositoryIssues implements ShouldQueue
 
             $issues = $provider->fetchAllIssues($repo, $token);
 
+            // If nothing returned (e.g., a repo with only closed issues but something went wrong), surface that.
+            if (empty($issues)) {
+                $link->update([
+                    'initial_import_finished_at' => now(),
+                    'last_sync_status'           => 'ok',
+                    'last_sync_error'            => 'Provider returned 0 issues. If the repo has only closed issues, ensure the token has access and the provider fetches closed items.',
+                ]);
+                return;
+            }
+
             $statusMap = $repo->statusMappings->keyBy(fn ($m) => strtolower($m->external_state));
 
-            [$defaultTypeId, $byKey, $byName, $byTier] = $this->prepareIssueTypeLookups();
+            // Lookups
+            [$defaultTypeId, $typeByKey, $typeByName, $typeByTier] = $this->prepareIssueTypeLookups();
             [$defaultPriorityId, $prioByKey, $prioByName] = $this->preparePriorityLookups();
 
             foreach ($issues as $i) {
                 $state = strtolower($i['state'] ?? '');
 
+                // --- Resolve Issue Status
                 $statusId = optional($statusMap->get($state))->issue_status_id;
                 if (!$statusId) {
                     $statusId = IssueStatus::query()
@@ -77,43 +89,73 @@ final class InitialImportRepositoryIssues implements ShouldQueue
                         ->value('id');
                 }
 
+                // --- Resolve Type & Priority
                 $issueTypeId = $this->inferIssueTypeIdFromLabels(
-                    $i['labels'] ?? [],
-                    $byKey,
-                    $byName,
-                    $byTier,
-                    $defaultTypeId
+                    $i['labels'] ?? [], $typeByKey, $typeByName, $typeByTier, $defaultTypeId
                 );
 
                 $issuePriorityId = $this->inferPriorityIdFromLabels(
-                    $i['labels'] ?? [],
-                    $prioByKey,
-                    $prioByName,
-                    $defaultPriorityId
+                    $i['labels'] ?? [], $prioByKey, $prioByName, $defaultPriorityId
                 );
 
-                $issue = Issue::query()->create([
-                    'project_id'      => $project->id,
-                    'summary'         => $i['title'],
-                    'description'     => $i['body'] ?? null,
-                    'issue_status_id' => $statusId,
-                    'issue_type_id'   => $issueTypeId,
-                    'issue_priority_id' => $issuePriorityId,
-                    'created_at'      => $i['created_at'] ?? now(),
-                    'updated_at'      => $i['updated_at'] ?? now(),
-                ]);
+                // --- Idempotent upsert: find existing external ref first
+                $externalIssueId = (string)($i['external_issue_id'] ?? '');
+                $number          = (int)($i['number'] ?? 0);
 
-                IssueExternalRef::query()->create([
-                    'issue_id'          => $issue->id,
-                    'repository_id'     => $repo->id,
-                    'provider'          => $repo->provider,
-                    'external_issue_id' => $i['external_issue_id'],
-                    'number'            => (int) $i['number'],
-                    'url'               => $i['url'] ?? null,
-                    'state'             => $i['state'] ?? null,
-                    'payload'           => $i['raw'] ?? null,
-                ]);
+                $ext = IssueExternalRef::query()
+                    ->where('repository_id', $repo->id)
+                    ->when($externalIssueId !== '', fn ($q) => $q->where('external_issue_id', $externalIssueId))
+                    ->when($externalIssueId === '' && $number > 0, fn ($q) => $q->where('number', $number))
+                    ->first();
 
+                if ($ext) {
+                    // Update the existing Issue + external ref (no duplicates)
+                    $issue = Issue::query()->find($ext->issue_id);
+                    if ($issue) {
+                        $issue->fill([
+                            'summary'           => $i['title'],
+                            'description'       => $i['body'] ?? null,
+                            'issue_status_id'   => $statusId,
+                            'issue_type_id'     => $issueTypeId,
+                            'issue_priority_id' => $issuePriorityId,
+                            'updated_at'        => $i['updated_at'] ?? now(),
+                            'closed_at'         => $i['closed_at'] ?? null,
+                        ])->save();
+                    }
+
+                    $ext->fill([
+                        'state'   => $i['state'] ?? null,
+                        'url'     => $i['url'] ?? null,
+                        'payload' => $i['raw'] ?? null,
+                        'number'  => $number ?: $ext->number,
+                    ])->save();
+                } else {
+                    // Create new Issue + external ref
+                    $issue = Issue::query()->create([
+                        'project_id'        => $project->id,
+                        'summary'           => $i['title'],
+                        'description'       => $i['body'] ?? null,
+                        'issue_status_id'   => $statusId,
+                        'issue_type_id'     => $issueTypeId,
+                        'issue_priority_id' => $issuePriorityId,
+                        'created_at'        => $i['created_at'] ?? now(),
+                        'updated_at'        => $i['updated_at'] ?? now(),
+                        'closed_at'         => $i['closed_at'] ?? null,
+                    ]);
+
+                    IssueExternalRef::query()->create([
+                        'issue_id'          => $issue->id,
+                        'repository_id'     => $repo->id,
+                        'provider'          => $repo->provider,
+                        'external_issue_id' => $externalIssueId,
+                        'number'            => $number,
+                        'url'               => $i['url'] ?? null,
+                        'state'             => $i['state'] ?? null,
+                        'payload'           => $i['raw'] ?? null,
+                    ]);
+                }
+
+                // --- People mapping (assoc only if account connected)
                 if (!empty($i['assignee_login'])) {
                     /** @var User|null $assignee */
                     $assignee = User::query()
@@ -122,7 +164,7 @@ final class InitialImportRepositoryIssues implements ShouldQueue
                                 ->where('nickname', $i['assignee_login']);
                         })->first();
 
-                    if ($assignee) {
+                    if (isset($issue) && $assignee) {
                         $issue->assignee()->associate($assignee)->save();
                     }
                 }
@@ -135,7 +177,7 @@ final class InitialImportRepositoryIssues implements ShouldQueue
                                 ->where('nickname', $i['reporter_login']);
                         })->first();
 
-                    if ($reporter) {
+                    if (isset($issue) && $reporter) {
                         $issue->reporter()->associate($reporter)->save();
                     }
                 }
@@ -156,9 +198,7 @@ final class InitialImportRepositoryIssues implements ShouldQueue
         }
     }
 
-    /**
-     * @return array{0:string,1:array<string,string>,2:array<string,string>,3:array<string,string>}
-     */
+    /** @return array{0:string,1:array<string,string>,2:array<string,string>,3:array<string,string>} */
     private function prepareIssueTypeLookups(): array
     {
         $types = IssueType::query()->get(['id', 'key', 'name', 'tier', 'is_default']);
@@ -183,9 +223,65 @@ final class InitialImportRepositoryIssues implements ShouldQueue
         return [(string) $default->id, $byKey, $byName, $byTier];
     }
 
-    /**
-     * @param array<int,string> $labels
-     */
+    /** @return array{0:string,1:array<string,string>,2:array<string,string>} */
+    private function preparePriorityLookups(): array
+    {
+        $priorities = IssuePriority::query()->get(['id', 'key', 'name']);
+
+        $default = $priorities->firstWhere('key', 'MEDIUM') ?? $priorities->first();
+
+        if (!$default) {
+            throw new \RuntimeException('No IssuePriorities exist; seed IssuePriorities before importing.');
+        }
+
+        $byKey  = [];
+        $byName = [];
+        foreach ($priorities as $p) {
+            if ($p->key)  { $byKey[strtolower((string) $p->key)]   = (string) $p->id; }
+            if ($p->name) { $byName[strtolower((string) $p->name)] = (string) $p->id; }
+        }
+
+        return [(string) $default->id, $byKey, $byName];
+    }
+
+    /** @param array<int,string> $labels */
+    private function inferPriorityIdFromLabels(array $labels, array $byKey, array $byName, string $defaultId): string
+    {
+        $synonyms = [
+            'HIGHEST' => ['p0', 'blocker', 'critical', 'urgent', 'sev1', 'highest'],
+            'HIGH'    => ['p1', 'high', 'important', 'sev2'],
+            'MEDIUM'  => ['p2', 'medium', 'normal', 'default'],
+            'LOW'     => ['p3', 'low', 'minor', 'sev4'],
+            'LOWEST'  => ['p4', 'lowest', 'trivial'],
+        ];
+
+        foreach ($labels as $label) {
+            $l = strtolower((string) $label);
+
+            if (isset($byKey[$l]))  { return $byKey[$l]; }
+            if (isset($byName[$l])) { return $byName[$l]; }
+
+            if (preg_match('/^p([0-4])$/i', $l, $m)) {
+                $map = ['0' => 'HIGHEST', '1' => 'HIGH', '2' => 'MEDIUM', '3' => 'LOW', '4' => 'LOWEST'];
+                $k = strtolower($map[$m[1]]);
+                if (isset($byKey[$k])) { return $byKey[$k]; }
+            }
+
+            foreach ($synonyms as $canonicalKey => $alts) {
+                foreach ($alts as $alt) {
+                    if ($l === strtolower($alt)) {
+                        $k = strtolower($canonicalKey);
+                        if (isset($byKey[$k])) { return $byKey[$k]; }
+                        if (isset($byName[strtolower($canonicalKey)])) { return $byName[strtolower($canonicalKey)]; }
+                    }
+                }
+            }
+        }
+
+        return $defaultId;
+    }
+
+    /** @param array<int,string> $labels */
     private function inferIssueTypeIdFromLabels(
         array $labels,
         array $byKey,
@@ -219,80 +315,4 @@ final class InitialImportRepositoryIssues implements ShouldQueue
 
         return $defaultId;
     }
-
-    /**
-     * Priority helpers
-     * @return array{0:string,1:array<string,string>,2:array<string,string>}
-     */
-    private function preparePriorityLookups(): array
-    {
-        // Your seeder defines keys: HIGHEST, HIGH, MEDIUM, LOW, LOWEST
-        $priorities = IssuePriority::query()->get(['id', 'key', 'name']);
-
-        // default: MEDIUM if exists, else first
-        $default = $priorities->firstWhere('key', 'MEDIUM') ?? $priorities->first();
-
-        if (!$default) {
-            throw new \RuntimeException('No IssuePriorities exist; seed IssuePriorities before importing.');
-        }
-
-        $byKey  = [];
-        $byName = [];
-        foreach ($priorities as $p) {
-            if ($p->key)  { $byKey[strtolower((string) $p->key)]   = (string) $p->id; }
-            if ($p->name) { $byName[strtolower((string) $p->name)] = (string) $p->id; }
-        }
-
-        return [(string) $default->id, $byKey, $byName];
-    }
-
-    /**
-     * Infer priority from labels like: p0/p1/p2, blocker, critical, high, medium, low, lowest, trivial, etc.
-     * Falls back to $defaultId when no match.
-     * @param array<int,string> $labels
-     */
-    private function inferPriorityIdFromLabels(
-        array $labels,
-        array $byKey,
-        array $byName,
-        string $defaultId
-    ): string {
-        // Map synonyms → canonical priority keys defined in your seeder
-        $synonyms = [
-            'HIGHEST' => ['p0', 'blocker', 'critical', 'urgent', 'sev1', 'highest'],
-            'HIGH'    => ['p1', 'high', 'important', 'sev2'],
-            'MEDIUM'  => ['p2', 'medium', 'normal', 'default'],
-            'LOW'     => ['p3', 'low', 'minor', 'sev4'],
-            'LOWEST'  => ['p4', 'lowest', 'trivial'],
-        ];
-
-        foreach ($labels as $label) {
-            $l = strtolower((string) $label);
-
-            // direct by key or name (case-insensitive)
-            if (isset($byKey[$l]))  { return $byKey[$l]; }
-            if (isset($byName[$l])) { return $byName[$l]; }
-
-            // numeric patterns like "P0", "p1", "prio: high"
-            if (preg_match('/^p([0-4])$/i', $l, $m)) {
-                $map = ['0' => 'HIGHEST', '1' => 'HIGH', '2' => 'MEDIUM', '3' => 'LOW', '4' => 'LOWEST'];
-                $k = strtolower($map[$m[1]]);
-                if (isset($byKey[$k])) { return $byKey[$k]; }
-            }
-
-            // synonyms
-            foreach ($synonyms as $canonicalKey => $alts) {
-                foreach ($alts as $alt) {
-                    if ($l === strtolower($alt)) {
-                        $k = strtolower($canonicalKey);
-                        if (isset($byKey[$k])) { return $byKey[$k]; }
-                        if (isset($byName[strtolower($canonicalKey)])) { return $byName[strtolower($canonicalKey)]; }
-                    }
-                }
-            }
-        }
-
-        return $defaultId;
-    }
-
 }
