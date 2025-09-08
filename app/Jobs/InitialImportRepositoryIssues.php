@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Issue;
 use App\Models\IssueExternalRef;
 use App\Models\IssueStatus;
+use App\Models\IssueType;
 use App\Models\ProjectRepository;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -32,13 +33,9 @@ final class InitialImportRepositoryIssues implements ShouldQueue
         $project = $link->project;
         $repo    = $link->repository;
 
-        // --- Resolve an access token (link token OR integrator's SocialAccount) ---
-        $token = $link->token;
-        if (!$token && $link->integrator) {
-            $token = optional(
-                $link->integrator->socialAccounts->firstWhere('provider', $repo->provider)
-            )->token;
-        }
+        $token = $link->token ?: optional(
+            $link->integrator?->socialAccounts->firstWhere('provider', $repo->provider)
+        )->token;
 
         if (!$token) {
             $link->update([
@@ -60,16 +57,16 @@ final class InitialImportRepositoryIssues implements ShouldQueue
             $factory  = app('repo-provider-factory');
             $provider = $factory($repo->provider);
 
-            $issues = $provider->fetchAllIssues($repo, $token); // may throw
+            $issues = $provider->fetchAllIssues($repo, $token);
 
-            // Map external states -> local IssueStatus
-            $map = $repo->statusMappings->keyBy(fn ($m) => strtolower($m->external_state));
+            $statusMap = $repo->statusMappings->keyBy(fn ($m) => strtolower($m->external_state));
+
+            [$defaultTypeId, $byKey, $byName, $byTier] = $this->prepareIssueTypeLookups();
 
             foreach ($issues as $i) {
                 $state = strtolower($i['state'] ?? '');
-                $statusId = optional($map->get($state))->issue_status_id;
 
-                // Fallback: open -> first non-done; closed -> any done
+                $statusId = optional($statusMap->get($state))->issue_status_id;
                 if (!$statusId) {
                     $statusId = IssueStatus::query()
                         ->when($state === 'closed', fn ($q) => $q->where('is_done', true),
@@ -78,11 +75,20 @@ final class InitialImportRepositoryIssues implements ShouldQueue
                         ->value('id');
                 }
 
+                $issueTypeId = $this->inferIssueTypeIdFromLabels(
+                    $i['labels'] ?? [],
+                    $byKey,
+                    $byName,
+                    $byTier,
+                    $defaultTypeId
+                );
+
                 $issue = Issue::query()->create([
                     'project_id'      => $project->id,
                     'summary'         => $i['title'],
                     'description'     => $i['body'] ?? null,
                     'issue_status_id' => $statusId,
+                    'issue_type_id'   => $issueTypeId,
                     'created_at'      => $i['created_at'] ?? now(),
                     'updated_at'      => $i['updated_at'] ?? now(),
                 ]);
@@ -98,7 +104,6 @@ final class InitialImportRepositoryIssues implements ShouldQueue
                     'payload'           => $i['raw'] ?? null,
                 ]);
 
-                // Assignee mapping (only if the user connected their provider account)
                 if (!empty($i['assignee_login'])) {
                     /** @var User|null $assignee */
                     $assignee = User::query()
@@ -112,7 +117,6 @@ final class InitialImportRepositoryIssues implements ShouldQueue
                     }
                 }
 
-                // Reporter mapping (same rule)
                 if (!empty($i['reporter_login'])) {
                     /** @var User|null $reporter */
                     $reporter = User::query()
@@ -140,5 +144,69 @@ final class InitialImportRepositoryIssues implements ShouldQueue
             ]);
             report($e);
         }
+    }
+
+    /**
+     * @return array{0:string,1:array<string,string>,2:array<string,string>,3:array<string,string>}
+     */
+    private function prepareIssueTypeLookups(): array
+    {
+        $types = IssueType::query()->get(['id', 'key', 'name', 'tier', 'is_default']);
+
+        $default = $types->firstWhere('is_default', true)
+            ?? $types->firstWhere('key', 'TASK')
+            ?? $types->first();
+
+        if (!$default) {
+            throw new \RuntimeException('No IssueTypes exist; seed IssueTypes before importing.');
+        }
+
+        $byKey  = [];
+        $byName = [];
+        $byTier = [];
+        foreach ($types as $t) {
+            if ($t->key)  { $byKey[strtolower((string) $t->key)]   = (string) $t->id; }
+            if ($t->name) { $byName[strtolower((string) $t->name)] = (string) $t->id; }
+            if ($t->tier) { $byTier[strtolower($t->tier->value)]   = (string) $t->id; }
+        }
+
+        return [(string) $default->id, $byKey, $byName, $byTier];
+    }
+
+    /**
+     * @param array<int,string> $labels
+     */
+    private function inferIssueTypeIdFromLabels(
+        array $labels,
+        array $byKey,
+        array $byName,
+        array $byTier,
+        string $defaultId
+    ): string {
+        $synonyms = [
+            'bug'     => ['bug', 'defect'],
+            'feature' => ['feature', 'enhancement', 'fr'],
+            'task'    => ['task', 'chore'],
+            'story'   => ['story', 'user story'],
+            'epic'    => ['epic'],
+            'subtask' => ['subtask', 'sub-task'],
+        ];
+
+        foreach ($labels as $label) {
+            $l = strtolower((string) $label);
+
+            if (isset($byKey[$l])) { return $byKey[$l]; }
+            if (isset($byName[$l])) { return $byName[$l]; }
+
+            foreach ($synonyms as $canonical => $alts) {
+                if ($l === $canonical || in_array($l, $alts, true)) {
+                    $canonKey = strtolower($canonical);
+                    if (isset($byKey[$canonKey])) { return $byKey[$canonKey]; }
+                    if (isset($byTier[$canonKey])) { return $byTier[$canonKey]; }
+                }
+            }
+        }
+
+        return $defaultId;
     }
 }

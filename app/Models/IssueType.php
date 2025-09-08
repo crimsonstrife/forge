@@ -30,12 +30,6 @@ class IssueType extends Model
      */
     public function allowedChildTiers(): array
     {
-        // Your rules:
-        // - Epic: can contain anything except Epics.
-        // - Story: can contain anything except Epics.
-        // - Task: only Sub-Tasks.
-        // - Sub-Task: can contain additional sub-tasks.
-        // - Other: behaves like Task (only Sub-Tasks).
         return match ($this->tier) {
             IssueTier::Epic  => [IssueTier::Story, IssueTier::Task, IssueTier::SubTask, IssueTier::Other],
             IssueTier::Story => [IssueTier::Task, IssueTier::SubTask, IssueTier::Other],
