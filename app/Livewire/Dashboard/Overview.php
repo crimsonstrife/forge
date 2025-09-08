@@ -39,7 +39,7 @@ final class Overview extends Component
         $user = auth()->user();
         $teamId = $user->currentTeam?->id;
 
-        // (unchanged) my issues
+        // my issues
         $this->myIssues = Issue::query()
             ->select(['id', 'summary', 'key', 'project_id', 'issue_status_id', 'issue_type_id', 'assignee_id', 'updated_at', 'due_at'])
             ->with([
@@ -53,7 +53,7 @@ final class Overview extends Component
             ->limit(10)
             ->get();
 
-        // (unchanged) status summary
+        // status summary
         $this->statusSummary = Issue::query()
             ->where('assignee_id', $user->id)
             ->selectRaw('issue_status_id, COUNT(*) as total')
@@ -61,7 +61,7 @@ final class Overview extends Component
             ->pluck('total', 'issue_status_id')
             ->toArray();
 
-        // (unchanged) due soon
+        // due soon
         $this->upcomingDue = Issue::query()
             ->select(['id', 'summary', 'key', 'project_id', 'due_at', 'issue_status_id'])
             ->with(['project:id,key,name', 'status:id,name,color,is_done'])
@@ -72,7 +72,7 @@ final class Overview extends Component
             ->limit(10)
             ->get();
 
-        // (unchanged) my projects
+        // my projects
         $this->myProjects = $user->projects()
             ->select(['projects.id', 'projects.name', 'projects.key'])
             ->withCount([
@@ -129,7 +129,7 @@ final class Overview extends Component
 
             // Also harvest project_id from properties (so we can link)
             if (!empty($props['project_id'])) {
-                $projectIds[] = $props['project_id'];
+                $projectIds->push($props['project_id']);
             }
         }
 
@@ -145,7 +145,7 @@ final class Overview extends Component
             ->keyBy('id');
 
         $projectsById = Project::query()
-            ->whereIn('id', array_filter((array)$projectIds))
+            ->whereIn('id', array_filter($projectIds->all()))
             ->get(['id', 'key', 'name'])
             ->keyBy('id');
 
@@ -283,6 +283,18 @@ final class Overview extends Component
             }
             return $dt?->toFormattedDateString() ?? 'Recent';
         });
+    }
+
+    /**
+     * @param Collection<int,mixed>|array<int,mixed> $ids
+     * @return array<int,int>
+     */
+    private function idsList(Collection|array $ids): array
+    {
+        $arr = $ids instanceof Collection ? $ids->all() : $ids;
+        $arr = \Illuminate\Support\Arr::flatten($arr);
+        $arr = array_map('intval', $arr);
+        return array_values(array_unique(array_filter($arr)));
     }
 
     public function render(): View
