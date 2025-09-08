@@ -15,9 +15,12 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 final class InitialImportRepositoryIssues implements ShouldQueue
 {
-    use Dispatchable, Queueable;
+    use Dispatchable;
+    use Queueable;
 
-    public function __construct(public string $projectRepositoryId) {}
+    public function __construct(public string $projectRepositoryId)
+    {
+    }
 
     public function handle(): void
     {
@@ -71,8 +74,11 @@ final class InitialImportRepositoryIssues implements ShouldQueue
                 $statusId = optional($statusMap->get($state))->issue_status_id;
                 if (!$statusId) {
                     $statusId = IssueStatus::query()
-                        ->when($state === 'closed', fn ($q) => $q->where('is_done', true),
-                            fn ($q) => $q->where('is_done', false))
+                        ->when(
+                            $state === 'closed',
+                            fn ($q) => $q->where('is_done', true),
+                            fn ($q) => $q->where('is_done', false)
+                        )
                         ->orderBy('order')
                         ->value('id');
                 }
@@ -174,9 +180,15 @@ final class InitialImportRepositoryIssues implements ShouldQueue
         $byName = [];
         $byTier = [];
         foreach ($types as $t) {
-            if ($t->key)  { $byKey[strtolower((string) $t->key)]   = (string) $t->id; }
-            if ($t->name) { $byName[strtolower((string) $t->name)] = (string) $t->id; }
-            if ($t->tier) { $byTier[strtolower($t->tier->value)]   = (string) $t->id; }
+            if ($t->key) {
+                $byKey[strtolower((string) $t->key)]   = (string) $t->id;
+            }
+            if ($t->name) {
+                $byName[strtolower((string) $t->name)] = (string) $t->id;
+            }
+            if ($t->tier) {
+                $byTier[strtolower($t->tier->value)]   = (string) $t->id;
+            }
         }
 
         return [(string) $default->id, $byKey, $byName, $byTier];
@@ -204,14 +216,22 @@ final class InitialImportRepositoryIssues implements ShouldQueue
         foreach ($labels as $label) {
             $l = strtolower((string) $label);
 
-            if (isset($byKey[$l])) { return $byKey[$l]; }
-            if (isset($byName[$l])) { return $byName[$l]; }
+            if (isset($byKey[$l])) {
+                return $byKey[$l];
+            }
+            if (isset($byName[$l])) {
+                return $byName[$l];
+            }
 
             foreach ($synonyms as $canonical => $alts) {
                 if ($l === $canonical || in_array($l, $alts, true)) {
                     $canonKey = strtolower($canonical);
-                    if (isset($byKey[$canonKey])) { return $byKey[$canonKey]; }
-                    if (isset($byTier[$canonKey])) { return $byTier[$canonKey]; }
+                    if (isset($byKey[$canonKey])) {
+                        return $byKey[$canonKey];
+                    }
+                    if (isset($byTier[$canonKey])) {
+                        return $byTier[$canonKey];
+                    }
                 }
             }
         }
@@ -238,8 +258,12 @@ final class InitialImportRepositoryIssues implements ShouldQueue
         $byKey  = [];
         $byName = [];
         foreach ($priorities as $p) {
-            if ($p->key)  { $byKey[strtolower((string) $p->key)]   = (string) $p->id; }
-            if ($p->name) { $byName[strtolower((string) $p->name)] = (string) $p->id; }
+            if ($p->key) {
+                $byKey[strtolower((string) $p->key)]   = (string) $p->id;
+            }
+            if ($p->name) {
+                $byName[strtolower((string) $p->name)] = (string) $p->id;
+            }
         }
 
         return [(string) $default->id, $byKey, $byName];
@@ -269,14 +293,20 @@ final class InitialImportRepositoryIssues implements ShouldQueue
             $l = strtolower((string) $label);
 
             // direct by key or name (case-insensitive)
-            if (isset($byKey[$l]))  { return $byKey[$l]; }
-            if (isset($byName[$l])) { return $byName[$l]; }
+            if (isset($byKey[$l])) {
+                return $byKey[$l];
+            }
+            if (isset($byName[$l])) {
+                return $byName[$l];
+            }
 
             // numeric patterns like "P0", "p1", "prio: high"
             if (preg_match('/^p([0-4])$/i', $l, $m)) {
                 $map = ['0' => 'HIGHEST', '1' => 'HIGH', '2' => 'MEDIUM', '3' => 'LOW', '4' => 'LOWEST'];
                 $k = strtolower($map[$m[1]]);
-                if (isset($byKey[$k])) { return $byKey[$k]; }
+                if (isset($byKey[$k])) {
+                    return $byKey[$k];
+                }
             }
 
             // synonyms
@@ -284,8 +314,12 @@ final class InitialImportRepositoryIssues implements ShouldQueue
                 foreach ($alts as $alt) {
                     if ($l === strtolower($alt)) {
                         $k = strtolower($canonicalKey);
-                        if (isset($byKey[$k])) { return $byKey[$k]; }
-                        if (isset($byName[strtolower($canonicalKey)])) { return $byName[strtolower($canonicalKey)]; }
+                        if (isset($byKey[$k])) {
+                            return $byKey[$k];
+                        }
+                        if (isset($byName[strtolower($canonicalKey)])) {
+                            return $byName[strtolower($canonicalKey)];
+                        }
                     }
                 }
             }
