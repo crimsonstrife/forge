@@ -52,6 +52,8 @@ class AppServiceProvider extends ServiceProvider
             $event->extendSocialite('gitea', \SocialiteProviders\Gitea\Provider::class);
             $event->extendSocialite('gitlab', \SocialiteProviders\GitLab\Provider::class);
             $event->extendSocialite('discord', \SocialiteProviders\Discord\Provider::class);
+            $event->extendSocialite('todoist', \SocialiteProviders\Todoist\Provider::class);
+            $event->extendSocialite('atlassian', \SocialiteProviders\Atlassian\Provider::class);
         });
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5dc5c53ab3349726320c5b06be713548",
+    "content-hash": "0975d62456408a3aba1536ae36afa0df",
     "packages": [
         {
             "name": "amphp/amp",
@@ -10719,6 +10719,57 @@
             "time": "2024-02-20T11:51:46+00:00"
         },
         {
+            "name": "socialiteproviders/atlassian",
+            "version": "4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SocialiteProviders/Atlassian.git",
+                "reference": "7bb46562bdadf338b18aaf1ec6710eec3b83aff3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SocialiteProviders/Atlassian/zipball/7bb46562bdadf338b18aaf1ec6710eec3b83aff3",
+                "reference": "7bb46562bdadf338b18aaf1ec6710eec3b83aff3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^8.0",
+                "socialiteproviders/manager": "^4.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialiteProviders\\Atlassian\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ryan Cooley",
+                    "email": "ryan.cooley@processmaker.com",
+                    "homepage": "https://www.processmaker.com"
+                }
+            ],
+            "description": "Atlassian OAuth2 Provider for Laravel Socialite",
+            "keywords": [
+                "atlassian",
+                "laravel",
+                "oauth",
+                "provider",
+                "socialite"
+            ],
+            "support": {
+                "docs": "https://socialiteproviders.com/atlassian",
+                "issues": "https://github.com/socialiteproviders/providers/issues",
+                "source": "https://github.com/socialiteproviders/providers"
+            },
+            "time": "2024-06-19T08:47:44+00:00"
+        },
+        {
             "name": "socialiteproviders/discord",
             "version": "4.2.0",
             "source": {
@@ -10964,6 +11015,57 @@
                 "source": "https://github.com/socialiteproviders/manager"
             },
             "time": "2025-02-24T19:33:30+00:00"
+        },
+        {
+            "name": "socialiteproviders/todoist",
+            "version": "4.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SocialiteProviders/Todoist.git",
+                "reference": "d2da08bed4da68b4afecc807e9c4bf8f4bf5d1ce"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SocialiteProviders/Todoist/zipball/d2da08bed4da68b4afecc807e9c4bf8f4bf5d1ce",
+                "reference": "d2da08bed4da68b4afecc807e9c4bf8f4bf5d1ce",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.4 || ^8.0",
+                "socialiteproviders/manager": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialiteProviders\\Todoist\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "atymic",
+                    "email": "atymicq@gmail.com",
+                    "homepage": "https://atymic.dev"
+                }
+            ],
+            "description": "Todoist OAuth2 Provider for Laravel Socialite",
+            "keywords": [
+                "laravel",
+                "oauth",
+                "provider",
+                "socialite",
+                "todoist"
+            ],
+            "support": {
+                "docs": "https://socialiteproviders.com/todoist",
+                "issues": "https://github.com/socialiteproviders/providers/issues",
+                "source": "https://github.com/socialiteproviders/providers"
+            },
+            "time": "2022-12-27T05:04:50+00:00"
         },
         {
             "name": "spatie/backtrace",

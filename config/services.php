@@ -63,5 +63,17 @@ return [
         'avatar_default_extension' => env('DISCORD_EXTENSION_DEFAULT', 'png'), // only pick from jpg, png, webp
     ],
 
-    'socialite_providers' => explode(',', env('SOCIALITE_PROVIDERS', 'github,gitlab,gitea,discord')),
+    'todoist' => [
+        'client_id' => env('TODOIST_CLIENT_ID'),
+        'client_secret' => env('TODOIST_CLIENT_SECRET'),
+        'redirect' => env('TODOIST_REDIRECT_URI')
+    ],
+
+    'atlassian' => [
+        'client_id' => env('ATLASSIAN_CLIENT_ID'),
+        'client_secret' => env('ATLASSIAN_CLIENT_SECRET'),
+        'redirect' => env('ATLASSIAN_REDIRECT_URI')
+    ],
+
+    'socialite_providers' => explode(',', env('SOCIALITE_PROVIDERS', 'github,gitlab,gitea,discord,todoist,atlassian,slack')),
 ];
