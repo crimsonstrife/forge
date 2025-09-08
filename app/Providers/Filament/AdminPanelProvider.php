@@ -27,8 +27,6 @@ use Laravel\Jetstream\Jetstream;
 
 class AdminPanelProvider extends PanelProvider
 {
-
-
     public function panel(Panel $panel): Panel
     {
         return $panel

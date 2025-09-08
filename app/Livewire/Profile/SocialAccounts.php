@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire\Profile;
 
 use App\Models\SocialAccount;
