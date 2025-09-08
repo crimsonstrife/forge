@@ -13,9 +13,12 @@ use App\Observers\IssueObserver;
 use App\Observers\PermissionSetObserver;
 use App\Observers\ProjectObserver;
 use App\Observers\RoleObserver;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 use Laravel\Telescope\TelescopeServiceProvider;
+use SocialiteProviders\GitHub\Provider;
+use SocialiteProviders\Manager\SocialiteWasCalled;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -41,5 +44,9 @@ class AppServiceProvider extends ServiceProvider
         Comment::observe(CommentObserver::class);
         Role::observe(RoleObserver::class);
         PermissionSet::observe(PermissionSetObserver::class);
+
+        Event::listen(static function (SocialiteWasCalled $event) {
+            $event->extendSocialite('github', Provider::class);
+        });
     }
 }

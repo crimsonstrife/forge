@@ -18,6 +18,16 @@ class ProjectRepository extends Model
         'token_expires_at' => 'datetime',
     ];
 
+    protected $fillable = [
+        'project_id',
+        'repository_id',
+        'integrator_user_id',
+        'token',
+        'token_type',
+        'token_expires_at',
+    ];
+
+
     public function project(): BelongsTo { return $this->belongsTo(Project::class); }
     public function repository(): BelongsTo { return $this->belongsTo(Repository::class); }
     public function integrator(): BelongsTo { return $this->belongsTo(User::class, 'integrator_user_id'); }

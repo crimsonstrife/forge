@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUuid('repository_id')->constrained()->cascadeOnDelete();
             $table->string('provider');           // github|gitlab|gitea
             $table->string('external_state');     // e.g., "open", "closed", or a label name
-            $table->foreignUuid('issue_status_id')->constrained('issue_statuses')->cascadeOnDelete();
+            $table->foreignId('issue_status_id')->constrained('issue_statuses')->cascadeOnDelete();
             $table->timestamps();
             $table->unique(['repository_id','external_state']);
         });

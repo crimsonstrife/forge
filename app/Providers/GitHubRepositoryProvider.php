@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Providers;
 
 use App\Models\Repository;
@@ -20,30 +21,40 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
 
         do {
             $resp = Http::withToken($token)
+                ->withHeaders([
+                    // GitHub requires a User-Agent; use app name as a sane default
+                    'User-Agent' => config('app.name', 'Forge'),
+                ])
                 ->acceptJson()
                 ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}/issues", [
-                    'state' => 'all',
+                    'state'    => 'all',
                     'per_page' => 100,
-                    'page' => $page,
+                    'page'     => $page,
                 ]);
+
+            if ($resp->failed()) {
+                throw new \RuntimeException(
+                    "GitHub API error ({$resp->status()}): " . substr($resp->body(), 0, 2000)
+                );
+            }
 
             $batch = collect($resp->json() ?? [])
                 ->filter(fn ($i) => empty($i['pull_request'])) // exclude PRs
                 ->map(function ($i) {
                     return [
-                        'external_issue_id' => (string)$i['id'],
-                        'number' => (int)$i['number'],
-                        'title' => $i['title'],
-                        'body' => $i['body'],
-                        'state' => $i['state'], // open|closed
-                        'url' => $i['html_url'],
-                        'assignee_login' => Arr::get($i, 'assignee.login'),
-                        'reporter_login' => Arr::get($i, 'user.login'),
-                        'labels' => collect($i['labels'] ?? [])->pluck('name')->all(),
-                        'created_at' => $i['created_at'],
-                        'updated_at' => $i['updated_at'],
-                        'closed_at'  => $i['closed_at'] ?? null,
-                        'raw' => $i,
+                        'external_issue_id' => (string) $i['id'],
+                        'number'            => (int) $i['number'],
+                        'title'             => $i['title'],
+                        'body'              => $i['body'],
+                        'state'             => $i['state'], // open|closed
+                        'url'               => $i['html_url'],
+                        'assignee_login'    => Arr::get($i, 'assignee.login'),
+                        'reporter_login'    => Arr::get($i, 'user.login'),
+                        'labels'            => collect($i['labels'] ?? [])->pluck('name')->all(),
+                        'created_at'        => $i['created_at'],
+                        'updated_at'        => $i['updated_at'],
+                        'closed_at'         => $i['closed_at'] ?? null,
+                        'raw'               => $i,
                     ];
                 })->values()->all();
 
@@ -73,20 +84,20 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         if (!empty($issue['pull_request'])) { return null; } // ignore PRs
 
         return [
-            'provider' => 'github',
-            'host' => 'github.com',
-            'owner' => $repo['owner']['login'] ?? '',
-            'name'  => $repo['name'] ?? '',
-            'external_issue_id' => (string)$issue['id'],
-            'number' => (int)$issue['number'],
-            'state'  => $issue['state'],
-            'title'  => $issue['title'],
-            'body'   => $issue['body'],
-            'labels' => collect($issue['labels'] ?? [])->pluck('name')->all(),
-            'assignee_login' => Arr::get($issue,'assignee.login'),
-            'reporter_login' => Arr::get($issue,'user.login'),
-            'raw' => $payload,
-            'action' => $action, // opened|closed|edited|reopened|assigned|unassigned|labeled|unlabeled
+            'provider'        => 'github',
+            'host'            => 'github.com',
+            'owner'           => $repo['owner']['login'] ?? '',
+            'name'            => $repo['name'] ?? '',
+            'external_issue_id' => (string) $issue['id'],
+            'number'          => (int) $issue['number'],
+            'state'           => $issue['state'],
+            'title'           => $issue['title'],
+            'body'            => $issue['body'],
+            'labels'          => collect($issue['labels'] ?? [])->pluck('name')->all(),
+            'assignee_login'  => Arr::get($issue, 'assignee.login'),
+            'reporter_login'  => Arr::get($issue, 'user.login'),
+            'raw'             => $payload,
+            'action'          => $action, // opened|closed|edited|reopened|assigned|unassigned|labeled|unlabeled
         ];
     }
 
@@ -95,7 +106,6 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
      */
     public function resolveRepositoryFromWebhook(array $headers, string $rawPayload): ?Repository
     {
-        // Optional: validate signature if using GitHub App / webhook secret
         $payload = json_decode($rawPayload, true, 512, JSON_THROW_ON_ERROR);
         $repo = $payload['repository'] ?? null;
         if (!$repo) { return null; }

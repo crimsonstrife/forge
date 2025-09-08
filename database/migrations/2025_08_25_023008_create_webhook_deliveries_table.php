@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('webhook_deliveries', function (Blueprint $table) {
             $table->id();
+            $table->string('provider');
+            $table->foreignUuid('repository_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('event_type')->nullable();
+            $table->string('signature')->nullable();
+            $table->json('headers')->nullable();
+            $table->longText('payload');       // raw body
+            $table->integer('http_status')->nullable();
+            $table->text('processing_error')->nullable();
             $table->timestamps();
         });
     }

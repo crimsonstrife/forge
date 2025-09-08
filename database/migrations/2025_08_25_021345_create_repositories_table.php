@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('default_branch')->nullable();
             $table->json('meta')->nullable();         // misc provider data
             $table->timestamps();
-            $table->unique(['provider', 'host', 'owner', 'name']);
+            $table->unique(['provider', 'host', 'name'], 'repo_provider_unique');
         });
     }
 

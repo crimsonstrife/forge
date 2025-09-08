@@ -13,9 +13,22 @@ class Repository extends BaseModel
     use HasUuids;
     use IsPermissible;
 
+    protected $fillable = [
+        'provider',
+        'host',
+        'owner',
+        'name',
+        'external_id',
+        'default_branch',
+        'meta',
+    ];
+
     protected $keyType = 'string';
     public $incrementing = false;
-    protected $casts = ['id' => 'string'];
+    protected $casts = [
+        'meta' => 'array',
+        'id' => 'string',
+    ];
 
     public static function boot(): void
     {
