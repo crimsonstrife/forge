@@ -98,6 +98,7 @@ final class InitialImportRepositoryIssues implements ShouldQueue
                     'description'     => $i['body'] ?? null,
                     'issue_status_id' => $statusId,
                     'issue_type_id'   => $issueTypeId,
+                    'issue_priority_id' => $issuePriorityId,
                     'created_at'      => $i['created_at'] ?? now(),
                     'updated_at'      => $i['updated_at'] ?? now(),
                 ]);
