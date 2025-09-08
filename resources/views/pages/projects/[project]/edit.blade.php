@@ -22,10 +22,5 @@ render(function (View $view, Project $project) {
                     <livewire:projects.edit-project-form :project="$project" />
             </div>
         </div>
-        <div class="row g-4">
-            <div class="container mx-auto px-3" style="max-width: 980px">
-                @include('partials.projects.repository-panel', ['project' => $project])
-            </div>
-        </div>
     </div>
 </x-app-layout>

@@ -18,11 +18,12 @@
     <div class="card-body">
         @if($link)
             @php
-                $repo = $link->repository()->first(); // provider, host, owner, name
+                $repo = $link->repository()->first();
             @endphp
 
             <div class="row g-3 align-items-center">
                 <div class="col-md-8">
+                    {{-- existing provider/repo markup --}}
                     <div class="mb-1">
                         <strong>Provider:</strong> {{ strtoupper($repo->provider) }}
                     </div>
@@ -33,18 +34,20 @@
                             <span class="text-muted">({{ $repo->host }})</span>
                         @endif
                     </div>
-
                     @if($repo->provider === 'github')
-                        <div class="mb-1">
+                        <div class="mb-2">
                             <a class="link-primary" target="_blank"
                                href="https://{{ $repo->host ?? 'github.com' }}/{{ $repo->owner }}/{{ $repo->name }}">
                                 View on GitHub
                             </a>
                         </div>
                     @endif
+                    
+                    <livewire:projects.manage-repository :project="$project" :link="$link" />
                 </div>
 
                 <div class="col-md-4">
+                    {{-- existing sync status box --}}
                     <div class="border rounded p-3 bg-body-tertiary">
                         <div class="small text-muted">Sync status</div>
                         <div class="fw-semibold">
@@ -69,6 +72,7 @@
                     </div>
                 </div>
             </div>
+
         @else
             @can('connect', [\App\Models\ProjectRepository::class, $project])
                 @if($issuesCount > 0)
@@ -78,7 +82,6 @@
                         connect a repository only on projects without issues.
                     </div>
                 @else
-                    {{-- Livewire connect wizard --}}
                     <livewire:projects.connect-repository :project="$project" />
                 @endif
             @else

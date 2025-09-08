@@ -9,6 +9,7 @@
         ['label' => 'Scrum',      'route' => 'projects.scrum'],
         ['label' => 'Calendar',   'route' => 'projects.calendar'],
         ['label' => 'Timeline',   'route' => 'projects.timeline'],
+        ['label' => 'Code',       'route' => 'projects.code'],
         ['label' => 'Transitions','route' => 'projects.transitions'],
     ];
 @endphp
