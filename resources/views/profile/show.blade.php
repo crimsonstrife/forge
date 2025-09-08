@@ -14,6 +14,8 @@
                     @livewire('profile.update-password-form')
                 @endif
 
+                    @livewire('profile.social-accounts')
+
                 @if (Laravel\Fortify\Features::canManageTwoFactorAuthentication())
                     @livewire('profile.two-factor-authentication-form')
                 @endif

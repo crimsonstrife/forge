@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Admin\Pages;
+namespace App\Filament\Pages;
 
 use App\Settings\GithubSettings;
 use App\Settings\GiteaSettings;

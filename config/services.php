@@ -38,6 +38,30 @@ return [
     'github' => [
         'client_id' => env('GITHUB_CLIENT_ID'),
         'client_secret' => env('GITHUB_CLIENT_SECRET'),
-        'redirect' => env('GITHUB_REDIRECT_URI', 'https://forge.test/auth/github/callback'),
-        ],
+        'redirect' => env('GITHUB_REDIRECT_URI'),
+    ],
+
+    'gitlab' => [
+        'client_id' => env('GITLAB_CLIENT_ID'),
+        'client_secret' => env('GITLAB_CLIENT_SECRET'),
+        'redirect' => env('GITLAB_REDIRECT_URI'),
+        'base_url' => env('GITLAB_BASE_URL', 'https://gitlab.com'),
+    ],
+
+    'gitea' => [
+        'client_id' => env('GITEA_CLIENT_ID'),
+        'client_secret' => env('GITEA_CLIENT_SECRET'),
+        'redirect' => env('GITEA_REDIRECT_URI'),
+        'base_url' => env('GITEA_BASE_URL', 'https://gitea.example.com'),
+    ],
+
+    'discord' => [
+        'client_id' => env('DISCORD_CLIENT_ID'),
+        'client_secret' => env('DISCORD_CLIENT_SECRET'),
+        'redirect' => env('DISCORD_REDIRECT_URI'),
+        'allow_gif_avatars' => (bool)env('DISCORD_AVATAR_GIF', true),
+        'avatar_default_extension' => env('DISCORD_EXTENSION_DEFAULT', 'png'), // only pick from jpg, png, webp
+    ],
+
+    'socialite_providers' => explode(',', env('SOCIALITE_PROVIDERS', 'github,gitlab,gitea,discord')),
 ];

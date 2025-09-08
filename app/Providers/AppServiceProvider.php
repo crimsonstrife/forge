@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 use Laravel\Telescope\TelescopeServiceProvider;
-use SocialiteProviders\GitHub\Provider;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 
 class AppServiceProvider extends ServiceProvider
@@ -29,7 +28,6 @@ class AppServiceProvider extends ServiceProvider
     {
         if (class_exists(TelescopeServiceProvider::class) && $this->app->environment('local')) {
             $this->app->register(TelescopeServiceProvider::class);
-            $this->app->register(TelescopeServiceProvider::class);
         }
     }
 
@@ -38,6 +36,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->runningInConsole()) {
+            return; // do not touch URL/Request during composer/CLI
+        }
+
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
         Issue::observe(IssueObserver::class);
         Project::observe(ProjectObserver::class);
@@ -46,7 +48,10 @@ class AppServiceProvider extends ServiceProvider
         PermissionSet::observe(PermissionSetObserver::class);
 
         Event::listen(static function (SocialiteWasCalled $event) {
-            $event->extendSocialite('github', Provider::class);
+            $event->extendSocialite('github', \SocialiteProviders\GitHub\Provider::class);
+            $event->extendSocialite('gitea', \SocialiteProviders\Gitea\Provider::class);
+            $event->extendSocialite('gitlab', \SocialiteProviders\GitLab\Provider::class);
+            $event->extendSocialite('discord', \SocialiteProviders\Discord\Provider::class);
         });
     }
 }

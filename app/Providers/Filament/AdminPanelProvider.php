@@ -2,7 +2,7 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Admin\Pages\ConnectorsAndSyncSettings;
+use App\Filament\Pages\ConnectorsAndSyncSettings;
 use App\Listeners\SwitchTeam;
 use Filament\Events\TenantSet;
 use Filament\Http\Middleware\Authenticate;

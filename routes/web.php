@@ -42,12 +42,5 @@ Route::middleware([
         ->name('projects.calendar.ics');
 });
 
-
-Route::get('/auth/github/redirect', [GitHubAuthController::class, 'redirect'])
-    ->name('auth.github.redirect');
-
-Route::get('/auth/github/callback', [GitHubAuthController::class, 'callback'])
-    ->name('auth.github.callback');
-
 Route::post('/webhooks/github', [GitHubWebhookController::class, 'handle'])
     ->name('webhooks.github');

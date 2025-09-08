@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\GitHubAuthController;
+use App\Http\Controllers\Auth\SocialAccountLinkController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Livewire\Auth\ConfirmPassword;
 use App\Livewire\Auth\ForgotPassword;
@@ -26,6 +28,17 @@ Route::middleware('auth')->group(function () {
 
     Route::get('confirm-password', ConfirmPassword::class)
         ->name('password.confirm');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/auth/{provider}/link', [SocialAccountLinkController::class, 'redirect'])
+        ->name('social.link');
+
+    Route::get('/auth/{provider}/link/callback', [SocialAccountLinkController::class, 'callback'])
+        ->name('social.link.callback');
+
+    Route::delete('/profile/social/{socialAccount}', [SocialAccountLinkController::class, 'destroy'])
+        ->name('social.unlink');
 });
 
 Route::post('logout', App\Livewire\Actions\Logout::class)
