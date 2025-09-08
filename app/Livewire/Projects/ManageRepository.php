@@ -82,7 +82,7 @@ final class ManageRepository extends Component
                     [
                         'repository_id' => $this->link->repository_id,
                         'provider'      => $this->link->repository->provider,
-                        'external_state'=> $k,
+                        'external_state' => $k,
                     ],
                     ['issue_status_id' => $this->statusMapping[$k]]
                 );

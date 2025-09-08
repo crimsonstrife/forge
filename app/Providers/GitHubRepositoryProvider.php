@@ -92,17 +92,25 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
     public function normalizeWebhook(array $headers, string $rawPayload): ?array
     {
         $event = $headers['X-GitHub-Event'] ?? null;
-        if ($event !== 'issues') { return null; }
+        if ($event !== 'issues') {
+            return null;
+        }
 
         $payload = json_decode($rawPayload, true, 512, JSON_THROW_ON_ERROR);
-        if (!$payload) { return null; }
+        if (!$payload) {
+            return null;
+        }
 
         $action = $payload['action'] ?? null;
         $issue  = $payload['issue']  ?? null;
         $repo   = $payload['repository'] ?? null;
-        if (!$issue || !$repo) { return null; }
+        if (!$issue || !$repo) {
+            return null;
+        }
 
-        if (!empty($issue['pull_request'])) { return null; } // ignore PRs
+        if (!empty($issue['pull_request'])) {
+            return null;
+        } // ignore PRs
 
         return [
             'provider'          => 'github',
@@ -130,7 +138,9 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
     {
         $payload = json_decode($rawPayload, true, 512, JSON_THROW_ON_ERROR);
         $repo = $payload['repository'] ?? null;
-        if (!$repo) { return null; }
+        if (!$repo) {
+            return null;
+        }
 
         return Repository::query()
             ->where('provider', 'github')
