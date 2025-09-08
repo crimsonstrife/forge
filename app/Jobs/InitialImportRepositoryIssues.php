@@ -13,9 +13,12 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 final class InitialImportRepositoryIssues implements ShouldQueue
 {
-    use Dispatchable, Queueable;
+    use Dispatchable;
+    use Queueable;
 
-    public function __construct(public string $projectRepositoryId) {}
+    public function __construct(public string $projectRepositoryId)
+    {
+    }
 
     public function handle(): void
     {
@@ -72,8 +75,11 @@ final class InitialImportRepositoryIssues implements ShouldQueue
                 // Fallback: open -> first non-done; closed -> any done
                 if (!$statusId) {
                     $statusId = IssueStatus::query()
-                        ->when($state === 'closed', fn ($q) => $q->where('is_done', true),
-                            fn ($q) => $q->where('is_done', false))
+                        ->when(
+                            $state === 'closed',
+                            fn ($q) => $q->where('is_done', true),
+                            fn ($q) => $q->where('is_done', false)
+                        )
                         ->orderBy('order')
                         ->value('id');
                 }

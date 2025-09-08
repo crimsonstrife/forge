@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -24,6 +25,12 @@ class IssueStatusMapping extends Model
         });
     }
 
-    public function repository(): BelongsTo { return $this->belongsTo(Repository::class); }
-    public function status(): BelongsTo { return $this->belongsTo(IssueStatus::class, 'issue_status_id'); }
+    public function repository(): BelongsTo
+    {
+        return $this->belongsTo(Repository::class);
+    }
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(IssueStatus::class, 'issue_status_id');
+    }
 }

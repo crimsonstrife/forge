@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire\Projects;
 
 use App\Jobs\InitialImportRepositoryIssues;
@@ -85,7 +86,7 @@ final class ConnectRepository extends Component
         /** @var array<int,array{id:string,name:string,is_done:bool}> $statuses */
         $statuses = IssueStatus::query()
             ->orderBy('order')->get(['id','name','is_done'])
-            ->map(fn($s) => ['id'=>$s->id,'name'=>$s->name,'is_done'=>$s->is_done])->all();
+            ->map(fn ($s) => ['id' => $s->id,'name' => $s->name,'is_done' => $s->is_done])->all();
 
         // suggest defaults if empty
         if (empty($this->statusMapping)) {

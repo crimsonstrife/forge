@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Webhooks;
 
 use App\Models\Issue;
@@ -30,7 +31,9 @@ final class GitHubWebhookController extends Controller
         $provider = $factory('github');
 
         $repo = $provider->resolveRepositoryFromWebhook($request->headers->all(), $raw);
-        if ($repo) { $delivery->update(['repository_id' => $repo->id]); }
+        if ($repo) {
+            $delivery->update(['repository_id' => $repo->id]);
+        }
 
         $event = $provider->normalizeWebhook($request->headers->all(), $raw);
         if (!$event || !$repo) {
