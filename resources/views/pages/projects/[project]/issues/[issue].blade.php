@@ -34,6 +34,7 @@ render(function (View $view, Project $project, Issue $issue) {
                 'priority:id,name',
             ])
             ->latest(),
+        'vcsLinks:id,issue_id,repository_id,type,external_id,name,number,url,state,payload,created_at',
     ]);
 
     $issue->loadCount([
@@ -222,6 +223,11 @@ render(function (View $view, Project $project, Issue $issue) {
         ->latest()
         ->get();
 
+    // Linked repository
+    $projectRepoLink = $project->repositoryLink;        // App\Models\ProjectRepository|null
+    $projectRepo     = $projectRepoLink?->repository;    // App\Models\Repository|null
+    $defaultBranch   = $projectRepo?->default_branch ?: 'main';
+
     return $view->with(compact(
         'attachments',
         'project',
@@ -233,6 +239,8 @@ render(function (View $view, Project $project, Issue $issue) {
         'childrenPointsDone',
         'childrenProgressPct',
         'activityGroups',
+        'projectRepo',
+        'defaultBranch',
     ));
 });
 ?>
@@ -369,6 +377,164 @@ render(function (View $view, Project $project, Issue $issue) {
                         @endforelse
                     </ul>
                 </div>
+
+                {{-- Code Links: Branches & Pull Requests --}}
+                @if($projectRepo)
+                    <div x-data="window.issueVcs({ repoId: '{{ $projectRepo->id }}', issueKey: '{{ $issue->key }}', defaultBranch: '{{ $defaultBranch }}', prTitleInitial: @js("[{{ $issue->key }}] {{ $issue->summary }}"),})" x-init="init()" class="card shadow-sm">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <h4 class="h6 mb-0">Code Links</h4>
+                            <div class="small text-body-secondary">Repository: {{ $projectRepo->owner }}/{{ $projectRepo->name }}</div>
+                        </div>
+
+                        <div class="card-body d-flex flex-column gap-3">
+
+                            {{-- Existing links --}}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <h6 class="mb-2">Linked Branches</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        @forelse($issue->branchLinks as $b)
+                                            <li class="d-flex justify-content-between align-items-center">
+                                                <a href="{{ $b->url }}" target="_blank" rel="noreferrer">{{ $b->name }}</a>
+                                                <small class="text-body-secondary">{{ $b->created_at?->diffForHumans() }}</small>
+                                            </li>
+                                        @empty
+                                            <li class="text-body-secondary small">None yet.</li>
+                                        @endforelse
+                                    </ul>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <h6 class="mb-2">Linked Pull Requests</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        @forelse($issue->pullRequestLinks as $pr)
+                                            <li class="d-flex justify-content-between align-items-center">
+                            <span>
+                                <a href="{{ $pr->url }}" target="_blank" rel="noreferrer">
+                                    #{{ $pr->number }} — {{ $pr->name ?? 'Pull Request' }}
+                                </a>
+                                @if($pr->state)
+                                    <span class="badge bg-secondary ms-2">{{ $pr->state }}</span>
+                                @endif
+                            </span>
+                                                <small class="text-body-secondary">{{ $pr->created_at?->diffForHumans() }}</small>
+                                            </li>
+                                        @empty
+                                            <li class="text-body-secondary small">None yet.</li>
+                                        @endforelse
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <hr class="my-2"/>
+
+                            <template x-if="error">
+                                <div class="alert alert-danger d-flex align-items-start gap-2" role="alert">
+                                    <div>⚠️</div>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-semibold" x-text="error.title || 'Request failed'"></div>
+                                        <div class="small" x-text="error.message || ''"></div>
+                                    </div>
+                                    <button type="button" class="btn-close" @click="error=null"></button>
+                                </div>
+                            </template>
+
+                            <template x-if="!!notice">
+                                <div class="alert alert-success d-flex align-items-start gap-2" role="alert">
+                                    <div>✅</div>
+                                    <div class="flex-grow-1" x-text="notice"></div>
+                                    <button type="button" class="btn-close" @click="notice=null"></button>
+                                </div>
+                            </template>
+
+                            {{-- Search & link branch --}}
+                            <div>
+                                <label class="form-label">Link existing branch</label>
+                                <input type="text" class="form-control" placeholder="Search branches…"
+                                       x-model.debounce.300ms="branchQuery" @input="searchBranches()">
+                                <div class="list-group mt-2" x-show="branchResults.length">
+                                    <template x-for="b in branchResults" :key="b.name">
+                                        <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
+                                            <div class="text-truncate">
+                                                <span class="fw-semibold" x-text="b.name"></span>
+                                                <small class="text-body-secondary ms-2" x-text="b.default ? 'default' : ''"></small>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" @click="prHead = b.name">Use as head</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" @click="prBase = b.name">Use as base</button>
+                                                <button type="button" class="btn btn-sm btn-outline-primary"  @click="linkBranch(b)">Link</button>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+
+                            {{-- Create branch --}}
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md">
+                                    <label class="form-label">Create new branch</label>
+                                    <input type="text" class="form-control"
+                                           placeholder="feature/{{ $issue->project->key }}-{{ $issue->number }}-{{ \Illuminate\Support\Str::slug($issue->summary) }}"
+                                           x-model="newBranchName">
+                                    <small class="text-body-secondary">
+                                        Base: <span x-text="baseRef || defaultBranch"></span>
+                                    </small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Base ref</label>
+                                    <input type="text" class="form-control" placeholder="{{ $defaultBranch }}" x-model="baseRef">
+                                </div>
+                                <div class="col-md-auto">
+                                    <button class="btn btn-outline-primary w-100" @click="createBranch()" :disabled="!canCreateBranch">Create</button>
+                                </div>
+                            </div>
+
+                            <hr class="my-2"/>
+
+                            {{-- Search & link PR --}}
+                            <div>
+                                <label class="form-label">Link existing pull request</label>
+                                <input type="text" class="form-control" placeholder="Search PRs by title/number/head/base…"
+                                       x-model.debounce.300ms="prQuery" @input="searchPulls()">
+                                <div class="list-group mt-2" x-show="prResults.length">
+                                    <template x-for="pr in prResults" :key="pr.number">
+                                        <button type="button" class="list-group-item list-group-item-action" @click="linkPr(pr)">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>#<span x-text="pr.number"></span> — <span x-text="pr.title"></span></span>
+                                                <small class="text-body-secondary" x-text="pr.state"></small>
+                                            </div>
+                                            <small class="text-body-secondary">
+                                                head: <span x-text="pr.head"></span> → base: <span x-text="pr.base"></span>
+                                            </small>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+
+                            {{-- Create PR --}}
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md">
+                                    <label class="form-label">PR title</label>
+                                    <input type="text" class="form-control" x-model="prTitle"
+                                           value="[{{ $issue->key }}] {{ $issue->summary }}">
+                                    <small class="text-body-secondary">Base: {{ $defaultBranch }}</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Head branch</label>
+                                    <input type="text" class="form-control" placeholder="feature/…" x-model="prHead">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Base branch</label>
+                                    <input type="text" class="form-control" :placeholder="defaultBranch" x-model="prBase">
+                                </div>
+                                <div class="col-md-auto">
+                                    <button class="btn btn-primary w-100" @click="createPr()" :disabled="!canCreatePr">Open PR</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                @endif
 
                 {{-- Timer + time entries --}}
                 <livewire:issues.focus-timer :issue="$issue" class="mb-2"/>
@@ -534,3 +700,146 @@ render(function (View $view, Project $project, Issue $issue) {
         </div>
     </div>
 </x-app-layout>
+<script>
+    /**
+     * Expose globally so Alpine/Livewire can find it no matter init timing.
+     */
+    window.issueVcs = function ({ repoId, issueKey, defaultBranch, prTitleInitial = '' }) {
+        return {
+            repoId, issueKey, defaultBranch,
+            loading: false,
+            error: null,
+            notice: null,
+            baseRef: '',
+            branchQuery: '', branchResults: [],
+            prQuery: '', prResults: [],
+            newBranchName: '',
+            prTitle: prTitleInitial,
+            prBase: defaultBranch,
+            prHead: '',
+
+            // computed
+            get canCreateBranch() {
+                return !this.loading && this.newBranchName.trim().length > 0;
+            },
+            get canCreatePr() {
+                return !this.loading && this.prTitle.trim().length > 0 && this.prHead.trim().length > 0;
+            },
+            async init() {
+                try {
+                    const url = new URL(`{{ route('issues.vcs.default-branch', ['issue' => $issue->key]) }}`);
+                    url.searchParams.set('repository_id', this.repoId);
+                    const data = await this.request(url.toString());
+                    if (data?.default) {
+                        this.defaultBranch = data.default;
+                        if (!this.prBase || this.prBase === '') this.prBase = data.default;
+                    }
+                } catch (_) { /* error already surfaced */ }
+            },
+            async request(url, opts = {}) {
+            this.loading = true;
+            this.error = null;
+            this.notice = null;
+                try {
+                    const r = await fetch(url, {
+                        headers: { 'Accept': 'application/json', ...(opts.headers || {}) },
+                        ...opts,
+                    });
+                    const maybeJson = await (async () => { try { return await r.clone().json(); } catch { return null; } })();
+                    if (!r.ok) {
+                        const title = (maybeJson && (maybeJson.title || maybeJson.error)) || r.statusText || 'Request failed';
+                        const message = (maybeJson && (maybeJson.message || maybeJson.detail)) || `HTTP ${r.status}`;
+                        this.error = { title, message };
+                        throw Object.assign(new Error(message), { response: r, body: maybeJson });
+                    }
+                    return maybeJson;
+                } finally {
+                    this.loading = false;
+                }
+            },
+
+            async searchBranches() {
+                const url = new URL(`{{ route('issues.vcs.branches.search', ['issue' => $issue->key]) }}`);
+                url.searchParams.set('repository_id', this.repoId);
+                url.searchParams.set('q', this.branchQuery || '');
+                this.branchResults = await this.request(url.toString());
+            },
+
+            async searchPulls() {
+                const url = new URL(`{{ route('issues.vcs.pulls.search', ['issue' => $issue->key]) }}`);
+                url.searchParams.set('repository_id', this.repoId);
+                url.searchParams.set('q', this.prQuery || '');
+                this.prResults = await this.request(url.toString());
+            },
+
+            async linkBranch(b) {
+                await this.request(`{{ route('issues.vcs.link.branch', ['issue' => $issue->key]) }}`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                      },
+                  body: JSON.stringify({
+                        repository_id: this.repoId,
+                        name: b.name,
+                        url: b.url,
+                        payload: b,
+                      })
+                });
+                this.notice = 'Branch linked.';
+                setTimeout(()=>window.location.reload(), 500);
+            },
+
+            async linkPr(pr) {
+                await this.request(`{{ route('issues.vcs.link.pr', ['issue' => $issue->key]) }}`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                      },
+                  body: JSON.stringify({
+                        repository_id: this.repoId,
+                        number: pr.number,
+                        title: pr.title,
+                        state: pr.state,
+                        url: pr.url,
+                        payload: pr,
+                      })
+                });
+                this.notice = 'Pull request linked.';
+                setTimeout(()=>window.location.reload(), 500);
+            },
+
+            async createBranch() {
+                const link = await this.request(`{{ route('issues.vcs.create.branch', ['issue' => $issue->key]) }}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify({
+                        repository_id: this.repoId,
+                        name: this.newBranchName.trim(),
+                        from_ref: (this.baseRef || this.defaultBranch).trim(),
+                    })
+                });
+                this.prHead = link.name;
+                this.notice = `Branch "${link.name}" created.`;
+                await this.searchBranches();
+            },
+
+            async createPr() {
+                await this.request(`{{ route('issues.vcs.create.pr', ['issue' => $issue->key]) }}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify({
+                        repository_id: this.repoId,
+                        title: this.prTitle.trim() || `[${this.issueKey}]`,
+                        head: this.prHead.trim(),
+                        base: (this.prBase || this.defaultBranch).trim(),
+                        body: `Linked to ${this.issueKey}`,
+                    })
+                });
+                this.notice = 'Pull request opened.';
+                setTimeout(() => window.location.reload(), 800);
+            },
+        }
+    };
+</script>

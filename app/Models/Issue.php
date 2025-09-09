@@ -187,6 +187,24 @@ class Issue extends BaseModel implements HasMedia
         return $this->hasOne(IssueExternalRef::class);
     }
 
+    /** @return HasMany<IssueVcsLink> */
+    public function vcsLinks(): HasMany
+    {
+        return $this->hasMany(IssueVcsLink::class);
+    }
+
+    /** @return HasMany<IssueVcsLink> */
+    public function branchLinks(): HasMany
+    {
+        return $this->vcsLinks()->where('type', 'branch');
+    }
+
+    /** @return HasMany<IssueVcsLink> */
+    public function pullRequestLinks(): HasMany
+    {
+        return $this->vcsLinks()->where('type', 'pull_request');
+    }
+
     public function scopeEpics($q)
     {
         return $q->whereHas('type', fn ($t) => $t->where('key', 'EPIC'));

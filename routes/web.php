@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\IssueVcsController;
 use App\Http\Controllers\Webhooks\GitHubWebhookController;
 use App\Http\Controllers\IssueAttachmentDownloadController;
 use App\Http\Controllers\ProjectCalendarController;
@@ -40,4 +41,14 @@ Route::middleware([
     Route::get('/projects/{project}/calendar.ics', ProjectCalendarController::class)
         ->middleware(['auth','verified'])
         ->name('projects.calendar.ics');
+});
+
+Route::middleware(['web','auth','verified'])->group(function () {
+    Route::get('/issues/{issue}/vcs/branches', [IssueVcsController::class,'searchBranches'])->name('issues.vcs.branches.search');
+    Route::get('/issues/{issue}/vcs/pulls',    [IssueVcsController::class,'searchPulls'])->name('issues.vcs.pulls.search');
+    Route::get('/issues/{issue}/vcs/default-branch', [IssueVcsController::class,'defaultBranch'])->name('issues.vcs.default-branch');
+    Route::post('/issues/{issue}/vcs/link/branch', [IssueVcsController::class,'linkBranch'])->name('issues.vcs.link.branch');
+    Route::post('/issues/{issue}/vcs/link/pr',     [IssueVcsController::class,'linkPr'])->name('issues.vcs.link.pr');
+    Route::post('/issues/{issue}/vcs/create/branch', [IssueVcsController::class,'createBranch'])->name('issues.vcs.create.branch');
+    Route::post('/issues/{issue}/vcs/create/pr',     [IssueVcsController::class,'createPr'])->name('issues.vcs.create.pr');
 });

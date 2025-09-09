@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Contracts\RepositoryProviderInterface;
 use App\Models\Comment;
 use App\Models\Issue;
 use App\Models\PermissionSet;
@@ -29,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
         if (class_exists(TelescopeServiceProvider::class) && $this->app->environment('local')) {
             $this->app->register(TelescopeServiceProvider::class);
         }
+
+        $this->app->bind(RepositoryProviderInterface::class, GitHubRepositoryProvider::class);
     }
 
     /**

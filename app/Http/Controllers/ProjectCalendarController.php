@@ -9,11 +9,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
-final class ProjectCalendarController
+final class ProjectCalendarController extends Controller
 {
     public function __invoke(Request $request, Project $project): Response
     {
-        Gate::authorize('view', $project);
+        $this->authorize('view', $project);
 
         $issues = Issue::query()
             ->where('project_id', $project->id)
