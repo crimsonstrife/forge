@@ -6,3 +6,14 @@
 [x-cloak] {
     display: none;
 }
+
+.scroll-area {
+    max-height: 28rem;
+    overflow: auto;
+    scrollbar-gutter: stable;    /* avoids layout shift when scrollbar appears */
+}
+@media (min-width: 992px) {    /* give more room on desktop */
+    .scroll-area-lg {
+        max-height: 40rem;
+    }
+}

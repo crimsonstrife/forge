@@ -13,31 +13,33 @@
                 @if($myIssues->isEmpty())
                     <p class="small text-body-secondary mb-0">{{ __('Nothing assigned. Enjoy the calm 👌') }}</p>
                 @else
-                    <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
-                        @foreach($myIssues as $issue)
-                            <li class="d-flex align-items-start justify-content-between gap-2">
-                                <div class="flex-grow-1 min-w-0">
-                                    <a class="fw-medium small text-reset text-decoration-none text-truncate d-block"
-                                       href="{{ route('issues.show', ['project' => $issue->project, 'issue' => $issue]) }}">
-                                        {{ $issue->project->key }}-{{ $issue->key }} — {{ $issue->summary }}
-                                    </a>
-                                    <div class="small text-body-secondary mt-1">
-                                        {{ $issue->status?->name ?? '—' }}
-                                        @if($issue->due_at)
-                                            • {{ __('Due') }} {{ $issue->due_at->diffForHumans() }}
-                                        @endif
+                    <div class="scroll-area scroll-area-lg pe-1">
+                        <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+                            @foreach($myIssues as $issue)
+                                <li class="d-flex align-items-start justify-content-between gap-2">
+                                    <div class="flex-grow-1 min-w-0">
+                                        <a class="fw-medium small text-reset text-decoration-none d-block text-break"
+                                           href="{{ route('issues.show', ['project' => $issue->project, 'issue' => $issue]) }}">
+                                            {{ $issue->project->key }}-{{ $issue->key }} — {{ $issue->summary }}
+                                        </a>
+                                        <div class="small text-body-secondary mt-1">
+                                            {{ $issue->status?->name ?? '—' }}
+                                            @if($issue->due_at)
+                                                • {{ __('Due') }} {{ $issue->due_at->diffForHumans() }}
+                                            @endif
+                                        </div>
                                     </div>
-                                </div>
 
-                                @if($issue->status)
-                                    <span class="badge rounded-pill"
-                                          style="background-color: {{ $issue->status->color }}20; color: {{ $issue->status->color }}">
-                    {{ $issue->status->name }}
-                  </span>
-                                @endif
-                            </li>
-                        @endforeach
-                    </ul>
+                                    @if($issue->status)
+                                        <span class="badge rounded-pill flex-shrink-0 text-nowrap"
+                                              style="background-color: {{ $issue->status->color }}20; color: {{ $issue->status->color }}">
+                                        {{ $issue->status->name }}
+                                    </span>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @endif
             </div>
         </div>
@@ -49,19 +51,21 @@
                 @if($upcomingDue->isEmpty())
                     <p class="small text-body-secondary mb-0">{{ __('No upcoming deadlines.') }}</p>
                 @else
-                    <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
-                        @foreach($upcomingDue as $issue)
-                            <li class="d-flex align-items-center justify-content-between gap-2">
-                                <a class="small text-reset text-decoration-none text-truncate"
-                                   href="{{ route('issues.show', ['project' => $issue->project, 'issue' => $issue]) }}">
-                                    {{ $issue->project->key }}-{{ $issue->key }} — {{ $issue->summary }}
-                                </a>
-                                <span class="small text-body-secondary flex-shrink-0">
-                  {{ $issue->due_at->toFormattedDateString() }}
-                </span>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <div class="scroll-area scroll-area-lg pe-1">
+                        <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+                            @foreach($upcomingDue as $issue)
+                                <li class="d-flex align-items-center justify-content-between gap-2">
+                                    <a class="small text-reset text-decoration-none d-block text-break"
+                                       href="{{ route('issues.show', ['project' => $issue->project, 'issue' => $issue]) }}">
+                                        {{ $issue->project->key }}-{{ $issue->key }} — {{ $issue->summary }}
+                                    </a>
+                                    <span class="small text-body-secondary flex-shrink-0">
+                                        {{ $issue->due_at->toFormattedDateString() }}
+                                    </span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @endif
             </div>
         </div>
@@ -110,7 +114,7 @@
                     <h3 class="h6 mb-0">{{ __('Recent activity') }}</h3>
                 </div>
 
-                <div class="mt-3 d-flex flex-column gap-3">
+                <div class="mt-3 d-flex flex-column gap-3 scroll-area scroll-area-lg pe-1">
                     @forelse($activityGroups as $groupLabel => $items)
                         <div>
                             <div class="text-uppercase small fw-semibold text-body-secondary">
