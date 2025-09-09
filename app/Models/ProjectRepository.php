@@ -15,7 +15,9 @@ class ProjectRepository extends Model
     protected $casts = [
         'id' => 'string',
         'token' => 'encrypted',
-        'token_expires_at' => 'datetime',
+        'token_expires_at'           => 'datetime',
+        'initial_import_started_at'  => 'datetime',
+        'initial_import_finished_at' => 'datetime',
     ];
 
     protected $fillable = [
@@ -25,6 +27,10 @@ class ProjectRepository extends Model
         'token',
         'token_type',
         'token_expires_at',
+        'initial_import_started_at',
+        'initial_import_finished_at',
+        'last_sync_status',
+        'last_sync_error',
     ];
 
 

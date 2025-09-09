@@ -17,7 +17,6 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
      */
     public function fetchAllIssues(Repository $repository, string $token): array
     {
-        // Fetch open and closed explicitly; merge & de-dupe by number.
         $open   = $this->fetchIssuesByState($repository, $token, 'open');
         $closed = $this->fetchIssuesByState($repository, $token, 'closed');
 
@@ -28,8 +27,6 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
     }
 
     /**
-     * Fetch issues for a single state with robust pagination and required headers.
-     *
      * @param 'open'|'closed' $state
      * @return array<int, array<string,mixed>>
      */
@@ -41,12 +38,13 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         do {
             $resp = Http::withToken($token)
                 ->withHeaders([
-                    // GitHub requires a User-Agent; use app name as a sane default
-                    'User-Agent' => config('app.name', 'Forge'),
+                    'User-Agent'              => config('app.name', 'Forge'),
+                    'Accept'                  => 'application/vnd.github+json',
+                    'X-GitHub-Api-Version'    => '2022-11-28',
                 ])
                 ->acceptJson()
                 ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}/issues", [
-                    'state'    => $state,   // explicit for reliability
+                    'state'    => $state,
                     'per_page' => 100,
                     'page'     => $page,
                 ]);
@@ -57,9 +55,10 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
                 );
             }
 
+            // Map this page
             $batch = collect($resp->json() ?? [])
                 ->filter(fn ($i) => empty($i['pull_request'])) // exclude PRs
-                ->map(function ($i) {
+                ->map(static function ($i) {
                     return [
                         'external_issue_id' => (string) $i['id'],
                         'number'            => (int) $i['number'],
@@ -72,7 +71,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
                         'labels'            => collect($i['labels'] ?? [])->pluck('name')->all(),
                         'created_at'        => $i['created_at'],
                         'updated_at'        => $i['updated_at'],
-                        'closed_at'         => $i['closed_at'] ?? null, // keep for local model
+                        'closed_at'         => $i['closed_at'] ?? null,
                         'raw'               => $i,
                     ];
                 })
@@ -80,10 +79,29 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
                 ->all();
 
             $issues = array_merge($issues, $batch);
+
+            // Keep going **if** GitHub says there is a next page,
+            // even when $batch is empty (e.g., page contains only PRs).
+            $hasNext = $this->linkHeaderHasNext((string) $resp->header('Link'));
             $page++;
-        } while (!empty($batch));
+        } while ($hasNext);
 
         return $issues;
+    }
+
+    private function linkHeaderHasNext(?string $linkHeader): bool
+    {
+        if (!$linkHeader) {
+            return false;
+        }
+
+        // Example: <https://api.github.com/...&page=2>; rel="next", <...>; rel="last"
+        foreach (explode(',', $linkHeader) as $part) {
+            if (str_contains($part, 'rel="next"')) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -117,9 +135,9 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             'labels'            => collect($issue['labels'] ?? [])->pluck('name')->all(),
             'assignee_login'    => Arr::get($issue, 'assignee.login'),
             'reporter_login'    => Arr::get($issue, 'user.login'),
-            'closed_at'         => $issue['closed_at'] ?? null, // include for webhook-based updates
+            'closed_at'         => $issue['closed_at'] ?? null,
             'raw'               => $payload,
-            'action'            => $action, // opened|closed|edited|reopened|assigned|unassigned|labeled|unlabeled
+            'action'            => $action,
         ];
     }
 
