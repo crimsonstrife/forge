@@ -41,6 +41,3 @@ Route::middleware([
         ->middleware(['auth','verified'])
         ->name('projects.calendar.ics');
 });
-
-Route::post('/webhooks/github', [GitHubWebhookController::class, 'handle'])
-    ->name('webhooks.github');
