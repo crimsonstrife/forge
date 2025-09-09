@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Webhooks;
 
 use App\Models\Issue;
@@ -98,8 +99,11 @@ final class GitHubWebhookController extends Controller
                 } else {
                     // Fallback: choose first non-done for open, any done for closed
                     $issue->issue_status_id = \App\Models\IssueStatus::query()
-                        ->when($state === 'closed', fn ($q) => $q->where('is_done', true),
-                            fn ($q) => $q->where('is_done', false))
+                        ->when(
+                            $state === 'closed',
+                            fn ($q) => $q->where('is_done', true),
+                            fn ($q) => $q->where('is_done', false)
+                        )
                         ->orderBy('order')
                         ->value('id') ?? $issue->issue_status_id;
                 }

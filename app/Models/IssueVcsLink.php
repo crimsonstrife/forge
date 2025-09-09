@@ -50,7 +50,16 @@ class IssueVcsLink extends Model
         });
     }
 
-    public function issue(): BelongsTo { return $this->belongsTo(Issue::class); }
-    public function repository(): BelongsTo { return $this->belongsTo(Repository::class); }
-    public function linkedBy(): BelongsTo { return $this->belongsTo(User::class, 'linked_by_user_id'); }
+    public function issue(): BelongsTo
+    {
+        return $this->belongsTo(Issue::class);
+    }
+    public function repository(): BelongsTo
+    {
+        return $this->belongsTo(Repository::class);
+    }
+    public function linkedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'linked_by_user_id');
+    }
 }

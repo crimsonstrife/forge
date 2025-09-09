@@ -19,7 +19,9 @@ use Illuminate\Support\Str;
 
 class IssueVcsController extends Controller
 {
-    public function __construct(private RepositoryProviderInterface $provider) {}
+    public function __construct(private RepositoryProviderInterface $provider)
+    {
+    }
 
     /** GET /api/issues/{key}/vcs/branches */
     public function searchBranches(SearchVcsRequest $request, Issue $issue): JsonResponse
@@ -188,7 +190,8 @@ class IssueVcsController extends Controller
                 // re-encrypt it now to clean up legacy data:
                 try {
                     $link->forceFill(['token' => Crypt::encryptString($raw)])->save();
-                } catch (\Throwable $ignored) {}
+                } catch (\Throwable $ignored) {
+                }
             } else {
                 // Likely a hash or corrupted value
                 abort(403, 'Stored repository token is invalid. Please re-link the repository.');

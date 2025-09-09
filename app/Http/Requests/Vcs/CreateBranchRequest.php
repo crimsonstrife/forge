@@ -6,7 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 
 final class CreateBranchRequest extends FormRequest
 {
-    public function authorize(): bool { return auth()->check(); }
+    public function authorize(): bool
+    {
+        return auth()->check();
+    }
 
     /** @return array<string, mixed> */
     public function rules(): array

@@ -110,17 +110,25 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
     public function normalizeWebhook(array $headers, string $rawPayload): ?array
     {
         $event = $headers['X-GitHub-Event'] ?? null;
-        if ($event !== 'issues') { return null; }
+        if ($event !== 'issues') {
+            return null;
+        }
 
         $payload = json_decode($rawPayload, true, 512, JSON_THROW_ON_ERROR);
-        if (!$payload) { return null; }
+        if (!$payload) {
+            return null;
+        }
 
         $action = $payload['action'] ?? null;
         $issue  = $payload['issue']  ?? null;
         $repo   = $payload['repository'] ?? null;
-        if (!$issue || !$repo) { return null; }
+        if (!$issue || !$repo) {
+            return null;
+        }
 
-        if (!empty($issue['pull_request'])) { return null; } // ignore PRs
+        if (!empty($issue['pull_request'])) {
+            return null;
+        } // ignore PRs
 
         return [
             'provider'          => 'github',
@@ -148,7 +156,9 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
     {
         $payload = json_decode($rawPayload, true, 512, JSON_THROW_ON_ERROR);
         $repo = $payload['repository'] ?? null;
-        if (!$repo) { return null; }
+        if (!$repo) {
+            return null;
+        }
 
         return Repository::query()
             ->where('provider', 'github')
@@ -172,18 +182,18 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             ]);
 
         if ($resp->failed()) {
-            throw new RuntimeException("GitHub API error (branches): {$resp->status()} ".substr($resp->body(),0,1000));
+            throw new RuntimeException("GitHub API error (branches): {$resp->status()} ".substr($resp->body(), 0, 1000));
         }
 
         $items = collect($resp->json() ?? [])
-            ->map(fn($b) => [
+            ->map(fn ($b) => [
                 'name' => $b['name'],
                 'commit_sha' => Arr::get($b, 'commit.sha'),
                 'protected' => (bool) ($b['protected'] ?? false),
                 'default' => $b['name'] === ($repository->default_branch ?? ''),
                 'url' => "https://github.com/{$repository->owner}/{$repository->name}/tree/{$b['name']}",
             ])
-            ->filter(fn($b) => $query === '' || str_contains(strtolower($b['name']), strtolower($query)))
+            ->filter(fn ($b) => $query === '' || str_contains(strtolower($b['name']), strtolower($query)))
             ->take($limit)
             ->values()
             ->all();
@@ -206,11 +216,11 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             ]);
 
         if ($resp->failed()) {
-            throw new RuntimeException("GitHub API error (pulls): {$resp->status()} ".substr($resp->body(),0,1000));
+            throw new RuntimeException("GitHub API error (pulls): {$resp->status()} ".substr($resp->body(), 0, 1000));
         }
 
         $items = collect($resp->json() ?? [])
-            ->map(fn($pr) => [
+            ->map(fn ($pr) => [
                 'number' => (int) $pr['number'],
                 'title' => $pr['title'],
                 'state' => $pr['state'],
@@ -219,7 +229,9 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
                 'url'  => $pr['html_url'],
             ])
             ->filter(function ($pr) use ($query) {
-                if ($query === '') { return true; }
+                if ($query === '') {
+                    return true;
+                }
                 $q = strtolower($query);
                 return str_contains(strtolower($pr['title']), $q)
                     || str_contains((string) $pr['number'], $q)
@@ -247,7 +259,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}/git/ref/heads/{$from}");
 
         if ($refResp->failed()) {
-            throw new RuntimeException("GitHub API error (get ref): {$refResp->status()} ".substr($refResp->body(),0,1000));
+            throw new RuntimeException("GitHub API error (get ref): {$refResp->status()} ".substr($refResp->body(), 0, 1000));
         }
 
         $sha = Arr::get($refResp->json(), 'object.sha');
@@ -268,7 +280,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             ]);
 
         if ($createResp->failed()) {
-            throw new RuntimeException("GitHub API error (create branch): {$createResp->status()} ".substr($createResp->body(),0,1000));
+            throw new RuntimeException("GitHub API error (create branch): {$createResp->status()} ".substr($createResp->body(), 0, 1000));
         }
 
         return [
@@ -299,7 +311,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             ]);
 
         if ($resp->failed()) {
-            throw new RuntimeException("GitHub API error (create PR): {$resp->status()} ".substr($resp->body(),0,1000));
+            throw new RuntimeException("GitHub API error (create PR): {$resp->status()} ".substr($resp->body(), 0, 1000));
         }
 
         $pr = $resp->json();
@@ -326,7 +338,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}");
 
         if ($resp->failed()) {
-            throw new RuntimeException("GitHub API error (repo): {$resp->status()} ".substr($resp->body(),0,1000));
+            throw new RuntimeException("GitHub API error (repo): {$resp->status()} ".substr($resp->body(), 0, 1000));
         }
 
         return (string) ($resp->json('default_branch') ?? 'main');

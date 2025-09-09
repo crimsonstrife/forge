@@ -206,7 +206,7 @@ final class Overview extends Component
                     $targetLabel = "{$project->key} — {$project->name}";
                     $targetUrl   = route('projects.show', ['project' => $project]);
                 }
-            } else if (isset($props['issue_key'], $props['issue_summary'])) {
+            } elseif (isset($props['issue_key'], $props['issue_summary'])) {
                 $targetLabel = "{$props['issue_key']}: {$props['issue_summary']}";
                 if (!empty($props['project_id']) && ($p = $projectsById->get($props['project_id']))) {
                     $targetUrl = route('issues.index', ['project' => $p, 'search' => $props['issue_key']]);

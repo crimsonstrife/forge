@@ -11,4 +11,3 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/webhooks/github', [GitHubWebhookController::class, 'handle'])
     ->name('webhooks.github');
-
