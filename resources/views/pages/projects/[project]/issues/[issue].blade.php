@@ -580,9 +580,10 @@ render(function (View $view, Project $project, Issue $issue) {
 
                     <!-- Sidebar: attachments and code links -->
                     <aside class="col-lg-4 d-flex flex-column gap-3">
-                        <!-- Code Links (moved) -->
+                        <!-- Code Links -->
+                        @php $defaultPrTitle = "[$issue->key] $issue->summary"; @endphp
                         @if($projectRepo)
-                            <div x-data="window.issueVcs({ repoId: '{{ $projectRepo->id }}', issueKey: '{{ $issue->key }}', defaultBranch: '{{ $defaultBranch }}', prTitleInitial: @js("[{{ $issue->key }}] {{ $issue->summary }}"),})" x-init="init()" class="card shadow-sm">
+                            <div x-data="window.issueVcs({ repoId: '{{ $projectRepo->id }}', issueKey: '{{ $issue->key }}', defaultBranch: '{{ $defaultBranch }}', prTitleInitial: @js($defaultPrTitle),})" x-init="init()" class="card shadow-sm">
                                 <div class="card-body d-flex align-items-center justify-content-between">
                                     <h4 class="h6 mb-0">Code Links</h4>
                                     <div class="small text-body-secondary">Repo: {{ $projectRepo->owner }}/{{ $projectRepo->name }}</div>
@@ -714,7 +715,7 @@ render(function (View $view, Project $project, Issue $issue) {
                                         <div class="col-12">
                                             <label class="form-label">PR title</label>
                                             <input type="text" class="form-control" x-model="prTitle"
-                                                   value="[{{ $issue->key }}] {{ $issue->summary }}">
+                                                   placeholder="[{{ $issue->key }}] {{ $issue->summary }}">
                                             <small class="text-body-secondary">Base: {{ $defaultBranch }}</small>
                                         </div>
                                         <div class="col-12 d-flex gap-2">
