@@ -45,7 +45,7 @@ render(function (View $view, Project $project) {
     $doneStatusIds   = $statuses->where('is_done', true)->pluck('id')->values();
     $activeStatusIds = $statuses->where('is_done', false)->pluck('id')->values();
 
-    $statusSummary = $statuses->map(fn($s) => [
+    $statusSummary = $statuses->map(fn ($s) => [
         'id' => (string)$s->id,
         'name' => $s->name,
         'key' => $s->key,

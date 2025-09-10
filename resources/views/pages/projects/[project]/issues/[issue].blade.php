@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('issues.show');
@@ -25,7 +26,7 @@ render(function (View $view, Project $project, Issue $issue) {
         'reporter:id,name,profile_photo_path',
         'tags',
         'parent:id,key,summary,project_id',
-        'children' => fn($q) => $q
+        'children' => fn ($q) => $q
             ->with([
                 'status:id,name,color,is_done',
                 'assignee:id,name,profile_photo_path',
@@ -39,7 +40,7 @@ render(function (View $view, Project $project, Issue $issue) {
 
     $issue->loadCount([
         'comments',
-        'media as attachments_count' => fn($m) => $m->where('collection_name', 'attachments'),
+        'media as attachments_count' => fn ($m) => $m->where('collection_name', 'attachments'),
     ]);
 
     // Recent activity for THIS issue
@@ -213,13 +214,13 @@ render(function (View $view, Project $project, Issue $issue) {
 
     $children = $issue->children;
     $childrenTotal = $children->count();
-    $childrenDone = $children->filter(fn($c) => (bool)$c->status?->is_done)->count();
+    $childrenDone = $children->filter(fn ($c) => (bool)$c->status?->is_done)->count();
     $childrenPointsTotal = (int)$children->sum('story_points');
-    $childrenPointsDone = (int)$children->filter(fn($c) => (bool)$c->status?->is_done)->sum('story_points');
+    $childrenPointsDone = (int)$children->filter(fn ($c) => (bool)$c->status?->is_done)->sum('story_points');
     $childrenProgressPct = $childrenTotal > 0 ? (int)round(($childrenDone / $childrenTotal) * 100) : 0;
 
     $attachments = $issue->media()
-        ->where('collection_name','attachments')
+        ->where('collection_name', 'attachments')
         ->latest()
         ->get();
 
