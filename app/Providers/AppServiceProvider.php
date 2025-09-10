@@ -14,6 +14,7 @@ use App\Observers\IssueObserver;
 use App\Observers\PermissionSetObserver;
 use App\Observers\ProjectObserver;
 use App\Observers\RoleObserver;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
@@ -43,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
             return; // do not touch URL/Request during composer/CLI
         }
 
+        Paginator::useBootstrapFive();
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
         Issue::observe(IssueObserver::class);
         Project::observe(ProjectObserver::class);
