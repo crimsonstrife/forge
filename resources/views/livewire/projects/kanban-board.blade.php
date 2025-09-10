@@ -24,86 +24,60 @@
     </div>
 
     {{-- Columns --}}
-    <div class="dd d-flex flex-nowrap gap-3 px-3 pb-3 overflow-auto"
-         x-init="$nextTick(() => window.initKanbanSortables())"
-    >
+    <div class="dd d-flex flex-nowrap gap-3 px-3 pb-3 overflow-auto" x-init="$nextTick(() => window.initKanbanSortables())">
         @foreach ($columns as $col)
-            <ol class="kanban-col"
-                :class="view"
-                style="--kanban-accent: {{ $col['color'] ?? '#78909C' }};"
-            >
+            <ol class="kanban-col" :class="view" style="--kanban-accent: {{ $col['color'] ?? '#78909C' }};">
                 <div class="kanban__title">
                     <h2 class="m-0">
                         <i class="material-icons">folder</i> {{ $col['name'] }}
                     </h2>
                 </div>
+                <wa-scroller orientation="vertical" style="max-height: 600px;" without-scrollbar>
+                    <ul class="dd-list kanban-list" data-kanban-list data-status-id="{{ $col['id'] }}">
+                        @foreach (($lists[$col['id']] ?? []) as $issue)
+                            {{-- inside each <li class="dd-item" ...> --}}
+                            <li class="dd-item" data-issue-id="{{ $issue['id'] }}" wire:key="issue-{{ $issue['id'] }}" style="--tier-color: {{ $issue['type_color'] ?? '#607D8B' }};" x-data="{ editingTitle: false, titleDraft: @js($issue['summary']), editingDesc: false, descDraft: @js($issue['description'] ?? ''), saveTitle(){ $wire.updateIssueField('{{ $issue['id'] }}', 'summary', this.titleDraft); this.editingTitle = false;}, saveDesc(){ $wire.updateIssueField('{{ $issue['id'] }}', 'description', this.descDraft); this.editingDesc = false; } }">
+                                <h3 class="title dd-handle d-flex align-items-start justify-content-between"
+                                    :class="view==='kanban' ? 'card--' + '{{ $issue['tier'] ?? 'other' }}' : ''">
+                                    <div class="me-2 w-100">
+                                        <!-- Display mode -->
+                                        <div x-show="!editingTitle" class="fw-semibold" @click.stop="editingTitle = true" role="button">
+                                            <i class="material-icons me-1 align-text-bottom">filter_none</i>
+                                            <span x-text="titleDraft"></span>
+                                        </div>
 
-                <ul class="dd-list kanban-list"
-                    data-kanban-list
-                    data-status-id="{{ $col['id'] }}"
-                >
-                    @foreach (($lists[$col['id']] ?? []) as $issue)
-                        {{-- inside each <li class="dd-item" ...> --}}
-                        <li class="dd-item"
-                            data-issue-id="{{ $issue['id'] }}"
-                            wire:key="issue-{{ $issue['id'] }}"
-                            style="--tier-color: {{ $issue['type_color'] ?? '#607D8B' }};"
-                            x-data="{
-        editingTitle: false,
-        titleDraft: @js($issue['summary']),
-        editingDesc: false,
-        descDraft: @js($issue['description'] ?? ''),
-        saveTitle(){
-            $wire.updateIssueField('{{ $issue['id'] }}', 'summary', this.titleDraft);
-            this.editingTitle = false;
-        },
-        saveDesc(){
-            $wire.updateIssueField('{{ $issue['id'] }}', 'description', this.descDraft);
-            this.editingDesc = false;
-        }
-    }"
-                        >
-                            <h3 class="title dd-handle d-flex align-items-start justify-content-between"
-                                :class="view==='kanban' ? 'card--' + '{{ $issue['tier'] ?? 'other' }}' : ''">
-                                <div class="me-2 w-100">
+                                        <!-- Edit mode -->
+                                        <div x-show="editingTitle" class="js-no-drag w-100">
+                                            <input type="text"
+                                                   class="form-control form-control-sm"
+                                                   x-model="titleDraft"
+                                                   maxlength="200"
+                                                   @keydown.enter.prevent="saveTitle()"
+                                                   @keydown.escape.prevent="editingTitle=false"
+                                                   @blur="saveTitle()"
+                                                   autofocus
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {{-- Tier chip --}}
+                                    <x-issues.tier-badge
+                                        :color="$issue['type_color'] ?? '#607D8B'"
+                                        :icon="$issue['type_icon'] ?? 'filter_none'"
+                                    />
+                                </h3>
+
+                                {{-- Description --}}
+                                <div class="text">
                                     <!-- Display mode -->
-                                    <div x-show="!editingTitle" class="fw-semibold" @click.stop="editingTitle = true" role="button">
-                                        <i class="material-icons me-1 align-text-bottom">filter_none</i>
-                                        <span x-text="titleDraft"></span>
+                                    <div x-show="!editingDesc" @click.stop="editingDesc = true" role="button">
+                                        @php($desc = \Illuminate\Support\Str::limit(strip_tags($issue['description'] ?? ''), 160))
+                                        <span x-text="descDraft || @js($desc)"></span>
+                                        <span x-show="!(descDraft?.length) && '{{ $desc }}' === ''" class="text-muted">Add a description…</span>
                                     </div>
 
                                     <!-- Edit mode -->
-                                    <div x-show="editingTitle" class="js-no-drag w-100">
-                                        <input type="text"
-                                               class="form-control form-control-sm"
-                                               x-model="titleDraft"
-                                               maxlength="200"
-                                               @keydown.enter.prevent="saveTitle()"
-                                               @keydown.escape.prevent="editingTitle=false"
-                                               @blur="saveTitle()"
-                                               autofocus
-                                        />
-                                    </div>
-                                </div>
-
-                                {{-- Tier chip --}}
-                                <x-issues.tier-badge
-                                    :color="$issue['type_color'] ?? '#607D8B'"
-                                    :icon="$issue['type_icon'] ?? 'filter_none'"
-                                />
-                            </h3>
-
-                            {{-- Description --}}
-                            <div class="text">
-                                <!-- Display mode -->
-                                <div x-show="!editingDesc" @click.stop="editingDesc = true" role="button">
-                                    @php($desc = \Illuminate\Support\Str::limit(strip_tags($issue['description'] ?? ''), 160))
-                                    <span x-text="descDraft || @js($desc)"></span>
-                                    <span x-show="!(descDraft?.length) && '{{ $desc }}' === ''" class="text-muted">Add a description…</span>
-                                </div>
-
-                                <!-- Edit mode -->
-                                <div x-show="editingDesc" class="js-no-drag">
+                                    <div x-show="editingDesc" class="js-no-drag">
             <textarea class="form-control form-control-sm"
                       rows="3"
                       x-model="descDraft"
@@ -114,42 +88,43 @@
                       @blur="saveDesc()"
                       autofocus
             ></textarea>
-                                    <div class="form-text">Press ⌘/Ctrl+Enter to save, Esc to cancel.</div>
-                                </div>
-                            </div>
-
-                            {{-- Roll-up progress (unchanged) --}}
-                            @if(($issue['progress'] ?? null) !== null)
-                                <div class="mt-2">
-                                    <div class="progress" style="height: 6px;">
-                                        <div class="progress-bar"
-                                             role="progressbar"
-                                             style="width: {{ $issue['progress'] }}%; background-color: {{ $issue['type_color'] ?? '#607D8B' }};"
-                                             aria-valuenow="{{ $issue['progress'] }}" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <div class="d-flex justify-content-between mt-1 small text-muted">
-                                        <span>{{ $issue['children_done'] }} / {{ $issue['children_total'] }}</span>
-                                        <span>{{ $issue['progress'] }}%</span>
+                                        <div class="form-text">Press ⌘/Ctrl+Enter to save, Esc to cancel.</div>
                                     </div>
                                 </div>
-                            @endif
 
-                            <div class="actions d-flex gap-2 mt-2">
-                                <button type="button" class="btn btn-sm btn-light"
-                                        wire:click="openIssue('{{ $issue['key'] }}')"
-                                        title="Open">
-                                    <i class="material-icons">edit</i>
-                                </button>
+                                {{-- Roll-up progress (unchanged) --}}
+                                @if(($issue['progress'] ?? null) !== null)
+                                    <div class="mt-2">
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar"
+                                                 role="progressbar"
+                                                 style="width: {{ $issue['progress'] }}%; background-color: {{ $issue['type_color'] ?? '#607D8B' }};"
+                                                 aria-valuenow="{{ $issue['progress'] }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-1 small text-muted">
+                                            <span>{{ $issue['children_done'] }} / {{ $issue['children_total'] }}</span>
+                                            <span>{{ $issue['progress'] }}%</span>
+                                        </div>
+                                    </div>
+                                @endif
 
-                                <button type="button" class="btn btn-sm btn-light js-no-drag" title="Label"
-                                        {{-- keep passing UUID string if quickColor expects id --}}
-                                        wire:click="quickColor('{{ $issue['id'] }}')">
-                                    <i class="material-icons">label</i>
-                                </button>
-                            </div>
-                        </li>
-                    @endforeach
-                </ul>
+                                <div class="actions d-flex gap-2 mt-2">
+                                    <button type="button" class="btn btn-sm btn-light"
+                                            wire:click="openIssue('{{ $issue['key'] }}')"
+                                            title="Open">
+                                        <i class="material-icons">edit</i>
+                                    </button>
+
+                                    <button type="button" class="btn btn-sm btn-light js-no-drag" title="Label"
+                                            {{-- keep passing UUID string if quickColor expects id --}}
+                                            wire:click="quickColor('{{ $issue['id'] }}')">
+                                        <i class="material-icons">label</i>
+                                    </button>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </wa-scroller>
 
                 <div class="actions mt-2">
                     <button class="addbutt btn" type="button"
