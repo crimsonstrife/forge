@@ -541,9 +541,7 @@ render(function (View $view, Project $project, Issue $issue) {
                                     <livewire:issues.attachment-upload :issue="$issue"/>
                                 @endcan
                             </div>
-                            <div
-                                x-data="{
-        async remove(id) {
+                            <div x-data="{ async remove(id) {
             const url = '{{ route('issues.attachments.destroy', ['project' => $project, 'issue' => $issue, 'media' => '__ID__']) }}'.replace('__ID__', id);
             const r = await fetch(url, {
                 method: 'DELETE',
@@ -564,21 +562,11 @@ render(function (View $view, Project $project, Issue $issue) {
             // Optional: surface success toast if desired
             document.dispatchEvent(new CustomEvent('notify', { detail: { title: 'Deleted', body: 'Attachment removed.' } }));
         }
-    }"
-                                x-on:issue-attachments-updated.window="
-        if ($refs.attachments) { $refs.attachments.innerHTML = event.detail.html }
-        if ($refs.attachmentsCount && event.detail?.count !== undefined) {
-            $refs.attachmentsCount.textContent = event.detail.count
-        }
-    "
-                                x-on:issue-attachment-delete.window="remove($event.detail.id)"
-                            >
+                                }"
+                                x-on:issue-attachments-updated.window="if ($refs.attachments) { $refs.attachments.innerHTML = event.detail.html }
+                                if ($refs.attachmentsCount && event.detail?.count !== undefined) { $refs.attachmentsCount.textContent = event.detail.count }" x-on:issue-attachment-delete.window="remove($event.detail.id)">
                                 <div x-ref="attachments">
-                                    @include('partials.issues.attachments_list', [
-                                        'attachments' => $attachments,
-                                        'issue' => $issue,
-                                        'project' => $project,
-                                    ])
+                                    @include('partials.issues.attachments_list', ['attachments' => $attachments, 'issue' => $issue, 'project' => $project,])
                                 </div>
                             </div>
                         </div>
