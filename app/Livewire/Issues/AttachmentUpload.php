@@ -33,6 +33,7 @@ final class AttachmentUpload extends Component
     /**
      * @throws FileIsTooBig
      * @throws FileDoesNotExist
+     * @throws \Throwable
      */
     public function save(): void
     {
@@ -47,7 +48,19 @@ final class AttachmentUpload extends Component
         }
 
         $this->reset('files');
-        $this->dispatch('attachments-updated');
+        // Re-query attachments, render partial, and push to the page as a browser event.
+        $attachments = $this->issue->media()
+            ->where('collection_name', 'attachments')
+            ->latest()
+            ->get();
+
+        $html = view('partials.issues.attachments_list', [
+        'attachments' => $attachments,
+        'issue' => $this->issue,
+        'project' => $this->issue->project,
+            ])->render();
+
+        $this->dispatch('issue-attachments-updated', html: $html, count: $attachments->count())->toBrowser();
         $this->dispatch('notify', title: 'Uploaded', body: 'Attachment(s) added.');
     }
 

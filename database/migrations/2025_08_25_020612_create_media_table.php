@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('media', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id()->primary();
             $table->uuidMorphs('model');
             $table->uuid()->nullable()->unique();
             $table->string('collection_name');

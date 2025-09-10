@@ -293,9 +293,6 @@ render(function (View $view, Project $project, Issue $issue) {
                                 <span class="small">{{ $issue->priority?->name }}</span>
                             </div>
                             <h3 class="h5 mt-2 mb-2">{{ $issue->summary }}</h3>
-                            @if($issue->description)
-                                <div class="text-body">{{ $issue->description }}</div>
-                            @endif
 
                             @if($issue->tags->isNotEmpty())
                                 <div class="mt-3 d-flex flex-wrap gap-2">
@@ -352,348 +349,396 @@ render(function (View $view, Project $project, Issue $issue) {
                     </div>
                 </div>
 
-                {{-- Attachments --}}
-                <div class="card shadow-sm">
-                    <div class="card-body d-flex align-items-center justify-content-between">
-                        <h4 class="h6 mb-0">Attachments ({{ $issue->attachments_count }})</h4>
-                        @can('update', $issue)
-                            <livewire:issues.attachment-upload :issue="$issue"/>
-                        @endcan
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        @forelse($attachments as $file)
-                            <li class="list-group-item d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span>📎</span>
-                                    <div>
-                                        <div class="fw-semibold small">{{ $file->file_name }}</div>
-                                        <div class="text-body-secondary small">{{ number_format($file->size / 1024, 1) }} KB · uploaded {{ $file->created_at->diffForHumans() }}</div>
+                <div class="row g-3">
+                    <!-- Main content: tabs -->
+                    <div class="col-lg-8 d-flex flex-column gap-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h4 class="h6 mb-3">Issue Details</h4>
+
+                                <!-- WebAwesome tabs with Bootstrap fallback -->
+                                <wa-tab-group class="d-block" placement="top" active="overview">
+                                    <div class="d-flex align-items-center justify-content-between mb-2" slot="nav">
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <wa-tab panel="overview">Overview</wa-tab>
+                                            <wa-tab panel="subissues">Sub-issues</wa-tab>
+                                            <wa-tab panel="activity">Activity</wa-tab>
+                                            <wa-tab panel="time">Time</wa-tab>
+                                        </div>
                                     </div>
-                                </div>
-                                <a class="small" href="{{ route('issues.attachments.download', [$project, $issue, $file]) }}">Download</a>
-                            </li>
-                        @empty
-                            <li class="list-group-item text-body-secondary small py-4">No attachments.</li>
-                        @endforelse
-                    </ul>
-                </div>
 
-                {{-- Code Links: Branches & Pull Requests --}}
-                @if($projectRepo)
-                    <div x-data="window.issueVcs({ repoId: '{{ $projectRepo->id }}', issueKey: '{{ $issue->key }}', defaultBranch: '{{ $defaultBranch }}', prTitleInitial: @js("[{{ $issue->key }}] {{ $issue->summary }}"),})" x-init="init()" class="card shadow-sm">
-                        <div class="card-body d-flex align-items-center justify-content-between">
-                            <h4 class="h6 mb-0">Code Links</h4>
-                            <div class="small text-body-secondary">Repository: {{ $projectRepo->owner }}/{{ $projectRepo->name }}</div>
-                        </div>
+                                    <!-- Overview: description moved from header -->
+                                    <wa-tab-panel name="overview" aria-hidden="false" active>
+                                        @if($issue->description)
+                                            <div class="text-body">{!! $issue->description !!}</div>
+                                        @else
+                                            <p class="text-body-secondary small mb-0">{{ __('No description yet.') }}</p>
+                                        @endif
+                                    </wa-tab-panel>
 
-                        <div class="card-body d-flex flex-column gap-3">
-
-                            {{-- Existing links --}}
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <h6 class="mb-2">Linked Branches</h6>
-                                    <ul class="list-unstyled mb-0">
-                                        @forelse($issue->branchLinks as $b)
-                                            <li class="d-flex justify-content-between align-items-center">
-                                                <a href="{{ $b->url }}" target="_blank" rel="noreferrer">{{ $b->name }}</a>
-                                                <small class="text-body-secondary">{{ $b->created_at?->diffForHumans() }}</small>
-                                            </li>
-                                        @empty
-                                            <li class="text-body-secondary small">None yet.</li>
-                                        @endforelse
-                                    </ul>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <h6 class="mb-2">Linked Pull Requests</h6>
-                                    <ul class="list-unstyled mb-0">
-                                        @forelse($issue->pullRequestLinks as $pr)
-                                            <li class="d-flex justify-content-between align-items-center">
-                            <span>
-                                <a href="{{ $pr->url }}" target="_blank" rel="noreferrer">
-                                    #{{ $pr->number }} — {{ $pr->name ?? 'Pull Request' }}
-                                </a>
-                                @if($pr->state)
-                                    <span class="badge bg-secondary ms-2">{{ $pr->state }}</span>
-                                @endif
-                            </span>
-                                                <small class="text-body-secondary">{{ $pr->created_at?->diffForHumans() }}</small>
-                                            </li>
-                                        @empty
-                                            <li class="text-body-secondary small">None yet.</li>
-                                        @endforelse
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <hr class="my-2"/>
-
-                            <template x-if="error">
-                                <div class="alert alert-danger d-flex align-items-start gap-2" role="alert">
-                                    <div>⚠️</div>
-                                    <div class="flex-grow-1">
-                                        <div class="fw-semibold" x-text="error.title || 'Request failed'"></div>
-                                        <div class="small" x-text="error.message || ''"></div>
-                                    </div>
-                                    <button type="button" class="btn-close" @click="error=null"></button>
-                                </div>
-                            </template>
-
-                            <template x-if="!!notice">
-                                <div class="alert alert-success d-flex align-items-start gap-2" role="alert">
-                                    <div>✅</div>
-                                    <div class="flex-grow-1" x-text="notice"></div>
-                                    <button type="button" class="btn-close" @click="notice=null"></button>
-                                </div>
-                            </template>
-
-                            {{-- Search & link branch --}}
-                            <div>
-                                <label class="form-label">Link existing branch</label>
-                                <input type="text" class="form-control" placeholder="Search branches…"
-                                       x-model.debounce.300ms="branchQuery" @input="searchBranches()">
-                                <div class="list-group mt-2" x-show="branchResults.length">
-                                    <template x-for="b in branchResults" :key="b.name">
-                                        <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
-                                            <div class="text-truncate">
-                                                <span class="fw-semibold" x-text="b.name"></span>
-                                                <small class="text-body-secondary ms-2" x-text="b.default ? 'default' : ''"></small>
+                                    <!-- Sub-issues panel -->
+                                    <wa-tab-panel name="subissues">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <div>
+                                                <div class="text-body-secondary small mb-1">
+                                                    {{ $childrenDone }} of {{ $childrenTotal }} done
+                                                    @if($childrenPointsTotal > 0)
+                                                        · {{ $childrenPointsDone }}/{{ $childrenPointsTotal }} pts
+                                                    @endif
+                                                </div>
+                                                <wa-progress-bar aria-label="Progress" value="{{ $childrenProgressPct }}" style="--track-height: 6px;">{{ $childrenProgressPct }}%</wa-progress-bar>
                                             </div>
-                                            <div class="d-flex gap-2">
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" @click="prHead = b.name">Use as head</button>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" @click="prBase = b.name">Use as base</button>
-                                                <button type="button" class="btn btn-sm btn-outline-primary"  @click="linkBranch(b)">Link</button>
+                                            <div>
+                                                @can('create', [App\Models\Issue::class, $project])
+                                                    <a href="{{ route('issues.create', ['project' => $project, 'parent' => $issue->key]) }}" class="btn btn-outline-secondary btn-sm">
+                                                        + New sub-issue
+                                                    </a>
+                                                @endcan
                                             </div>
                                         </div>
-                                    </template>
-                                </div>
-                            </div>
 
-                            {{-- Create branch --}}
-                            <div class="row g-2 align-items-end">
-                                <div class="col-md">
-                                    <label class="form-label">Create new branch</label>
-                                    <input type="text" class="form-control"
-                                           placeholder="feature/{{ $issue->project->key }}-{{ $issue->number }}-{{ \Illuminate\Support\Str::slug($issue->summary) }}"
-                                           x-model="newBranchName">
-                                    <small class="text-body-secondary">
-                                        Base: <span x-text="baseRef || defaultBranch"></span>
-                                    </small>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Base ref</label>
-                                    <input type="text" class="form-control" placeholder="{{ $defaultBranch }}" x-model="baseRef">
-                                </div>
-                                <div class="col-md-auto">
-                                    <button class="btn btn-outline-primary w-100" @click="createBranch()" :disabled="!canCreateBranch">Create</button>
-                                </div>
-                            </div>
-
-                            <hr class="my-2"/>
-
-                            {{-- Search & link PR --}}
-                            <div>
-                                <label class="form-label">Link existing pull request</label>
-                                <input type="text" class="form-control" placeholder="Search PRs by title/number/head/base…"
-                                       x-model.debounce.300ms="prQuery" @input="searchPulls()">
-                                <div class="list-group mt-2" x-show="prResults.length">
-                                    <template x-for="pr in prResults" :key="pr.number">
-                                        <button type="button" class="list-group-item list-group-item-action" @click="linkPr(pr)">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <span>#<span x-text="pr.number"></span> — <span x-text="pr.title"></span></span>
-                                                <small class="text-body-secondary" x-text="pr.state"></small>
-                                            </div>
-                                            <small class="text-body-secondary">
-                                                head: <span x-text="pr.head"></span> → base: <span x-text="pr.base"></span>
-                                            </small>
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-
-                            {{-- Create PR --}}
-                            <div class="row g-2 align-items-end">
-                                <div class="col-md">
-                                    <label class="form-label">PR title</label>
-                                    <input type="text" class="form-control" x-model="prTitle"
-                                           value="[{{ $issue->key }}] {{ $issue->summary }}">
-                                    <small class="text-body-secondary">Base: {{ $defaultBranch }}</small>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Head branch</label>
-                                    <input type="text" class="form-control" placeholder="feature/…" x-model="prHead">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Base branch</label>
-                                    <input type="text" class="form-control" :placeholder="defaultBranch" x-model="prBase">
-                                </div>
-                                <div class="col-md-auto">
-                                    <button class="btn btn-primary w-100" @click="createPr()" :disabled="!canCreatePr">Open PR</button>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                @endif
-
-                {{-- Timer + time entries --}}
-                <livewire:issues.focus-timer :issue="$issue" class="mb-2"/>
-                <livewire:issues.time-entries-panel :issue="$issue"/>
-
-                {{-- Sub-issues --}}
-                <div class="card shadow-sm">
-                    <div class="card-body d-flex align-items-center justify-content-between">
-                        <div>
-                            <h4 class="h6 mb-1">Sub-issues ({{ $childrenTotal }})</h4>
-                            @if($childrenTotal > 0)
-                                <div class="text-body-secondary small">
-                                    {{ $childrenDone }} of {{ $childrenTotal }} done
-                                    @if($childrenPointsTotal > 0)
-                                        · {{ $childrenPointsDone }}/{{ $childrenPointsTotal }} pts
-                                    @endif
-                                </div>
-                                <wa-progress-bar aria-label="Progress" value="{{ $childrenProgressPct }}" style="--track-height: 6px;">{{ $childrenProgressPct }}%</wa-progress-bar>
-                            @endif
-                        </div>
-                        <div>
-                            @can('create', [App\Models\Issue::class, $project])
-                                <a href="{{ route('issues.create', ['project' => $project, 'parent' => $issue->key]) }}" class="btn btn-outline-secondary btn-sm">
-                                    + New sub-issue
-                                </a>
-                            @endcan
-                        </div>
-                    </div>
-
-                    @if($childrenTotal === 0)
-                        <div class="card-body text-body-secondary small">No sub-issues yet.</div>
-                    @else
-                        <div class="table-responsive">
-                            <table class="table table-sm align-middle mb-0">
-                                <thead class="table-light">
-                                <tr>
-                                    <th>Key</th>
-                                    <th>Summary</th>
-                                    <th>Status</th>
-                                    <th>Assignee</th>
-                                    <th>Type</th>
-                                    <th>Priority</th>
-                                    <th class="text-end">Pts</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @foreach($children as $child)
-                                    <tr>
-                                        <td>
-                                            <a class="link-primary" href="{{ route('issues.show', ['project'=>$project, 'issue'=>$child]) }}">
-                                                {{ $child->key }}
-                                            </a>
-                                        </td>
-                                        <td>{{ $child->summary }}</td>
-                                        <td>
-                                            <span class="d-inline-flex align-items-center gap-1">
-                                                <span class="rounded-circle d-inline-block" style="width:.5rem;height:.5rem;background: {{ $child->status?->color ?? '#9ca3af' }}"></span>
-                                                {{ $child->status?->name ?? '—' }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            @if($child->assignee)
-                                                <span class="d-inline-flex align-items-center gap-2">
-                                                    <x-avatar :src="$child->assignee->profile_photo_url" :name="$child->assignee->name" preset="sm" />
-                                                    {{ $child->assignee->name }}
-                                                </span>
-                                            @else
-                                                —
-                                            @endif
-                                        </td>
-                                        <td>{{ $child->type?->name ?? '—' }}</td>
-                                        <td>{{ $child->priority?->name ?? '—' }}</td>
-                                        <td class="text-end">{{ $child->story_points ?? '—' }}</td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Activity --}}
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h4 class="h6">Activity</h4>
-                        <div class="mt-3">
-                            @forelse($activityGroups as $groupLabel => $items)
-                                <div class="mb-3">
-                                    <div class="text-uppercase text-body-secondary small fw-semibold">{{ $groupLabel }}</div>
-                                    <ul class="list-unstyled mb-0 mt-2">
-                                        @foreach($items as $i)
-                                            <li class="border rounded p-3 mb-2">
-                                                <div class="d-flex gap-2">
-                                                    <x-avatar :src="$i['actor_avatar'] ?? asset('images/default-avatar.png')" :name="$i['actor_name']" preset="sm" />
-                                                    <div class="flex-grow-1">
-                                                        <div class="small">
-                                                            <span class="fw-semibold">{{ $i['actor_name'] }}</span>
-                                                            <span class="text-body-secondary">{{ strtolower($i['verb']) }}</span>
-                                                            @if($i['target_url'])
-                                                                <a href="{{ $i['target_url'] }}" class="link-primary fw-semibold">{{ $i['target_label'] }}</a>
-                                                            @else
-                                                                <span class="fw-semibold">{{ $i['target_label'] }}</span>
-                                                            @endif
-                                                        </div>
-                                                        <div class="text-body-secondary small">{{ $i['ago'] }}</div>
-
-                                                        @php $statusChange = collect($i['changes'])->firstWhere('key','issue_status_id'); @endphp
-                                                        @if($statusChange)
-                                                            <div class="small mt-2 d-flex align-items-center gap-2">
-                                                                <span class="text-body-secondary">{{ $statusChange['label'] }}:</span>
-                                                                <span class="badge text-bg-light">{{ $statusChange['from'] ?? '—' }}</span>
-                                                                <span>→</span>
-                                                                <span class="badge" style="background-color: {{ $statusChange['to_color'] ?? 'transparent' }}20;color: inherit;">
-                                                                    {{ $statusChange['to'] ?? '—' }}
+                                        @if($childrenTotal === 0)
+                                            <div class="text-body-secondary small">No sub-issues yet.</div>
+                                        @else
+                                            <div class="table-responsive">
+                                                <table class="table table-sm align-middle mb-0">
+                                                    <thead class="table-light">
+                                                    <tr>
+                                                        <th>Key</th>
+                                                        <th>Summary</th>
+                                                        <th>Status</th>
+                                                        <th>Assignee</th>
+                                                        <th>Type</th>
+                                                        <th>Priority</th>
+                                                        <th class="text-end">Pts</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    @foreach($children as $child)
+                                                        <tr>
+                                                            <td>
+                                                                <a class="link-primary" href="{{ route('issues.show', ['project'=>$project, 'issue'=>$child]) }}">
+                                                                    {{ $child->key }}
+                                                                </a>
+                                                            </td>
+                                                            <td>{{ $child->summary }}</td>
+                                                            <td>
+                                                                <span class="d-inline-flex align-items-center gap-1">
+                                                                    <span class="rounded-circle d-inline-block" style="width:.5rem;height:.5rem;background: {{ $child->status?->color ?? '#9ca3af' }}"></span>
+                                                                    {{ $child->status?->name ?? '—' }}
                                                                 </span>
-                                                            </div>
-                                                        @endif
+                                                            </td>
+                                                            <td>
+                                                                @if($child->assignee)
+                                                                    <span class="d-inline-flex align-items-center gap-2">
+                                                                        <x-avatar :src="$child->assignee->profile_photo_url" :name="$child->assignee->name" preset="sm" />
+                                                                        {{ $child->assignee->name }}
+                                                                    </span>
+                                                                @else
+                                                                    —
+                                                                @endif
+                                                            </td>
+                                                            <td>{{ $child->type?->name ?? '—' }}</td>
+                                                            <td>{{ $child->priority?->name ?? '—' }}</td>
+                                                            <td class="text-end">{{ $child->story_points ?? '—' }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @endif
+                                    </wa-tab-panel>
 
-                                                        @if(!empty($i['changes']))
-                                                            <div x-data="{ open:false }" class="mt-2">
-                                                                <button type="button" class="btn btn-link btn-sm p-0" @click="open = !open">
-                                                                    <span x-show="!open">Show details</span>
-                                                                    <span x-show="open">Hide details</span>
-                                                                </button>
-                                                                <div x-show="open" x-cloak class="mt-2 border rounded p-2 small">
-                                                                    @foreach($i['changes'] as $c)
-                                                                        <div class="d-flex gap-2">
-                                                                            <div class="text-body-secondary" style="width: 9rem">{{ $c['label'] }}</div>
-                                                                            <div class="flex-grow-1 d-flex align-items-center gap-2">
-                                                                                <span class="badge text-bg-light">{{ $c['from'] ?? '—' }}</span>
+                                    <!-- Activity panel -->
+                                    <wa-tab-panel name="activity">
+                                        <div>
+                                            @forelse($activityGroups as $groupLabel => $items)
+                                                <div class="mb-3">
+                                                    <div class="text-uppercase text-body-secondary small fw-semibold">{{ $groupLabel }}</div>
+                                                    <ul class="list-unstyled mb-0 mt-2">
+                                                        @foreach($items as $i)
+                                                            <li class="border rounded p-3 mb-2">
+                                                                <div class="d-flex gap-2">
+                                                                    <x-avatar :src="$i['actor_avatar'] ?? asset('images/default-avatar.png')" :name="$i['actor_name']" preset="sm" />
+                                                                    <div class="flex-grow-1">
+                                                                        <div class="small">
+                                                                            <span class="fw-semibold">{{ $i['actor_name'] }}</span>
+                                                                            <span class="text-body-secondary">{{ strtolower($i['verb']) }}</span>
+                                                                            @if($i['target_url'])
+                                                                                <a href="{{ $i['target_url'] }}" class="link-primary fw-semibold">{{ $i['target_label'] }}</a>
+                                                                            @else
+                                                                                <span class="fw-semibold">{{ $i['target_label'] }}</span>
+                                                                            @endif
+                                                                        </div>
+                                                                        <div class="text-body-secondary small">{{ $i['ago'] }}</div>
+
+                                                                        @php $statusChange = collect($i['changes'])->firstWhere('key','issue_status_id'); @endphp
+                                                                        @if($statusChange)
+                                                                            <div class="small mt-2 d-flex align-items-center gap-2">
+                                                                                <span class="text-body-secondary">{{ $statusChange['label'] }}:</span>
+                                                                                <span class="badge text-bg-light">{{ $statusChange['from'] ?? '—' }}</span>
                                                                                 <span>→</span>
-                                                                                <span class="badge" @if($c['to_color']) style="background-color: {{ $c['to_color'] }}20;color: inherit;" @endif>
-                                                                                    {{ $c['to'] ?? '—' }}
+                                                                                <span class="badge" style="background-color: {{ $statusChange['to_color'] ?? 'transparent' }}20;color: inherit;">
+                                                                                    {{ $statusChange['to'] ?? '—' }}
                                                                                 </span>
                                                                             </div>
-                                                                        </div>
-                                                                    @endforeach
+                                                                        @endif
+
+                                                                        @if(!empty($i['changes']))
+                                                                            <div x-data="{ open:false }" class="mt-2">
+                                                                                <button type="button" class="btn btn-link btn-sm p-0" @click="open = !open">
+                                                                                    <span x-show="!open">Show details</span>
+                                                                                    <span x-show="open">Hide details</span>
+                                                                                </button>
+                                                                                <div x-show="open" x-cloak class="mt-2 border rounded p-2 small">
+                                                                                    @foreach($i['changes'] as $c)
+                                                                                        <div class="d-flex gap-2">
+                                                                                            <div class="text-body-secondary" style="width: 9rem">{{ $c['label'] }}</div>
+                                                                                            <div class="flex-grow-1 d-flex align-items-center gap-2">
+                                                                                                <span class="badge text-bg-light">{{ $c['from'] ?? '—' }}</span>
+                                                                                                <span>→</span>
+                                                                                                <span class="badge" @if($c['to_color']) style="background-color: {{ $c['to_color'] }}20;color: inherit;" @endif>
+                                                                                                    {{ $c['to'] ?? '—' }}
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    @endforeach
+                                                                                </div>
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        @endif
-                                                    </div>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
                                                 </div>
-                                            </li>
-                                        @endforeach
-                                    </ul>
+                                            @empty
+                                                <p class="text-body-secondary small mb-0">No activity yet.</p>
+                                            @endforelse
+                                        </div>
+                                    </wa-tab-panel>
+
+
+                                    <!-- Time panel: focus timer + entries (moved) -->
+                                    <wa-tab-panel name="time">
+                                        <div class="mb-2">
+                                            <livewire:issues.focus-timer :issue="$issue" />
+                                        </div>
+                                        <livewire:issues.time-entries-panel :issue="$issue"/>
+                                    </wa-tab-panel>
+                                </wa-tab-group>
+
+                                <!-- Bootstrap fallback (only shown if wa-tab-group isn't defined) -->
+                                <noscript>
+                                    <div class="alert alert-info small mb-0">Enable JavaScript to use tabs.</div>
+                                </noscript>
+                            </div>
+                        </div>
+                        <div class="card shadow-sm">
+                            <div class="card-body d-flex align-items-center justify-content-between">
+                                <h4 class="h6 mb-0">Attachments (<span x-ref="attachmentsCount">{{ $issue->attachments_count }}</span>)</h4>
+                                @can('update', $issue)
+                                    <livewire:issues.attachment-upload :issue="$issue"/>
+                                @endcan
+                            </div>
+                            <div
+                                x-data="{
+        async remove(id) {
+            const url = '{{ route('issues.attachments.destroy', ['project' => $project, 'issue' => $issue, 'media' => '__ID__']) }}'.replace('__ID__', id);
+            const r = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            });
+            if (!r.ok) {
+                // Optional: surface an error toast if you have a global handler
+                return;
+            }
+            const data = await r.json();
+            if (data?.html) { $refs.attachments.innerHTML = data.html; }
+            if ($refs.attachmentsCount && data?.count !== undefined) {
+                $refs.attachmentsCount.textContent = data.count;
+            }
+            // Optional: surface success toast if desired
+            document.dispatchEvent(new CustomEvent('notify', { detail: { title: 'Deleted', body: 'Attachment removed.' } }));
+        }
+    }"
+                                x-on:issue-attachments-updated.window="
+        if ($refs.attachments) { $refs.attachments.innerHTML = event.detail.html }
+        if ($refs.attachmentsCount && event.detail?.count !== undefined) {
+            $refs.attachmentsCount.textContent = event.detail.count
+        }
+    "
+                                x-on:issue-attachment-delete.window="remove($event.detail.id)"
+                            >
+                                <div x-ref="attachments">
+                                    @include('partials.issues.attachments_list', [
+                                        'attachments' => $attachments,
+                                        'issue' => $issue,
+                                        'project' => $project,
+                                    ])
                                 </div>
-                            @empty
-                                <p class="text-body-secondary small mb-0">No activity yet.</p>
-                            @endforelse
+                            </div>
+                        </div>
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h4 class="h6">Comments ({{ $issue->comments_count }})</h4>
+                                <livewire:issues.comments :issue="$issue"/>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {{-- Comments --}}
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h4 class="h6">Comments ({{ $issue->comments_count }})</h4>
-                        <livewire:issues.comments :issue="$issue"/>
-                    </div>
+                    <!-- Sidebar: attachments and code links -->
+                    <aside class="col-lg-4 d-flex flex-column gap-3">
+                        <!-- Code Links (moved) -->
+                        @if($projectRepo)
+                            <div x-data="window.issueVcs({ repoId: '{{ $projectRepo->id }}', issueKey: '{{ $issue->key }}', defaultBranch: '{{ $defaultBranch }}', prTitleInitial: @js("[{{ $issue->key }}] {{ $issue->summary }}"),})" x-init="init()" class="card shadow-sm">
+                                <div class="card-body d-flex align-items-center justify-content-between">
+                                    <h4 class="h6 mb-0">Code Links</h4>
+                                    <div class="small text-body-secondary">Repo: {{ $projectRepo->owner }}/{{ $projectRepo->name }}</div>
+                                </div>
+
+                                <div class="card-body d-flex flex-column gap-3">
+                                    <!-- Existing links -->
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <h6 class="mb-2">Linked Branches</h6>
+                                            <ul class="list-unstyled mb-0">
+                                                @forelse($issue->branchLinks as $b)
+                                                    <li class="d-flex justify-content-between align-items-center">
+                                                        <a href="{{ $b->url }}" target="_blank" rel="noreferrer">{{ $b->name }}</a>
+                                                        <small class="text-body-secondary">{{ $b->created_at?->diffForHumans() }}</small>
+                                                    </li>
+                                                @empty
+                                                    <li class="text-body-secondary small">None yet.</li>
+                                                @endforelse
+                                            </ul>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <h6 class="mb-2">Linked Pull Requests</h6>
+                                            <ul class="list-unstyled mb-0">
+                                                @forelse($issue->pullRequestLinks as $pr)
+                                                    <li class="d-flex justify-content-between align-items-center">
+                                                        <span>
+                                                            <a href="{{ $pr->url }}" target="_blank" rel="noreferrer">
+                                                                #{{ $pr->number }} — {{ $pr->name ?? 'Pull Request' }}
+                                                            </a>
+                                                            @if($pr->state)
+                                                                <span class="badge bg-secondary ms-2">{{ $pr->state }}</span>
+                                                            @endif
+                                                        </span>
+                                                        <small class="text-body-secondary">{{ $pr->created_at?->diffForHumans() }}</small>
+                                                    </li>
+                                                @empty
+                                                    <li class="text-body-secondary small">None yet.</li>
+                                                @endforelse
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <hr class="my-2"/>
+
+                                    <template x-if="error">
+                                        <div class="alert alert-danger d-flex align-items-start gap-2" role="alert">
+                                            <div>⚠️</div>
+                                            <div class="flex-grow-1">
+                                                <div class="fw-semibold" x-text="error.title || 'Request failed'"></div>
+                                                <div class="small" x-text="error.message || ''"></div>
+                                            </div>
+                                            <button type="button" class="btn-close" @click="error=null"></button>
+                                        </div>
+                                    </template>
+
+                                    <template x-if="!!notice">
+                                        <div class="alert alert-success d-flex align-items-start gap-2" role="alert">
+                                            <div>✅</div>
+                                            <div class="flex-grow-1" x-text="notice"></div>
+                                            <button type="button" class="btn-close" @click="notice=null"></button>
+                                        </div>
+                                    </template>
+
+                                    <!-- Search & link branch -->
+                                    <div>
+                                        <label class="form-label">Link existing branch</label>
+                                        <input type="text" class="form-control" placeholder="Search branches…"
+                                               x-model.debounce.300ms="branchQuery" @input="searchBranches()">
+                                        <div class="list-group mt-2" x-show="branchResults.length">
+                                            <template x-for="b in branchResults" :key="b.name">
+                                                <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
+                                                    <div class="text-truncate">
+                                                        <span class="fw-semibold" x-text="b.name"></span>
+                                                        <small class="text-body-secondary ms-2" x-text="b.default ? 'default' : ''"></small>
+                                                    </div>
+                                                    <div class="d-flex gap-2">
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" @click="prHead = b.name">Use as head</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" @click="prBase = b.name">Use as base</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary"  @click="linkBranch(b)">Link</button>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <!-- Create branch -->
+                                    <div class="row g-2 align-items-end">
+                                        <div class="col-12">
+                                            <label class="form-label">Create new branch</label>
+                                            <input type="text" class="form-control"
+                                                   placeholder="feature/{{ $issue->project->key }}-{{ $issue->number }}-{{ \Illuminate\Support\Str::slug($issue->summary) }}"
+                                                   x-model="newBranchName">
+                                            <small class="text-body-secondary">
+                                                Base: <span x-text="baseRef || defaultBranch"></span>
+                                            </small>
+                                        </div>
+                                        <div class="col-12 d-flex gap-2">
+                                            <input type="text" class="form-control" placeholder="{{ $defaultBranch }}" x-model="baseRef">
+                                            <button class="btn btn-outline-primary" @click="createBranch()" :disabled="!canCreateBranch">Create</button>
+                                        </div>
+                                    </div>
+
+                                    <hr class="my-2"/>
+
+                                    <!-- Search & link PR -->
+                                    <div>
+                                        <label class="form-label">Link existing pull request</label>
+                                        <input type="text" class="form-control" placeholder="Search PRs by title/number/head/base…"
+                                               x-model.debounce.300ms="prQuery" @input="searchPulls()">
+                                        <div class="list-group mt-2" x-show="prResults.length">
+                                            <template x-for="pr in prResults" :key="pr.number">
+                                                <button type="button" class="list-group-item list-group-item-action" @click="linkPr(pr)">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span>#<span x-text="pr.number"></span> — <span x-text="pr.title"></span></span>
+                                                        <small class="text-body-secondary" x-text="pr.state"></small>
+                                                    </div>
+                                                    <small class="text-body-secondary">
+                                                        head: <span x-text="pr.head"></span> → base: <span x-text="pr.base"></span>
+                                                    </small>
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <!-- Create PR -->
+                                    <div class="row g-2 align-items-end">
+                                        <div class="col-12">
+                                            <label class="form-label">PR title</label>
+                                            <input type="text" class="form-control" x-model="prTitle"
+                                                   value="[{{ $issue->key }}] {{ $issue->summary }}">
+                                            <small class="text-body-secondary">Base: {{ $defaultBranch }}</small>
+                                        </div>
+                                        <div class="col-12 d-flex gap-2">
+                                            <input type="text" class="form-control" placeholder="feature/…" x-model="prHead">
+                                            <input type="text" class="form-control" :placeholder="defaultBranch" x-model="prBase">
+                                            <button class="btn btn-primary" @click="createPr()" :disabled="!canCreatePr">Open PR</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </aside>
                 </div>
 
             </div>

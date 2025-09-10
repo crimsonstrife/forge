@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\IssueVcsController;
 use App\Http\Controllers\Webhooks\GitHubWebhookController;
-use App\Http\Controllers\IssueAttachmentDownloadController;
+use App\Http\Controllers\IssueAttachmentController;
 use App\Http\Controllers\ProjectCalendarController;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
@@ -35,9 +35,12 @@ Route::middleware([
     Route::get('/dashboard', static function () {
         return view('dashboard');
     })->name('dashboard');
-    Route::get('/projects/{project}/issues/{issue}/attachments/{media}',
-        IssueAttachmentDownloadController::class
+    Route::get('/projects/{project}/issues/{issue}/attachments/{media}/download',
+        [IssueAttachmentController::class, 'download']
     )->name('issues.attachments.download');
+    Route::delete('/projects/{project}/issues/{issue}/attachments/{media}',
+        [IssueAttachmentController::class, 'destroy']
+    )->name('issues.attachments.destroy');
     Route::get('/projects/{project}/calendar.ics', ProjectCalendarController::class)
         ->middleware(['auth','verified'])
         ->name('projects.calendar.ics');

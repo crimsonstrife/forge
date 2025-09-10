@@ -250,8 +250,7 @@ class Issue extends BaseModel implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('attachments')
-            ->useDisk('attachments')       // private
-            ->singleFile(false);
+            ->useDisk('attachments');
     }
 
     /** Percent as float 0..1 for charts */
