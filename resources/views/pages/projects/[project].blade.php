@@ -45,7 +45,7 @@ render(function (View $view, Project $project) {
     $doneStatusIds   = $statuses->where('is_done', true)->pluck('id')->values();
     $activeStatusIds = $statuses->where('is_done', false)->pluck('id')->values();
 
-    $statusSummary = $statuses->map(fn($s) => [
+    $statusSummary = $statuses->map(fn ($s) => [
         'id' => (string)$s->id,
         'name' => $s->name,
         'key' => $s->key,
@@ -281,6 +281,12 @@ render(function (View $view, Project $project) {
                 @can('update', $project)
                     <a href="{{ route('projects.edit', ['project' => $project]) }}" class="btn btn-secondary btn-sm">Edit
                         Project</a>
+                @endcan
+                @can('delete', $project)
+                        <x-delete-button
+                            :action="route('projects.destroy', $project)"
+                            :confirm="__('Delete this project and all completed issues? This is permanent. Projects with open issues cannot be deleted.')"
+                        />
                 @endcan
             </div>
         </div>

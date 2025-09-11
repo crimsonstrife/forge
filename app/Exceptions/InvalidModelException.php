@@ -2,7 +2,8 @@
 
 namespace App\Exceptions;
 
-class InvalidModelException
-{
+use Exception;
 
+class InvalidModelException extends Exception
+{
 }
