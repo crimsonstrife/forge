@@ -2,7 +2,6 @@
 
 namespace App\Exceptions;
 
-use Exception;
 use RuntimeException;
 
 class CannotDeleteWithOpenChildren extends RuntimeException
