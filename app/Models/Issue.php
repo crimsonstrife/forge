@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\ActivityContext;
 use App\Traits\IsPermissible;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -296,5 +297,29 @@ class Issue extends BaseModel implements HasMedia
         }
 
         return $parentType->allowsChildType($childType);
+    }
+
+    protected function typeId(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->issue_type_id,
+            set: static fn ($value) => ['issue_type_id' => $value],
+        );
+    }
+
+    protected function statusId(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->issue_status_id,
+            set: static fn ($value) => ['issue_status_id' => $value],
+        );
+    }
+
+    protected function priorityId(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->issue_priority_id,
+            set: static fn ($value) => ['issue_priority_id' => $value],
+        );
     }
 }
