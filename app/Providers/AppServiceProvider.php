@@ -14,8 +14,11 @@ use App\Observers\IssueObserver;
 use App\Observers\PermissionSetObserver;
 use App\Observers\ProjectObserver;
 use App\Observers\RoleObserver;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 use Laravel\Telescope\TelescopeServiceProvider;
@@ -43,6 +46,14 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             return; // do not touch URL/Request during composer/CLI
         }
+
+        RateLimiter::for('api', static function (Request $request) {
+            $key = optional($request->user())?->getAuthIdentifier()
+                ?? optional($request->user())?->currentAccessToken()?->id
+                ?? $request->ip();
+
+            return Limit::perMinute(120)->by($key);
+        });
 
         Paginator::useBootstrapFive();
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
