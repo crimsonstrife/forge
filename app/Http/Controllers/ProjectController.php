@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Project;
@@ -9,7 +10,8 @@ class ProjectController extends Controller
 {
     public function __construct(
         private ProjectDeletionService $deleter,
-    ) {}
+    ) {
+    }
 
     public function __invoke(Project $project): RedirectResponse
     {

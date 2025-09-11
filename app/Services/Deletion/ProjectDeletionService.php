@@ -11,7 +11,8 @@ final class ProjectDeletionService
 {
     public function __construct(
         private IssueDeletionService $issueDeletion,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws Throwable

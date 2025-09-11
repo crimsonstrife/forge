@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Issue;
@@ -10,7 +11,8 @@ class IssueController extends Controller
 {
     public function __construct(
         private IssueDeletionService $deleter,
-    ) {}
+    ) {
+    }
 
     public function __invoke(Project $project, Issue $issue): RedirectResponse
     {
