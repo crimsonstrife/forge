@@ -34,6 +34,21 @@ class ProjectPolicy
         return $this->resolveThePermissionIdOnce($user);
     }
 
+    public function delete(User $user, Project $project): bool
+    {
+        // Keep delete tied to access + manage
+        if (! $project->isAccessibleBy($user)) {
+            return false;
+        }
+
+        // Same cross-team logic as create, but reuse the quick checks
+        if ($user->hasPermissionTo('is-super-admin') || $user->hasPermissionTo('projects.manage')) {
+            return true;
+        }
+
+        return $this->resolveThePermissionIdOnce($user) || $user->hasPermissionTo('projects.delete');
+    }
+
     public function update(User $user, Project $project): bool
     {
         // Keep update tied to access + manage

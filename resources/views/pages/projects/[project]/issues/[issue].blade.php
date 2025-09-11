@@ -271,6 +271,12 @@ render(function (View $view, Project $project, Issue $issue) {
                 @can('update', $issue)
                     <a href="{{ route('issues.edit', ['project'=>$project, 'issue'=>$issue]) }}" class="btn btn-outline-secondary btn-sm">Edit</a>
                 @endcan
+                @can('delete', $issue)
+                    <x-delete-button
+                        :action="route('issues.destroy', [$project, $issue])"
+                        :confirm="__('Delete this issue (and any completed children)? This is permanent. Issues with open children cannot be deleted.')"
+                    />
+                @endcan
             </div>
         </div>
     </x-slot>

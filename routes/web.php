@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\IssueController;
 use App\Http\Controllers\IssueVcsController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\Webhooks\GitHubWebhookController;
 use App\Http\Controllers\IssueAttachmentController;
 use App\Http\Controllers\ProjectCalendarController;
@@ -44,6 +46,11 @@ Route::middleware([
     Route::get('/projects/{project}/calendar.ics', ProjectCalendarController::class)
         ->middleware(['auth','verified'])
         ->name('projects.calendar.ics');
+    Route::delete('/projects/{project}', ProjectController::class)
+        ->name('projects.destroy');
+
+    Route::delete('/projects/{project}/issues/{issue}', IssueController::class)
+        ->name('issues.destroy');
 });
 
 Route::middleware(['web','auth','verified'])->group(function () {
