@@ -23,15 +23,15 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'throttle:api'])->group(functio
 
     Route::get('issues', [V1\IssueController::class, 'index'])->name('api.v1.issues.index');
     Route::post('issues', [V1\IssueController::class, 'store'])->name('api.v1.issues.store');
-    Route::get('issues/{issue}', [V1\IssueController::class, 'show'])->name('api.v1.issues.show');
-    Route::put('issues/{issue}', [V1\IssueController::class, 'update'])->name('api.v1.issues.update');
+    Route::get('issues/{issue:id}', [V1\IssueController::class, 'show'])->name('api.v1.issues.show');
+    Route::put('issues/{issue:id}', [V1\IssueController::class, 'update'])->name('api.v1.issues.update');
 
-    Route::post('issues/{issue}/transition', [V1\IssueTransitionController::class, 'store'])
+    Route::post('issues/{issue:id}/transition', [V1\IssueTransitionController::class, 'store'])
         ->name('api.v1.issues.transition');
 
-    Route::post('issues/{issue}/comments', [V1\IssueCommentController::class, 'store'])
+    Route::post('issues/{issue:id}/comments', [V1\IssueCommentController::class, 'store'])
         ->name('api.v1.issues.comments.store');
 
-    Route::post('issues/{issue}/attachments', [V1\IssueAttachmentController::class, 'store'])
+    Route::post('issues/{issue:id}/attachments', [V1\IssueAttachmentController::class, 'store'])
         ->name('api.v1.issues.attachments.store');
 });
