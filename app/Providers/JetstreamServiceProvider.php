@@ -43,15 +43,19 @@ class JetstreamServiceProvider extends ServiceProvider
      */
     protected function configurePermissions(): void
     {
-        // Default abilities for *new* tokens
-        \Laravel\Jetstream\Jetstream::defaultApiTokenPermissions(['issues:read']);
+        // Defaults applied to new tokens (if you don’t check anything):
+        Jetstream::defaultApiTokenPermissions([
+            'issues:read',
+            'projects:read',
+        ]);
 
         \Laravel\Jetstream\Jetstream::permissions([
+            'projects:read',
             'issues:read',
             'issues:write',
-            'projects:read',
             'comments:write',
             'attachments:write',
+            'time:write',
         ]);
 
         \Laravel\Jetstream\Jetstream::role('admin', 'Administrator', [

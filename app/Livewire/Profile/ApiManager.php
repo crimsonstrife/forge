@@ -23,13 +23,10 @@ final class ApiManager extends Component
         'permissions' => [],
     ];
 
-    /** @var array{permissions:array<int,string>} */
-    public array $updateApiTokenForm = [
-        'permissions' => [],
-    ];
-
     public bool $displayingToken = false;
     public bool $managingApiTokenPermissions = false;
+    public array $updateApiTokenForm = ['permissions' => []];
+    public ?PersonalAccessToken $editingToken = null;
     public bool $confirmingApiTokenDeletion = false;
 
     public ?int $managingApiTokenId = null;
@@ -71,57 +68,42 @@ final class ApiManager extends Component
         $this->dispatch('created');
     }
 
-    public function manageApiTokenPermissions(int $tokenId): void
+    public function manageApiTokenPermissions(string $tokenId): void
     {
-        $token = $this->findTokenOrFail($tokenId);
+        $this->editingToken = PersonalAccessToken::query()->findOrFail($tokenId);
 
-        $this->managingApiTokenId = $token->id;
-        $this->updateApiTokenForm['permissions'] = $token->abilities ?? [];
+        // Abilities are stored as JSON; ensure array in form.
+        $this->updateApiTokenForm['permissions'] = $this->editingToken->abilities ?? [];
+
         $this->managingApiTokenPermissions = true;
     }
 
     public function updateApiToken(): void
     {
-        if ($this->managingApiTokenId === null) {
-            return;
-        }
+        $this->authorize('update', $this->editingToken); // optional, if you have a policy
 
-        $token = $this->findTokenOrFail($this->managingApiTokenId);
-        $abilities = $this->sanitizeAbilities($this->updateApiTokenForm['permissions']);
+        $abilities = array_values(array_filter($this->updateApiTokenForm['permissions'] ?? [], 'strlen'));
 
-        // Persist abilities
-        $token->forceFill(['abilities' => $abilities])->save();
+        $this->editingToken->forceFill(['abilities' => $abilities])->save();
 
+        $this->dispatch('saved'); // or $this->dispatch('created') if your UI listens for it
         $this->managingApiTokenPermissions = false;
-        $this->managingApiTokenId = null;
-
-        $this->user->unsetRelation('tokens');
-        $this->user->load('tokens');
-        $this->dispatch('saved');
     }
 
-    public function confirmApiTokenDeletion(int $tokenId): void
+    public function confirmApiTokenDeletion(string $tokenId): void
     {
-        $this->deletingTokenId = $tokenId;
+        $this->editingToken = PersonalAccessToken::query()->findOrFail($tokenId);
         $this->confirmingApiTokenDeletion = true;
     }
 
     public function deleteApiToken(): void
     {
-        if ($this->deletingTokenId === null) {
-            return;
-        }
-
-        $token = $this->findTokenOrFail($this->deletingTokenId);
-        $token->delete();
-
+        optional($this->editingToken)->delete();
         $this->confirmingApiTokenDeletion = false;
-        $this->deletingTokenId = null;
+        $this->editingToken = null;
 
-        $this->user->unsetRelation('tokens');
-        $this->user->load('tokens');
-
-        $this->dispatch('deleted');
+        // Refresh the user's tokens if you show them live
+        $this->user->refresh();
     }
 
     /** @return array<int,string> */

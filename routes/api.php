@@ -34,4 +34,16 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'throttle:api'])->group(functio
 
     Route::post('issues/{issue:id}/attachments', [V1\IssueAttachmentController::class, 'store'])
         ->name('api.v1.issues.attachments.store');
+
+    Route::get('issues/{issue:id}/time/summary', [V1\IssueTimeController::class, 'summary'])
+        ->name('api.v1.issues.time.summary');
+
+    Route::post('issues/{issue:id}/time/start', [V1\IssueTimeController::class, 'start'])
+        ->name('api.v1.issues.time.start');
+
+    Route::post('issues/{issue:id}/time/stop', [V1\IssueTimeController::class, 'stop'])
+        ->name('api.v1.issues.time.stop');
+
+    Route::post('issues/{issue:id}/time', [V1\IssueTimeController::class, 'store'])
+        ->name('api.v1.issues.time.store');
 });

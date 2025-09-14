@@ -79,16 +79,16 @@
                                 @endif
 
                                 @if (Laravel\Jetstream\Jetstream::hasPermissions())
-                                    <button type="button" class="btn btn-link btn-sm p-0"
-                                            wire:click="manageApiTokenPermissions({{ $token->id }})">
-                                        {{ __('Permissions') }}
-                                    </button>
+                                        <button type="button" class="btn btn-link btn-sm p-0"
+                                                wire:click="manageApiTokenPermissions(@js($token->id))">
+                                            {{ __('Permissions') }}
+                                        </button>
                                 @endif
 
-                                <button type="button" class="btn btn-link btn-sm text-danger p-0"
-                                        wire:click="confirmApiTokenDeletion({{ $token->id }})">
-                                    {{ __('Delete') }}
-                                </button>
+                                    <button type="button" class="btn btn-link btn-sm text-danger p-0"
+                                            wire:click="confirmApiTokenDeletion(@js($token->id))">
+                                        {{ __('Delete') }}
+                                    </button>
                             </div>
                         </div>
                     @endforeach
