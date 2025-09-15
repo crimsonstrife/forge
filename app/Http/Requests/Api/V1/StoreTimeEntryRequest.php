@@ -20,15 +20,9 @@ class StoreTimeEntryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Option A: just seconds (1..24h)
-            'seconds' => ['required_without_all:started_at,ended_at', 'nullable', 'integer', 'min:1', 'max:86400'],
-
-            // Option B: explicit window
-            'started_at' => ['required_without:seconds', 'nullable', 'date'],
-            'ended_at'   => ['required_without:seconds', 'nullable', 'date', 'after:started_at'],
-
-            // Optional note
-            'note' => ['nullable', 'string', 'max:10000'],
+            'started_at' => ['required','date'], // accept ISO-8601 or any Carbon-parsable
+            'ended_at'   => ['required','date','after:started_at'],
+            'note'       => ['nullable','string','max:2000'],
         ];
     }
 
@@ -38,7 +32,7 @@ class StoreTimeEntryRequest extends FormRequest
             $this->merge(['seconds' => (int) $this->input('seconds')]);
         }
 
-        if ($this->filled('note') && is_string($this->note)) {
+        if (is_string($this->note) && $this->filled('note')) {
             $this->merge(['note' => trim($this->note)]);
         }
     }

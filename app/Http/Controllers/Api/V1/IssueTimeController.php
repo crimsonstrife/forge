@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreTimeEntryRequest;
 use App\Models\Issue;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -17,15 +18,23 @@ class IssueTimeController extends Controller
     public function summary(Request $request, Issue $issue): JsonResponse
     {
         $this->authorize('view', $issue);
-        $this->ensureTimeAbility($request);
+
+        $running = $issue->timeEntries()
+            ->where('user_id', $request->user()->getKey())
+            ->whereNull('ended_at')
+            ->latest('started_at')
+            ->first();
+
+        $total = (int) $issue->totalTrackedSeconds();
 
         return response()->json([
             'data' => [
-                'total_seconds' => $issue->totalTrackedSeconds(),
-                'running'       => $issue->timeEntries()
-                    ->where('user_id', $request->user()->getKey())
-                    ->whereNull('ended_at')
-                    ->exists(),
+                'total_seconds'      => $total,
+                'running'            => (bool) $running,
+                'running_started_at' => $running?->started_at?->toImmutable()?->toIso8601String(),
+                'elapsed_seconds'    => $running
+                    ? $total + now()->diffInSeconds($running->started_at)
+                    : $total,
             ],
         ]);
     }
@@ -37,34 +46,32 @@ class IssueTimeController extends Controller
     public function start(Request $request, Issue $issue): JsonResponse
     {
         $this->authorize('update', $issue);
-        $this->ensureTimeAbility($request);
 
-        $userId = $request->user()->getKey();
-
-        $existing = $issue->timeEntries()
-            ->where('user_id', $userId)
+        // Close any stray running entries for this user on this issue
+        $issue->timeEntries()
+            ->where('user_id', $request->user()->getKey())
             ->whereNull('ended_at')
-            ->first();
+            ->update([
+                'ended_at' => now(),
+                'duration_seconds' => \DB::raw('TIMESTAMPDIFF(SECOND, started_at, NOW())'),
+            ]);
 
-        if ($existing) {
-            return response()->json([
-                'message' => 'A timer is already running for this issue.',
-                'data'    => ['entry_id' => $existing->getKey()],
-            ], 409);
-        }
+        $at = $this->parseWhen($request->input('at')); // null => now()
 
         $entry = $issue->timeEntries()->create([
-            'user_id'          => $userId,
-            'started_at'       => now(),
-            'ended_at'         => null,
-            'duration_seconds' => 0,
-            'note'             => null,
+            'user_id'   => $request->user()->getKey(),
+            'started_at'=> $at ?? now(),
+            'note'      => (string) $request->string('note'), // optional
         ]);
 
         return response()->json([
             'data' => [
-                'entry_id' => $entry->getKey(),
-                'running'  => true,
+                'running'            => true,
+                'running_started_at' => $entry->started_at?->toImmutable()?->toIso8601String(),
+                'entry' => [
+                    'id'         => $entry->id,
+                    'started_at' => $entry->started_at?->toIso8601String(),
+                ],
             ],
         ], 201);
     }
@@ -76,34 +83,34 @@ class IssueTimeController extends Controller
     public function stop(Request $request, Issue $issue): JsonResponse
     {
         $this->authorize('update', $issue);
-        $this->ensureTimeAbility($request);
 
-        $userId = $request->user()->getKey();
-
-        $entry = $issue->timeEntries()
-            ->where('user_id', $userId)
+        $running = $issue->timeEntries()
+            ->where('user_id', $request->user()->getKey())
             ->whereNull('ended_at')
             ->latest('started_at')
-            ->first();
+            ->firstOrFail();
 
-        if (! $entry) {
-            return response()->json(['message' => 'No running timer found.'], 404);
-        }
+        $endedAt = $this->parseWhen($request->input('at')) ?? now();
 
-        $ended = now();
-        $seconds = max(1, $ended->diffInSeconds(Carbon::parse($entry->started_at)));
-
-        $entry->forceFill([
-            'ended_at'         => $ended,
-            'duration_seconds' => $seconds,
-        ])->save();
+        $running->ended_at = $endedAt;
+        $running->duration_seconds = max(
+            0,
+            $endedAt->diffInSeconds($running->started_at)
+        );
+        $running->save();
 
         return response()->json([
             'data' => [
-                'entry_id'       => $entry->getKey(),
-                'seconds'        => $seconds,
-                'total_seconds'  => $issue->totalTrackedSeconds(),
-                'running'        => false,
+                'running'         => false,
+                'entry' => [
+                    'id'               => $running->id,
+                    'started_at'       => $running->started_at?->toIso8601String(),
+                    'ended_at'         => $running->ended_at?->toIso8601String(),
+                    'duration_seconds' => $running->duration_seconds,
+                ],
+                'summary' => [
+                    'total_seconds' => (int) $issue->totalTrackedSeconds(),
+                ],
             ],
         ]);
     }
@@ -112,42 +119,40 @@ class IssueTimeController extends Controller
      * POST /api/v1/issues/{issue:id}/time
      * Manual log: accepts either {seconds} or {started_at, ended_at}, plus optional note.
      */
-    public function store(StoreTimeEntryRequest $request, Issue $issue): JsonResponse
+    public function store(StoreTimeEntryRequest $req, Issue $issue): JsonResponse
     {
         $this->authorize('update', $issue);
 
-        $data = $request->validated();
-        $userId = $request->user()->getKey();
-
-        /** @var int|null $seconds */
-        $seconds = $data['seconds'] ?? null;
-
-        if ($seconds && $seconds > 0) {
-            $endedAt = now();
-            $startedAt = (clone $endedAt)->subSeconds($seconds);
-        } else {
-            /** @var \DateTimeInterface $startedAt */
-            /** @var \DateTimeInterface $endedAt */
-            $startedAt = Carbon::parse($data['started_at']);
-            $endedAt   = Carbon::parse($data['ended_at']);
-            $seconds   = max(1, $endedAt->diffInSeconds($startedAt));
-        }
+        $started = CarbonImmutable::parse($req->validated('started_at'));
+        $ended   = CarbonImmutable::parse($req->validated('ended_at'));
 
         $entry = $issue->timeEntries()->create([
-            'user_id'          => $userId,
-            'started_at'       => $startedAt,
-            'ended_at'         => $endedAt,
-            'duration_seconds' => $seconds,
-            'note'             => $data['note'] ?? null,
+            'user_id'          => $req->user()->getKey(),
+            'started_at'       => $started,
+            'ended_at'         => $ended,
+            'duration_seconds' => max(0, $ended->diffInSeconds($started)),
+            'note'             => (string) $req->validated('note', ''),
         ]);
 
         return response()->json([
             'data' => [
-                'entry_id'      => $entry->getKey(),
-                'seconds'       => $seconds,
-                'total_seconds' => $issue->totalTrackedSeconds(),
+                'entry' => [
+                    'id'               => $entry->id,
+                    'started_at'       => $entry->started_at?->toIso8601String(),
+                    'ended_at'         => $entry->ended_at?->toIso8601String(),
+                    'duration_seconds' => $entry->duration_seconds,
+                ],
+                'summary' => [
+                    'total_seconds' => (int) $issue->totalTrackedSeconds(),
+                ],
             ],
         ], 201);
+    }
+
+    private function parseWhen(?string $iso): ?CarbonImmutable
+    {
+        if (!$iso) return null;
+        try { return CarbonImmutable::parse($iso); } catch (\Throwable) { return null; }
     }
 
     /**
