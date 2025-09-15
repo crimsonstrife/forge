@@ -11,7 +11,7 @@
                     <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between"
                             wire:click="addBlocker('{{ $r['id'] }}')">
                         <span>{{ $r['label'] }}</span>
-                        <span class="badge bg-outline-secondary">Add</span>
+                        <span class="badge badge-outline-secondary">Add</span>
                     </button>
                 @endforeach
             </div>
