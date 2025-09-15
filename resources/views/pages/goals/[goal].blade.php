@@ -2,6 +2,7 @@
 
 use App\Models\Goal;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('goals.show');
@@ -35,6 +36,15 @@ render(function (View $view, Goal $goal) {
                     @endif
                 </small>
             </div>
+            @php
+                $healthClass = [
+                    'on_track' => 'bg-success',
+                    'at_risk' => 'bg-warning text-dark',
+                    'off_track' => 'bg-danger',
+                ][$goal->health->value] ?? 'bg-secondary';
+            @endphp
+            <span class="badge {{ $healthClass }}">Health: {{ str($goal->health->value)->replace('_',' ')->title() }}</span>
+            <span class="badge bg-secondary">Confidence: {{ $goal->confidence }}%</span>
             <div class="ms-3 d-flex gap-2">
                 <a href="{{ route('goals.edit', ['goal' => $goal]) }}" class="btn btn-outline-primary">Edit</a>
                 <a href="{{ route('goals.index') }}" class="btn btn-outline-secondary">All Goals</a>
@@ -96,6 +106,7 @@ render(function (View $view, Goal $goal) {
                                             </small>
                                         </div>
                                     @endif
+                                    <livewire:goals.quick-checkin :kr="$kr" :key="$kr->id" />
                                 </div>
                             @endforeach
                         </div>
@@ -128,38 +139,9 @@ render(function (View $view, Goal $goal) {
                     </div>
                 </div>
             @endif
+                <livewire:goals.manage-goal-dependencies :goal="$goal" />
 
-            <div class="card">
-                <div class="card-header">Linked Work</div>
-                <div class="card-body p-0">
-                    @if($goal->links->isEmpty())
-                        <div class="p-3 text-muted">No links yet.</div>
-                    @else
-                        <div class="list-group list-group-flush">
-                            @foreach($goal->links as $link)
-                                <div class="list-group-item d-flex align-items-center justify-content-between">
-                                    <div>
-                                        <div class="fw-semibold">{{ class_basename($link->linkable_type) }}</div>
-                                        <small class="text-muted">
-                                            @if(method_exists($link->linkable, 'getAttribute'))
-                                                {{ $link->linkable->name ?? $link->linkable->summary ?? $link->linkable->id }}
-                                            @else
-                                                #{{ $link->linkable_id }}
-                                            @endif
-                                        </small>
-                                    </div>
-                                    @if(method_exists($link->linkable, 'getRouteKey'))
-                                        <a class="btn btn-sm btn-outline-secondary"
-                                           href="{{ route(str(class_basename($link->linkable_type))->lower()->plural().'.show', [$link->linkable]) }}">
-                                            View
-                                        </a>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-            </div>
+                <livewire:goals.manage-goal-links :goal="$goal" />
         </div>
     </div>
 </x-app-layout>

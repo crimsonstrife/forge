@@ -33,6 +33,21 @@
             </div>
 
             <div class="col-md-4">
+                <label class="form-label">Confidence</label>
+                <input type="number" min="0" max="100" class="form-control" wire:model="confidence">
+                @error('confidence') <div class="text-danger small">{{ $message }}</div> @enderror
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Health</label>
+                <select class="form-select" wire:model="health">
+                    <option value="on_track">On track</option>
+                    <option value="at_risk">At risk</option>
+                    <option value="off_track">Off track</option>
+                </select>
+                @error('health') <div class="text-danger small">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="col-md-4">
                 <label class="form-label">Start Date</label>
                 <input type="date" wire:model="start_date" class="form-control">
             </div>
@@ -41,6 +56,16 @@
                 <label class="form-label">Due Date</label>
                 <input type="date" wire:model="due_date" class="form-control">
                 @error('due_date') <div class="text-danger small">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Check-in cadence</label>
+                <select class="form-select" wire:model="cadence">
+                    <option value="weekly">Weekly</option>
+                    <option value="biweekly">Bi-weekly</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+                @error('cadence') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
 
             <div class="col-md-4">

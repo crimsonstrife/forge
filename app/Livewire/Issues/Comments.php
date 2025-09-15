@@ -44,7 +44,11 @@ final class Comments extends Component
 
     public function render(): View
     {
-        $comments = $this->issue->comments()->with('user:id,name,profile_photo_path')->get();
+        $comments = $this->issue
+            ->comments()
+            ->with('user:id,name,profile_photo_path')
+            ->latest()
+            ->get();
 
         return view('livewire.issues.comments', compact('comments'));
     }

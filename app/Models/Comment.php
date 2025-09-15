@@ -68,6 +68,18 @@ class Comment extends BaseModel implements HasMedia
         return $this->children();
     }
 
+    /**
+     * The author of the comment.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id')
+            ->withDefault([
+                'name' => __('Deleted user'),
+                'profile_photo_path' => null,
+            ]);
+    }
+
     // Convenience scope for listing under a model
     public function scopeFor($q, Model $model): Builder
     {

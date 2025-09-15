@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Goals;
 
+use App\Enums\GoalCadence;
+use App\Enums\GoalHealth;
 use App\Enums\GoalStatus;
 use App\Enums\GoalType;
 use App\Enums\KRAutomation;
@@ -45,6 +47,11 @@ final class UpdateGoalForm extends Component
     /** @var array<int, array{id:string,name:string}> */
     public array $ownerOptions = [];
 
+    public int $confidence = 70;
+    public string $health = GoalHealth::OnTrack->value;
+
+    public string $cadence = GoalCadence::Weekly->value;
+
     public function mount(Goal $goal): void
     {
         $this->authorize('update', $goal);
@@ -59,7 +66,7 @@ final class UpdateGoalForm extends Component
         $this->owner_type = $goal->owner_type;
         $this->owner_id = $goal->owner_id;
 
-        $this->keyResults = $goal->keyResults->map(fn(GoalKeyResult $kr) => [
+        $this->keyResults = $goal->keyResults->map(fn (GoalKeyResult $kr) => [
             'id' => $kr->id,
             'name' => $kr->name,
             'unit' => $kr->unit->value,
@@ -111,19 +118,19 @@ final class UpdateGoalForm extends Component
             Team::class => Team::query()
                 ->orderBy('name')
                 ->get(['id','name'])
-                ->map(fn($m) => ['id' => (string)$m->id, 'name' => $m->name])
+                ->map(fn ($m) => ['id' => (string)$m->id, 'name' => $m->name])
                 ->values()->all(),
 
             Project::class => Project::query()
                 ->orderBy('name')
                 ->get(['id','name'])
-                ->map(fn($m) => ['id' => (string)$m->id, 'name' => $m->name])
+                ->map(fn ($m) => ['id' => (string)$m->id, 'name' => $m->name])
                 ->values()->all(),
 
             Organization::class => Organization::query()
                 ->orderBy('name')
                 ->get(['id','name'])
-                ->map(fn($m) => ['id' => (string)$m->id, 'name' => $m->name])
+                ->map(fn ($m) => ['id' => (string)$m->id, 'name' => $m->name])
                 ->values()->all(),
 
             default => [],
@@ -155,9 +162,12 @@ final class UpdateGoalForm extends Component
             'keyResults.*.target_max' => ['nullable','numeric'],
             'keyResults.*.automation' => ['required','in:manual,issues_done_percent,story_points_done_percent'],
             'keyResults.*.weight' => ['integer','min:1'],
+            'confidence' => ['required','integer','min:0','max:100'],
+            'health' => ['required','in:on_track,at_risk,off_track'],
+            'cadence' => ['required','in:weekly,biweekly,monthly'],
         ]);
 
-        $this->goal->update([
+        $goal = $this->goal->update([
             'name' => $validated['name'],
             'goal_type' => $validated['goal_type'],
             'status' => $validated['status'],
@@ -165,8 +175,15 @@ final class UpdateGoalForm extends Component
             'start_date' => $this->start_date ? Carbon::parse($this->start_date) : null,
             'due_date' => $this->due_date ? Carbon::parse($this->due_date) : null,
             'owner_type' => $validated['owner_type'],
+            'confidence' => $validated['confidence'],
+            'health' => $validated['health'],
+            'cadence' => $validated['cadence'],
             'owner_id' => $validated['owner_id'],
         ]);
+
+        $goal->setCycleFromDates($goal->start_date, $goal->due_date, '01-01'); // or '04-01' for Apr FY
+        $goal->bumpNextCheckinAt();
+        $goal->saveQuietly();
 
         // Sync KRs (create, update, delete)
         $incoming = collect($validated['keyResults']);
@@ -204,8 +221,8 @@ final class UpdateGoalForm extends Component
     public function render(): View
     {
         return view('livewire.goals.update-goal-form', [
-            'typeOptions' => collect(GoalType::cases())->mapWithKeys(fn($c) => [$c->value => ucfirst($c->value)])->all(),
-            'statusOptions' => collect(GoalStatus::cases())->mapWithKeys(fn($c) => [$c->value => ucfirst($c->value)])->all(),
+            'typeOptions' => collect(GoalType::cases())->mapWithKeys(fn ($c) => [$c->value => ucfirst($c->value)])->all(),
+            'statusOptions' => collect(GoalStatus::cases())->mapWithKeys(fn ($c) => [$c->value => ucfirst($c->value)])->all(),
             'ownerTypes' => [
                 Team::class => 'Team',
                 Project::class => 'Project',
