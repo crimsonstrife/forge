@@ -73,11 +73,26 @@ class Goal extends Model
         'next_checkin_at' => 'datetime',
     ];
 
-    public function owner(): MorphTo { return $this->morphTo(); }
-    public function parent(): BelongsTo { return $this->belongsTo(self::class, 'parent_id'); }
-    public function children(): HasMany { return $this->hasMany(self::class, 'parent_id'); }
-    public function keyResults(): HasMany { return $this->hasMany(GoalKeyResult::class); }
-    public function links(): HasMany { return $this->hasMany(GoalLink::class); }
+    public function owner(): MorphTo
+    {
+        return $this->morphTo();
+    }
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id');
+    }
+    public function keyResults(): HasMany
+    {
+        return $this->hasMany(GoalKeyResult::class);
+    }
+    public function links(): HasMany
+    {
+        return $this->hasMany(GoalLink::class);
+    }
 
     /** @return MorphToMany<Project> */
     public function projects(): MorphToMany
@@ -149,7 +164,7 @@ class Goal extends Model
     {
         $krs = $this->keyResults()->get();
         $total = max($krs->sum('weight'), 1);
-        $progress = $krs->sum(fn($kr) => $kr->percentComplete() * ($kr->weight / $total));
+        $progress = $krs->sum(fn ($kr) => $kr->percentComplete() * ($kr->weight / $total));
 
         $this->forceFill(['progress' => round($progress, 2)])->saveQuietly();
 
@@ -196,7 +211,7 @@ class Goal extends Model
             $offsetMonths = Carbon::parse($start)->diffInMonths($fyStartThisYear);
             $quarter = intdiv($offsetMonths, 3) + 1;
             $fy = (int) $fyStartThisYear->format('Y');
-            $this->cycle_label = sprintf('%d-Q%d', $fy + intdiv($offsetMonths, 12), min(max($quarter,1),4));
+            $this->cycle_label = sprintf('%d-Q%d', $fy + intdiv($offsetMonths, 12), min(max($quarter, 1), 4));
         }
     }
 

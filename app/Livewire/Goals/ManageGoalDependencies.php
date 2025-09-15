@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire\Goals;
 
 use App\Models\Goal;
@@ -38,7 +39,7 @@ final class ManageGoalDependencies extends Component
             ->orderBy('name')
             ->limit(8)
             ->get(['id', 'name'])
-            ->map(fn($g) => ['id' => (string) $g->id, 'label' => $g->name])
+            ->map(fn ($g) => ['id' => (string) $g->id, 'label' => $g->name])
             ->all();
     }
 

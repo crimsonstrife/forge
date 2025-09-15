@@ -20,7 +20,7 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
     protected $casts = [
         'id' => 'string',
         'abilities'   => 'array',
-        'last_used_at'=> 'datetime',
+        'last_used_at' => 'datetime',
         'expires_at'  => 'datetime',
     ];
 

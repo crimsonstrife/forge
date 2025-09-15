@@ -66,7 +66,7 @@ final class UpdateGoalForm extends Component
         $this->owner_type = $goal->owner_type;
         $this->owner_id = $goal->owner_id;
 
-        $this->keyResults = $goal->keyResults->map(fn(GoalKeyResult $kr) => [
+        $this->keyResults = $goal->keyResults->map(fn (GoalKeyResult $kr) => [
             'id' => $kr->id,
             'name' => $kr->name,
             'unit' => $kr->unit->value,
@@ -118,19 +118,19 @@ final class UpdateGoalForm extends Component
             Team::class => Team::query()
                 ->orderBy('name')
                 ->get(['id','name'])
-                ->map(fn($m) => ['id' => (string)$m->id, 'name' => $m->name])
+                ->map(fn ($m) => ['id' => (string)$m->id, 'name' => $m->name])
                 ->values()->all(),
 
             Project::class => Project::query()
                 ->orderBy('name')
                 ->get(['id','name'])
-                ->map(fn($m) => ['id' => (string)$m->id, 'name' => $m->name])
+                ->map(fn ($m) => ['id' => (string)$m->id, 'name' => $m->name])
                 ->values()->all(),
 
             Organization::class => Organization::query()
                 ->orderBy('name')
                 ->get(['id','name'])
-                ->map(fn($m) => ['id' => (string)$m->id, 'name' => $m->name])
+                ->map(fn ($m) => ['id' => (string)$m->id, 'name' => $m->name])
                 ->values()->all(),
 
             default => [],
@@ -221,8 +221,8 @@ final class UpdateGoalForm extends Component
     public function render(): View
     {
         return view('livewire.goals.update-goal-form', [
-            'typeOptions' => collect(GoalType::cases())->mapWithKeys(fn($c) => [$c->value => ucfirst($c->value)])->all(),
-            'statusOptions' => collect(GoalStatus::cases())->mapWithKeys(fn($c) => [$c->value => ucfirst($c->value)])->all(),
+            'typeOptions' => collect(GoalType::cases())->mapWithKeys(fn ($c) => [$c->value => ucfirst($c->value)])->all(),
+            'statusOptions' => collect(GoalStatus::cases())->mapWithKeys(fn ($c) => [$c->value => ucfirst($c->value)])->all(),
             'ownerTypes' => [
                 Team::class => 'Team',
                 Project::class => 'Project',

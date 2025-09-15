@@ -60,7 +60,7 @@ class IssueTimeController extends Controller
 
         $entry = $issue->timeEntries()->create([
             'user_id'   => $request->user()->getKey(),
-            'started_at'=> $at ?? now(),
+            'started_at' => $at ?? now(),
             'note'      => (string) $request->string('note'), // optional
         ]);
 
@@ -151,8 +151,14 @@ class IssueTimeController extends Controller
 
     private function parseWhen(?string $iso): ?CarbonImmutable
     {
-        if (!$iso) return null;
-        try { return CarbonImmutable::parse($iso); } catch (\Throwable) { return null; }
+        if (!$iso) {
+            return null;
+        }
+        try {
+            return CarbonImmutable::parse($iso);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     /**

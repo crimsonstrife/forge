@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire\Goals;
 
 use App\Models\Goal;
@@ -39,7 +40,7 @@ final class ManageGoalLinks extends Component
         $this->authorize('update', $goal);
         $this->goal = $goal->loadMissing(['links.linkable']);
         $this->weights = $goal->links
-            ->mapWithKeys(fn(GoalLink $l) => [(string) $l->getKey() => (int) $l->weight])
+            ->mapWithKeys(fn (GoalLink $l) => [(string) $l->getKey() => (int) $l->weight])
             ->all();
     }
 
@@ -64,7 +65,7 @@ final class ManageGoalLinks extends Component
         if ($wantProjects) {
             /** @var EloquentCollection<Project> $projects */
             $projects = Project::query()
-                ->when($q !== '', fn($qq) => $qq->where('name', 'like', "%{$q}%"))
+                ->when($q !== '', fn ($qq) => $qq->where('name', 'like', "%{$q}%"))
                 ->orderBy('name')
                 ->limit(10)
                 ->get(['id','name']);

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire\Goals;
 
 use App\Models\GoalKeyResult;

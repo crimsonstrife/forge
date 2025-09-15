@@ -12,7 +12,9 @@ final class GoalCheckinReminder extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public Goal $goal) {}
+    public function __construct(public Goal $goal)
+    {
+    }
 
     public function via(object $notifiable): array
     {
@@ -21,7 +23,7 @@ final class GoalCheckinReminder extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->subject('Goal check-in reminder: '.$this->goal->name)
             ->line('It’s time to add a check-in for “'.$this->goal->name.'”.')
             ->action('Open Goal', route('goals.show', $this->goal));

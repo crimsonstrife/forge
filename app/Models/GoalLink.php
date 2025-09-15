@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +24,12 @@ class GoalLink extends Model
         });
     }
 
-    public function goal(): BelongsTo { return $this->belongsTo(Goal::class); }
-    public function linkable(): MorphTo { return $this->morphTo(); }
+    public function goal(): BelongsTo
+    {
+        return $this->belongsTo(Goal::class);
+    }
+    public function linkable(): MorphTo
+    {
+        return $this->morphTo();
+    }
 }

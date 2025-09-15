@@ -17,7 +17,7 @@ final class LookupsController extends Controller
         return response()->json([
             'statuses'  => IssueStatus::query()->get(['id','name','is_done']),
             'types'     => IssueType::query()->get(['id','key','name']),
-            'priorities'=> IssuePriority::query()->get(['id','name']),
+            'priorities' => IssuePriority::query()->get(['id','name']),
         ]);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Enums\KRAutomation;
@@ -40,8 +41,14 @@ class GoalKeyResult extends Model
         'weight' => 'int',
     ];
 
-    public function goal(): BelongsTo { return $this->belongsTo(Goal::class); }
-    public function checkins(): HasMany { return $this->hasMany(GoalCheckin::class); }
+    public function goal(): BelongsTo
+    {
+        return $this->belongsTo(Goal::class);
+    }
+    public function checkins(): HasMany
+    {
+        return $this->hasMany(GoalCheckin::class);
+    }
 
     public function percentComplete(): float
     {
@@ -50,13 +57,21 @@ class GoalKeyResult extends Model
         $from = $this->initial_value;
 
         if ($dir === KRDirection::MaintainBetween) {
-            if ($this->target_min === null || $this->target_max === null) { return 0.0; }
-            if ($cur < $this->target_min) { return 0.0; }
-            if ($cur > $this->target_max) { return 0.0; }
+            if ($this->target_min === null || $this->target_max === null) {
+                return 0.0;
+            }
+            if ($cur < $this->target_min) {
+                return 0.0;
+            }
+            if ($cur > $this->target_max) {
+                return 0.0;
+            }
             return 100.0;
         }
 
-        if ($this->target_value === null) { return 0.0; }
+        if ($this->target_value === null) {
+            return 0.0;
+        }
 
         $distance = max(abs($this->target_value - $from), 1e-8);
         $progress = match ($dir) {
