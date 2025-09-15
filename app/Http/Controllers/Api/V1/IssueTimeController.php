@@ -151,7 +151,7 @@ class IssueTimeController extends Controller
 
     private function parseWhen(?string $iso): ?CarbonImmutable
     {
-        if (!$iso) {
+        if ($iso === null) {
             return null;
         }
         try {
