@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Goals;
 
+use App\Enums\GoalCadence;
+use App\Enums\GoalHealth;
 use App\Enums\GoalStatus;
 use App\Enums\GoalType;
 use App\Enums\KRAutomation;
@@ -44,6 +46,11 @@ final class UpdateGoalForm extends Component
 
     /** @var array<int, array{id:string,name:string}> */
     public array $ownerOptions = [];
+
+    public int $confidence = 70;
+    public string $health = GoalHealth::OnTrack->value;
+
+    public string $cadence = GoalCadence::Weekly->value;
 
     public function mount(Goal $goal): void
     {
@@ -155,9 +162,12 @@ final class UpdateGoalForm extends Component
             'keyResults.*.target_max' => ['nullable','numeric'],
             'keyResults.*.automation' => ['required','in:manual,issues_done_percent,story_points_done_percent'],
             'keyResults.*.weight' => ['integer','min:1'],
+            'confidence' => ['required','integer','min:0','max:100'],
+            'health' => ['required','in:on_track,at_risk,off_track'],
+            'cadence' => ['required','in:weekly,biweekly,monthly'],
         ]);
 
-        $this->goal->update([
+        $goal = $this->goal->update([
             'name' => $validated['name'],
             'goal_type' => $validated['goal_type'],
             'status' => $validated['status'],
@@ -165,8 +175,15 @@ final class UpdateGoalForm extends Component
             'start_date' => $this->start_date ? Carbon::parse($this->start_date) : null,
             'due_date' => $this->due_date ? Carbon::parse($this->due_date) : null,
             'owner_type' => $validated['owner_type'],
+            'confidence' => $validated['confidence'],
+            'health' => $validated['health'],
+            'cadence' => $validated['cadence'],
             'owner_id' => $validated['owner_id'],
         ]);
+
+        $goal->setCycleFromDates($goal->start_date, $goal->due_date, '01-01'); // or '04-01' for Apr FY
+        $goal->bumpNextCheckinAt();
+        $goal->saveQuietly();
 
         // Sync KRs (create, update, delete)
         $incoming = collect($validated['keyResults']);

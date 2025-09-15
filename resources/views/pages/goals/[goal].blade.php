@@ -35,6 +35,15 @@ render(function (View $view, Goal $goal) {
                     @endif
                 </small>
             </div>
+            @php
+                $healthClass = [
+                    'on_track' => 'bg-success',
+                    'at_risk' => 'bg-warning text-dark',
+                    'off_track' => 'bg-danger',
+                ][$goal->health->value] ?? 'bg-secondary';
+            @endphp
+            <span class="badge {{ $healthClass }}">Health: {{ str($goal->health->value)->replace('_',' ')->title() }}</span>
+            <span class="badge bg-secondary">Confidence: {{ $goal->confidence }}%</span>
             <div class="ms-3 d-flex gap-2">
                 <a href="{{ route('goals.edit', ['goal' => $goal]) }}" class="btn btn-outline-primary">Edit</a>
                 <a href="{{ route('goals.index') }}" class="btn btn-outline-secondary">All Goals</a>
@@ -96,6 +105,7 @@ render(function (View $view, Goal $goal) {
                                             </small>
                                         </div>
                                     @endif
+                                    <livewire:goals.quick-checkin :kr="$kr" :key="$kr->id" />
                                 </div>
                             @endforeach
                         </div>
@@ -128,8 +138,9 @@ render(function (View $view, Goal $goal) {
                     </div>
                 </div>
             @endif
+                <livewire:goals.manage-goal-dependencies :goal="$goal" />
 
-            <livewire:goals.manage-goal-links :goal="$goal" />
+                <livewire:goals.manage-goal-links :goal="$goal" />
         </div>
     </div>
 </x-app-layout>

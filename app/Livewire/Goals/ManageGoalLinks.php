@@ -5,6 +5,7 @@ use App\Models\Goal;
 use App\Models\GoalLink;
 use App\Models\Issue;
 use App\Models\Project;
+use App\Services\GoalProgressService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -118,6 +119,9 @@ final class ManageGoalLinks extends Component
 
         $this->goal = $this->goal->fresh(['links.linkable']);
 
+        // Recompute goal progress now that links changed
+        app(GoalProgressService::class)->recalcGoal($this->goal);
+
         $this->reset('q', 'results');
 
         $this->dispatch('toast', body: 'Linked successfully.');
@@ -132,6 +136,9 @@ final class ManageGoalLinks extends Component
             unset($this->weights[$goalLinkId]);
 
             $this->goal = $this->goal->fresh(['links.linkable']);
+
+            // Recompute goal progress now that links changed
+            app(GoalProgressService::class)->recalcGoal($this->goal);
 
             $this->dispatch('toast', body: 'Link removed.');
         }
