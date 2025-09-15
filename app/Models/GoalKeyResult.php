@@ -7,9 +7,22 @@ use App\Enums\MetricUnit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class GoalKeyResult extends Model
 {
+    protected $keyType = 'string';
+    public $incrementing = false;
+
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(static function ($model) {
+            $model->id = Str::uuid();
+        });
+    }
+
     protected $fillable = [
         'goal_id','name','unit','direction','initial_value','current_value',
         'target_min','target_max','target_value','automation','weight',

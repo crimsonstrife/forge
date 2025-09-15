@@ -129,37 +129,7 @@ render(function (View $view, Goal $goal) {
                 </div>
             @endif
 
-            <div class="card">
-                <div class="card-header">Linked Work</div>
-                <div class="card-body p-0">
-                    @if($goal->links->isEmpty())
-                        <div class="p-3 text-muted">No links yet.</div>
-                    @else
-                        <div class="list-group list-group-flush">
-                            @foreach($goal->links as $link)
-                                <div class="list-group-item d-flex align-items-center justify-content-between">
-                                    <div>
-                                        <div class="fw-semibold">{{ class_basename($link->linkable_type) }}</div>
-                                        <small class="text-muted">
-                                            @if(method_exists($link->linkable, 'getAttribute'))
-                                                {{ $link->linkable->name ?? $link->linkable->summary ?? $link->linkable->id }}
-                                            @else
-                                                #{{ $link->linkable_id }}
-                                            @endif
-                                        </small>
-                                    </div>
-                                    @if(method_exists($link->linkable, 'getRouteKey'))
-                                        <a class="btn btn-sm btn-outline-secondary"
-                                           href="{{ route(str(class_basename($link->linkable_type))->lower()->plural().'.show', [$link->linkable]) }}">
-                                            View
-                                        </a>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-            </div>
+            <livewire:goals.manage-goal-links :goal="$goal" />
         </div>
     </div>
 </x-app-layout>
