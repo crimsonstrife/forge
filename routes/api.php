@@ -18,8 +18,7 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'throttle:api'])->group(functio
     Route::get('projects', [V1\ProjectController::class, 'index'])->name('api.v1.projects.index');
     Route::get('projects/{project}', [V1\ProjectController::class, 'show'])->name('api.v1.projects.show');
 
-    Route::get('lookups', \App\Http\Controllers\Api\V1\LookupsController::class)
-        ->middleware(['auth:sanctum','throttle:api']);
+    Route::get('lookups', \App\Http\Controllers\Api\V1\LookupsController::class);
 
     Route::get('issues', [V1\IssueController::class, 'index'])->name('api.v1.issues.index');
     Route::post('issues', [V1\IssueController::class, 'store'])->name('api.v1.issues.store');
