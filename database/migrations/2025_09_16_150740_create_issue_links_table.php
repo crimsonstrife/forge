@@ -31,8 +31,8 @@ return new class () extends Migration {
             $table->index('to_issue_id');
 
             // Canonical pair columns to prevent duplicates in either direction (MySQL 8+ virtual columns)
-            $table->string('canonical_a')->virtualAs("IF(`from_issue_id` < `to_issue_id`, `from_issue_id`, `to_issue_id`)");
-            $table->string('canonical_b')->virtualAs("IF(`from_issue_id` < `to_issue_id`, `to_issue_id`, `from_issue_id`)");
+            $table->uuid('canonical_a')->virtualAs("IF(`from_issue_id` < `to_issue_id`, `from_issue_id`, `to_issue_id`)");
+            $table->uuid('canonical_b')->virtualAs("IF(`from_issue_id` < `to_issue_id`, `to_issue_id`, `from_issue_id`)");
 
             // Only one link per type between two issues (regardless of direction)
             $table->unique(['issue_link_type_id', 'canonical_a', 'canonical_b'], 'issue_links_unique_pair');
