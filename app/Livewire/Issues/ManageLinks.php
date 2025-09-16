@@ -183,7 +183,7 @@ final class ManageLinks extends Component
     public function render(): View
     {
         $issue = $this->issue->loadMissing(
-            ['outgoingLinks', 'incomingLinks', 'outgoingLinks.type', 'incomingLinks.type', 'outgoingLinks.to.project:id,key', 'incomingLinks.from.project:id,key']
+            ['outgoingLinks.type', 'incomingLinks.type', 'outgoingLinks.to.project:id,key', 'incomingLinks.from.project:id,key']
         );
 
         // Shape for view
