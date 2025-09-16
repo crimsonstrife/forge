@@ -22,5 +22,9 @@ render(function (View $view, Goal $goal) {
         </div>
     </x-slot>
 
-    <livewire:goals.update-goal-form :goal="$goal" />
+    <div class="py-4">
+        <div class="container mx-auto px-3" style="max-width: 720px">
+            <livewire:goals.update-goal-form :goal="$goal" />
+        </div>
+    </div>
 </x-app-layout>
