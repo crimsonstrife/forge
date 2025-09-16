@@ -370,6 +370,7 @@ render(function (View $view, Project $project, Issue $issue) {
                                             <wa-tab panel="overview">Overview</wa-tab>
                                             <wa-tab panel="subissues">Sub-issues</wa-tab>
                                             <wa-tab panel="activity">Activity</wa-tab>
+                                            <wa-tab panel="links">Links</wa-tab>
                                             <wa-tab panel="time">Time</wa-tab>
                                         </div>
                                     </div>
@@ -525,6 +526,10 @@ render(function (View $view, Project $project, Issue $issue) {
                                         </div>
                                     </wa-tab-panel>
 
+                                    <!-- Linked word panel -->
+                                    <wa-tab-panel name="links">
+                                        <livewire:issues.manage-links :issue="$issue" />
+                                    </wa-tab-panel>
 
                                     <!-- Time panel: focus timer + entries (moved) -->
                                     <wa-tab-panel name="time">
