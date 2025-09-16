@@ -29,7 +29,8 @@ class Comment extends BaseModel implements HasMedia
     protected $fillable = [
         'issue_id',
         'user_id',
-        'body'
+        'body',
+        'parent_id',
     ];
 
     protected $casts = [
