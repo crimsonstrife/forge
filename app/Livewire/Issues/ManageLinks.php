@@ -75,7 +75,7 @@ final class ManageLinks extends Component
         // If Gate blocks everything, fall back to showing matches the user can *likely* see.
         $visible = $candidates->filter(function (Issue $i) {
             try {
-                return \Illuminate\Support\Facades\Gate::allows('view', $i);
+                return Gate::allows('view', $i);
             } catch (\Throwable $e) {
                 return false;
             }
