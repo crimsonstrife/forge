@@ -1,7 +1,8 @@
 @php
     /** @var \App\Models\Comment $c */
     /** @var int $level */
-    $indentClass = 'ms-' . min(5, $level + 1); // cap indent
+    $MAX_INDENT_LEVEL = 5;
+    $indentClass = 'ms-' . min($MAX_INDENT_LEVEL, $level + 1); // cap indent
     $children = $c->getRelation('children_eager') ?? collect();
 @endphp
 
