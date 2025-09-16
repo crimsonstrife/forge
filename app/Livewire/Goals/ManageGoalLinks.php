@@ -90,7 +90,9 @@ final class ManageGoalLinks extends Component
 
             foreach ($projects as $p) {
                 $key = Project::class . ':' . (string) $p->id;
-                if (in_array($key, $existing, true)) { continue; }
+                if (in_array($key, $existing, true)) {
+                    continue;
+                }
 
                 $out[] = [
                     'id' => (string) $p->id,
@@ -117,7 +119,9 @@ final class ManageGoalLinks extends Component
 
             foreach ($issues as $i) {
                 $key = Issue::class . ':' . (string) $i->id;
-                if (in_array($key, $existing, true)) { continue; }
+                if (in_array($key, $existing, true)) {
+                    continue;
+                }
 
                 $out[] = [
                     'id' => (string) $i->id,
