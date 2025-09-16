@@ -113,22 +113,29 @@ final class Comments extends Component
 
         $byParent = $all->groupBy('parent_id');
 
-        $build = static function (?string $parentId) use (&$build, $byParent): Collection {
-            /** @var Collection<int,Comment> $level */
-            $level = $byParent->get($parentId, collect());
-
-            return $level->map(function (Comment $c) use (&$build) {
-                // Attach a non-persistent relation for eager-rendering
-                $c->setRelation('children_eager', $build($c->getKey()));
-                return $c;
-            });
-        };
-
-        $tree = $build(null);
+        $tree = $this->buildTree($byParent, null);
 
         return view('livewire.issues.comments', [
             'tree'  => $tree,
             'count' => $all->count(),
         ]);
+    }
+    /**
+     * Recursively build a tree of comments grouped by parent_id.
+     *
+     * @param Collection $byParent
+     * @param string|null $parentId
+     * @return Collection<int, Comment>
+     */
+    private function buildTree(Collection $byParent, ?string $parentId): Collection
+    {
+        /** @var Collection<int,Comment> $level */
+        $level = $byParent->get($parentId, collect());
+
+        return $level->map(function (Comment $c) use ($byParent) {
+            // Attach a non-persistent relation for eager-rendering
+            $c->setRelation('children_eager', $this->buildTree($byParent, $c->getKey()));
+            return $c;
+        });
     }
 }
