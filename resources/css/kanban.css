@@ -1,0 +1,58 @@
+/* Typography & header */
+.kanban-h1 { font-size: 1.25rem; }
+.kanban__title h2 { color: #607D8B; font-size: 1rem; }
+.kanban__title h2 .material-icons { color: #B0BEC5; }
+
+/* Column shell */
+.kanban-col {
+    --kanban-accent: #78909C;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 2px rgba(0,0,0,.14),
+    0 3px 1px -2px rgba(0,0,0,.2),
+    0 1px 5px rgba(0,0,0,.12);
+    padding: 0.85rem;
+    width: min(400px,33%);
+    height: min(900px, 50%);
+    min-height: 500px;
+    min-width: 220px;
+    border-top: 10px solid var(--kanban-accent);
+    flex: 0 0 auto;
+}
+
+/* Board vs list view */
+.kanban-col.kanban { display: inline-block; vertical-align: top; }
+.kanban-col.list { border-top: none; border-left: 4px solid var(--kanban-accent); width: 100%; max-width: 680px; }
+
+/* Cards */
+.dd-item {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    margin: .5rem 0;
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+.dd-item:hover { box-shadow: 0 5px 6px rgba(0,0,0,.14), 0 3px 1px -6px rgba(0,0,0,.2), 2px 5px 3px rgba(0,0,0,.12); }
+
+/* Card header (drag handle) */
+.title.dd-handle {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: 1.1rem; padding: .5rem .75rem; margin: 0;
+    cursor: grab;
+}
+.title.dd-handle .material-icons { color: #607D8B; }
+
+/* Body + actions */
+.text { color: #666; border-top: 1px solid rgba(0,0,0,.08); padding: .5rem .75rem; }
+.actions { border-top: 1px solid rgba(0,0,0,.08); padding: .5rem; color: #B0BEC5; }
+
+/* Add button */
+.addbutt { background: #EEE; color: #607D8B; width: 100%; font-weight: 600; }
+.addbutt:hover { color: #00838F; }
+
+/* Drag ghost / placeholder */
+.dd-placeholder { background: #E0E0E0; border: 1px dashed #b6bcbf; height: 44px; margin: .5rem 0; }
+.dd-dragel { opacity: .9; }
+
+.text [role="button"], .fw-semibold[role="button"] { cursor: text; }

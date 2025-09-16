@@ -1,0 +1,26 @@
+@props(['submit'])
+
+<div {{ $attributes->merge(['class' => 'row g-4']) }}>
+    <x-section-title>
+        <x-slot name="title">{{ $title }}</x-slot>
+        <x-slot name="description">{{ $description }}</x-slot>
+    </x-section-title>
+
+    <div class="col-md-8">
+        <form wire:submit="{{ $submit }}">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row g-3">
+                        {{ $form }}
+                    </div>
+                </div>
+
+                @if (isset($actions))
+                    <div class="card-footer d-flex justify-content-end gap-2">
+                        {{ $actions }}
+                    </div>
+                @endif
+            </div>
+        </form>
+    </div>
+</div>
