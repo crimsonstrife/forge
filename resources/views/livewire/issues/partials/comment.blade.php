@@ -19,14 +19,14 @@
             <div class="d-flex gap-2 align-items-center mt-2">
                 <button type="button"
                         class="btn btn-sm btn-link p-0"
-                        wire:click="startReply('{{ $c->id }}')">
+                        wire:click="startReply({{ $c->id }})">
                     {{ __('Reply') }}
                 </button>
             </div>
 
             {{-- Inline reply box --}}
             @if ($replyFor === $c->id)
-                <form wire:submit.prevent="postReply('{{ $c->id }}')" class="d-flex gap-2 mt-2 {{ $indentClass }}">
+                <form wire:submit.prevent="postReply({{ $c->id }})" class="d-flex gap-2 mt-2 {{ $indentClass }}">
                     <wa-textarea class="form-control"
                                  wire:model.defer="replyBodies.{{ $c->id }}"
                                  rows="2"
