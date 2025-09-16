@@ -357,6 +357,19 @@ render(function (View $view, Project $project, Issue $issue) {
                 </div>
 
                 <div class="row g-3">
+                    <div class="col-lg-12 d-flex flex-column gap-3">
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <h3 class="h6 mb-2">{{ __('Related Works') }}</h3>
+                            </div>
+                            <div class="card-body d-flex gap-4 justify-content-between">
+                                <livewire:issues.manage-links :issue="$issue" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3">
                     <!-- Main content: tabs -->
                     <div class="col-lg-8 d-flex flex-column gap-3">
                         <div class="card shadow-sm">
@@ -524,7 +537,6 @@ render(function (View $view, Project $project, Issue $issue) {
                                             @endforelse
                                         </div>
                                     </wa-tab-panel>
-
 
                                     <!-- Time panel: focus timer + entries (moved) -->
                                     <wa-tab-panel name="time">
@@ -736,7 +748,6 @@ render(function (View $view, Project $project, Issue $issue) {
                         @endif
                     </aside>
                 </div>
-
             </div>
         </div>
     </div>

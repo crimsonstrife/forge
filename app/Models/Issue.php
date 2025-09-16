@@ -194,6 +194,18 @@ class Issue extends BaseModel implements HasMedia
         return $this->hasMany(IssueVcsLink::class);
     }
 
+    /** @return HasMany<IssueLink> */
+    public function outgoingLinks(): HasMany
+    {
+        return $this->hasMany(IssueLink::class, 'from_issue_id')->with(['type', 'to.project:id,key']);
+    }
+
+    /** @return HasMany<IssueLink> */
+    public function incomingLinks(): HasMany
+    {
+        return $this->hasMany(IssueLink::class, 'to_issue_id')->with(['type', 'from.project:id,key']);
+    }
+
     /** @return HasMany<IssueVcsLink> */
     public function branchLinks(): HasMany
     {

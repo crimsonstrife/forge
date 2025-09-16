@@ -22,7 +22,8 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,        // creates all permissions
             RoleSeeder::class,              // creates roles & attaches permissions
             PermissionSetSeeder::class,     // creates permission sets & attaches permissions
-            PermissionSetGroupSeeder::class // creates groups & attaches sets
+            PermissionSetGroupSeeder::class, // creates groups & attaches sets
+            IssueLinkTypeSeeder::class // creates typings for linking issue relationships
         ]);
 
         // --- Domain defaults / enums (call if present) ---
@@ -33,7 +34,6 @@ class DatabaseSeeder extends Seeder
         //$this->callIfExists(SyncDefaultsSeeder::class);
 
         // --- Bootstrap admin / first user (interactive by default) ---
-        // Tip: run with --no-interaction to auto-generate credentials per your UserSeeder.
         $this->call(UserSeeder::class);
 
         // Re-cache Spatie after everything.
