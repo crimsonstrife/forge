@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureSupportIdentity;
 use App\Http\Middleware\SetPermissionsTeamContext;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withBroadcasting(__DIR__.'/../routes/channels.php')
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(SetPermissionsTeamContext::class);
+        $middleware->alias([
+            'support.identity' => EnsureSupportIdentity::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
