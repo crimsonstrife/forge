@@ -6,7 +6,7 @@
     $children = $c->getRelation('children_eager') ?? collect();
 @endphp
 
-<li class="list-group-item">
+<li class="list-group-item" wire:key="comment-{{ $c->id }}">
     <div class="d-flex gap-2">
         <x-avatar :src="$c->user->profile_photo_url" :name="$c->user->name" preset="sm" />
         <div class="flex-grow-1">
@@ -17,19 +17,18 @@
 
             <div class="small">{{ $c->body }}</div>
 
-            <div class="d-flex gap-2 align-items-center mt-2">
-                <button type="button"
-                        class="btn btn-sm btn-link p-0"
-                        wire:click="startReply({{ $c->id }})">
-                    {{ __('Reply') }}
-                </button>
-            </div>
+            <button type="button"
+                    class="btn btn-sm btn-link p-0"
+                    wire:click="startReply(@js($c->id))">
+                {{ __('Reply') }}
+            </button>
 
             {{-- Inline reply box --}}
             @if ($replyFor === $c->id)
-                <form wire:submit.prevent="postReply({{ $c->id }})" class="d-flex gap-2 mt-2 {{ $indentClass }}">
+                <form wire:submit.prevent="postReply(@js($c->id))"
+                      class="d-flex gap-2 mt-2 {{ $indentClass }}">
                     <wa-textarea class="form-control"
-                                 wire:model.defer="replyBodies.{{ $c->id }}"
+                                 wire:model.defer="replyBodies[@js($c->id)]"
                                  rows="2"
                                  placeholder="{{ __('Write a reply...') }}"></wa-textarea>
                     <div class="d-flex flex-column gap-2">
