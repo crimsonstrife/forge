@@ -1,20 +1,21 @@
 <div class="card">
+    @php $ownerIsProject = $goal->owner_type === \App\Models\Project::class; @endphp
     <div class="card-header d-flex align-items-center">
         <span>Linked Work</span>
         <div class="ms-auto d-flex gap-2">
+            @unless($ownerIsProject)
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="t-project" value="project" wire:model.live="types">
+                    <label class="form-check-label" for="t-project">Projects</label>
+                </div>
+            @endunless
+
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="t-project" value="project"
-                       wire:model.live="types">
-                <label class="form-check-label" for="t-project">Projects</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="t-issue" value="issue"
-                       wire:model.live="types">
+                <input class="form-check-input" type="checkbox" id="t-issue" value="issue" wire:model.live="types">
                 <label class="form-check-label" for="t-issue">Issues</label>
             </div>
         </div>
     </div>
-
     <div class="card-body">
         <div class="mb-3">
             <input type="search"
