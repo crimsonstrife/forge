@@ -74,7 +74,7 @@ class Create extends Component
             'key'               => $this->key,
             'name'              => $this->name,
             'description'       => $this->description,
-            'default_project_id'=> $this->defaultProjectId,
+            'default_project_id' => $this->defaultProjectId,
         ]);
 
         // Ensure the default project is included in associations

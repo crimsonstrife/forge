@@ -25,8 +25,14 @@ class TicketComment extends Model
     protected $guarded = [];
 
     /** @return BelongsTo<Ticket,TicketComment> */
-    public function ticket(): BelongsTo { return $this->belongsTo(Ticket::class); }
+    public function ticket(): BelongsTo
+    {
+        return $this->belongsTo(Ticket::class);
+    }
 
     /** @return BelongsTo<User,TicketComment> */
-    public function user(): BelongsTo { return $this->belongsTo(User::class); }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

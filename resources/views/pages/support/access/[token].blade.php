@@ -2,6 +2,7 @@
 
 use App\Models\SupportIdentity;
 use Illuminate\Http\RedirectResponse;
+
 use function Laravel\Folio\{name, render};
 
 name('support.access.by-token');

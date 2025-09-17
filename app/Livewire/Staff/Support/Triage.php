@@ -41,10 +41,22 @@ final class Triage extends Component
         $this->authorize('viewAny', Ticket::class);
     }
 
-    public function updatingSearch(): void { $this->resetPage(); }
-    public function updatingStatusId(): void { $this->resetPage(); }
-    public function updatingPriorityId(): void { $this->resetPage(); }
-    public function updatingTypeId(): void { $this->resetPage(); }
+    public function updatingSearch(): void
+    {
+        $this->resetPage();
+    }
+    public function updatingStatusId(): void
+    {
+        $this->resetPage();
+    }
+    public function updatingPriorityId(): void
+    {
+        $this->resetPage();
+    }
+    public function updatingTypeId(): void
+    {
+        $this->resetPage();
+    }
 
     public function getRowsProperty(): LengthAwarePaginator
     {
@@ -57,9 +69,9 @@ final class Triage extends Component
                         ->orWhere('submitter_email', 'like', '%' . $this->search . '%');
                 });
             })
-            ->when($this->statusId, fn($q) => $q->where('status_id', $this->statusId))
-            ->when($this->priorityId, fn($q) => $q->where('priority_id', $this->priorityId))
-            ->when($this->typeId, fn($q) => $q->where('type_id', $this->typeId))
+            ->when($this->statusId, fn ($q) => $q->where('status_id', $this->statusId))
+            ->when($this->priorityId, fn ($q) => $q->where('priority_id', $this->priorityId))
+            ->when($this->typeId, fn ($q) => $q->where('type_id', $this->typeId))
             ->latest()
             ->paginate(20);
     }
@@ -68,7 +80,7 @@ final class Triage extends Component
     {
         return view('livewire.staff.support.triage', [
             'statuses'  => TicketStatus::query()->orderBy('name')->get(['id','name']),
-            'priorities'=> TicketPriority::query()->orderBy('weight')->get(['id','name']),
+            'priorities' => TicketPriority::query()->orderBy('weight')->get(['id','name']),
             'types'     => TicketType::query()->orderBy('name')->get(['id','name']),
             'rows'      => $this->rows,
         ]);

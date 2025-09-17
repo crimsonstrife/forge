@@ -56,12 +56,12 @@ class Edit extends Component
         $this->name = $this->product->name;
         $this->description = $this->product->description;
         $this->defaultProjectId = $this->product->default_project_id;
-        $this->projectIds = $this->product->projects()->pluck('projects.id')->map(fn($id) => (string)$id)->all();
+        $this->projectIds = $this->product->projects()->pluck('projects.id')->map(fn ($id) => (string)$id)->all();
 
         // preload maps
-        $this->typeMap = $this->product->typeMaps()->pluck('issue_type_id','ticket_type_id')->map(fn($v)=> (int)$v)->all();
-        $this->statusMap = $this->product->statusMaps()->pluck('issue_status_id','ticket_status_id')->map(fn($v)=> (int)$v)->all();
-        $this->priorityMap = $this->product->priorityMaps()->pluck('issue_priority_id','ticket_priority_id')->map(fn($v)=> (int)$v)->all();
+        $this->typeMap = $this->product->typeMaps()->pluck('issue_type_id', 'ticket_type_id')->map(fn ($v) => (int)$v)->all();
+        $this->statusMap = $this->product->statusMaps()->pluck('issue_status_id', 'ticket_status_id')->map(fn ($v) => (int)$v)->all();
+        $this->priorityMap = $this->product->priorityMaps()->pluck('issue_priority_id', 'ticket_priority_id')->map(fn ($v) => (int)$v)->all();
     }
 
     public function save(): void
@@ -115,10 +115,10 @@ class Edit extends Component
             'allProjects'    => Project::query()->orderBy('name')->get(['id','name','key']),
             'ticketTypes'    => TicketType::query()->orderBy('name')->get(['id','name']),
             'ticketStatuses' => TicketStatus::query()->orderBy('name')->get(['id','name']),
-            'ticketPriorities'=> TicketPriority::query()->orderBy('weight')->get(['id','name']),
+            'ticketPriorities' => TicketPriority::query()->orderBy('weight')->get(['id','name']),
             'issueTypes'     => IssueType::query()->orderBy('name')->get(['id','name']),
             'issueStatuses'  => IssueStatus::query()->orderBy('order')->get(['id','name']),
-            'issuePriorities'=> IssuePriority::query()->orderBy('weight')->get(['id','name']),
+            'issuePriorities' => IssuePriority::query()->orderBy('weight')->get(['id','name']),
         ]);
     }
 }

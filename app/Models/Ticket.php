@@ -38,38 +38,71 @@ class Ticket extends BaseModel
     }
 
     /** @return BelongsTo<ServiceProduct,Ticket> */
-    public function product(): BelongsTo { return $this->belongsTo(ServiceProduct::class, 'service_product_id'); }
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(ServiceProduct::class, 'service_product_id');
+    }
 
     /** @return BelongsTo<Project,Ticket> */
-    public function project(): BelongsTo { return $this->belongsTo(Project::class); }
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
 
     /** @return BelongsTo<User,Ticket> */
-    public function submitter(): BelongsTo { return $this->belongsTo(User::class, 'submitter_user_id'); }
+    public function submitter(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'submitter_user_id');
+    }
 
     /** @return BelongsTo<User,Ticket> */
-    public function assignee(): BelongsTo { return $this->belongsTo(User::class, 'assigned_to_user_id'); }
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to_user_id');
+    }
 
     /** @return HasMany<TicketComment> */
-    public function comments(): HasMany { return $this->hasMany(TicketComment::class)->latest(); }
+    public function comments(): HasMany
+    {
+        return $this->hasMany(TicketComment::class)->latest();
+    }
 
     /** @return BelongsToMany<Issue> */
-    public function issues(): BelongsToMany { return $this->belongsToMany(Issue::class, 'ticket_issue_links'); }
+    public function issues(): BelongsToMany
+    {
+        return $this->belongsToMany(Issue::class, 'ticket_issue_links');
+    }
 
     /** @return BelongsTo<TicketStatus,Ticket> */
-    public function status(): BelongsTo { return $this->belongsTo(TicketStatus::class, 'status_id'); }
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(TicketStatus::class, 'status_id');
+    }
 
     /** @return BelongsTo<TicketPriority,Ticket> */
-    public function priority(): BelongsTo { return $this->belongsTo(TicketPriority::class, 'priority_id'); }
+    public function priority(): BelongsTo
+    {
+        return $this->belongsTo(TicketPriority::class, 'priority_id');
+    }
 
     /** @return BelongsTo<TicketType,Ticket> */
-    public function type(): BelongsTo { return $this->belongsTo(TicketType::class, 'type_id'); }
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(TicketType::class, 'type_id');
+    }
 
     protected static function booted(): void
     {
         static::creating(static function (self $ticket): void {
-            if (empty($ticket->id)) { $ticket->id = (string) str()->ulid(); }
-            if (empty($ticket->key)) { $ticket->key = app(TicketKeyService::class)->nextKey(); }
-            if (empty($ticket->via)) { $ticket->via = 'portal'; }
+            if (empty($ticket->id)) {
+                $ticket->id = (string) str()->ulid();
+            }
+            if (empty($ticket->key)) {
+                $ticket->key = app(TicketKeyService::class)->nextKey();
+            }
+            if (empty($ticket->via)) {
+                $ticket->via = 'portal';
+            }
         });
     }
 

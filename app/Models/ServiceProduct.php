@@ -26,25 +26,46 @@ class ServiceProduct extends BaseModel
     }
 
     /** @return BelongsTo<Organization,ServiceProduct> */
-    public function organization(): BelongsTo { return $this->belongsTo(Organization::class); }
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
 
     /** @return BelongsTo<Project,ServiceProduct> */
-    public function defaultProject(): BelongsTo { return $this->belongsTo(Project::class, 'default_project_id'); }
+    public function defaultProject(): BelongsTo
+    {
+        return $this->belongsTo(Project::class, 'default_project_id');
+    }
 
     /** @return BelongsToMany<Project> */
-    public function projects(): BelongsToMany { return $this->belongsToMany(Project::class, 'project_service_product'); }
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'project_service_product');
+    }
 
     /** @return HasMany<Ticket> */
-    public function tickets(): HasMany { return $this->hasMany(Ticket::class, 'service_product_id'); }
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'service_product_id');
+    }
 
     /** @return HasMany<ServiceProductTypeMap> */
-    public function typeMaps(): HasMany { return $this->hasMany(ServiceProductTypeMap::class); }
+    public function typeMaps(): HasMany
+    {
+        return $this->hasMany(ServiceProductTypeMap::class);
+    }
 
     /** @return HasMany<ServiceProductStatusMap> */
-    public function statusMaps(): HasMany { return $this->hasMany(ServiceProductStatusMap::class); }
+    public function statusMaps(): HasMany
+    {
+        return $this->hasMany(ServiceProductStatusMap::class);
+    }
 
     /** @return HasMany<ServiceProductPriorityMap> */
-    public function priorityMaps(): HasMany { return $this->hasMany(ServiceProductPriorityMap::class); }
+    public function priorityMaps(): HasMany
+    {
+        return $this->hasMany(ServiceProductPriorityMap::class);
+    }
 
     /**
      * Resolve mapped Issue Type ID for a given Ticket Type, honoring project allowed sets.
