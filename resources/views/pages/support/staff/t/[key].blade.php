@@ -12,4 +12,3 @@ middleware(['auth', 'verified']);
         @livewire('staff.support.show-ticket', ['key' => $key])
     </div>
 </x-app-layout>
-<?php
