@@ -3,6 +3,7 @@
 namespace App\Livewire\Support;
 
 use App\Models\Organization;
+use App\Models\ServiceProduct;
 use App\Models\SupportIdentity;
 use App\Models\Ticket;
 use App\Models\TicketPriority;
@@ -15,6 +16,12 @@ use Livewire\Component;
 
 final class NewTicket extends Component
 {
+    /** @var array<int, array{id:string,name:string,project?:string}> */
+    public array $products = [];
+
+    #[Validate('required|string|exists:service_products,id')]
+    public string $productId = '';
+
     #[Validate('required|string|min:5|max:160')]
     public string $subject = '';
 
@@ -26,6 +33,20 @@ final class NewTicket extends Component
 
     #[Validate('required|email:rfc,dns')]
     public string $email = '';
+
+    public function mount(): void
+    {
+        $this->products = ServiceProduct::query()
+            ->with('defaultProject:id,name')
+            ->orderBy('name')
+            ->get(['id','name','default_project_id'])
+            ->map(fn (ServiceProduct $p) => [
+                'id'      => $p->getKey(),
+                'name'    => $p->name . ($p->defaultProject?->name ? " (Project: {$p->defaultProject->name})" : ''),
+                'project' => $p->defaultProject?->name,
+            ])
+            ->all();
+    }
 
     public function submit(TextRedactor $redactor): void
     {
@@ -43,11 +64,14 @@ final class NewTicket extends Component
         $priorityId = (int) TicketPriority::query()->where('name', 'Medium')->value('id');
         $typeId = (int) TicketType::query()->where('name', 'Bug')->value('id');
         $organizationId = auth()->user()?->organization_id ?? (string) Organization::query()->value('id');
+        /** @var ServiceProduct $product */
+        $product = ServiceProduct::query()->select(['id','organization_id','default_project_id'])->findOrFail($this->productId);
 
         $ticket = Ticket::query()->create([
             'organization_id' => $organizationId,
             'submitter_name'  => $this->name,
             'submitter_email' => $normalized,
+            'project_id'      => $product->default_project_id,
             'email_hash'      => $hash,
             'subject'         => $this->subject,
             'body'            => $this->body,

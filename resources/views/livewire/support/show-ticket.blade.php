@@ -7,7 +7,7 @@
             </h2>
 
             <div class="small text-body-secondary mb-2">
-                Opened {{ $ticket->created_at->diffForHumans() }} by {{ $ticket->submitter_name }}
+                Product: {{ $ticket->product->name ?? '—' }} · Opened {{ $ticket->created_at->diffForHumans() }} by {{ $ticket->submitter_name }}
             </div>
 
             <div class="border rounded p-3 bg-body-tertiary">
