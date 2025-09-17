@@ -6,11 +6,11 @@
         "dev": "vite"
     },
     "dependencies": {
-        "@awesome.me/webawesome": "^3.0.0-beta.4",
+        "@awesome.me/webawesome": "^3.0.0-beta.6",
         "@popperjs/core": "^2.11.8",
         "@tailwindcss/vite": "^4.1.11",
         "autoprefixer": "^10.4.20",
-        "axios": "^1.12.1",
+        "axios": "^1.12.2",
         "bootstrap": "^5.3.8",
         "concurrently": "^9.0.1",
         "laravel-precognition-alpine": "^0.7.2",
