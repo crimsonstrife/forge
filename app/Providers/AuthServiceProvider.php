@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Models\ProjectRepository;
 use App\Models\Sprint;
 use App\Models\Team;
+use App\Models\Ticket;
 use App\Models\User;
 use App\Policies\GoalPolicy;
 use App\Policies\OrganizationPolicy;
@@ -16,6 +17,7 @@ use App\Policies\ProjectPolicy;
 use App\Policies\ProjectRepositoryPolicy;
 use App\Policies\SprintPolicy;
 use App\Policies\TeamPolicy;
+use App\Policies\TicketPolicy;
 use DB;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Cache;
@@ -32,6 +34,7 @@ class AuthServiceProvider extends ServiceProvider
         Goal::class => GoalPolicy::class,
         Organization::class => OrganizationPolicy::class,
         ProjectRepository::class => ProjectRepositoryPolicy::class,
+        Ticket::class => TicketPolicy::class
     ];
 
     /**

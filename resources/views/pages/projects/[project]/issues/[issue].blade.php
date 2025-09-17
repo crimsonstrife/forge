@@ -24,6 +24,7 @@ render(function (View $view, Project $project, Issue $issue) {
         'priority:id,name',
         'assignee:id,name,profile_photo_path',
         'reporter:id,name,profile_photo_path',
+        'tickets:id,key',
         'tags',
         'parent:id,key,summary,project_id',
         'children' => fn ($q) => $q
@@ -300,6 +301,14 @@ render(function (View $view, Project $project, Issue $issue) {
                                 <span class="small">{{ $issue->priority?->name }}</span>
                             </div>
                             <h3 class="h5 mt-2 mb-2">{{ $issue->summary }}</h3>
+
+                            @if(($issue->tickets ?? collect())->isNotEmpty())
+                                @php $t = $issue->tickets->first(); @endphp
+                                <a href="{{ route('support.staff.show', ['key' => $t->key]) }}"
+                                   class="badge text-bg-secondary text-decoration-none">
+                                    From Support: {{ $t->key }}
+                                </a>
+                            @endif
 
                             @if($issue->tags->isNotEmpty())
                                 <div class="mt-3 d-flex flex-wrap gap-2">

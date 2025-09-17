@@ -21,84 +21,118 @@
         <div class="collapse navbar-collapse d-md-flex" id="appNavbar">
             <!-- Left: main nav -->
             <ul class="navbar-nav me-auto mb-2 mb-md-0 align-items-md-center">
-                <li class="nav-item">
-                    <x-nav-link href="{{ $user ? route('dashboard') : url('/') }}" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </li>
+                @auth
+                    <li class="nav-item">
+                        <x-nav-link href="{{ $user ? route('dashboard') : url('/') }}" :active="request()->routeIs('dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                    </li>
 
-                <!-- Projects -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        {{ __('Projects') }}
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="projectsDropdown">
-                        <li>
-                            <x-dropdown-link href="{{ Route::has('projects.index') ? route('projects.index') : url('/projects') }}">
-                                {{ __('Browse projects') }}
-                            </x-dropdown-link>
-                        </li>
-                        @auth
+                    <!-- Projects -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ __('Projects') }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="projectsDropdown">
                             <li>
-                                <x-dropdown-link href="{{ Route::has('projects.mine') ? route('projects.mine') : url('/projects?filter=mine') }}">
-                                    {{ __('My projects') }}
+                                <x-dropdown-link href="{{ Route::has('projects.index') ? route('projects.index') : url('/projects') }}">
+                                    {{ __('Browse projects') }}
                                 </x-dropdown-link>
                             </li>
-                        @endauth
-                        @can('create', Project::class)
+                            @auth
+                                <li>
+                                    <x-dropdown-link href="{{ Route::has('projects.mine') ? route('projects.mine') : url('/projects?filter=mine') }}">
+                                        {{ __('My projects') }}
+                                    </x-dropdown-link>
+                                </li>
+                            @endauth
+                            @can('create', Project::class)
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <x-dropdown-link href="{{ Route::has('projects.create') ? route('projects.create') : url('/projects/create') }}">
+                                        {{ __('New project') }}
+                                    </x-dropdown-link>
+                                </li>
+                            @endcan
+                        </ul>
+                    </li>
+
+                    <!-- Organizations -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="orgDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ __('Organizations') }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="orgDropdown">
+                            <li>
+                                <x-dropdown-link href="{{ Route::has('organizations.index') ? route('organizations.index') : url('/organizations') }}">
+                                    {{ __('Browse organizations') }}
+                                </x-dropdown-link>
+                            </li>
+                            @can('create', Organization::class)
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <x-dropdown-link href="{{ Route::has('organizations.create') ? route('organizations.create') : url('/organizations/create') }}">
+                                        {{ __('New organization') }}
+                                    </x-dropdown-link>
+                                </li>
+                            @endcan
+                        </ul>
+                    </li>
+
+                    <!-- Goals -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="goalDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ __('Goals') }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="goalDropdown">
+                            <li>
+                                <x-dropdown-link href="{{ Route::has('goals.index') ? route('goals.index') : url('/goals') }}">
+                                    {{ __('Browse goals') }}
+                                </x-dropdown-link>
+                            </li>
+                            @can('create', Goal::class)
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <x-dropdown-link href="{{ Route::has('goals.create') ? route('goals.create') : url('/goals/create') }}">
+                                        {{ __('New goal') }}
+                                    </x-dropdown-link>
+                                </li>
+                            @endcan
+                        </ul>
+                    </li>
+
+                    <!-- Support/Service Desk -->
+                    <li class="nav-item">
+                        <x-nav-link href="{{ $user ? route('support.staff.index') : url('/support/staff') }}" :active="request()->routeIs('support.staff.index')">
+                            {{ __('Support') }}
+                        </x-nav-link>
+                    </li>
+                @elseguest
+                    <!-- Support/Service Desk -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="supportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ __('Support') }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="supportDropdown">
+                            <li>
+                                <x-dropdown-link href="{{ Route::has('support.index') ? route('support.index') : url('/support') }}">
+                                    {{ __('Support Center') }}
+                                </x-dropdown-link>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <x-dropdown-link href="{{ Route::has('projects.create') ? route('projects.create') : url('/projects/create') }}">
-                                    {{ __('New project') }}
+                                <x-dropdown-link href="{{ Route::has('support.my') ? route('support.my') : url('/support/my') }}">
+                                    {{ __('My Tickets') }}
                                 </x-dropdown-link>
                             </li>
-                        @endcan
-                    </ul>
-                </li>
-
-                <!-- Organizations -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="orgDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        {{ __('Organizations') }}
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="orgDropdown">
-                        <li>
-                            <x-dropdown-link href="{{ Route::has('organizations.index') ? route('organizations.index') : url('/organizations') }}">
-                                {{ __('Browse organizations') }}
-                            </x-dropdown-link>
-                        </li>
-                        @can('create', Organization::class)
-                            <li><hr class="dropdown-divider"></li>
                             <li>
-                                <x-dropdown-link href="{{ Route::has('organizations.create') ? route('organizations.create') : url('/organizations/create') }}">
-                                    {{ __('New organization') }}
+                                <x-dropdown-link href="{{ Route::has('support.new') ? route('support.new') : url('/support/new') }}">
+                                    {{ __('New Ticket') }}
                                 </x-dropdown-link>
                             </li>
-                        @endcan
-                    </ul>
-                </li>
-
-                <!-- Goals -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="goalDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        {{ __('Goals') }}
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="goalDropdown">
-                        <li>
-                            <x-dropdown-link href="{{ Route::has('goals.index') ? route('goals.index') : url('/goals') }}">
-                                {{ __('Browse goals') }}
-                            </x-dropdown-link>
-                        </li>
-                        @can('create', Goal::class)
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <x-dropdown-link href="{{ Route::has('goals.create') ? route('goals.create') : url('/goals/create') }}">
-                                    {{ __('New goal') }}
-                                </x-dropdown-link>
-                            </li>
-                        @endcan
-                    </ul>
-                </li>
+                        </ul>
+                    </li>
+                @endauth
             </ul>
 
             @auth
