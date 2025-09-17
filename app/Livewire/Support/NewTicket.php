@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Support;
 
-use App\Models\Organization;
 use App\Models\ServiceProduct;
 use App\Models\SupportIdentity;
 use App\Models\Ticket;
@@ -31,7 +30,7 @@ final class NewTicket extends Component
     #[Validate('required|string|min:2|max:120')]
     public string $name = '';
 
-    #[Validate('required|email:rfc,dns')]
+    #[Validate('required|email:rfc')]
     public string $email = '';
 
     public function mount(): void
@@ -60,32 +59,37 @@ final class NewTicket extends Component
             ['email_encrypted' => $normalized, 'token' => (string) str()->ulid()]
         );
 
-        $statusId = (int) TicketStatus::query()->where('name', 'New')->value('id');
+        $statusId   = (int) TicketStatus::query()->where('name', 'New')->value('id');
         $priorityId = (int) TicketPriority::query()->where('name', 'Medium')->value('id');
-        $typeId = (int) TicketType::query()->where('name', 'Bug')->value('id');
-        $organizationId = auth()->user()?->organization_id ?? (string) Organization::query()->value('id');
-        /** @var ServiceProduct $product */
-        $product = ServiceProduct::query()->select(['id','organization_id','default_project_id'])->findOrFail($this->productId);
+        $typeId     = (int) TicketType::query()->where('name', 'Bug')->value('id');
 
-        $ticket = Ticket::query()->create([
-            'organization_id' => $organizationId,
-            'submitter_name'  => $this->name,
-            'submitter_email' => $normalized,
-            'project_id'      => $product->default_project_id,
-            'email_hash'      => $hash,
-            'subject'         => $this->subject,
-            'body'            => $this->body,
-            'redacted_body'   => $redactor->redact($this->body),
-            'status_id'       => $statusId,
-            'priority_id'     => $priorityId,
-            'type_id'         => $typeId,
-            'access_token'    => (string) str()->ulid(),
-            'via'             => 'public',
+        /** @var ServiceProduct $product */
+        $product = ServiceProduct::query()
+            ->select(['id','organization_id','default_project_id'])
+            ->findOrFail($this->productId);
+
+        Ticket::query()->create([
+            'organization_id'    => $product->organization_id,
+            'service_product_id' => $product->getKey(),
+            'project_id'         => $product->default_project_id,
+            'submitter_name'     => $this->name,
+            'submitter_email'    => $normalized,
+            'email_hash'         => $hash,
+            'subject'            => $this->subject,
+            'body'               => $this->body,
+            'redacted_body'      => $redactor->redact($this->body),
+            'status_id'          => $statusId,
+            'priority_id'        => $priorityId,
+            'type_id'            => $typeId,
+            'access_token'       => (string) str()->ulid(),
+            'via'                => 'public',
         ]);
 
-        // TODO: notify customer & staff
-
-        $this->redirect(route('support.access.by-token', ['token' => $identity->token]), navigate: true);
+        // Use Livewire redirect (no SPA navigate) to avoid client-side ResizeObserver churn
+        $this->redirect(
+            route('support.access.by-token', ['token' => $identity->token]),
+            navigate: false
+        );
     }
 
     public function render(): View
