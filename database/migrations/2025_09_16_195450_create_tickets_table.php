@@ -10,11 +10,11 @@ return new class extends Migration {
         Schema::create('tickets', static function (Blueprint $table): void {
             $table->ulid('id')->primary();
             $table->string('key', 32)->unique()->index();
-            $table->foreignUlid('organization_id')->index()->nullable();
+            $table->foreignUuid('organization_id')->index()->nullable();
             $table->foreignUlid('service_product_id')->nullable()->index();
-            $table->foreignUlid('project_id')->nullable()->index();
+            $table->foreignUuid('project_id')->nullable()->index();
 
-            $table->foreignUlid('submitter_user_id')->nullable()->index();
+            $table->foreignUuid('submitter_user_id')->nullable()->index();
             $table->string('submitter_name');
             $table->string('submitter_email');
             $table->char('email_hash', 64)->index();
@@ -27,7 +27,7 @@ return new class extends Migration {
             $table->foreignId('priority_id')->constrained('ticket_priorities');
             $table->foreignId('type_id')->constrained('ticket_types');
 
-            $table->foreignUlid('assigned_to_user_id')->nullable()->index();
+            $table->foreignUuid('assigned_to_user_id')->nullable()->index();
 
             $table->ulid('access_token')->nullable()->unique()->index();
             $table->string('via', 24)->default('portal');
@@ -38,7 +38,7 @@ return new class extends Migration {
 
         Schema::create('ticket_issue_links', static function (Blueprint $table): void {
             $table->foreignUlid('ticket_id')->index();
-            $table->foreignUlid('issue_id')->index();
+            $table->foreignUuid('issue_id')->index();
             $table->unique(['ticket_id', 'issue_id']);
         });
     }

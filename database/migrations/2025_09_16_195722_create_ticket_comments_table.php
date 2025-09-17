@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('ticket_comments', static function (Blueprint $table): void {
             $table->ulid('id')->primary();
             $table->foreignUlid('ticket_id')->index();
-            $table->foreignUlid('user_id')->nullable()->index(); // null = public/customer
+            $table->foreignUuid('user_id')->nullable()->index(); // null = public/customer
             $table->text('body');
             $table->text('redacted_body')->nullable();
             $table->boolean('is_internal')->default(false);

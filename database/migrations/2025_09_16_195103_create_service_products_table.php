@@ -9,11 +9,11 @@ return new class extends Migration {
     {
         Schema::create('service_products', static function (Blueprint $table): void {
             $table->ulid('id')->primary();
-            $table->foreignUlid('organization_id')->index();
+            $table->foreignUuid('organization_id')->index();
             $table->string('key', 32)->index();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->foreignUlid('default_project_id')->nullable()->index();
+            $table->foreignUuid('default_project_id')->nullable()->index();
             $table->timestamps();
             $table->softDeletes();
 
@@ -21,7 +21,7 @@ return new class extends Migration {
         });
 
         Schema::create('project_service_product', static function (Blueprint $table): void {
-            $table->foreignUlid('project_id')->index();
+            $table->foreignUuid('project_id')->index();
             $table->foreignUlid('service_product_id')->index();
             $table->primary(['project_id', 'service_product_id']);
         });
