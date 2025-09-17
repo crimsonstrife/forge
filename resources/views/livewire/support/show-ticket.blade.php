@@ -1,10 +1,15 @@
 <div class="vstack gap-3">
     <div class="card">
         <div class="card-body">
-            <h2 class="h5 mb-1">{{ $ticket->key }} — {{ $ticket->subject }}</h2>
+            <h2 class="h5 mb-1 d-flex align-items-center gap-2">
+                {{ $ticket->key }} — {{ $ticket->subject }}
+                <span class="badge text-bg-secondary">{{ $ticket->status->name ?? '—' }}</span>
+            </h2>
+
             <div class="small text-body-secondary mb-2">
                 Opened {{ $ticket->created_at->diffForHumans() }} by {{ $ticket->submitter_name }}
             </div>
+
             <div class="border rounded p-3 bg-body-tertiary">
                 {!! nl2br(e($ticket->redacted_body ?? '')) !!}
             </div>
