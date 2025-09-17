@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 /**
  * @property string $id
@@ -13,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class SupportIdentity extends Model
 {
+    use HasUlids;
+
     protected $guarded = [];
 
     protected function casts(): array
@@ -22,6 +26,15 @@ class SupportIdentity extends Model
             'last_seen_at' => 'datetime',
             'revoked_at' => 'datetime',
         ];
+    }
+
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(static function ($model) {
+            $model->id = Str::ulid();
+        });
     }
 
     /** @return HasMany<Ticket> */

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Support;
 
+use App\Models\Organization;
 use App\Models\SupportIdentity;
 use App\Models\Ticket;
 use App\Models\TicketPriority;
@@ -41,9 +42,10 @@ final class NewTicket extends Component
         $statusId = (int) TicketStatus::query()->where('name', 'New')->value('id');
         $priorityId = (int) TicketPriority::query()->where('name', 'Medium')->value('id');
         $typeId = (int) TicketType::query()->where('name', 'Bug')->value('id');
+        $organizationId = auth()->user()?->organization_id ?? (string) Organization::query()->value('id');
 
         $ticket = Ticket::query()->create([
-            'organization_id' => auth()->user()?->organization_id ?? organization()->id,
+            'organization_id' => $organizationId,
             'submitter_name'  => $this->name,
             'submitter_email' => $normalized,
             'email_hash'      => $hash,
