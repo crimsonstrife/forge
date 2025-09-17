@@ -7,6 +7,7 @@ use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -216,6 +217,21 @@ class Issue extends BaseModel implements HasMedia
     public function pullRequestLinks(): HasMany
     {
         return $this->vcsLinks()->where('type', 'pull_request');
+    }
+
+    /** @return BelongsToMany<Ticket> */
+    public function tickets(): BelongsToMany
+    {
+        return $this->belongsToMany(Ticket::class, 'ticket_issue_links');
+    }
+
+    /**
+     * Quick helper: does this issue come from (at least one) support ticket?
+     */
+    public function hasSupportTicket(): bool
+    {
+        // Avoid N+1 by using withCount('tickets') when listing; this is fine for detail pages.
+        return $this->tickets()->exists();
     }
 
     public function scopeEpics($q)

@@ -138,6 +138,11 @@ final class ShowTicket extends Component
             ->latest()
             ->get(['id','body','created_at','user_id']);
 
+        $relatedIssues = $this->ticket->issues()
+            ->select(['id','key','summary','project_id'])
+            ->with('project:id,name,key')
+            ->get();
+
         return view('livewire.staff.support.show-ticket', [
             'statuses'   => TicketStatus::query()->orderBy('name')->get(['id','name']),
             'priorities' => TicketPriority::query()->orderBy('weight')->get(['id','name']),
@@ -146,6 +151,7 @@ final class ShowTicket extends Component
             'projects'   => Project::query()->orderBy('name')->get(['id','name','key']),
             'internal' => $internal,
             'public'   => $public,
+            'relatedIssues' => $relatedIssues,
         ]);
     }
 }

@@ -9,14 +9,30 @@
                     </div>
                 </div>
                 <div class="text-end">
+                    @foreach($relatedIssues as $i)
+                        @php
+                            $projectParam = $i->project_id;
+                            $issueParam   = $i->key;
+
+                            $issueUrl = route('issues.show', [
+                                'project' => $projectParam,
+                                'issue'   => $issueParam,
+                            ]);
+                            $label = ($i->project?->key ? $i->project->key . '-' : '') . $issueParam;
+                        @endphp
+
+                        <a href="{{ $issueUrl }}" class="badge text-bg-primary text-decoration-none" title="{{ $i->summary }}">
+                            Related Issue: {{ $label }}
+                        </a>
+                    @endforeach
+
                     <button
                         class="btn btn-outline-primary"
                         wire:click="convertToIssue"
-                        @disabled(!$projectId)  {{-- Disable until a project is chosen --}}
+                        @disabled(!$projectId)
                         title="{{ $projectId ? 'Convert to Issue' : 'Select a project first' }}"
-                    >
-                        Convert to Issue
-                    </button>
+                    >Convert to Issue</button>
+
                     @error('projectId') <div class="small text-danger mt-1">{{ $message }}</div> @enderror
                 </div>
             </div>

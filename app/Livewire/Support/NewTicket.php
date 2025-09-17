@@ -41,7 +41,7 @@ final class NewTicket extends Component
             ->get(['id','name','default_project_id'])
             ->map(fn (ServiceProduct $p) => [
                 'id'      => $p->getKey(),
-                'name'    => $p->name . ($p->defaultProject?->name ? " (Project: {$p->defaultProject->name})" : ''),
+                'name'    => $p->name,
                 'project' => $p->defaultProject?->name,
             ])
             ->all();
