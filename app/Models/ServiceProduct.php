@@ -84,7 +84,7 @@ class ServiceProduct extends BaseModel
             }
         }
 
-        return $issueTypeId ?: ($project?->defaultTypeId());
+        return $issueTypeId ?? ($project?->defaultTypeId());
     }
 
     /**
