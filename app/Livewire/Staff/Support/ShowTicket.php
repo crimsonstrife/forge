@@ -126,14 +126,26 @@ final class ShowTicket extends Component
 
     public function render(): View
     {
+        $internal = $this->ticket->comments()
+            ->where('is_internal', true)
+            ->with('user:id,name,email,profile_photo_path')
+            ->latest()
+            ->get(['id','body','created_at','user_id']); // reference $ticket for submitter data
+
+        $public = $this->ticket->comments()
+            ->where('is_internal', false)
+            ->with('user:id,name,email,profile_photo_path')
+            ->latest()
+            ->get(['id','body','created_at','user_id']);
+
         return view('livewire.staff.support.show-ticket', [
             'statuses'   => TicketStatus::query()->orderBy('name')->get(['id','name']),
             'priorities' => TicketPriority::query()->orderBy('weight')->get(['id','name']),
             'types'      => TicketType::query()->orderBy('name')->get(['id','name']),
             'assignees'  => User::query()->orderBy('name')->get(['id','name']),
             'projects'   => Project::query()->orderBy('name')->get(['id','name','key']),
-            'internal'   => $this->ticket->comments()->where('is_internal', true)->latest()->get(['id','body','created_at','user_id']),
-            'public'     => $this->ticket->comments()->where('is_internal', false)->latest()->get(['id','body','created_at','user_id']),
+            'internal' => $internal,
+            'public'   => $public,
         ]);
     }
 }

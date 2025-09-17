@@ -45,9 +45,11 @@ final class ShowTicket extends Component
     {
         $comments = $this->ticket->comments()
             ->where('is_internal', false)
+            ->with('user:id,name,email,profile_photo_path')
             ->latest()
-            ->get(['id','redacted_body','created_at']);
+            ->get(['id','redacted_body','created_at','user_id']);
 
         return view('livewire.support.show-ticket', compact('comments'));
     }
+
 }

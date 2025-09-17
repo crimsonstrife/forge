@@ -98,10 +98,38 @@
                 <div class="card-header fw-semibold">Internal notes</div>
                 <div class="card-body vstack gap-2">
                     @forelse($internal as $c)
-                        <div class="border rounded p-2">
-                            <div class="small text-body-secondary mb-1">{{ $c->created_at->format('M j, Y g:ia') }}</div>
-                            {!! nl2br(e($c->body)) !!}
-                        </div>
+                        @foreach($internal as $c)
+                            @php
+                                $name = $c->user?->name ?? $ticket->submitter_name;
+                                $email = $c->user?->email ?? $ticket->submitter_email;
+                                $initials = collect(preg_split('/\s+/', trim($name)))->filter()->map(fn($p) => mb_substr($p, 0, 1))->take(2)->implode('');
+                                $avatar = $c->user?->profile_photo_url ?? ( ($email && $email !== '')
+                                    ? 'https://www.gravatar.com/avatar/' . md5(strtolower(trim($email))) . '?s=64&d=404'
+                                    : null
+                                );
+                            @endphp
+
+                            <div class="border rounded p-2 d-flex gap-3 align-items-start">
+                                <div style="width:40px;height:40px;">
+                                    @if($avatar)
+                                        <img src="{{ $avatar }}" alt="" width="40" height="40" class="rounded-circle"
+                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    @else
+                                        <div class="rounded-circle bg-secondary-subtle border d-flex align-items-center justify-content-center"
+                                             style="width:40px;height:40px; {{ $avatar ? 'display:none;' : '' }}">
+                                            <span class="fw-semibold">{{ $initials }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="fw-semibold">{{ $name }}</div>
+                                        <div class="small text-body-secondary">{{ $c->created_at->format('M j, Y g:ia') }}</div>
+                                    </div>
+                                    <div class="mt-1">{!! nl2br(e($c->body)) !!}</div>
+                                </div>
+                            </div>
+                        @endforeach
                     @empty
                         <div class="text-body-secondary">No internal notes.</div>
                     @endforelse
@@ -125,9 +153,35 @@
                 <div class="card-header fw-semibold">Public conversation</div>
                 <div class="card-body vstack gap-2">
                     @forelse($public as $c)
-                        <div class="border rounded p-2">
-                            <div class="small text-body-secondary mb-1">{{ $c->created_at->format('M j, Y g:ia') }}</div>
-                            {!! nl2br(e($c->body)) !!}
+                        @php
+                            $name = $c->user?->name ?? $ticket->submitter_name;
+                            $email = $c->user?->email ?? $ticket->submitter_email;
+                            $initials = collect(preg_split('/\s+/', trim($name)))->filter()->map(fn($p) => mb_substr($p, 0, 1))->take(2)->implode('');
+                            $avatar = $c->user?->profile_photo_url ?? ( ($email && $email !== '')
+                                ? 'https://www.gravatar.com/avatar/' . md5(strtolower(trim($email))) . '?s=64&d=404'
+                                : null
+                            );
+                        @endphp
+
+                        <div class="border rounded p-2 d-flex gap-3 align-items-start">
+                            <div style="width:40px;height:40px;">
+                                @if($avatar)
+                                    <img src="{{ $avatar }}" alt="" width="40" height="40" class="rounded-circle"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                @else
+                                    <div class="rounded-circle bg-secondary-subtle border d-flex align-items-center justify-content-center"
+                                         style="width:40px;height:40px; {{ $avatar ? 'display:none;' : '' }}">
+                                        <span class="fw-semibold">{{ $initials }}</span>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between">
+                                    <div class="fw-semibold">{{ $name }}</div>
+                                    <div class="small text-body-secondary">{{ $c->created_at->format('M j, Y g:ia') }}</div>
+                                </div>
+                                <div class="mt-1">{!! nl2br(e($c->body)) !!}</div>
+                            </div>
                         </div>
                     @empty
                         <div class="text-body-secondary">No replies yet.</div>
