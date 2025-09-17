@@ -2,23 +2,29 @@
 
 namespace App\Models;
 
+use App\Services\Support\TicketKeyService;
+use App\Support\ActivityContext;
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @property string $id
  * @property string $key
  * @property string|null $access_token
  */
-class Ticket extends Model
+class Ticket extends BaseModel
 {
     use SoftDeletes;
     use HasUlids;
+    use LogsActivity;
+    use IsPermissible;
 
     protected $guarded = [];
 
@@ -62,8 +68,30 @@ class Ticket extends Model
     {
         static::creating(static function (self $ticket): void {
             if (empty($ticket->id)) { $ticket->id = (string) str()->ulid(); }
-            if (empty($ticket->key)) { $ticket->key = app(\App\Services\Support\TicketKeyService::class)->nextKey(); }
+            if (empty($ticket->key)) { $ticket->key = app(TicketKeyService::class)->nextKey(); }
             if (empty($ticket->via)) { $ticket->via = 'portal'; }
         });
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('forge.support.ticket')
+            ->logOnly(['subject','key','body','submitter_email'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
+    public function tapActivity(\Spatie\Activitylog\Contracts\Activity $activity): void
+    {
+        $ctx = ActivityContext::base();
+        $activity->team_id = $ctx['team_id'];                 // persisted column
+        $activity->properties = $activity->properties->merge([ // JSON props
+            'actor_id' => $ctx['user_id'],
+            'ip'       => $ctx['ip'],
+            'ua'       => $ctx['user_agent'],
+        ]);
+        $activity->event = $activity->event ?: 'updated'; // create/update/delete auto-populate
+        $activity->description = 'ticket.' . $activity->event;
     }
 }
