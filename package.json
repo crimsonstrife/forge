@@ -6,7 +6,7 @@
         "dev": "vite"
     },
     "dependencies": {
-        "@awesome.me/webawesome": "^3.0.0-beta.4",
+        "@awesome.me/webawesome": "^3.0.0-beta.6",
         "@popperjs/core": "^2.11.8",
         "@tailwindcss/vite": "^4.1.11",
         "autoprefixer": "^10.4.20",
