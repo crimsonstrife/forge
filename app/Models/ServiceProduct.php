@@ -104,7 +104,7 @@ class ServiceProduct extends BaseModel
             }
         }
 
-        return $issuePriorityId ?: ($project?->defaultPriorityId());
+        return $issuePriorityId ?? ($project?->defaultPriorityId());
     }
 
     /**
