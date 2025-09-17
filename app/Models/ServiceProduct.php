@@ -125,6 +125,6 @@ class ServiceProduct extends BaseModel
             }
         }
 
-        return $issueStatusId ?: ($project?->initialStatusId());
+        return $issueStatusId ?? ($project?->initialStatusId());
     }
 }
