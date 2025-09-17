@@ -6,7 +6,7 @@ name('support.index');
 
 ?>
 
-<x-app-layout>
+<x-guest-layout>
     <div class="container py-4">
         <h1 class="h4 mb-3">Support</h1>
         <p class="text-body-secondary">Submit a request or review your existing tickets.</p>
@@ -15,4 +15,4 @@ name('support.index');
             <a class="btn btn-outline-secondary" href="{{ route('support.access.request') }}">Access my tickets</a>
         </div>
     </div>
-</x-app-layout>
+</x-guest-layout>

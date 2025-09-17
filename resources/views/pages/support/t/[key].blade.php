@@ -7,8 +7,8 @@ middleware(['support.identity']);
 
 ?>
 
-<x-app-layout>
+<x-guest-layout>
     <div class="container py-4">
         @livewire('support.show-ticket', ['key' => $key])
     </div>
-</x-app-layout>
+</x-guest-layout>

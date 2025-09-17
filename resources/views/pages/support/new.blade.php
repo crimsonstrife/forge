@@ -6,7 +6,7 @@ name('support.new');
 
 ?>
 
-<x-app-layout>
+<x-guest-layout>
     <div class="container py-4">
         <h1 class="h4 mb-3">Submit a ticket</h1>
         <div class="alert alert-warning small">
@@ -14,4 +14,4 @@ name('support.new');
         </div>
         @livewire('support.new-ticket')
     </div>
-</x-app-layout>
+</x-guest-layout>
