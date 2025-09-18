@@ -62,7 +62,7 @@ final class TicketController extends Controller
                 'priority_id'        => $priority,
                 'type_id'            => $typeId,
                 'status_id'          => $statusId,
-                'support_identity_id'=> $identity?->getKey(),
+                'support_identity_id' => $identity?->getKey(),
                 'source'             => 'api',                // helpful flag
                 'channel'            => 'game',               // optional
                 'build'              => $payload['build'] ?? null,
@@ -71,10 +71,10 @@ final class TicketController extends Controller
             ]);
 
             /** @var array<int,UploadedFile> $files */
-//            $files = $payload['attachments'] ?? [];
-//            foreach ($files as $file) {
-//                $t->addMedia($file)->toMediaCollection('attachments');
-//            }
+            //            $files = $payload['attachments'] ?? [];
+            //            foreach ($files as $file) {
+            //                $t->addMedia($file)->toMediaCollection('attachments');
+            //            }
 
             return $t->load([
                 'status:id,name',

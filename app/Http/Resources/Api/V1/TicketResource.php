@@ -19,7 +19,7 @@ final class TicketResource extends JsonResource
             'priority'  => $this->priority->only(['id', 'name']) ?? null,
             'type'      => $this->type->only(['id', 'name']) ?? null,
             'product'   => $this->serviceProduct?->only(['id','name']),
-            'created_at'=> $this->created_at?->toIso8601String(),
+            'created_at' => $this->created_at?->toIso8601String(),
             'links'     => [
                 'html' => route('tickets.show', ['ticket' => $this->getKey()], false) ?? null,
             ],
