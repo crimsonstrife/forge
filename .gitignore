@@ -22,3 +22,5 @@ yarn-error.log
 /.vscode
 /.zed
 /.rnd
+forge.code-workspace
+.DS_Store
