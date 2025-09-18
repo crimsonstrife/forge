@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureSupportIdentity;
 use App\Http\Middleware\SetPermissionsTeamContext;
+use App\Http\Middleware\VerifyIngestKey;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(SetPermissionsTeamContext::class);
         $middleware->alias([
             'support.identity' => EnsureSupportIdentity::class,
+            'ingest.key' => VerifyIngestKey::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

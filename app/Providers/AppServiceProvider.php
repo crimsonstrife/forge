@@ -55,6 +55,13 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(120)->by($key);
         });
 
+        RateLimiter::for('ticket-ingest', static function (Request $request) {
+            $key = $request->attributes->get('ingest_key');
+            $bucket = $key?->id ?? $request->ip();
+
+            return [Limit::perMinute(20)->by('ingest:' . $bucket)];
+        });
+
         Paginator::useBootstrapFive();
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
         Issue::observe(IssueObserver::class);
