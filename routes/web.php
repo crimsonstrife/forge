@@ -3,7 +3,6 @@
 use App\Http\Controllers\IssueController;
 use App\Http\Controllers\IssueVcsController;
 use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\Webhooks\GitHubWebhookController;
 use App\Http\Controllers\IssueAttachmentController;
 use App\Http\Controllers\ProjectCalendarController;
 use App\Livewire\Settings\Appearance;
@@ -12,8 +11,10 @@ use App\Livewire\Settings\Profile;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+    return auth()->check()
+        ? redirect()->to('/dashboard')
+        : view('welcome');
+});
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -27,7 +28,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::middleware([
     'auth:sanctum',
@@ -46,7 +47,7 @@ Route::middleware([
         [IssueAttachmentController::class, 'destroy']
     )->name('issues.attachments.destroy');
     Route::get('/projects/{project}/calendar.ics', ProjectCalendarController::class)
-        ->middleware(['auth','verified'])
+        ->middleware(['auth', 'verified'])
         ->name('projects.calendar.ics');
     Route::delete('/projects/{project}', ProjectController::class)
         ->name('projects.destroy');
@@ -55,12 +56,12 @@ Route::middleware([
         ->name('issues.destroy');
 });
 
-Route::middleware(['web','auth','verified'])->group(function () {
-    Route::get('/issues/{issue}/vcs/branches', [IssueVcsController::class,'searchBranches'])->name('issues.vcs.branches.search');
-    Route::get('/issues/{issue}/vcs/pulls', [IssueVcsController::class,'searchPulls'])->name('issues.vcs.pulls.search');
-    Route::get('/issues/{issue}/vcs/default-branch', [IssueVcsController::class,'defaultBranch'])->name('issues.vcs.default-branch');
-    Route::post('/issues/{issue}/vcs/link/branch', [IssueVcsController::class,'linkBranch'])->name('issues.vcs.link.branch');
-    Route::post('/issues/{issue}/vcs/link/pr', [IssueVcsController::class,'linkPr'])->name('issues.vcs.link.pr');
-    Route::post('/issues/{issue}/vcs/create/branch', [IssueVcsController::class,'createBranch'])->name('issues.vcs.create.branch');
-    Route::post('/issues/{issue}/vcs/create/pr', [IssueVcsController::class,'createPr'])->name('issues.vcs.create.pr');
+Route::middleware(['web', 'auth', 'verified'])->group(function () {
+    Route::get('/issues/{issue}/vcs/branches', [IssueVcsController::class, 'searchBranches'])->name('issues.vcs.branches.search');
+    Route::get('/issues/{issue}/vcs/pulls', [IssueVcsController::class, 'searchPulls'])->name('issues.vcs.pulls.search');
+    Route::get('/issues/{issue}/vcs/default-branch', [IssueVcsController::class, 'defaultBranch'])->name('issues.vcs.default-branch');
+    Route::post('/issues/{issue}/vcs/link/branch', [IssueVcsController::class, 'linkBranch'])->name('issues.vcs.link.branch');
+    Route::post('/issues/{issue}/vcs/link/pr', [IssueVcsController::class, 'linkPr'])->name('issues.vcs.link.pr');
+    Route::post('/issues/{issue}/vcs/create/branch', [IssueVcsController::class, 'createBranch'])->name('issues.vcs.create.branch');
+    Route::post('/issues/{issue}/vcs/create/pr', [IssueVcsController::class, 'createPr'])->name('issues.vcs.create.pr');
 });
