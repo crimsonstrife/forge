@@ -31,7 +31,7 @@ final class IngestKeyManager
 
         $id = $key->id;
 
-        $token = "fki_". $id . $this->b64url($secret);
+        $token = "fki_" . $id . "." . $this->b64url($secret);
 
         return ['token' => $token, 'key' => $key];
     }
