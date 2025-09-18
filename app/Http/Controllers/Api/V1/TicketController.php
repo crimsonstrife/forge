@@ -71,11 +71,7 @@ final class TicketController extends Controller
             ]);
 
             /** @var array<int,UploadedFile> $files */
-            //            $files = $payload['attachments'] ?? [];
-            //            foreach ($files as $file) {
-            //                $t->addMedia($file)->toMediaCollection('attachments');
-            //            }
-
+            // TODO: Implement attachment handling if required in the future.
             return $t->load([
                 'status:id,name',
                 'priority:id,name',
