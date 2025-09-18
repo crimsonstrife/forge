@@ -105,7 +105,11 @@ final class IngestKeyManager
     {
         $appKey = (string) config('app.key');
         if (str_starts_with($appKey, 'base64:')) {
-            $appKey = base64_decode(substr($appKey, 7)) ?: '';
+            $decoded = base64_decode(substr($appKey, 7), true);
+            if ($decoded === false) {
+                throw new \RuntimeException('Failed to decode base64 app key. Please check your APP_KEY configuration.');
+            }
+            $appKey = $decoded;
         }
         return hash_hmac('sha256', $secret, $appKey);
     }
