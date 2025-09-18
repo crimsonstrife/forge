@@ -1,4 +1,5 @@
 <div class="vstack gap-3">
+    {{-- Product Details --}}
     <div class="card">
         <div class="card-header fw-semibold">Product Details</div>
         <form wire:submit.prevent="save" class="card-body vstack gap-3">
@@ -90,5 +91,97 @@
                 <button class="btn btn-primary">Save</button>
             </div>
         </form>
+    </div>
+
+    {{-- Ingest Keys --}}
+    <div class="card">
+        <div class="card-header fw-semibold d-flex align-items-center justify-content-between">
+            <span>API Ingest Keys</span>
+        </div>
+
+        <div class="card-body vstack gap-3">
+            {{-- One-time token alert --}}
+            @if($newKeyToken)
+                <div class="alert alert-warning d-flex align-items-start gap-2">
+                    <div>
+                        <div class="fw-semibold">Copy this token now — it won't be shown again.</div>
+                        <code class="user-select-all d-inline-block mt-1" x-data
+                              x-on:click="$clipboard('{{ $newKeyToken }}')">{{ $newKeyToken }}</code>
+                    </div>
+                    <button type="button" class="btn-close ms-auto" aria-label="Close"
+                            wire:click="$set('newKeyToken', null)"></button>
+                </div>
+            @endif
+
+            {{-- Generate new key --}}
+            <div class="row g-2 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label mb-1">Label (optional)</label>
+                    <input type="text" class="form-control" wire:model.defer="newKeyLabel" placeholder="e.g. UE4 build server, QA rig">
+                    @error('newKeyLabel') <div class="text-danger small">{{ $message }}</div> @enderror
+                </div>
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="button" class="btn btn-success ms-auto"
+                            wire:click="generateKey">Generate Key</button>
+                </div>
+            </div>
+
+            {{-- Keys table --}}
+            @if($this->ingestKeys->isEmpty())
+                <div class="text-body-secondary small">No keys yet.</div>
+            @else
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle">
+                        <thead>
+                        <tr>
+                            <th style="width:30%">Label</th>
+                            <th style="width:15%">Status</th>
+                            <th style="width:20%">Last Used</th>
+                            <th style="width:20%">Created</th>
+                            <th style="width:15%" class="text-end">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($this->ingestKeys as $k)
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">{{ $k->name ?? '—' }}</div>
+                                    <div class="small text-body-secondary">ID: {{ $k->id }}</div>
+                                </td>
+                                <td>
+                                    @if($k->revoked_at)
+                                        <span class="badge text-bg-secondary">Revoked</span>
+                                    @else
+                                        <span class="badge text-bg-success">Active</span>
+                                    @endif
+                                </td>
+                                <td class="small">
+                                    {{ $k->last_used_at?->diffForHumans() ?? '—' }}
+                                </td>
+                                <td class="small">
+                                    {{ $k->created_at?->format('Y-m-d H:i') }}
+                                </td>
+                                <td class="text-end">
+                                    @if(!$k->revoked_at)
+                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                                wire:click="revokeKey('{{ $k->id }}')"
+                                                wire:confirm="Revoke this key? Clients using it will stop working.">
+                                            Revoke
+                                        </button>
+                                    @else
+                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                                wire:click="deleteKey('{{ $k->id }}')"
+                                                wire:confirm="Delete this revoked key permanently?">
+                                            Delete
+                                        </button>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
     </div>
 </div>

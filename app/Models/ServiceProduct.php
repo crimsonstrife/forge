@@ -67,6 +67,11 @@ class ServiceProduct extends BaseModel
         return $this->hasMany(ServiceProductPriorityMap::class);
     }
 
+    public function ingestKeys(): HasMany
+    {
+        return $this->hasMany(ServiceProductIngestKey::class);
+    }
+
     /**
      * Resolve mapped Issue Type ID for a given Ticket Type, honoring project allowed sets.
      * @param int $ticketTypeId

@@ -12,13 +12,21 @@ Route::get('/user', static function (Request $request) {
 Route::post('/webhooks/github', [GitHubWebhookController::class, 'handle'])
     ->name('webhooks.github');
 
+
+Route::prefix('v1')->name('api.v1.')->group(function () {
+    // Public (throttled) ingest; optionally protect with 'ingest.key' later.
+    Route::post('tickets', [V1\TicketController::class, 'store'])
+        ->name('tickets.store')
+        ->middleware(['ingest.key', 'throttle:ticket-ingest']);
+});
+
 Route::prefix('v1')->middleware(['auth:sanctum', 'throttle:api'])->group(function (): void {
     Route::get('me', V1\MeController::class)->name('api.v1.me');
 
     Route::get('projects', [V1\ProjectController::class, 'index'])->name('api.v1.projects.index');
     Route::get('projects/{project}', [V1\ProjectController::class, 'show'])->name('api.v1.projects.show');
 
-    Route::get('lookups', \App\Http\Controllers\Api\V1\LookupsController::class);
+    Route::get('lookups', V1\LookupsController::class);
 
     Route::get('issues', [V1\IssueController::class, 'index'])->name('api.v1.issues.index');
     Route::post('issues', [V1\IssueController::class, 'store'])->name('api.v1.issues.store');
