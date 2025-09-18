@@ -13,12 +13,19 @@ use App\Models\ServiceProductTypeMap;
 use App\Models\TicketPriority;
 use App\Models\TicketStatus;
 use App\Models\TicketType;
+use App\Models\ServiceProductIngestKey;
+use App\Services\Support\IngestKeyManager;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Collection as SupportCollection;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Random\RandomException;
 
-class Edit extends Component
+/**
+ * @property-read SupportCollection<int, ServiceProductIngestKey> $ingestKeys
+ */
+final class Edit extends Component
 {
     use AuthorizesRequests;
 
@@ -47,21 +54,36 @@ class Edit extends Component
     /** @var array<int,int|null> ticket_priority_id => issue_priority_id */
     public array $priorityMap = [];
 
+    #[Validate('nullable|string|max:100')]
+    public ?string $newKeyLabel = null;
+
+    public ?string $newKeyToken = null;
+
     public function mount(string $productId): void
     {
-        $this->product = ServiceProduct::query()->with(['projects:id,name', 'defaultProject:id,name'])->findOrFail($productId);
+        $this->product = ServiceProduct::query()
+            ->with(['projects:id,name', 'defaultProject:id,name'])
+            ->findOrFail($productId);
+
         $this->authorize('support.manage');
 
         $this->key = $this->product->key;
         $this->name = $this->product->name;
         $this->description = $this->product->description;
         $this->defaultProjectId = $this->product->default_project_id;
-        $this->projectIds = $this->product->projects()->pluck('projects.id')->map(fn ($id) => (string)$id)->all();
+        $this->projectIds = $this->product->projects()->pluck('projects.id')->map(fn ($id) => (string) $id)->all();
 
-        // preload maps
-        $this->typeMap = $this->product->typeMaps()->pluck('issue_type_id', 'ticket_type_id')->map(fn ($v) => (int)$v)->all();
-        $this->statusMap = $this->product->statusMaps()->pluck('issue_status_id', 'ticket_status_id')->map(fn ($v) => (int)$v)->all();
-        $this->priorityMap = $this->product->priorityMaps()->pluck('issue_priority_id', 'ticket_priority_id')->map(fn ($v) => (int)$v)->all();
+        $this->typeMap = $this->product->typeMaps()->pluck('issue_type_id', 'ticket_type_id')->map(fn ($v) => (int) $v)->all();
+        $this->statusMap = $this->product->statusMaps()->pluck('issue_status_id', 'ticket_status_id')->map(fn ($v) => (int) $v)->all();
+        $this->priorityMap = $this->product->priorityMaps()->pluck('issue_priority_id', 'ticket_priority_id')->map(fn ($v) => (int) $v)->all();
+    }
+
+    /** @return SupportCollection<int, ServiceProductIngestKey> */
+    public function getIngestKeysProperty(): SupportCollection
+    {
+        return $this->product->ingestKeys()
+            ->orderByDesc('created_at')
+            ->get(['id', 'name', 'service_product_id', 'last_used_at', 'revoked_at', 'created_at']);
     }
 
     public function save(): void
@@ -78,30 +100,27 @@ class Edit extends Component
 
         $this->product->projects()->sync($this->projectIds);
 
-        // upsert type maps
         foreach (TicketType::query()->pluck('id') as $ticketTypeId) {
-            $issueTypeId = $this->typeMap[(int)$ticketTypeId] ?? null;
+            $issueTypeId = $this->typeMap[(int) $ticketTypeId] ?? null;
             ServiceProductTypeMap::query()->updateOrCreate(
-                ['service_product_id' => $this->product->getKey(), 'ticket_type_id' => (int)$ticketTypeId],
-                ['issue_type_id' => $issueTypeId]
+                ['service_product_id' => $this->product->getKey(), 'ticket_type_id' => (int) $ticketTypeId],
+                ['issue_type_id' => $issueTypeId],
             );
         }
 
-        // upsert status maps
         foreach (TicketStatus::query()->pluck('id') as $ticketStatusId) {
-            $issueStatusId = $this->statusMap[(int)$ticketStatusId] ?? null;
+            $issueStatusId = $this->statusMap[(int) $ticketStatusId] ?? null;
             ServiceProductStatusMap::query()->updateOrCreate(
-                ['service_product_id' => $this->product->getKey(), 'ticket_status_id' => (int)$ticketStatusId],
-                ['issue_status_id' => $issueStatusId]
+                ['service_product_id' => $this->product->getKey(), 'ticket_status_id' => (int) $ticketStatusId],
+                ['issue_status_id' => $issueStatusId],
             );
         }
 
-        // upsert priority maps
         foreach (TicketPriority::query()->pluck('id') as $ticketPriorityId) {
-            $issuePriorityId = $this->priorityMap[(int)$ticketPriorityId] ?? null;
+            $issuePriorityId = $this->priorityMap[(int) $ticketPriorityId] ?? null;
             ServiceProductPriorityMap::query()->updateOrCreate(
-                ['service_product_id' => $this->product->getKey(), 'ticket_priority_id' => (int)$ticketPriorityId],
-                ['issue_priority_id' => $issuePriorityId]
+                ['service_product_id' => $this->product->getKey(), 'ticket_priority_id' => (int) $ticketPriorityId],
+                ['issue_priority_id' => $issuePriorityId],
             );
         }
 
@@ -109,16 +128,60 @@ class Edit extends Component
         $this->product->refresh();
     }
 
+    /**
+     * @throws RandomException
+     */
+    public function generateKey(IngestKeyManager $manager): void
+    {
+        $this->authorize('support.manage');
+        $this->validateOnly('newKeyLabel');
+
+        $result = $manager->generate(
+            product: $this->product,
+            name: $this->newKeyLabel,
+            createdBy: auth()->id(),
+        );
+
+        $this->newKeyToken = $result['token'];
+        $this->newKeyLabel = null;
+        $this->product->unsetRelation('ingestKeys');
+    }
+
+    public function revokeKey(string $keyId): void
+    {
+        $this->authorize('support.manage');
+
+        /** @var ServiceProductIngestKey|null $key */
+        $key = $this->product->ingestKeys()->whereKey($keyId)->first();
+        if ($key !== null && $key->revoked_at === null) {
+            $key->revoked_at = now()->toImmutable();
+            $key->save();
+            $this->product->unsetRelation('ingestKeys');
+        }
+    }
+
+    public function deleteKey(string $keyId): void
+    {
+        $this->authorize('support.manage');
+
+        /** @var ServiceProductIngestKey|null $key */
+        $key = $this->product->ingestKeys()->whereKey($keyId)->first();
+        if ($key !== null && $key->revoked_at !== null) {
+            $key->delete();
+            $this->product->unsetRelation('ingestKeys');
+        }
+    }
+
     public function render(): View
     {
         return view('livewire.staff.support.products.edit', [
-            'allProjects'    => Project::query()->orderBy('name')->get(['id','name','key']),
-            'ticketTypes'    => TicketType::query()->orderBy('name')->get(['id','name']),
-            'ticketStatuses' => TicketStatus::query()->orderBy('name')->get(['id','name']),
-            'ticketPriorities' => TicketPriority::query()->orderBy('weight')->get(['id','name']),
-            'issueTypes'     => IssueType::query()->orderBy('name')->get(['id','name']),
-            'issueStatuses'  => IssueStatus::query()->orderBy('order')->get(['id','name']),
-            'issuePriorities' => IssuePriority::query()->orderBy('weight')->get(['id','name']),
+            'allProjects'      => Project::query()->orderBy('name')->get(['id', 'name', 'key']),
+            'ticketTypes'      => TicketType::query()->orderBy('name')->get(['id', 'name']),
+            'ticketStatuses'   => TicketStatus::query()->orderBy('name')->get(['id', 'name']),
+            'ticketPriorities' => TicketPriority::query()->orderBy('weight')->get(['id', 'name']),
+            'issueTypes'       => IssueType::query()->orderBy('name')->get(['id', 'name']),
+            'issueStatuses'    => IssueStatus::query()->orderBy('order')->get(['id', 'name']),
+            'issuePriorities'  => IssuePriority::query()->orderBy('weight')->get(['id', 'name']),
         ]);
     }
 }
