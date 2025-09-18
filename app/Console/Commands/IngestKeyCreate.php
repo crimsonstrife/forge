@@ -18,7 +18,7 @@ class IngestKeyCreate extends Command
     public function handle(IngestKeyManager $mgr): int
     {
         $sp = ServiceProduct::query()->findOrFail($this->argument('serviceProductId'));
-        $res = $mgr->generate($sp, $this->option('name'), auth()?->id());
+        $res = $mgr->generate($sp, $this->option('name'), null);
 
         $this->info('Key created. Copy this token now:');
         $this->line($res['token']);
