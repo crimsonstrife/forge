@@ -14,6 +14,9 @@ use App\Observers\IssueObserver;
 use App\Observers\PermissionSetObserver;
 use App\Observers\ProjectObserver;
 use App\Observers\RoleObserver;
+use Dedoc\Scramble\Scramble;
+use Dedoc\Scramble\Support\Generator\OpenApi;
+use Dedoc\Scramble\Support\Generator\SecurityScheme;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
@@ -46,6 +49,11 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             return; // do not touch URL/Request during composer/CLI
         }
+
+        Scramble::configure()->withDocumentTransformers(function (OpenApi $doc) {
+            $doc->info->title = config('app.name').' API';
+            $doc->secure(SecurityScheme::http('bearer')); // default for all endpoints
+        });
 
         RateLimiter::for('api', static function (Request $request) {
             $key = optional($request->user())?->getAuthIdentifier()

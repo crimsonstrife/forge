@@ -53,6 +53,14 @@ class AuthServiceProvider extends ServiceProvider
         $this->register();
         $this->registerPolicies();
 
+        Gate::define('viewApiDocs', fn (?User $user) =>
+            $user && $user->hasPermissionTo('is-super-admin')
+        );
+
+        Gate::define('viewScalar', fn (?User $user) =>
+            $user && $user->hasPermissionTo('is-super-admin')
+        );
+
         Gate::before(static function (User $user, string $ability) {
             /** @var PermissionRegistrar $reg */
             $reg = app(PermissionRegistrar::class);
