@@ -1,17 +1,16 @@
 name: Endpoints
-description: ''
+description: ""
 endpoints:
-  -
-    httpMethods:
+  - httpMethods:
       - GET
     uri: api/user
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -26,13 +25,12 @@ endpoints:
     cleanBodyParameters: []
     fileParameters: []
     responses:
-      -
-        status: 401
+      - status: 401
         content: '{"message":"Unauthenticated."}'
         headers:
-          cache-control: 'no-cache, private'
+          cache-control: "no-cache, private"
           content-type: application/json
-          access-control-allow-origin: '*'
+          access-control-allow-origin: "*"
         description: null
         custom: []
     responseFields: []
@@ -41,17 +39,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - POST
     uri: api/webhooks/github
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -72,17 +69,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - POST
     uri: api/v1/tickets
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -96,7 +92,7 @@ endpoints:
     bodyParameters:
       summary:
         name: summary
-        description: 'Must be at least 4 characters. Must not be greater than 200 characters.'
+        description: "Must be at least 4 characters. Must not be greater than 200 characters."
         required: true
         example: b
         type: string
@@ -106,9 +102,9 @@ endpoints:
         custom: []
       description:
         name: description
-        description: 'Must be at least 10 characters. Must not be greater than 8000 characters.'
+        description: "Must be at least 10 characters. Must not be greater than 8000 characters."
         required: true
-        example: 'Et animi quos velit et fugiat.'
+        example: "Et animi quos velit et fugiat."
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -116,7 +112,7 @@ endpoints:
         custom: []
       service_product_id:
         name: service_product_id
-        description: 'The <code>id</code> of an existing record in the service_products table.'
+        description: "The <code>id</code> of an existing record in the service_products table."
         required: true
         example: architecto
         type: string
@@ -126,7 +122,7 @@ endpoints:
         custom: []
       email:
         name: email
-        description: 'Must be a valid email address. Must not be greater than 255 characters.'
+        description: "Must be a valid email address. Must not be greater than 255 characters."
         required: false
         example: zbailey@example.net
         type: string
@@ -136,7 +132,7 @@ endpoints:
         custom: []
       player_id:
         name: player_id
-        description: 'Must not be greater than 255 characters.'
+        description: "Must not be greater than 255 characters."
         required: false
         example: i
         type: string
@@ -146,9 +142,9 @@ endpoints:
         custom: []
       build:
         name: build
-        description: 'Must not be greater than 64 characters.'
+        description: "Must not be greater than 64 characters."
         required: false
-        example: 'y'
+        example: "y"
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -156,7 +152,7 @@ endpoints:
         custom: []
       platform:
         name: platform
-        description: 'Must not be greater than 32 characters.'
+        description: "Must not be greater than 32 characters."
         required: false
         example: v
         type: string
@@ -166,7 +162,7 @@ endpoints:
         custom: []
       severity:
         name: severity
-        description: ''
+        description: ""
         required: false
         example: minor
         type: string
@@ -180,7 +176,7 @@ endpoints:
         custom: []
       metadata:
         name: metadata
-        description: ''
+        description: ""
         required: false
         example: null
         type: object
@@ -190,22 +186,22 @@ endpoints:
         custom: []
       attachments:
         name: attachments
-        description: 'Must be a file. Must not be greater than 10240 kilobytes.'
+        description: "Must be a file. Must not be greater than 10240 kilobytes."
         required: false
         example:
           - null
-        type: 'file[]'
+        type: "file[]"
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
       summary: b
-      description: 'Et animi quos velit et fugiat.'
+      description: "Et animi quos velit et fugiat."
       service_product_id: architecto
       email: zbailey@example.net
       player_id: i
-      build: 'y'
+      build: "y"
       platform: v
       severity: minor
     fileParameters:
@@ -218,17 +214,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - GET
     uri: api/v1/me
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -243,13 +238,12 @@ endpoints:
     cleanBodyParameters: []
     fileParameters: []
     responses:
-      -
-        status: 401
+      - status: 401
         content: '{"message":"Unauthenticated."}'
         headers:
-          cache-control: 'no-cache, private'
+          cache-control: "no-cache, private"
           content-type: application/json
-          access-control-allow-origin: '*'
+          access-control-allow-origin: "*"
         description: null
         custom: []
     responseFields: []
@@ -258,17 +252,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - GET
     uri: api/v1/projects
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -283,13 +276,12 @@ endpoints:
     cleanBodyParameters: []
     fileParameters: []
     responses:
-      -
-        status: 401
+      - status: 401
         content: '{"message":"Unauthenticated."}'
         headers:
-          cache-control: 'no-cache, private'
+          cache-control: "no-cache, private"
           content-type: application/json
-          access-control-allow-origin: '*'
+          access-control-allow-origin: "*"
         description: null
         custom: []
     responseFields: []
@@ -298,17 +290,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - GET
-    uri: 'api/v1/projects/{id}'
+    uri: "api/v1/projects/{id}"
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -318,7 +309,7 @@ endpoints:
     urlParameters:
       id:
         name: id
-        description: 'The ID of the project.'
+        description: "The ID of the project."
         required: true
         example: 6dbe929c-6f1f-47df-bc3c-b4ea3d0d55f6
         type: string
@@ -334,13 +325,12 @@ endpoints:
     cleanBodyParameters: []
     fileParameters: []
     responses:
-      -
-        status: 401
+      - status: 401
         content: '{"message":"Unauthenticated."}'
         headers:
-          cache-control: 'no-cache, private'
+          cache-control: "no-cache, private"
           content-type: application/json
-          access-control-allow-origin: '*'
+          access-control-allow-origin: "*"
         description: null
         custom: []
     responseFields: []
@@ -349,17 +339,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - GET
     uri: api/v1/lookups
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -374,13 +363,12 @@ endpoints:
     cleanBodyParameters: []
     fileParameters: []
     responses:
-      -
-        status: 401
+      - status: 401
         content: '{"message":"Unauthenticated."}'
         headers:
-          cache-control: 'no-cache, private'
+          cache-control: "no-cache, private"
           content-type: application/json
-          access-control-allow-origin: '*'
+          access-control-allow-origin: "*"
         description: null
         custom: []
     responseFields: []
@@ -389,17 +377,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - GET
     uri: api/v1/issues
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -414,13 +401,12 @@ endpoints:
     cleanBodyParameters: []
     fileParameters: []
     responses:
-      -
-        status: 401
+      - status: 401
         content: '{"message":"Unauthenticated."}'
         headers:
-          cache-control: 'no-cache, private'
+          cache-control: "no-cache, private"
           content-type: application/json
-          access-control-allow-origin: '*'
+          access-control-allow-origin: "*"
         description: null
         custom: []
     responseFields: []
@@ -429,17 +415,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - POST
     uri: api/v1/issues
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -453,7 +438,7 @@ endpoints:
     bodyParameters:
       project_id:
         name: project_id
-        description: 'Must be a valid UUID. The <code>id</code> of an existing record in the projects table.'
+        description: "Must be a valid UUID. The <code>id</code> of an existing record in the projects table."
         required: true
         example: 6ff8f7f6-1eb3-3525-be4a-3932c805afed
         type: string
@@ -463,7 +448,7 @@ endpoints:
         custom: []
       summary:
         name: summary
-        description: 'Must not be greater than 255 characters.'
+        description: "Must not be greater than 255 characters."
         required: true
         example: g
         type: string
@@ -473,9 +458,9 @@ endpoints:
         custom: []
       description:
         name: description
-        description: ''
+        description: ""
         required: false
-        example: 'Eius et animi quos velit et.'
+        example: "Eius et animi quos velit et."
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -483,7 +468,7 @@ endpoints:
         custom: []
       issue_type_id:
         name: issue_type_id
-        description: 'The <code>id</code> of an existing record in the issue_types table.'
+        description: "The <code>id</code> of an existing record in the issue_types table."
         required: true
         example: 16
         type: integer
@@ -493,7 +478,7 @@ endpoints:
         custom: []
       issue_priority_id:
         name: issue_priority_id
-        description: 'The <code>id</code> of an existing record in the issue_priorities table.'
+        description: "The <code>id</code> of an existing record in the issue_priorities table."
         required: false
         example: 16
         type: integer
@@ -503,7 +488,7 @@ endpoints:
         custom: []
       issue_status_id:
         name: issue_status_id
-        description: 'The <code>id</code> of an existing record in the issue_statuses table.'
+        description: "The <code>id</code> of an existing record in the issue_statuses table."
         required: false
         example: 16
         type: integer
@@ -513,7 +498,7 @@ endpoints:
         custom: []
       assignee_id:
         name: assignee_id
-        description: 'Must be a valid UUID. The <code>id</code> of an existing record in the users table.'
+        description: "Must be a valid UUID. The <code>id</code> of an existing record in the users table."
         required: false
         example: a4855dc5-0acb-33c3-b921-f4291f719ca0
         type: string
@@ -523,7 +508,7 @@ endpoints:
         custom: []
       parent_id:
         name: parent_id
-        description: 'Must be a valid UUID. The <code>id</code> of an existing record in the issues table.'
+        description: "Must be a valid UUID. The <code>id</code> of an existing record in the issues table."
         required: false
         example: c90237e9-ced5-3af6-88ea-84aeaa148878
         type: string
@@ -533,11 +518,11 @@ endpoints:
         custom: []
       tags:
         name: tags
-        description: ''
+        description: ""
         required: false
         example:
           - architecto
-        type: 'string[]'
+        type: "string[]"
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -545,7 +530,7 @@ endpoints:
     cleanBodyParameters:
       project_id: 6ff8f7f6-1eb3-3525-be4a-3932c805afed
       summary: g
-      description: 'Eius et animi quos velit et.'
+      description: "Eius et animi quos velit et."
       issue_type_id: 16
       issue_priority_id: 16
       issue_status_id: 16
@@ -561,17 +546,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - GET
-    uri: 'api/v1/issues/{id}'
+    uri: "api/v1/issues/{id}"
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -581,7 +565,7 @@ endpoints:
     urlParameters:
       id:
         name: id
-        description: 'The ID of the issue.'
+        description: "The ID of the issue."
         required: true
         example: OMP-1
         type: string
@@ -597,13 +581,12 @@ endpoints:
     cleanBodyParameters: []
     fileParameters: []
     responses:
-      -
-        status: 401
+      - status: 401
         content: '{"message":"Unauthenticated."}'
         headers:
-          cache-control: 'no-cache, private'
+          cache-control: "no-cache, private"
           content-type: application/json
-          access-control-allow-origin: '*'
+          access-control-allow-origin: "*"
         description: null
         custom: []
     responseFields: []
@@ -612,17 +595,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - PUT
-    uri: 'api/v1/issues/{id}'
+    uri: "api/v1/issues/{id}"
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -632,7 +614,7 @@ endpoints:
     urlParameters:
       id:
         name: id
-        description: 'The ID of the issue.'
+        description: "The ID of the issue."
         required: true
         example: OMP-1
         type: string
@@ -647,7 +629,7 @@ endpoints:
     bodyParameters:
       summary:
         name: summary
-        description: 'Must not be greater than 255 characters.'
+        description: "Must not be greater than 255 characters."
         required: false
         example: b
         type: string
@@ -657,9 +639,9 @@ endpoints:
         custom: []
       description:
         name: description
-        description: ''
+        description: ""
         required: false
-        example: 'Eius et animi quos velit et.'
+        example: "Eius et animi quos velit et."
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -667,7 +649,7 @@ endpoints:
         custom: []
       issue_type_id:
         name: issue_type_id
-        description: 'The <code>id</code> of an existing record in the issue_types table.'
+        description: "The <code>id</code> of an existing record in the issue_types table."
         required: false
         example: 16
         type: integer
@@ -677,7 +659,7 @@ endpoints:
         custom: []
       issue_priority_id:
         name: issue_priority_id
-        description: 'The <code>id</code> of an existing record in the issue_priorities table.'
+        description: "The <code>id</code> of an existing record in the issue_priorities table."
         required: false
         example: 16
         type: integer
@@ -687,7 +669,7 @@ endpoints:
         custom: []
       issue_status_id:
         name: issue_status_id
-        description: 'The <code>id</code> of an existing record in the issue_statuses table.'
+        description: "The <code>id</code> of an existing record in the issue_statuses table."
         required: false
         example: 16
         type: integer
@@ -697,7 +679,7 @@ endpoints:
         custom: []
       assignee_id:
         name: assignee_id
-        description: 'Must be a valid UUID. The <code>id</code> of an existing record in the users table.'
+        description: "Must be a valid UUID. The <code>id</code> of an existing record in the users table."
         required: false
         example: a4855dc5-0acb-33c3-b921-f4291f719ca0
         type: string
@@ -707,7 +689,7 @@ endpoints:
         custom: []
       parent_id:
         name: parent_id
-        description: 'Must be a valid UUID. The <code>id</code> of an existing record in the issues table.'
+        description: "Must be a valid UUID. The <code>id</code> of an existing record in the issues table."
         required: false
         example: c90237e9-ced5-3af6-88ea-84aeaa148878
         type: string
@@ -717,18 +699,18 @@ endpoints:
         custom: []
       tags:
         name: tags
-        description: ''
+        description: ""
         required: false
         example:
           - architecto
-        type: 'string[]'
+        type: "string[]"
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
       summary: b
-      description: 'Eius et animi quos velit et.'
+      description: "Eius et animi quos velit et."
       issue_type_id: 16
       issue_priority_id: 16
       issue_status_id: 16
@@ -744,17 +726,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - POST
-    uri: 'api/v1/issues/{issue_id}/transition'
+    uri: "api/v1/issues/{issue_id}/transition"
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -764,7 +745,7 @@ endpoints:
     urlParameters:
       issue_id:
         name: issue_id
-        description: 'The ID of the issue.'
+        description: "The ID of the issue."
         required: true
         example: OMP-1
         type: string
@@ -779,7 +760,7 @@ endpoints:
     bodyParameters:
       to_status_id:
         name: to_status_id
-        description: 'The <code>id</code> of an existing record in the issue_statuses table.'
+        description: "The <code>id</code> of an existing record in the issue_statuses table."
         required: true
         example: 16
         type: integer
@@ -797,17 +778,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - POST
-    uri: 'api/v1/issues/{issue_id}/comments'
+    uri: "api/v1/issues/{issue_id}/comments"
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -817,7 +797,7 @@ endpoints:
     urlParameters:
       issue_id:
         name: issue_id
-        description: 'The ID of the issue.'
+        description: "The ID of the issue."
         required: true
         example: OMP-1
         type: string
@@ -832,7 +812,7 @@ endpoints:
     bodyParameters:
       body:
         name: body
-        description: 'Must not be greater than 65000 characters.'
+        description: "Must not be greater than 65000 characters."
         required: true
         example: b
         type: string
@@ -850,17 +830,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - POST
-    uri: 'api/v1/issues/{issue_id}/attachments'
+    uri: "api/v1/issues/{issue_id}/attachments"
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -870,7 +849,7 @@ endpoints:
     urlParameters:
       issue_id:
         name: issue_id
-        description: 'The ID of the issue.'
+        description: "The ID of the issue."
         required: true
         example: OMP-1
         type: string
@@ -885,7 +864,7 @@ endpoints:
     bodyParameters:
       file:
         name: file
-        description: 'Must be a file. Must not be greater than 10240 kilobytes.'
+        description: "Must be a file. Must not be greater than 10240 kilobytes."
         required: true
         example: null
         type: file
@@ -903,17 +882,16 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - GET
-    uri: 'api/v1/issues/{issue_id}/time/summary'
+    uri: "api/v1/issues/{issue_id}/time/summary"
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'GET /api/v1/issues/{issue:id}/time/summary'
-      description: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
+      title: "GET /api/v1/issues/{issue:id}/time/summary"
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -923,7 +901,7 @@ endpoints:
     urlParameters:
       issue_id:
         name: issue_id
-        description: 'The ID of the issue.'
+        description: "The ID of the issue."
         required: true
         example: OMP-1
         type: string
@@ -939,13 +917,12 @@ endpoints:
     cleanBodyParameters: []
     fileParameters: []
     responses:
-      -
-        status: 401
+      - status: 401
         content: '{"message":"Unauthenticated."}'
         headers:
-          cache-control: 'no-cache, private'
+          cache-control: "no-cache, private"
           content-type: application/json
-          access-control-allow-origin: '*'
+          access-control-allow-origin: "*"
         description: null
         custom: []
     responseFields: []
@@ -954,19 +931,18 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - POST
-    uri: 'api/v1/issues/{issue_id}/time/start'
+    uri: "api/v1/issues/{issue_id}/time/start"
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
       title: |-
         POST /api/v1/issues/{issue:id}/time/start
         Starts a running timer for the authenticated user.
-      description: ''
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -976,7 +952,7 @@ endpoints:
     urlParameters:
       issue_id:
         name: issue_id
-        description: 'The ID of the issue.'
+        description: "The ID of the issue."
         required: true
         example: OMP-1
         type: string
@@ -998,19 +974,18 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - POST
-    uri: 'api/v1/issues/{issue_id}/time/stop'
+    uri: "api/v1/issues/{issue_id}/time/stop"
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
       title: |-
         POST /api/v1/issues/{issue:id}/time/stop
         Stops the current running timer for the authenticated user.
-      description: ''
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -1020,7 +995,7 @@ endpoints:
     urlParameters:
       issue_id:
         name: issue_id
-        description: 'The ID of the issue.'
+        description: "The ID of the issue."
         required: true
         example: OMP-1
         type: string
@@ -1042,19 +1017,18 @@ endpoints:
     method: null
     route: null
     custom: []
-  -
-    httpMethods:
+  - httpMethods:
       - POST
-    uri: 'api/v1/issues/{issue_id}/time'
+    uri: "api/v1/issues/{issue_id}/time"
     metadata:
       groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
+      groupDescription: ""
+      subgroup: ""
+      subgroupDescription: ""
       title: |-
         POST /api/v1/issues/{issue:id}/time
         Manual log: accepts either {seconds} or {started_at, ended_at}, plus optional note.
-      description: ''
+      description: ""
       authenticated: false
       deprecated: false
       custom: []
@@ -1064,7 +1038,7 @@ endpoints:
     urlParameters:
       issue_id:
         name: issue_id
-        description: 'The ID of the issue.'
+        description: "The ID of the issue."
         required: true
         example: OMP-1
         type: string
@@ -1079,9 +1053,9 @@ endpoints:
     bodyParameters:
       started_at:
         name: started_at
-        description: 'Must be a valid date.'
+        description: "Must be a valid date."
         required: true
-        example: '2025-09-19T15:54:45'
+        example: "2025-09-19T15:54:45"
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1089,9 +1063,9 @@ endpoints:
         custom: []
       ended_at:
         name: ended_at
-        description: 'Must be a valid date. Must be a date after <code>started_at</code>.'
+        description: "Must be a valid date. Must be a date after <code>started_at</code>."
         required: true
-        example: '2051-10-13'
+        example: "2051-10-13"
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1099,18 +1073,18 @@ endpoints:
         custom: []
       note:
         name: note
-        description: 'Must not be greater than 2000 characters.'
+        description: "Must not be greater than 2000 characters."
         required: false
-        example: 'n'
+        example: "n"
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         custom: []
     cleanBodyParameters:
-      started_at: '2025-09-19T15:54:45'
-      ended_at: '2051-10-13'
-      note: 'n'
+      started_at: "2025-09-19T15:54:45"
+      ended_at: "2051-10-13"
+      note: "n"
     fileParameters: []
     responses: []
     responseFields: []
