@@ -4,11 +4,11 @@
 html {
     font-family: sans-serif;
     -ms-text-size-adjust: 100%;
-    -webkit-text-size-adjust: 100%
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
-    margin: 0
+    margin: 0;
 }
 
 article,
@@ -24,7 +24,7 @@ menu,
 nav,
 section,
 summary {
-    display: block
+    display: block;
 }
 
 audio,
@@ -32,53 +32,53 @@ canvas,
 progress,
 video {
     display: inline-block;
-    vertical-align: baseline
+    vertical-align: baseline;
 }
 
 audio:not([controls]) {
     display: none;
-    height: 0
+    height: 0;
 }
 
 [hidden],
 template {
-    display: none
+    display: none;
 }
 
 a {
-    background-color: transparent
+    background-color: transparent;
 }
 
 a:active,
 a:hover {
-    outline: 0
+    outline: 0;
 }
 
 abbr[title] {
-    border-bottom: 1px dotted
+    border-bottom: 1px dotted;
 }
 
 b,
 strong {
-    font-weight: bold
+    font-weight: bold;
 }
 
 dfn {
-    font-style: italic
+    font-style: italic;
 }
 
 h1 {
     font-size: 2em;
-    margin: 0.67em 0
+    margin: 0.67em 0;
 }
 
 mark {
     background: #ff0;
-    color: #000
+    color: #000;
 }
 
 small {
-    font-size: 80%
+    font-size: 80%;
 }
 
 sub,
@@ -86,36 +86,36 @@ sup {
     font-size: 75%;
     line-height: 0;
     position: relative;
-    vertical-align: baseline
+    vertical-align: baseline;
 }
 
 sup {
-    top: -0.5em
+    top: -0.5em;
 }
 
 sub {
-    bottom: -0.25em
+    bottom: -0.25em;
 }
 
 img {
-    border: 0
+    border: 0;
 }
 
 svg:not(:root) {
-    overflow: hidden
+    overflow: hidden;
 }
 
 figure {
-    margin: 1em 40px
+    margin: 1em 40px;
 }
 
 hr {
     box-sizing: content-box;
-    height: 0
+    height: 0;
 }
 
 pre {
-    overflow: auto
+    overflow: auto;
 }
 
 code,
@@ -123,7 +123,7 @@ kbd,
 pre,
 samp {
     font-family: monospace, monospace;
-    font-size: 1em
+    font-size: 1em;
 }
 
 button,
@@ -133,16 +133,16 @@ select,
 textarea {
     color: inherit;
     font: inherit;
-    margin: 0
+    margin: 0;
 }
 
 button {
-    overflow: visible
+    overflow: visible;
 }
 
 button,
 select {
-    text-transform: none
+    text-transform: none;
 }
 
 button,
@@ -150,72 +150,72 @@ html input[type="button"],
 input[type="reset"],
 input[type="submit"] {
     -webkit-appearance: button;
-    cursor: pointer
+    cursor: pointer;
 }
 
 button[disabled],
 html input[disabled] {
-    cursor: default
+    cursor: default;
 }
 
 button::-moz-focus-inner,
 input::-moz-focus-inner {
     border: 0;
-    padding: 0
+    padding: 0;
 }
 
 input {
-    line-height: normal
+    line-height: normal;
 }
 
 input[type="checkbox"],
 input[type="radio"] {
     box-sizing: border-box;
-    padding: 0
+    padding: 0;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-    height: auto
+    height: auto;
 }
 
 input[type="search"] {
     -webkit-appearance: textfield;
-    box-sizing: content-box
+    box-sizing: content-box;
 }
 
 input[type="search"]::-webkit-search-cancel-button,
 input[type="search"]::-webkit-search-decoration {
-    -webkit-appearance: none
+    -webkit-appearance: none;
 }
 
 fieldset {
     border: 1px solid #c0c0c0;
     margin: 0 2px;
-    padding: 0.35em 0.625em 0.75em
+    padding: 0.35em 0.625em 0.75em;
 }
 
 legend {
     border: 0;
-    padding: 0
+    padding: 0;
 }
 
 textarea {
-    overflow: auto
+    overflow: auto;
 }
 
 optgroup {
-    font-weight: bold
+    font-weight: bold;
 }
 
 table {
     border-collapse: collapse;
-    border-spacing: 0
+    border-spacing: 0;
 }
 
 td,
 th {
-    padding: 0
+    padding: 0;
 }
 
 .content h1,
@@ -223,22 +223,27 @@ th {
 .content h3,
 .content h4,
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    font-size: 14px
+    font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+        sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 14px;
 }
 
 .content h1,
 .content h2,
 .content h3,
 .content h4 {
-    font-weight: bold
+    font-weight: bold;
 }
 
 .content pre,
 .content code {
-    font-family: Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
+    font-family:
+        Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono",
+        "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New",
+        monospace, serif;
     font-size: 12px;
-    line-height: 1.5
+    line-height: 1.5;
 }
 
 .content pre,
@@ -246,39 +251,44 @@ body {
     word-break: break-all;
     -webkit-hyphens: auto;
     -ms-hyphens: auto;
-    hyphens: auto
+    hyphens: auto;
 }
 
 @font-face {
-    font-family: 'slate';
+    font-family: "slate";
     src: url(../fonts/slate.eot?-syv14m);
-    src: url(../fonts/slate.eot?#iefix-syv14m) format("embedded-opentype"), url(../fonts/slate.woff2?-syv14m) format("woff2"), url(../fonts/slate.woff?-syv14m) format("woff"), url(../fonts/slate.ttf?-syv14m) format("truetype"), url(../fonts/slate.svg?-syv14m#slate) format("svg");
+    src:
+        url(../fonts/slate.eot?#iefix-syv14m) format("embedded-opentype"),
+        url(../fonts/slate.woff2?-syv14m) format("woff2"),
+        url(../fonts/slate.woff?-syv14m) format("woff"),
+        url(../fonts/slate.ttf?-syv14m) format("truetype"),
+        url(../fonts/slate.svg?-syv14m#slate) format("svg");
     font-weight: normal;
-    font-style: normal
+    font-style: normal;
 }
 
 .content aside.warning:before,
 .content aside.notice:before,
 .content aside.success:before {
-    font-family: 'slate';
+    font-family: "slate";
     speak: none;
     font-style: normal;
     font-weight: normal;
     font-variant: normal;
     text-transform: none;
-    line-height: 1
+    line-height: 1;
 }
 
 .content aside.warning:before {
-    content: "\e600"
+    content: "\e600";
 }
 
 .content aside.notice:before {
-    content: "\e602"
+    content: "\e602";
 }
 
 .content aside.success:before {
-    content: "\e606"
+    content: "\e606";
 }
 
 .tocify,
@@ -286,57 +296,57 @@ body {
 .lang-selector,
 .search,
 #nav-button {
-    display: none
+    display: none;
 }
 
-.tocify-wrapper>img {
+.tocify-wrapper > img {
     margin: 0 auto;
-    display: block
+    display: block;
 }
 
 .content {
-    font-size: 12px
+    font-size: 12px;
 }
 
 .content pre,
 .content code {
     border: 1px solid #999;
     border-radius: 5px;
-    font-size: 0.8em
+    font-size: 0.8em;
 }
 
 .content pre code {
-    border: 0
+    border: 0;
 }
 
 .content pre {
-    padding: 1.3em
+    padding: 1.3em;
 }
 
 .content code {
-    padding: 0.2em
+    padding: 0.2em;
 }
 
 .content table {
-    border: 1px solid #999
+    border: 1px solid #999;
 }
 
 .content table tr {
-    border-bottom: 1px solid #999
+    border-bottom: 1px solid #999;
 }
 
 .content table td,
 .content table th {
-    padding: 0.7em
+    padding: 0.7em;
 }
 
 .content p {
-    line-height: 1.5
+    line-height: 1.5;
 }
 
 .content a {
     text-decoration: none;
-    color: #000
+    color: #000;
 }
 
 .content h1 {
@@ -347,21 +357,21 @@ body {
     margin-bottom: 21px;
     border: 2px solid #ccc;
     border-width: 2px 0;
-    text-align: center
+    text-align: center;
 }
 
 .content h2 {
     font-size: 1.8em;
     margin-top: 2em;
     border-top: 2px solid #ccc;
-    padding-top: 0.8em
+    padding-top: 0.8em;
 }
 
-.content h1+h2,
-.content h1+div+h2 {
+.content h1 + h2,
+.content h1 + div + h2 {
     border-top: none;
     padding-top: 0;
-    margin-top: 0
+    margin-top: 0;
 }
 
 .content h3,
@@ -369,12 +379,12 @@ body {
     font-size: 0.8em;
     margin-top: 1.5em;
     margin-bottom: 0.8em;
-    text-transform: uppercase
+    text-transform: uppercase;
 }
 
 .content h5,
 .content h6 {
-    text-transform: uppercase
+    text-transform: uppercase;
 }
 
 .content aside {
@@ -383,11 +393,11 @@ body {
     border-radius: 5px;
     margin-top: 1.5em;
     margin-bottom: 1.5em;
-    line-height: 1.6
+    line-height: 1.6;
 }
 
 .content aside:before {
     vertical-align: middle;
     padding-right: 0.5em;
-    font-size: 14px
+    font-size: 14px;
 }
