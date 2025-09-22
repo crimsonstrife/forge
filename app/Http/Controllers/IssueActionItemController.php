@@ -21,7 +21,7 @@ final class IssueActionItemController extends Controller
         ]);
 
         $html = '<div id="root">'.($issue->description ?? '').'</div>';
-        $dom  = new DOMDocument('1.0','UTF-8');
+        $dom  = new DOMDocument('1.0', 'UTF-8');
         libxml_use_internal_errors(true);
         $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         libxml_clear_errors();
@@ -31,7 +31,8 @@ final class IssueActionItemController extends Controller
             $li->setAttribute('data-ai-checked', $data['checked'] ? 'true' : 'false');
         }
 
-        $root = $dom->getElementById('root'); $new = '';
+        $root = $dom->getElementById('root');
+        $new = '';
         foreach ($root->childNodes as $n) {
             $new .= $dom->saveHTML($n);
         }
