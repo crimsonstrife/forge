@@ -1,12 +1,12 @@
 <div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
-
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
-    <form method="POST" wire:submit="login" class="flex flex-col gap-6">
+    <x-validation-errors class="mb-3" />
+
+    <form wire:submit.prevent="login" class="flex flex-col gap-6">
         <!-- Email Address -->
-        <flux:input
+        <x-input
             wire:model="email"
             :label="__('Email address')"
             type="email"
@@ -18,7 +18,7 @@
 
         <!-- Password -->
         <div class="relative">
-            <flux:input
+            <x-input
                 wire:model="password"
                 :label="__('Password')"
                 type="password"
@@ -36,7 +36,7 @@
         </div>
 
         <!-- Remember Me -->
-        <flux:checkbox wire:model="remember" :label="__('Remember me')" />
+        <x-checkbox wire:model="remember" :label="__('Remember me')" />
 
         <div class="flex items-center justify-end">
             <wa-button type="submit" variant="brand" aria-label="{{ __('Log in') }}">

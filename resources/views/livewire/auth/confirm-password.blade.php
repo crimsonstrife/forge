@@ -9,7 +9,7 @@
 
     <form method="POST" wire:submit="confirmPassword" class="flex flex-col gap-6">
         <!-- Password -->
-        <flux:input
+        <x-input
             wire:model="password"
             :label="__('Password')"
             type="password"

@@ -6,7 +6,7 @@
 
     <form method="POST" wire:submit="sendPasswordResetLink" class="flex flex-col gap-6">
         <!-- Email Address -->
-        <flux:input
+        <x-input
             wire:model="email"
             :label="__('Email Address')"
             type="email"

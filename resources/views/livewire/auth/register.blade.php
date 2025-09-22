@@ -6,7 +6,7 @@
 
     <form method="POST" wire:submit="register" class="flex flex-col gap-6">
         <!-- Name -->
-        <flux:input
+        <x-input
             wire:model="name"
             :label="__('Name')"
             type="text"
@@ -17,7 +17,7 @@
         />
 
         <!-- Email Address -->
-        <flux:input
+        <x-input
             wire:model="email"
             :label="__('Email address')"
             type="email"
@@ -27,7 +27,7 @@
         />
 
         <!-- Password -->
-        <flux:input
+        <x-input
             wire:model="password"
             :label="__('Password')"
             type="password"
@@ -38,7 +38,7 @@
         />
 
         <!-- Confirm Password -->
-        <flux:input
+        <x-input
             wire:model="password_confirmation"
             :label="__('Confirm password')"
             type="password"
