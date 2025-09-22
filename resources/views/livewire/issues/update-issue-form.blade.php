@@ -10,7 +10,12 @@
 
                 <div class="col-12">
                     <x-label for="description" value="Description"/>
-                    <textarea id="description" rows="6" wire:model.defer="description" class="form-control"></textarea>
+                    <x-editor.tiny
+                        name="description"
+                        wireModel="description"
+                        :value="$this->description"
+                        wire:ignore
+                    />
                     @error('description') <div class="form-text text-danger">{{ $message }}</div> @enderror
                 </div>
 

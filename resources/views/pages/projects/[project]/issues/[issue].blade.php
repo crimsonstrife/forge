@@ -399,7 +399,7 @@ render(function (View $view, Project $project, Issue $issue) {
                                     <!-- Overview: description moved from header -->
                                     <wa-tab-panel name="overview" aria-hidden="false" active>
                                         @if($issue->description)
-                                            <div class="text-body">{!! $issue->description !!}</div>
+                                            <div id="issue-body" class="text-body issue-content">{!! $issue->description !!}</div>
                                         @else
                                             <p class="text-body-secondary small mb-0">{{ __('No description yet.') }}</p>
                                         @endif
@@ -903,4 +903,30 @@ render(function (View $view, Project $project, Issue $issue) {
             },
         }
     };
+</script>
+<script>
+    document.getElementById('issue-body').addEventListener('click', async (e) => {
+        const li = e.target.closest?.('li[data-ai-id]');
+        if (!li) return;
+        const list = li.closest('[data-ai-list-id]');
+
+        const next = li.getAttribute('data-ai-checked') !== 'true';
+        li.setAttribute('data-ai-checked', String(next));
+        const cb = li.querySelector('input[type="checkbox"]'); if (cb) cb.checked = next;
+
+        try {
+            await fetch(`{{ route('issues.action-items.toggle', [$project, $issue]) }}`, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    listId: list?.getAttribute('data-ai-list-id'),
+                    itemId: li.getAttribute('data-ai-id'),
+                    checked: next
+                })
+            });
+        } catch {
+            li.setAttribute('data-ai-checked', String(!next));
+            if (cb) cb.checked = !next;
+        }
+    });
 </script>

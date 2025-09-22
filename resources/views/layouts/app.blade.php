@@ -12,7 +12,7 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js','resources/js/editor/tinymce-init.js'])
     @fluxAppearance
     @livewireStyles
     @stack('styles')
@@ -42,7 +42,6 @@
 @livewireScripts
 @cookieconsentscripts
 @stack('scripts')
-
 <script>
     // Bootstrap-friendly + WA-friendly theme toggle
     window.themeSwitcher = function () {

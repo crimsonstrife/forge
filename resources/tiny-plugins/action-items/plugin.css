@@ -1,0 +1,4 @@
+.ai-checklist { padding-left: 1.25rem; margin: 0.5rem 0; }
+.ai-checklist li { list-style: none; display: flex; align-items: center; gap: .5rem; }
+.ai-checklist .ai-item input[type=checkbox] { margin-right: .25rem; }
+.ai-checklist li[data-ai-checked="true"] .ai-text { text-decoration: line-through; opacity: .8; }

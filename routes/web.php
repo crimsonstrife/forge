@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\IssueActionItemController;
 use App\Http\Controllers\IssueController;
 use App\Http\Controllers\IssueVcsController;
 use App\Http\Controllers\ProjectController;
@@ -40,6 +41,9 @@ Route::middleware([
         '/projects/{project}/issues/{issue}/attachments/{media}/download',
         [IssueAttachmentController::class, 'download']
     )->name('issues.attachments.download');
+    Route::post('/projects/{project}/issues/{issue}/action-items/toggle', [IssueActionItemController::class, 'toggle'])
+        ->middleware(['auth'])
+        ->name('issues.action-items.toggle');
     Route::delete(
         '/projects/{project}/issues/{issue}/attachments/{media}',
         [IssueAttachmentController::class, 'destroy']
