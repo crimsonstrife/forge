@@ -50,46 +50,58 @@
 ## Quick Start
 
 1. **Clone & install**
-   ```bash
-   git clone https://github.com/crimsonstrife/forge.git
-   cd forge
-   cp .env.example .env
-   composer install
-   npm install
-   php artisan key:generate
+
+    ```bash
+    git clone https://github.com/crimsonstrife/forge.git
+    cd forge
+    cp .env.example .env
+    composer install
+    npm install
+    php artisan key:generate
+
+    ```
 
 2. **Configure .env**
-   ```bash
-   APP_URL=http://forge.test          # or http://localhost:8000/your domain
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=your_database
-   DB_USERNAME=your_username
-   DB_PASSWORD=your_password
-   
-   CACHE_DRIVER=redis                  # or: file
-   SESSION_DRIVER=redis                # or: file
-   QUEUE_CONNECTION=database           # or: redis
+
+    ```bash
+    APP_URL=http://forge.test          # or http://localhost:8000/your domain
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=your_database
+    DB_USERNAME=your_username
+    DB_PASSWORD=your_password
+
+    CACHE_DRIVER=redis                  # or: file
+    SESSION_DRIVER=redis                # or: file
+    QUEUE_CONNECTION=database           # or: redis
+
+    ```
 
 3. **Database & storage**
-   ```bash
-   php artisan migrate
-   php artisan storage:link
-   php artisan db:seed
+
+    ```bash
+    php artisan migrate
+    php artisan storage:link
+    php artisan db:seed
+
+    ```
 
 4. **Frontend**
-   ```bash
-   npm install        # if you did not run it already
-   npm run dev        # or: npm run build
 
+    ```bash
+    npm install        # if you did not run it already
+    npm run dev        # or: npm run build
+
+    ```
 
 5. **Run**
-   ```bash
-   php artisan serve
-   # optional:
-   # php artisan reverb:start   # realtime
-   # php artisan queue:work     # queues
+    ```bash
+    php artisan serve
+    # optional:
+    # php artisan reverb:start   # realtime
+    # php artisan queue:work     # queues
+    ```
 
 ## Conventions
 
@@ -101,5 +113,7 @@
 - **Jobs:** Long-running tasks queued (ShouldQueue)
 
 ## Testing
-   ```bash
-   php artisan test
+
+```bash
+php artisan test
+```
