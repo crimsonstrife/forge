@@ -8,7 +8,7 @@
     <div class="container">
         <!-- Brand -->
         <a class="navbar-brand d-flex align-items-center gap-2" href="{{ $user ? route('dashboard') : url('/') }}">
-            <x-application-mark />
+            <x-application-logo />
         </a>
 
         <!-- Toggler -->

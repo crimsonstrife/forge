@@ -1,7 +1,16 @@
 <x-guest-layout>
     <x-authentication-card>
         <x-slot name="logo">
-            <x-authentication-card-logo />
+            <!-- Brand -->
+            @auth
+                <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('dashboard') }}">
+                    <x-application-logo />
+                </a>
+            @else
+                <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url('/') }}">
+                    <x-application-logo />
+                </a>
+            @endauth
         </x-slot>
 
         <x-validation-errors class="mb-3" />

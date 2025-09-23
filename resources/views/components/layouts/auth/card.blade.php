@@ -3,12 +3,16 @@
     <div class="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
         <div class="flex w-full max-w-md flex-col gap-6">
             <x-slot name="logo">
-                <a href="{{ url('/') }}" class="flex flex-col items-center gap-2 font-medium">
-                <span class="flex h-9 w-9 items-center justify-center rounded-md">
-                    <x-authentication-card-logo />
-                </span>
-                    <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
-                </a>
+                <!-- Brand -->
+                @auth
+                    <a class="flex flex-col items-center gap-2 text-black dark:text-white" href="{{ route('dashboard') }}">
+                        <x-application-logo />
+                    </a>
+                @else
+                    <a class="flex flex-col items-center gap-2 text-black dark:text-white" href="{{ url('/') }}">
+                        <x-application-logo />
+                    </a>
+                @endauth
             </x-slot>
 
             <x-validation-errors class="mb-3" />

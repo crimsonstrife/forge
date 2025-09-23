@@ -24,12 +24,18 @@
 <body class="d-flex flex-column min-vh-100 bg-light" x-data="themeSwitcher()" :class="{ 'dark': switchOn }">
 
 {{-- NAVBAR --}}
-<nav class="navbar navbar-expand-md bg-white border-bottom">
+<nav class="navbar navbar-expand-md bg-body border-bottom" x-data>
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url('/') }}">
-            <img src="/favicon.svg" alt="{{ config('app.name') }} logo" width="28" height="28">
-            <span class="fw-semibold">{{ config('app.name', 'Laravel') }}</span>
-        </a>
+        <!-- Brand -->
+        @auth
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('dashboard') }}">
+                <x-application-logo />
+            </a>
+        @else
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url('/') }}">
+                <x-application-logo />
+            </a>
+        @endauth
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnav" aria-controls="topnav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
