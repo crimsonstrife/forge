@@ -24,9 +24,8 @@
     x-init="init()"
     x-on:tiny-reinit.window="destroy(); init();"
     class="w-100"
-    wire:ignore
 >
-  <textarea id="{{ $id }}" name="{{ $name }}" class="form-control" placeholder="{{ $placeholder }}" @if($wireModel) wire:ignore @endif>
+  <textarea id="{{ $id }}" name="{{ $name }}" class="form-control" placeholder="{{ $placeholder }}" @if($wireModel) @endif>
 @if($value){!! $value !!}@endif
   </textarea>
 </div>

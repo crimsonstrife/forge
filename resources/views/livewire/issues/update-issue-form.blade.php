@@ -14,7 +14,6 @@
                         name="description"
                         wireModel="description"
                         :value="$this->description"
-                        wire:ignore
                     />
                     @error('description') <div class="form-text text-danger">{{ $message }}</div> @enderror
                 </div>
