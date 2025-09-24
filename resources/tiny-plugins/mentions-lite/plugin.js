@@ -1,16 +1,21 @@
 (function () {
     tinymce.PluginManager.add('mentions-lite', function (editor) {
+        const esc = tinymce.util.Tools.escapeHtml;
+
         const renderCard = (api, data) => {
             const el = document.createElement('div');
             el.className = 'mention-item';
-            el.innerHTML = `<div><strong>${tinymce.util.Tools.escapeHtml(data.value.label)}</strong>
-                        <small>${tinymce.util.Tools.escapeHtml(data.value.sublabel || '')}</small>
+            el.innerHTML = `<div><strong>${esc(data.value.label)}</strong>
+                        <small>${esc(data.value.sublabel || '')}</small>
                       </div>`;
             el.addEventListener('click', () => api.onAction(data));
             return el;
         };
 
+        // @user mentions
         editor.ui.registry.addAutocompleter('mentionsUsers', {
+            // TinyMCE 7+ requires "trigger"; keep "ch" for older versions (harmless on 7+)
+            trigger: '@',
             ch: '@',
             minChars: 1,
             columns: 1,
@@ -22,14 +27,16 @@
             onAction: (api, rng, value) => {
                 editor.selection.setRng(rng);
                 editor.insertContent(
-                    `<a href="${value.url}" data-mention-type="user" data-mention-id="${value.id}">@${tinymce.util.Tools.escapeHtml(value.label)}</a>&nbsp;`
+                    `<a href="${value.url}" data-mention-type="user" data-mention-id="${esc(value.id)}">@${esc(value.label)}</a>&nbsp;`
                 );
                 api.hide();
             },
             itemRenderer: renderCard
         });
 
+        // #issue mentions
         editor.ui.registry.addAutocompleter('mentionsIssues', {
+            trigger: '#',
             ch: '#',
             minChars: 1,
             fetch: async (pattern) => {
@@ -40,14 +47,14 @@
             onAction: (api, rng, value) => {
                 editor.selection.setRng(rng);
                 editor.insertContent(
-                    `<a href="${value.url}" data-mention-type="issue" data-mention-id="${value.id}">#${tinymce.util.Tools.escapeHtml(value.label)}</a>&nbsp;`
+                    `<a href="${value.url}" data-mention-type="issue" data-mention-id="${esc(value.id)}">#${esc(value.label)}</a>&nbsp;`
                 );
                 api.hide();
             }
         });
 
-        // Optional toolbar helpers
-        editor.ui.registry.addButton('mentionUser', { text: '@', onAction: () => editor.execCommand('mceInsertContent', false, '@') });
+        // Toolbar helpers
+        editor.ui.registry.addButton('mentionUser',  { text: '@', onAction: () => editor.execCommand('mceInsertContent', false, '@') });
         editor.ui.registry.addButton('mentionIssue', { text: '#', onAction: () => editor.execCommand('mceInsertContent', false, '#') });
     });
 })();
