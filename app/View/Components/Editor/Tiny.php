@@ -31,7 +31,7 @@ class Tiny extends Component
         $this->wireModel = $wireModel;
         $this->height = $height;
 
-        // Resolve hashed build paths from Vite's manifest
+
         $this->aiJs     = Vite::asset('resources/tiny-plugins/action-items/plugin.js');
         $this->aiCss    = Vite::asset('resources/tiny-plugins/action-items/plugin.css');
         $this->mentionsJs = Vite::asset('resources/tiny-plugins/mentions-lite/plugin.js');
