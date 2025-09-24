@@ -5,8 +5,6 @@
   'baseUrl' => '/build/vendor/tinymce',
 ])
 
-<script src="{{ $baseUrl }}/tinymce.js"></script>
-
 <div
     x-data="tinyEditor({
     elId: '{{ $id }}',
@@ -21,6 +19,7 @@
     toolbar: @js($toolbar),
     plugins: @js($plugins),
     wireModel: @js($wireModel),
+    initial: @js($value ?? null),
   })"
     x-init="init()"
     x-on:tiny-reinit.window="destroy(); init();"

@@ -24,3 +24,4 @@ yarn-error.log
 /.rnd
 forge.code-workspace
 .DS_Store
+/public/plugins/*

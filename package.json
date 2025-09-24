@@ -2,8 +2,10 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
-        "dev": "vite"
+        "build": "vite build && npm run postbuild",
+        "postbuild": "node scripts/minify-tinymce.js && node scripts/build-editor-plugins.js",
+        "dev": "vite",
+        "dev:plugins": "node scripts/build-editor-plugins.js --watch"
     },
     "dependencies": {
         "@awesome.me/webawesome": "^3.0.0-beta.6",
@@ -29,6 +31,7 @@
         "@tailwindcss/forms": "^0.5.7",
         "@tailwindcss/typography": "^0.5.18",
         "autoprefixer": "^10.4.16",
+        "esbuild": "^0.25.10",
         "laravel-echo": "^2.2.0",
         "postcss": "^8.4.32",
         "pusher-js": "^8.4.0",
