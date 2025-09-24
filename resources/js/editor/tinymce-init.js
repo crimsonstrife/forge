@@ -8,7 +8,7 @@ window.tinyEditor = function tinyEditor(opts) {
         wireModel: opts.wireModel ?? null,
         contentCss: Array.isArray(opts.contentCss) ? opts.contentCss : [],
         externalPlugins: opts.externalPlugins ?? {}, // { 'action-items': '/js/tinymce-actionitems.js', ... }
-        suffix: '.min', // will switch to '' if we load non-min core
+        suffix: '.min',
         initial: opts.initial ?? null,
     };
 
