@@ -30,7 +30,7 @@ final class CreateIssueForm extends Component
     #[Validate('required|string|max:200')]
     public string $summary = '';
 
-    #[Validate('nullable|string|max:10000')]
+    #[Validate('nullable|string|max:20000')]
     public ?string $description = null;
 
     public ?int $storyPoints = null;

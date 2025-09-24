@@ -36,7 +36,7 @@ final class UpdateIssueForm extends Component
     #[Validate(['summary' => 'required|string|min:3|max:200'])]
     public string $summary = '';
 
-    #[Validate(['description' => 'nullable|string|max:5000'])]
+    #[Validate(['description' => 'nullable|string|max:20000'])]
     public ?string $description = null;
 
     #[Validate(['issue_type_id' => 'required'])]
