@@ -74,7 +74,21 @@ class ProjectForm
                             ])
                             ->addActionLabel('Add origin')
                             ->visible(fn ($get) => $get('public_tracker_enabled') === true)
-                            ->columns(1),
+                            ->columns(1)
+                            ->formatStateUsing(function ($state) {
+                                // Convert array of strings to array of objects with 'origin' key
+                                if (is_array($state) && (count($state) === 0 || is_string(array_values($state)[0]))) {
+                                    return collect($state)->map(fn ($item) => ['origin' => $item])->all();
+                                }
+                                return $state;
+                            })
+                            ->dehydrateStateUsing(function ($state) {
+                                // Convert array of objects with 'origin' key to array of strings
+                                if (is_array($state) && (count($state) === 0 || is_array(array_values($state)[0]))) {
+                                    return collect($state)->pluck('origin')->filter()->values()->all();
+                                }
+                                return $state;
+                            }),
                     ])->columns(2),
                 ]),
                 Grid::make(1)->schema([
