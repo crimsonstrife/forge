@@ -123,5 +123,4 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    'show_company_links' => env('APP_SHOW_COMPANY_LINKS', false),
 ];
