@@ -5,24 +5,21 @@ namespace App\Services\ImportExport;
 use App\Models\ImportExportRecord;
 use App\Models\Issue;
 use App\Models\Project;
-use App\Models\User;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use RuntimeException;
 use ZipArchive;
 
-/**
- * Imports a .forgepkg into a NEW project.
- */
 final class ProjectImportService
 {
-    /** @var array<string,string> old-ext-id => new issue UUID (string) */
+    /** @var array<string,string> old issue external_id => new issue PK (UUID string) */
     private array $issueIdMap = [];
 
     /**
+     * @return string Project UUID
      * @throws \Throwable
      */
-    public function import(string $archivePath, ImportExportRecord $record): int
+    public function import(string $archivePath, ImportExportRecord $record): string
     {
         $zip = new ZipArchive();
         if ($zip->open($archivePath) !== true) {
@@ -37,37 +34,42 @@ final class ProjectImportService
         $projectData = json_decode($zip->getFromName('data/project.json') ?: '{}', true, 512, JSON_THROW_ON_ERROR);
 
         return DB::transaction(function () use ($zip, $projectData, $record): string {
-            // Create project (avoid slug collisions)
-            $slug = $projectData['slug'] ?? 'imported-project';
-            $baseSlug = $slug;
+            // Keys-as-slugs: prefer incoming key; fallback to slug or name
+            $incomingKey  = $projectData['key']  ?? null;
+            $incomingSlug = $projectData['slug'] ?? null;
+            $incomingName = $projectData['name'] ?? 'Imported Project';
+
+            $code = $incomingKey ?? $incomingSlug ?? Str::slug($incomingName) ?? 'project';
+            $uniqueKey = $code;
             $i = 1;
-            while (Project::query()->where('slug', $slug)->exists()) {
-                $slug = $baseSlug.'-import-'.$i++;
+            while (Project::query()->where('key', $uniqueKey)->exists()) {
+                $uniqueKey = $code . '-import-' . $i++;
             }
 
             $project = Project::query()->create([
-                'name' => $projectData['name'] ?? 'Imported Project',
-                'slug' => $slug,
+                'name'        => $incomingName,
+                'key'         => $uniqueKey, // <-- use key column in your schema
                 'description' => $projectData['description'] ?? null,
             ]);
 
             // Issues pass 1: create without parents
-            $lines = preg_split('/\r\n|\r|\n/', (string) $zip->getFromName('data/issues.ndjson'));
-            $rows  = array_values(array_filter($lines, fn ($l) => (string) $l !== ''));
+            $raw   = (string) $zip->getFromName('data/issues.ndjson');
+            $lines = preg_split('/\R/', $raw) ?: [];
+            $rows  = array_values(array_filter($lines, static fn ($l) => trim((string) $l) !== ''));
 
             foreach ($rows as $line) {
                 /** @var array<string,mixed> $row */
                 $row = json_decode($line, true, 512, JSON_THROW_ON_ERROR);
 
                 $issue = $project->issues()->create([
-                    'title' => $row['title'] ?? 'Untitled',
+                    'title'       => $row['title'] ?? 'Untitled',
                     'description' => $row['description'] ?? null,
-                    'external_id' => $row['external_id'] ?? null,
-                    // TODO: map status/type/priority by slug; map assignee by email
+                    'external_id' => $row['external_id'] ?? (string) Str::orderedUuid(),
+                    // TODO: map status/type/priority by slug; map assignee by email; attach labels
                 ]);
 
                 if (! empty($row['external_id'])) {
-                    $this->issueIdMap[$row['external_id']] = $issue->id;
+                    $this->issueIdMap[$row['external_id']] = (string) $issue->getKey();
                 }
             }
 
@@ -86,12 +88,12 @@ final class ProjectImportService
             }
 
             $record->update([
-                'project_id' => $project->id,
-                'status' => 'success',
-                'report' => ['warnings' => []],
+                'project_id' => (string) $project->getKey(),
+                'status'     => 'success',
+                'report'     => ['warnings' => []],
             ]);
 
-            return $project->id;
+            return (string) $project->getKey();
         });
     }
 }
