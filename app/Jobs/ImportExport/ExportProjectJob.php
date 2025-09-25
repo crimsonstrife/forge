@@ -12,14 +12,16 @@ use JsonException;
 
 final class ExportProjectJob implements ShouldQueue
 {
-    use Dispatchable, Queueable;
+    use Dispatchable;
+    use Queueable;
 
     public function __construct(
         public string $projectId,
         /** @var array<string,mixed> */
         public array $options,
         public int $recordId,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws JsonException

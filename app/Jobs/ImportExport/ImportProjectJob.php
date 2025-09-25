@@ -11,12 +11,14 @@ use Throwable;
 
 final class ImportProjectJob implements ShouldQueue
 {
-    use Dispatchable, Queueable;
+    use Dispatchable;
+    use Queueable;
 
     public function __construct(
         public string $absolutePath,
         public int $recordId,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws Throwable
