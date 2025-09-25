@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire\Public;
 
 use App\Models\Issue;

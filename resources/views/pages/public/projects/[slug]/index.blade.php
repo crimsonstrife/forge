@@ -1,7 +1,8 @@
 <?php
-use function Laravel\Folio\{name, render};
 use Illuminate\View\View;
 use App\Models\Project;
+
+use function Laravel\Folio\{name, render};
 
 name('public.projects.show');
 
