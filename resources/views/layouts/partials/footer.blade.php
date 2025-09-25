@@ -16,16 +16,16 @@
 
                 {{-- Socials (Web Awesome) --}}
                 <div class="d-flex align-items-center gap-3">
-                    <a href="https://github.com/Helical-Games/forge" class="link-body-emphasis" aria-label="GitHub">
-                        <wa-icon name="brands/github" style="font-size:1.25rem;"></wa-icon>
+                    <a href="https://github.com/crimsonstrife/forge" class="link-body-emphasis" aria-label="GitHub">
+                        <wa-icon family="brands" name="github" style="font-size:1.25rem;"></wa-icon>
                     </a>
                     @if (Route::has('docs.index'))
                         <a href="{{ route('docs.index') }}" class="link-body-emphasis" aria-label="Documentation">
-                            <wa-icon name="solid/book" style="font-size:1.25rem;"></wa-icon>
+                            <wa-icon family="solid" name="book" style="font-size:1.25rem;"></wa-icon>
                         </a>
                     @endif
                     <a href="{{ url('/scalar') }}" class="link-body-emphasis" aria-label="API Reference">
-                        <wa-icon name="solid/code" style="font-size:1.25rem;"></wa-icon>
+                        <wa-icon family="solid" name="code" style="font-size:1.25rem;"></wa-icon>
                     </a>
                 </div>
             </div>
@@ -70,9 +70,9 @@
             <div class="col-6 col-lg-2">
                 <h6 class="text-uppercase text-body-secondary fw-semibold mb-3">Legal</h6>
                 <ul class="list-unstyled mb-0">
-                    <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/terms') }}">Terms</a></li>
-                    <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/privacy') }}">Privacy</a></li>
-                    <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/cookies') }}">Cookies</a></li>
+                    <li><a class="link-body-emphasis text-decoration-none" href="{{ route('legal.terms.show') }}">Terms</a></li>
+                    <li><a class="link-body-emphasis text-decoration-none" href="{{ route('legal.policy.show') }}">Privacy</a></li>
+                    <li><a class="link-body-emphasis text-decoration-none" href="{{ route('legal.cookies.show') }}">Cookies</a></li>
                     <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/security') }}">Security</a></li>
                 </ul>
             </div>
