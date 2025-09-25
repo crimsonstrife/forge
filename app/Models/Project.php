@@ -39,7 +39,10 @@ class Project extends BaseModel
         'started_at',
         'due_at',
         'ended_at',
-        'archived_at'
+        'archived_at',
+        'public_tracker_enabled',
+        'count_private_in_progress',
+        'embed_domains',
     ];
 
     protected $casts = [
@@ -52,6 +55,9 @@ class Project extends BaseModel
         'due_at' => 'datetime',
         'ended_at' => 'datetime',
         'archived_at' => 'datetime',
+        'public_tracker_enabled' => 'bool',
+        'count_private_in_progress' => 'bool',
+        'embed_domains' => 'array',
     ];
 
     protected $attributes = [
@@ -320,5 +326,10 @@ class Project extends BaseModel
     {
         $s = $this->stage;
         return $s instanceof ProjectStage ? $s->label() : ucfirst((string) ($s ?? ''));
+    }
+
+    public function isPubliclyEmbeddable(): bool
+    {
+        return $this->public_tracker_enabled && filled($this->public_slug);
     }
 }

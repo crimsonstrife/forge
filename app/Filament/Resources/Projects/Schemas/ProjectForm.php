@@ -54,6 +54,20 @@ class ProjectForm
                             ->preload()
                             ->nullable(),
                     ])->columns(2),
+                    Section::make('Public Tracker')->schema([
+                        Forms\Components\Toggle::make('public_tracker_enabled')->label('Enable public tracker'),
+                        Forms\Components\TextInput::make('public_slug')
+                            ->helperText('Public URL slug (must be unique).')
+                            ->unique(ignoreRecord: true)
+                            ->visible(fn ($get) => $get('public_tracker_enabled') === true),
+                        Forms\Components\Toggle::make('count_private_in_progress')
+                            ->label('Include private issues in progress counters')
+                            ->visible(fn ($get) => $get('public_tracker_enabled') === true),
+                        Forms\Components\KeyValue::make('embed_domains')
+                            ->label('Allowed embed parent origins (frame-ancestors)')
+                            ->keyLabel('index')->valueLabel('origin')
+                            ->visible(fn ($get) => $get('public_tracker_enabled') === true),
+                    ])->columns(2),
                 ]),
                 Grid::make(1)->schema([
                     Section::make('Dates')->schema([
