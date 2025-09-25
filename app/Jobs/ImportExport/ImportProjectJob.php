@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs\ImportExport;
 
 use App\Models\ImportExportRecord;
@@ -7,18 +6,18 @@ use App\Services\ImportExport\ProjectImportService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-final class ImportProjectJob implements ShouldQueue
+class ImportProjectJob implements ShouldQueue
 {
-    use Dispatchable;
-    use Queueable;
+    use Queueable, Dispatchable;
 
     public function __construct(
-        public string $absolutePath,
+        public string $relativePath,
         public int $recordId,
-    ) {
-    }
+        public ?string $leadUserId = null,
+    ) {}
 
     /**
      * @throws Throwable
@@ -28,18 +27,14 @@ final class ImportProjectJob implements ShouldQueue
         $record = ImportExportRecord::query()->findOrFail($this->recordId);
         $record->update(['status' => 'running']);
 
-        try {
-            $projectId = $service->import($this->absolutePath, $record);
+        // Resolve absolute path from the actual disk root:
+        $abs = Storage::disk('local')->path($this->relativePath);
 
-            $record->update([
-                'project_id' => $projectId,
-                'status'     => 'success',
-            ]);
+        try {
+            $projectId = $service->import($abs, $record, $this->leadUserId);
+            $record->update(['project_id' => $projectId, 'status' => 'success']);
         } catch (Throwable $e) {
-            $record->update([
-                'status' => 'failed',
-                'report' => ['error' => $e->getMessage()],
-            ]);
+            $record->update(['status' => 'failed', 'report' => ['error' => $e->getMessage(), 'path' => $abs]]);
             throw $e;
         }
     }
