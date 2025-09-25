@@ -12,9 +12,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportsController
 {
-    public function download(int $recordId): StreamedResponse
+    public function download(ImportExportRecord $record): StreamedResponse
     {
-        $record = ImportExportRecord::query()->findOrFail($recordId);
         Gate::authorize('view', $record->project ?? $record);
 
         abort_unless($record->direction === 'export' && $record->status === 'success', 404);
