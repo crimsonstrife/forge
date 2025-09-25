@@ -1,82 +1,6 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>{{ config('app.name', 'Laravel') }}</title>
-
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-
-    <!-- Fonts (keep if you like this face) -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    <!-- (Optional) Material Icons — safe to remove if you only use <wa-icon> -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @fluxAppearance
-    @livewireStyles
-    @stack('styles')
-</head>
-<body class="d-flex flex-column min-vh-100 bg-light" x-data="themeSwitcher()" :class="{ 'dark': switchOn }">
-
-{{-- NAVBAR --}}
-<nav class="navbar navbar-expand-md bg-body border-bottom" x-data>
-    <div class="container">
-        <!-- Brand -->
-        @auth
-            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ route('dashboard') }}">
-                <x-application-logo />
-            </a>
-        @else
-            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url('/') }}">
-                <x-application-logo />
-            </a>
-        @endauth
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnav" aria-controls="topnav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        @if (Route::has('login'))
-            <div class="collapse navbar-collapse" id="topnav">
-                <ul class="navbar-nav ms-auto align-items-center gap-2">
-                    <div x-data="window.themeSwitcher()" x-init="switchTheme()" class="d-none d-md-flex align-items-center gap-2 me-2">
-                        <span class="small text-muted">{{ __('Dark Mode') }}</span>
-                        <wa-switch :checked="switchOn" @click="switchOn = !switchOn; switchTheme()"></wa-switch>
-                    </div>
-                    @auth
-                        <li class="nav-item">
-                            <a class="btn btn-dark" href="{{ route('dashboard') }}">
-                                <i class="fa-solid fa-gauge-high me-1"></i> Dashboard
-                            </a>
-                        </li>
-                    @else
-                        <li class="nav-item">
-                            <a class="btn btn-outline-secondary" href="{{ route('login') }}">
-                                <i class="fa-solid fa-right-to-bracket me-1"></i> Log in
-                            </a>
-                        </li>
-
-                        @if (Route::has('register'))
-                            <li class="nav-item">
-                                <a class="btn btn-outline-dark" href="{{ route('register') }}">
-                                    <i class="fa-regular fa-id-card me-1"></i> Register
-                                </a>
-                            </li>
-                        @endif
-                    @endauth
-                </ul>
-            </div>
-        @endif
-    </div>
-</nav>
-
+<x-guest-layout>
 {{-- MAIN --}}
-<main class="flex-fill">
+<x-slot class="flex-fill">
     <div class="container py-5">
         <div class="row g-4 align-items-center">
             {{-- Left: Hero / CTAs --}}
@@ -175,38 +99,5 @@
             </div>
         </div>
     </div>
-</main>
-@cookieconsentview
-{{-- FOOTER --}}
-<footer class="border-top py-3 small text-secondary bg-white">
-    <div class="container d-flex justify-content-between">
-        <span>&copy; {{ now()->year }} {{ config('app.name', 'Laravel') }}</span>
-        <span>v{{ app()->version() }}</span>
-    </div>
-</footer>
-@stack('modals')
-@fluxScripts
-@livewireScripts
-@cookieconsentscripts
-@stack('scripts')
-<script>
-    // Bootstrap-friendly + WA-friendly theme toggle
-    window.themeSwitcher = function () {
-        return {
-            switchOn: JSON.parse(localStorage.getItem('isDark')) || false,
-            switchTheme() {
-                const isDark = this.switchOn;
-                document.documentElement.classList.toggle('dark', isDark);
-                document.documentElement.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
-                localStorage.setItem('isDark', isDark);
-            }
-        }
-    }
-    // Initialize data-bs-theme on load
-    document.addEventListener('alpine:init', () => {
-        const isDark = JSON.parse(localStorage.getItem('isDark')) || false;
-        document.documentElement.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
-    });
-</script>
-</body>
-</html>
+</x-slot>
+</x-guest-layout>
