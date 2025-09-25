@@ -27,7 +27,7 @@ return new class () extends Migration {
         $tables = [
             'projects', 'issues', 'comments', 'issue_links',
             'time_entries', 'media', 'tags',
-            'statuses', 'issue_types', 'issue_priorities',
+            'issue_statuses', 'issue_types', 'issue_priorities',
         ];
 
         foreach ($tables as $table) {
