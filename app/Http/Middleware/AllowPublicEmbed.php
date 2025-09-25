@@ -15,7 +15,7 @@ class AllowPublicEmbed
 
         if ($request->route()?->getName() === 'embed.projects.show') {
             /** @var array<int, string> $allow */
-            $allow = config('security.embed_allowlist', []); // wire this to Settings if you prefer
+            $allow = config('security.embed_allowlist', []);
             if (! empty($allow)) {
                 $response->headers->set('Content-Security-Policy', "frame-ancestors " . implode(' ', $allow));
             }
