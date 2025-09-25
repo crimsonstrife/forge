@@ -25,8 +25,8 @@ class PublicProjectIssuesController extends Controller
             $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $s);
             $likePattern = "%{$escaped}%";
             $q->where(static function ($qq) use ($likePattern): void {
-                $qq->where('title', 'like', $likePattern, 'and', false)
-                   ->orWhere('key', 'like', $likePattern, 'and', false);
+                $qq->where('title', 'like', $likePattern)
+                   ->orWhere('key', 'like', $likePattern);
             });
         }
         return JsonResource::collection($q->limit(500)->get()->map(fn ($i) => [
