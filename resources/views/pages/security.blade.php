@@ -1,5 +1,6 @@
 <?php
 use function Laravel\Folio\name;
+
 name('security');
 ?>
 <x-app-layout>
