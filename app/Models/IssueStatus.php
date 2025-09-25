@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasExternalId;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class IssueStatus extends Model
 {
     use IsPermissible;
+    use HasExternalId;
 
     protected $fillable = [
         'name',

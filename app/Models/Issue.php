@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\ActivityContext;
+use App\Traits\HasExternalId;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -26,6 +27,7 @@ class Issue extends BaseModel implements HasMedia
     use LogsActivity;
     use InteractsWithMedia;
     use IsPermissible;
+    use HasExternalId;
 
     protected $keyType = 'string';
     public $incrementing = false;

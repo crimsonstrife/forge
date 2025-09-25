@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Enums\IssueTier;
+use App\Traits\HasExternalId;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Model;
 
 class IssueType extends Model
 {
     use IsPermissible;
+    use HasExternalId;
 
     protected $fillable = [
         'name',

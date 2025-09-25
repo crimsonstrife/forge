@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ProjectStage;
 use App\Support\ActivityContext;
+use App\Traits\HasExternalId;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -21,6 +22,7 @@ class Project extends BaseModel
     use HasUuids;
     use LogsActivity;
     use IsPermissible;
+    use HasExternalId;
 
     protected $keyType = 'string';
     public $incrementing = false;
