@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasExternalId;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Model;
 
 class IssuePriority extends Model
 {
     use IsPermissible;
+    use HasExternalId;
 
     protected $fillable = [
         'name',
@@ -23,11 +25,13 @@ class IssuePriority extends Model
         'weight' => 'int',
     ];
 
-    public function scopeOrdered($q){
+    public function scopeOrdered($q)
+    {
         return $q->orderBy('order');
     }
 
-    public function scopeWeighting($q){
+    public function scopeWeighting($q)
+    {
         return $q->orderBy('weight');
     }
 }

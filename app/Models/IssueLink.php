@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasExternalId;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,6 +22,7 @@ use Illuminate\Support\Str;
 class IssueLink extends Model
 {
     use HasUuids;
+    use HasExternalId;
 
     protected $table = 'issue_links';
     protected $keyType = 'string';

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ExportsController;
 use App\Http\Controllers\IssueActionItemController;
 use App\Http\Controllers\IssueController;
 use App\Http\Controllers\IssueVcsController;
@@ -25,6 +26,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/profile', Profile::class)->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
+
+    Route::get('/admin/exports/{record}/download', [ExportsController::class, 'download'])
+        ->middleware('signed')
+        ->name('admin.exports.download');
 });
 
 require __DIR__ . '/auth.php';
