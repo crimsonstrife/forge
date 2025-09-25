@@ -27,10 +27,8 @@ final class ProjectExportService
         $path = "exports/{$basename}";
         $abs  = storage_path("app/{$path}");
 
-        if (!mkdir($concurrentDirectory = dirname($abs), 0775, true) && !is_dir($concurrentDirectory)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-        }
-
+        // Ensure the export directory exists using Laravel's Storage facade
+        Storage::makeDirectory(dirname($path));
         $zip = new ZipArchive();
         if ($zip->open($abs, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
             throw new \RuntimeException('Unable to create export archive.');
