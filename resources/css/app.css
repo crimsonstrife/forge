@@ -7,6 +7,10 @@
     display: none;
 }
 
+main {
+    height: 100vh;
+}
+
 .scroll-area {
     max-height: 28rem;
     overflow: auto;
