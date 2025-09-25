@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="py-4">
-        <div class="container" style="max-width: 900px">
+        <div class="container d-flex flex-column gap-3">
             <div class="d-grid gap-4">
                 @if (Laravel\Fortify\Features::canUpdateProfileInformation())
                     @livewire('profile.update-profile-information-form')

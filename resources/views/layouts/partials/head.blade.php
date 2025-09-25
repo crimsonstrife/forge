@@ -27,7 +27,49 @@
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 @endif
+{{-- THEME: initial paint without flash --}}
+<script>
+    (() => {
+        try {
+            const ls = localStorage;
 
+            // Migrate legacy boolean key if you had one (isDark → theme)
+            const legacy = ls.getItem('isDark');
+            if (legacy !== null && !ls.getItem('theme')) {
+                ls.setItem('theme', JSON.parse(legacy) ? 'dark' : 'light');
+            }
+
+            const getPref = () => ls.getItem('theme') || 'auto';
+            const prefersDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+            const resolve = (pref = getPref()) => pref === 'auto' ? (prefersDark() ? 'dark' : 'light') : pref;
+
+            const apply = (theme) => {
+                const root = document.documentElement;
+                root.setAttribute('data-bs-theme', theme);
+                root.classList.toggle('dark', theme === 'dark'); // for any .dark-based utilities
+
+                // Set browser UI color for PWA / mobile chrome
+                let meta = document.querySelector('meta[name="theme-color"]');
+                if (!meta) { meta = document.createElement('meta'); meta.name = 'theme-color'; document.head.appendChild(meta); }
+                meta.content = theme === 'dark' ? '#0b0f13' : '#ffffff';
+
+                // Let Alpine/Livewire listeners react if needed
+                window.dispatchEvent(new CustomEvent('theme:changed', { detail: { theme } }));
+            };
+
+            // Public setter for UI controls
+            window.__setTheme = (pref) => { ls.setItem('theme', pref); apply(resolve(pref)); };
+
+            // Apply now
+            apply(resolve());
+
+            // Follow system changes when in "auto"
+            matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (getPref() === 'auto') apply(resolve('auto'));
+            });
+        } catch (e) { /* no-op */ }
+    })();
+</script>
 @vite($viteEntries)
 
 @fluxAppearance

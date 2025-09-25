@@ -108,9 +108,12 @@
                     <span class="text-body-tertiary ms-1">{{ config('app.version') }}</span>
                 @endunless ©{{ now()->year === 2025 ? '2025' : '2025 - ' . now()->year }} <a href="https://crimsonstrife.live">CrimsonStrife</a>. All rights reserved.
             </div>
-            <a href="#" class="btn btn-sm btn-outline-secondary" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-                <wa-icon family="solid" name="arrow-up"></wa-icon> Back to top
-            </a>
+            <div class="container-fluid d-flex justify-content-end gap-2" style="width: 30rem">
+                @include('layouts.partials.theme-toggle')
+                <a href="#" class="btn btn-sm btn-outline-secondary" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+                    <wa-icon family="solid" name="arrow-up"></wa-icon> Back to top
+                </a>
+            </div>
         </div>
     </div>
 </footer>

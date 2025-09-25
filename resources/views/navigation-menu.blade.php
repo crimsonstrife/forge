@@ -225,16 +225,6 @@
 
                             <li><hr class="dropdown-divider"></li>
 
-                            <!-- Dark mode toggle -->
-                            <li class="px-3 py-2">
-                                <div x-data="window.themeSwitcher()" x-init="switchTheme()" class="d-flex align-items-center justify-content-between">
-                                    <span class="small text-muted">{{ __('Dark Mode') }}</span>
-                                    <wa-switch :checked="switchOn" @click="switchOn = !switchOn; switchTheme()"></wa-switch>
-                                </div>
-                            </li>
-
-                            <li><hr class="dropdown-divider"></li>
-
                             <!-- Logout -->
                             <li>
                                 <form method="POST" action="{{ route('logout') }}" class="m-0">
@@ -245,12 +235,6 @@
                         </ul>
                     </div>
                 @else
-                    <!-- Guest actions -->
-                    <div x-data="window.themeSwitcher()" x-init="switchTheme()" class="d-none d-md-flex align-items-center gap-2 me-2">
-                        <span class="small text-muted">{{ __('Dark Mode') }}</span>
-                        <wa-switch :checked="switchOn" @click="switchOn = !switchOn; switchTheme()"></wa-switch>
-                    </div>
-
                     @if (Route::has('login'))
                         <a class="btn btn-outline-secondary" href="{{ route('login') }}">{{ __('Log in') }}</a>
                     @endif
