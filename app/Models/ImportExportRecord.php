@@ -11,7 +11,7 @@ class ImportExportRecord extends Model
     use HasExternalId;
 
     protected $fillable = [
-        'project_id', 'direction', 'status', 'file_path', 'options', 'report',
+        'project_id', 'direction', 'status', 'file_path', 'options', 'report', 'initiator_id',
     ];
 
     protected function casts(): array

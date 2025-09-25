@@ -27,6 +27,8 @@ class Project extends BaseModel
     protected $keyType = 'string';
     public $incrementing = false;
 
+    public const KEY_MAX_LENGTH = 8;
+
     protected $fillable = [
         'name',
         'key',

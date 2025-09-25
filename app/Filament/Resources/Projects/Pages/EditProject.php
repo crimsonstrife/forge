@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Projects\Pages;
 
 use App\Filament\Resources\Projects\ProjectResource;
 use App\Jobs\ImportExport\ExportProjectJob;
-use App\Jobs\ImportExport\ImportProjectJob;
 use App\Models\ImportExportRecord;
 use Filament\Actions;
 use Filament\Forms;
@@ -40,35 +39,6 @@ class EditProject extends EditRecord
                     ExportProjectJob::dispatch($this->record->id, $data, $record->id);
                     Notification::make()
                         ->title('Export queued')
-                        ->success()
-                        ->send();
-                }),
-
-            Actions\Action::make('import')
-                ->label('Import Into New Project')
-                ->schema([
-                    Forms\Components\FileUpload::make('archive')
-                        ->label('.forgepkg file')
-                        ->acceptedFileTypes(['application/zip'])
-                        ->directory('imports')
-                        ->preserveFilenames()
-                        ->required(),
-                ])
-                ->action(function (array $data): void {
-                    /** @var string $stored */
-                    $stored = $data['archive'];
-                    $abs = storage_path('app/'.$stored);
-
-                    $record = ImportExportRecord::query()->create([
-                        'direction'  => 'import',
-                        'status'     => 'queued',
-                        'file_path'  => $stored,
-                        'options'    => [],
-                    ]);
-
-                    ImportProjectJob::dispatch($abs, $record->id);
-                    Notification::make()
-                        ->title('Import queued')
                         ->success()
                         ->send();
                 }),
