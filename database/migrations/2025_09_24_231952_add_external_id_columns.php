@@ -31,10 +31,10 @@ return new class () extends Migration {
         ];
 
         foreach ($tables as $table) {
-            Schema::table($table, function (Blueprint $t): void {
-                if (Schema::hasColumn($t->getTable(), 'external_id')) {
-                    $t->dropUnique([$t->getTable().'_external_id_unique']);
-                    $t->dropIndex([$t->getTable().'_external_id_index']);
+            Schema::table($table, function (Blueprint $t) use ($table): void {
+                if (Schema::hasColumn($table, 'external_id')) {
+                    $t->dropUnique([$table.'_external_id_unique']);
+                    $t->dropIndex([$table.'_external_id_index']);
                     $t->dropColumn('external_id');
                 }
             });
