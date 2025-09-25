@@ -41,7 +41,7 @@ render(function (View $view, Project $project, Request $request) {
     </x-slot>
 
     <div class="py-4">
-        <div class="container">
+        <div class="container mx-auto py-4">
             <form class="d-flex align-items-center gap-2 mb-3" method="get">
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Search summary…" class="form-control w-auto" style="min-width: 18rem;">
                 <div class="form-check">

@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-4">
-        <div class="container" style="max-width: 720px">
+        <div class="container mx-auto py-4">
             @livewire('teams.create-team-form')
         </div>
     </div>

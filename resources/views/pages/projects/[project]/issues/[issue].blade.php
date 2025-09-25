@@ -284,7 +284,7 @@ render(function (View $view, Project $project, Issue $issue) {
     </x-slot>
 
     <div class="py-4">
-        <div class="container" style="max-width: 1000px">
+        <div class="container mx-auto py-4">
             <div class="d-grid gap-3">
 
                 {{-- Header card --}}

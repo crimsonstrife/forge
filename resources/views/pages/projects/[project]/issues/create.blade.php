@@ -29,7 +29,7 @@ render(function (View $view, Project $project) {
     </x-slot>
 
     <div class="py-4">
-        <div class="container">
+        <div class="container mx-auto py-4">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-10 col-lg-8 col-xl-7">
                     <livewire:issues.create-issue-form :project-id="$project->getKey()" :parent-id="$parent?->getKey()"/>

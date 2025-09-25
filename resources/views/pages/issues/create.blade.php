@@ -49,7 +49,7 @@ render(function (View $view) {
     </x-slot>
 
     <div class="py-4">
-        <div class="container">
+        <div class="container mx-auto py-4">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-10 col-lg-8 col-xl-7">
                     <livewire:issues.create-issue-form

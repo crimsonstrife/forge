@@ -42,7 +42,7 @@ render(function (View $view) {
     <x-slot name="header"><h1 class="h4 mb-0">Goals</h1></x-slot>
 
     <div class="py-4">
-        <div class="container" style="max-width: 1000px">
+        <div class="container mx-auto py-4">
             <form method="GET" class="row g-2 align-items-end mb-3">
                 <div class="col-md-5">
                     <label class="form-label mb-1">Search</label>
