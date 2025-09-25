@@ -52,20 +52,24 @@
                         @endif
                     </li>
                     <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/scalar') }}">API Reference</a></li>
-                    <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/changelog') }}">Changelog</a></li>
-                    <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/status') }}">Status</a></li>
+                    <li><a class="link-body-emphasis text-decoration-none" href="{{ route('changelog') }}">Changelog</a></li>
+                    <li><a class="link-body-emphasis text-decoration-none" href="{{ route('status') }}">Status</a></li>
                 </ul>
             </div>
 
-            <div class="col-6 col-lg-2">
-                <h6 class="text-uppercase text-body-secondary fw-semibold mb-3">Company</h6>
-                <ul class="list-unstyled mb-0">
-                    <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/about') }}">About</a></li>
-                    <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/blog') }}">Blog</a></li>
-                    <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/contact') }}">Contact</a></li>
-                    <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/careers') }}">Careers</a></li>
-                </ul>
-            </div>
+            @php($showCompany = (bool) config('app.show_company_links'))
+            @if ($showCompany)
+                <div class="col-6 col-lg-2">
+                    <h6 class="text-uppercase text-body-secondary fw-semibold mb-3">Company</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/about') }}">About</a></li>
+                        <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/blog') }}">Blog</a></li>
+                        <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/contact') }}">Contact</a></li>
+                        <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/careers') }}">Careers</a></li>
+                    </ul>
+                </div>
+            @endif
+
 
             <div class="col-6 col-lg-2">
                 <h6 class="text-uppercase text-body-secondary fw-semibold mb-3">Legal</h6>
@@ -73,7 +77,7 @@
                     <li><a class="link-body-emphasis text-decoration-none" href="{{ route('legal.terms.show') }}">Terms</a></li>
                     <li><a class="link-body-emphasis text-decoration-none" href="{{ route('legal.policy.show') }}">Privacy</a></li>
                     <li><a class="link-body-emphasis text-decoration-none" href="{{ route('legal.cookies.show') }}">Cookies</a></li>
-                    <li><a class="link-body-emphasis text-decoration-none" href="{{ url('/security') }}">Security</a></li>
+                    <li><a class="link-body-emphasis text-decoration-none" href="{{ route('security') }}">Security</a></li>
                 </ul>
             </div>
         </div>
@@ -82,10 +86,13 @@
     <div class="border-top">
         <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center py-3 gap-2">
             <div class="text-body-secondary small">
-                © {{ now()->year }} {{ config('app.name', 'Forge') }}. All rights reserved.
+                ©{{ now()->year }} {{ config('app.name', 'Forge') }}. All rights reserved.
+            </div>
+            <div class="text-body-secondary small">
+               Powered By: <a href="https://getforge.live">Forge</a> ©{{ now()->year === 2025 ? '2025' : '2025 - ' . now()->year }} <a href="https://crimsonstrife.live">CrimsonStrife</a>. All rights reserved.
             </div>
             <a href="#" class="btn btn-sm btn-outline-secondary" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-                <wa-icon name="solid/arrow-up"></wa-icon> Back to top
+                <wa-icon family="solid" name="arrow-up"></wa-icon> Back to top
             </a>
         </div>
     </div>
