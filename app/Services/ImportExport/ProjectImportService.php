@@ -107,7 +107,7 @@ final class ProjectImportService
                 $statusKey   = strtoupper((string) ($row['status_key'] ?? $row['status_slug'] ?? ''));
                 $priorityKey = strtoupper((string) ($row['priority_key'] ?? $row['priority_slug'] ?? ''));
 
-                $typeId     = $typeKey     && $allTypes->has($typeKey)     ? $allTypes[$typeKey]->id     : $defaultType;
+                $typeId     = $typeKey     && $allTypes->has($typeKey) ? $allTypes[$typeKey]->id : $defaultType;
                 $statusId   = $statusKey   && $allStatuses->has($statusKey) ? $allStatuses[$statusKey]->id : $defaultStatus;
                 $priorityId = $priorityKey && $allPriorities->has($priorityKey) ? $allPriorities[$priorityKey]->id : $defaultPriority;
 

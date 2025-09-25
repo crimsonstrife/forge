@@ -29,10 +29,14 @@ final class ProjectKeyGenerator
             while (mb_strlen($acronym) < $targetLen) {
                 foreach ($words as $w) {
                     $acronym .= Str::upper(mb_substr($w, $i, 1) ?: '');
-                    if (mb_strlen($acronym) >= $targetLen) { break 2; }
+                    if (mb_strlen($acronym) >= $targetLen) {
+                        break 2;
+                    }
                 }
                 $i++;
-                if ($i > 6) { break; }
+                if ($i > 6) {
+                    break;
+                }
             }
         }
 
