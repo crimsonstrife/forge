@@ -30,7 +30,7 @@ class ExportsController extends Controller
             $this->authorize('viewAny', ImportExportRecord::class);
         }
 
-        $disk = \Illuminate\Support\Facades\Storage::disk('local');
+        $disk = Storage::disk('local');
 
         // Normalize relative path (“exports/...”), tolerate slashes
         $relative = ltrim(str_replace('\\', '/', (string) $record->file_path), '/');
