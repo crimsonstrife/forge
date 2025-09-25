@@ -1,5 +1,6 @@
 <?php
 use function Laravel\Folio\name;
+
 name('legal.cookies.show');
 ?>
 

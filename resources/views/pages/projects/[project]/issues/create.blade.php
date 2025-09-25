@@ -2,6 +2,7 @@
 use App\Models\Project;
 use App\Models\Issue;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('issues.create');
