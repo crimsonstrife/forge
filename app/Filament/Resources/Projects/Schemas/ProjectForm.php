@@ -64,10 +64,17 @@ class ProjectForm
                         Forms\Components\Toggle::make('count_private_in_progress')
                             ->label('Include private issues in progress counters')
                             ->visible(fn ($get) => $get('public_tracker_enabled') === true),
-                        Forms\Components\KeyValue::make('embed_domains')
+                        Forms\Components\Repeater::make('embed_domains')
                             ->label('Allowed embed parent origins (frame-ancestors)')
-                            ->keyLabel('index')->valueLabel('origin')
-                            ->visible(fn ($get) => $get('public_tracker_enabled') === true),
+                            ->schema([
+                                Forms\Components\TextInput::make('origin')
+                                    ->label('Origin')
+                                    ->required()
+                                    ->placeholder('https://example.com')
+                            ])
+                            ->addActionLabel('Add origin')
+                            ->visible(fn ($get) => $get('public_tracker_enabled') === true)
+                            ->columns(1),
                     ])->columns(2),
                 ]),
                 Grid::make(1)->schema([
