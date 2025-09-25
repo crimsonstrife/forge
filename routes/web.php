@@ -28,6 +28,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 
     Route::get('/admin/exports/{record}/download', [ExportsController::class, 'download'])
+        ->middleware('signed')
         ->name('admin.exports.download');
 });
 

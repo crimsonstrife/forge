@@ -249,6 +249,12 @@ class Project extends BaseModel
         return $this->hasOne(ProjectRepository::class);
     }
 
+    public function importExportRecords(): HasMany
+    {
+        return $this->hasMany(ImportExportRecord::class);
+    }
+
+
     public function initialStatusId(): ?int
     {
         $id = $this->issueStatuses()->wherePivot('is_initial', true)->value('issue_statuses.id');

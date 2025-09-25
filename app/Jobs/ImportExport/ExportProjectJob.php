@@ -8,6 +8,7 @@ use App\Services\ImportExport\ProjectExportService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Str;
 use JsonException;
 
 final class ExportProjectJob implements ShouldQueue
@@ -32,11 +33,16 @@ final class ExportProjectJob implements ShouldQueue
         $record->update(['status' => 'running']);
 
         $project = Project::query()->findOrFail($this->projectId);
-        $path = $service->export($project, $this->options);
+        $path = $service->export($project, $this->options); // absolute path
+
+        $relative = Str::of($path)
+            ->after(storage_path('app'))   // drop the "…/storage/app"
+            ->replace('\\', '/')           // normalize slashes
+            ->ltrim('/');                  // remove leading /
 
         $record->update([
-            'status' => 'success',
-            'file_path' => str_replace(storage_path('app/'), '', $path),
+            'status'    => 'success',
+            'file_path' => (string) $relative,   // e.g. "exports/project-...forgepkg"
         ]);
     }
 }
