@@ -20,7 +20,7 @@ class PublicProjectIssuesController extends Controller
             ->where('is_public', true);
 
         $s = $request->input('s');
-        if (!empty($s)) {
+        if (filled($s)) {
             // Escape special LIKE characters
             $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $s);
             $likePattern = "%{$escaped}%";
