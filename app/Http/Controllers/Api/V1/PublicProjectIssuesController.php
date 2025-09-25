@@ -19,8 +19,12 @@ class PublicProjectIssuesController extends Controller
             ->where('project_id', $project->id)
             ->where('is_public', true);
 
-        if ($s = $request->string('q')->toString()) {
-            $q->where(static function ($qq) use ($s): void {
+            // Escape special LIKE characters
+            $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $s);
+            $likePattern = "%{$escaped}%";
+            $q->where(static function ($qq) use ($likePattern): void {
+                $qq->where('title', 'like', $likePattern, 'and', false)
+                   ->orWhere('key', 'like', $likePattern, 'and', false);
                 $qq->where('title', 'like', "%{$s}%")->orWhere('key', 'like', "%{$s}%");
             });
         }
