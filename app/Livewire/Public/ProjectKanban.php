@@ -95,9 +95,10 @@ class ProjectKanban extends Component
 
     private function applyFilters(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
-        if (filled($this->search)) {
-            $query->where(static function ($q): void {
-                $q->where('title', 'like', '%' . $this->search . '%')
+            $query->where(function ($q) {
+                $search = '%' . $this->search . '%';
+                $q->where('title', 'like', $search)
+                  ->orWhere('key', 'like', $search);
                     ->orWhere('key', 'like', '%' . $this->search . '%');
             });
         }
