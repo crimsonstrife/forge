@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs\ImportExport;
 
 use App\Models\ImportExportRecord;
@@ -11,13 +12,15 @@ use Throwable;
 
 class ImportProjectJob implements ShouldQueue
 {
-    use Queueable, Dispatchable;
+    use Queueable;
+    use Dispatchable;
 
     public function __construct(
         public string $relativePath,
         public int $recordId,
         public ?string $leadUserId = null,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws Throwable
