@@ -25,3 +25,4 @@ yarn-error.log
 forge.code-workspace
 .DS_Store
 /public/plugins/*
+/VERSION
