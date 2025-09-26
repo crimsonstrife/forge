@@ -14,14 +14,14 @@ main {
 
 /* The circular badge itself */
 .health-indicator {
-    flex: 0 0 auto;          /* don't stretch in flex rows */
-    width: 40px;             /* or inline-size: 40px; */
-    aspect-ratio: 1 / 1;     /* force perfect square */
+    flex: 0 0 auto; /* don't stretch in flex rows */
+    width: 40px; /* or inline-size: 40px; */
+    aspect-ratio: 1 / 1; /* force perfect square */
     border-radius: 50%;
-    display: grid;           /* easy centering for the icon */
+    display: grid; /* easy centering for the icon */
     place-items: center;
-    position: relative;      /* for the inner dot */
-    line-height: 1;          /* keep icon from affecting height */
+    position: relative; /* for the inner dot */
+    line-height: 1; /* keep icon from affecting height */
 }
 
 /* Optional inner dot */
@@ -31,7 +31,7 @@ main {
     inset: 50% auto auto 50%;
     transform: translate(-50%, -50%);
     width: 0.7rem;
-    aspect-ratio: 1 / 1;     /* force perfect circle */
+    aspect-ratio: 1 / 1; /* force perfect circle */
     border-radius: 50%;
 }
 

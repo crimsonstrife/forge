@@ -15,7 +15,9 @@ use Spatie\Health\Checks\Checks\UsedDiskSpaceCheck;
 
 class HealthServiceProvider extends ServiceProvider
 {
-    public function register(): void {}
+    public function register(): void
+    {
+    }
 
     public function boot(): void
     {
