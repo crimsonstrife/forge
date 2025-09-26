@@ -8,7 +8,9 @@ use Illuminate\Http\JsonResponse;
 
 class UpdateController extends Controller
 {
-    public function __construct(private SelfUpdateService $selfUpdate) {}
+    public function __construct(private SelfUpdateService $selfUpdate)
+    {
+    }
 
     public function check(): JsonResponse
     {

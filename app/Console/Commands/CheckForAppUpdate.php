@@ -11,7 +11,10 @@ class CheckForAppUpdate extends Command
     protected $signature = 'app:update:check';
     protected $description = 'Check for a newer app version and log a notice if found';
 
-    public function __construct(private SelfUpdateService $updates) { parent::__construct(); }
+    public function __construct(private SelfUpdateService $updates)
+    {
+        parent::__construct();
+    }
 
     public function handle(): int
     {

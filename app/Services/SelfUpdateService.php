@@ -22,7 +22,8 @@ class SelfUpdateService
     public function __construct(
         private UpdaterManager $updater,
         private Dispatcher $events,
-    ) {}
+    ) {
+    }
 
     /**
      * Check if a newer version than $currentVersion exists.
@@ -94,7 +95,10 @@ class SelfUpdateService
             ]);
 
             // Ensure app is back up even on error.
-            try { Artisan::call('up'); } catch (Throwable) {}
+            try {
+                Artisan::call('up');
+            } catch (Throwable) {
+            }
 
             return ['success' => false, 'error' => $e->getMessage()];
         }
