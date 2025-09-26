@@ -15,7 +15,7 @@ class PublicProjectIssuesController extends Controller
         $project = Project::query()->where('public_slug', $slug)->firstOrFail();
         abort_unless($project->isPubliclyEmbeddable(), 404);
 
-        $q = Issue::query()->with(['status','type','assignee','tags'])
+        $q = Issue::query()->with(['status','type','assignee','tags', 'parent'])
             ->where('project_id', $project->id)
             ->where('is_public', true);
 
@@ -31,10 +31,17 @@ class PublicProjectIssuesController extends Controller
         }
         return JsonResource::collection($q->limit(500)->get()->map(fn ($i) => [
             'id' => (string) $i->id,
-            'title' => $i->title,
+            'title' => $i->summary,
+            'description'=> $i->description,
             'status' => $i->status?->only(['id','name','is_done']),
             'type' => $i->type?->only(['id','name']),
             'assignee' => $i->assignee?->only(['id','name']),
+            'parent_id' => $i->parent?->only(['id','summary']),
+            'progress_percent' => $i->progress_percent,
+            'children_count' => $i->children_count,
+            'children_done_count' => $i->children_done_count,
+            'children_points_total' => $i->children_points_total,
+            'children_points_done' => $i->children_points_done,
             'tags' => $i->tags?->pluck('name')->all() ?? [],
         ]));
     }

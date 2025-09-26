@@ -43,6 +43,7 @@ class Project extends BaseModel
         'public_tracker_enabled',
         'count_private_in_progress',
         'embed_domains',
+        'public_slug',
     ];
 
     protected $casts = [
@@ -58,6 +59,7 @@ class Project extends BaseModel
         'public_tracker_enabled' => 'bool',
         'count_private_in_progress' => 'bool',
         'embed_domains' => 'array',
+        'public_slug' => 'string',
     ];
 
     protected $attributes = [
