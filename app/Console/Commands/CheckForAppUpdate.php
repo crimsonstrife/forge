@@ -18,7 +18,7 @@ class CheckForAppUpdate extends Command
         $current = $this->updates->currentVersion();
     public function handle(): int
     {
-        $current = config('self-update.version_installed'); // or settings
+        $current = $this->updates->currentVersion();
         $available = $this->updates->isUpdateAvailable($current);
 
         if ($available) {
