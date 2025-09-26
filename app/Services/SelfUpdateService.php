@@ -36,7 +36,7 @@ class SelfUpdateService
     /**
      * Get new available version
      */
-    public function newVersion() : string
+    public function newVersion(): string
     {
         return $this->updater->source()->getVersionAvailable();
     }
