@@ -151,7 +151,8 @@
                 @auth
                     <!-- Create -->
                     <div class="dropdown">
-                        <wa-button class="dropdown-toggle" variant="brand" data-bs-toggle="dropdown" aria-expanded="false">
+                        <style>#recordCreate:after { content: none !important;}</style>
+                        <wa-button id="recordCreate" class="dropdown-toggle" variant="brand" data-bs-toggle="dropdown" aria-expanded="false">
                             <wa-icon slot="start" name="plus"></wa-icon>
                             {{ __('Create') }}
                         </wa-button>
@@ -175,7 +176,7 @@
                     @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
                         @php($currentTeam = $user?->currentTeam)
                         <div class="dropdown">
-                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="teamsDropdown"
+                            <button class="btn dropdown-toggle" type="button" id="teamsDropdown"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ $currentTeam?->name ?? __('No team selected') }}
                             </button>
@@ -207,7 +208,7 @@
 
                     <!-- Settings / Profile -->
                     <div class="dropdown">
-                        <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2" type="button"
+                        <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button"
                                 id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                                 <x-avatar :src="$user?->profile_photo_url" :name="$user?->name" preset="md" />
