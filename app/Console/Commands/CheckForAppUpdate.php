@@ -15,7 +15,7 @@ class CheckForAppUpdate extends Command
     {
         parent::__construct();
     }
-
+        $current = $this->updates->currentVersion();
     public function handle(): int
     {
         $current = config('self-update.version_installed'); // or settings
