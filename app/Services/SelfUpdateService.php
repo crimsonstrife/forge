@@ -34,6 +34,14 @@ class SelfUpdateService
     }
 
     /**
+     * Get new available version
+     */
+    public function newVersion() : string
+    {
+        return $this->updater->source()->getVersionAvailable();
+    }
+
+    /**
      * Run the update. Returns a structured array result.
      *
      * @param string $currentVersion
