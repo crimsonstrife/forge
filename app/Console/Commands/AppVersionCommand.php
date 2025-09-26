@@ -17,7 +17,16 @@ class AppVersionCommand extends Command
         if ($this->argument('action') === 'read') {
             $this->line(is_file($path) ? trim((string) @file_get_contents($path)) : 'VERSION not found');
             return self::SUCCESS;
-        }
+            if (is_file($path)) {
+                $contents = file_get_contents($path);
+                if ($contents === false) {
+                    $this->error('Failed to read VERSION file.');
+                    return self::FAILURE;
+                }
+                $this->line(trim((string) $contents));
+            } else {
+                $this->line('VERSION not found');
+            }
 
         if ($this->argument('action') === 'write') {
             $value = (string) $this->option('value');
