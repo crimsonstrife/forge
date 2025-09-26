@@ -20,7 +20,8 @@ class IssueStatusResource extends Resource
 {
     protected static ?string $model = IssueStatus::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|null|\UnitEnum $navigationGroup = 'Projects';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedScale;
 
     public static function form(Schema $schema): Schema
     {

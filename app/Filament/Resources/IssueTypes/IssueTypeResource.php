@@ -19,8 +19,9 @@ use Filament\Tables\Table;
 class IssueTypeResource extends Resource
 {
     protected static ?string $model = IssueType::class;
+    protected static string|null|\UnitEnum $navigationGroup = 'Projects';
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
     public static function form(Schema $schema): Schema
     {

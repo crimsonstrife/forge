@@ -20,7 +20,8 @@ class ImportExportRecordResource extends Resource
 {
     protected static ?string $model = ImportExportRecord::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|null|\UnitEnum $navigationGroup = 'Projects';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsUpDown;
 
     public static function form(Schema $schema): Schema
     {

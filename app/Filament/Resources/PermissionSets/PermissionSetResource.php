@@ -20,7 +20,8 @@ class PermissionSetResource extends Resource
 {
     protected static ?string $model = PermissionSet::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|null|\UnitEnum $navigationGroup = 'Access/Permissions';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLink;
 
     public static function form(Schema $schema): Schema
     {
