@@ -113,7 +113,11 @@ class SelfUpdateService
         // Prefer a VERSION file you write during packaging:
         $path = base_path('VERSION');
         if (is_file($path)) {
-            return trim((string) @file_get_contents($path)) ?: null;
+            $contents = file_get_contents($path);
+            if ($contents === false) {
+                return null;
+            }
+            return trim((string) $contents) ?: null;
         }
 
         // Or fall back to env/config if that’s your pattern:
