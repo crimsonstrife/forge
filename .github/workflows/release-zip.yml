@@ -84,6 +84,13 @@ jobs:
       run: |
         cp .env.example .env
 
+    - name: Derive version from tag
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        VERSION="${GITHUB_REF_NAME#v}"
+        echo "$VERSION" > VERSION
+        echo "Wrote VERSION=$VERSION"
+
     - name: Create ZIP for release
       run: |
         mkdir -p release
