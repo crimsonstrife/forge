@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ExportsController;
+use App\Http\Controllers\HealthCheckResultsController;
 use App\Http\Controllers\IssueActionItemController;
 use App\Http\Controllers\IssueController;
 use App\Http\Controllers\IssueVcsController;
@@ -15,10 +16,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -42,6 +39,7 @@ Route::middleware([
     Route::get('/dashboard', static function () {
         return view('dashboard');
     })->name('dashboard');
+    Route::get('/status', HealthCheckResultsController::class)->name('status');
     Route::get(
         '/projects/{project}/issues/{issue}/attachments/{media}/download',
         [IssueAttachmentController::class, 'download']

@@ -18,6 +18,8 @@ class SystemUpdates extends Page
     public string $currentVersion = '0.1.0';
     public bool $updateAvailable = false;
 
+    public string $new = '0.0.0';
+
     public function mount(SelfUpdateService $updates): void
     {
         $this->currentVersion  = $updates->currentVersion();
@@ -80,6 +82,7 @@ class SystemUpdates extends Page
 
                     $this->currentVersion  = $new;
                     $this->updateAvailable = false;
+                    $this->new = $updates->newVersion();
                 }),
         ];
     }

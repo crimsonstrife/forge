@@ -1,14 +1,14 @@
 <?php
-use function Laravel\Folio\name;
+
+use function Laravel\Folio\{name, middleware};
 
 name('status');
+middleware(['auth', 'verified']);
 ?>
 <x-app-layout>
     <x-slot name="header"><h1 class="h3 mb-0">Status</h1></x-slot>
-    <div class="container mx-auto py-4">
-        <div class="alert alert-success mb-4">
-            All systems operational.
-        </div>
-        <p class="text-body-secondary mb-0">This is a simple placeholder.</p>
+
+    <div class="container py-4">
+        @include('vendor.health.list')
     </div>
 </x-app-layout>
