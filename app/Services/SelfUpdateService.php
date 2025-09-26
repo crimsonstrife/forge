@@ -85,7 +85,7 @@ class SelfUpdateService
 
             return [
                 'success' => true,
-                'newVersion' => $this->detectNewVersion(),
+                'newVersion' => $new,
                 'message' => 'Application updated successfully.',
             ];
         } catch (Throwable $e) {
