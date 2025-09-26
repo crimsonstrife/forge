@@ -6,9 +6,9 @@ use Illuminate\Console\Command;
 
 class AppVersionCommand extends Command
 {
-    const SUCCESS = 0;
-    const FAILURE = 1;
-    const INVALID = 2;
+    public const SUCCESS = 0;
+    public const FAILURE = 1;
+    public const INVALID = 2;
 
     protected $signature = 'app:version {action : read|write} {--value= : Version value to write (for write action)}';
     protected $description = 'Read or write the application VERSION file';
