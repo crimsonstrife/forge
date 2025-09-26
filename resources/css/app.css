@@ -12,6 +12,36 @@ main {
     min-height: 100vh;
 }
 
+/* The circular badge itself */
+.health-indicator {
+    flex: 0 0 auto; /* don't stretch in flex rows */
+    width: 40px; /* or inline-size: 40px; */
+    aspect-ratio: 1 / 1; /* force perfect square */
+    border-radius: 50%;
+    display: grid; /* easy centering for the icon */
+    place-items: center;
+    position: relative; /* for the inner dot */
+    line-height: 1; /* keep icon from affecting height */
+}
+
+/* Optional inner dot */
+.health-indicator::after {
+    content: "";
+    position: absolute;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
+    width: 0.7rem;
+    aspect-ratio: 1 / 1; /* force perfect circle */
+    border-radius: 50%;
+}
+
+/* Make sure the icon doesn't stretch */
+.health-indicator wa-icon,
+.health-indicator .wa-icon {
+    font-size: 20px;
+    line-height: 1;
+}
+
 .scroll-area {
     max-height: 28rem;
     overflow: auto;
