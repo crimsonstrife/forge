@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 /**
  * @property string $id
@@ -47,6 +48,18 @@ class IssueLink extends Model
             $model->id = Str::uuid();
         });
     }
+
+    protected static function booted(): void
+    {
+        static::saving(static function ($link): void {
+            if ($link->from_issue_id === $link->to_issue_id) {
+                throw ValidationException::withMessages([
+                    'to_issue_id' => 'An issue cannot link to itself.',
+                ]);
+            }
+        });
+    }
+
 
     public function type(): BelongsTo
     {

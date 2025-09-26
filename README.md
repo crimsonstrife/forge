@@ -5,6 +5,7 @@
 ![PHP 8.3](https://img.shields.io/badge/PHP-8.3-777bb3?logo=php)
 ![Laravel 12](https://img.shields.io/badge/Laravel-12-ff2d20?logo=laravel)
 ![Filament 4](https://img.shields.io/badge/Filament-4-0ea5e9)
+[![Laravel](https://github.com/crimsonstrife/forge/actions/workflows/laravel.yml/badge.svg?branch=dev)](https://github.com/crimsonstrife/forge/actions/workflows/laravel.yml)
 
 **Forge** is a Laravel-powered project & issue management app for small studios and indie teams. Track projects and issues, define workflows, connect support tickets, and manage admin data via Filament—all with a modern Livewire UI.
 

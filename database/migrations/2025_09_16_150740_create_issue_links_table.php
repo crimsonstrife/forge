@@ -5,12 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class () extends Migration {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('issue_links', static function (Blueprint $table) {
+        Schema::create('issue_links', static function (Blueprint $table): void {
             $table->uuid('id')->primary();
 
             $table->uuid('issue_link_type_id');
@@ -26,22 +23,22 @@ return new class () extends Migration {
             $table->foreign('to_issue_id')->references('id')->on('issues')->cascadeOnDelete();
             $table->foreign('created_by_id')->references('id')->on('users')->nullOnDelete();
 
-            // Useful lookup indexes
+            // Helpful lookups
             $table->index('from_issue_id');
             $table->index('to_issue_id');
 
-            // Canonical pair columns to prevent duplicates in either direction (MySQL 8+ virtual columns)
-            $table->uuid('canonical_a')->virtualAs("IF(`from_issue_id` < `to_issue_id`, `from_issue_id`, `to_issue_id`)");
-            $table->uuid('canonical_b')->virtualAs("IF(`from_issue_id` < `to_issue_id`, `to_issue_id`, `from_issue_id`)");
+            // Canonical pair (direction-agnostic), driver-neutral CASE expression
+            $caseA = 'CASE WHEN from_issue_id < to_issue_id THEN from_issue_id ELSE to_issue_id END';
+            $caseB = 'CASE WHEN from_issue_id < to_issue_id THEN to_issue_id ELSE from_issue_id END';
+
+            $table->uuid('canonical_a')->virtualAs($caseA);
+            $table->uuid('canonical_b')->virtualAs($caseB);
 
             // Only one link per type between two issues (regardless of direction)
             $table->unique(['issue_link_type_id', 'canonical_a', 'canonical_b'], 'issue_links_unique_pair');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('issue_links');
