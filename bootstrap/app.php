@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AllowPublicEmbed;
 use App\Http\Middleware\EnsureSupportIdentity;
 use App\Http\Middleware\SetPermissionsTeamContext;
 use App\Http\Middleware\VerifyIngestKey;
@@ -24,9 +25,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'ingest.key' => VerifyIngestKey::class,
         ]);
         $middleware->group('api', [
-            EnsureFrontendRequestsAreStateful::class, // 👈 add this FIRST
+            EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             SubstituteBindings::class,
+        ]);
+        $middleware->group('embed', [
+            AllowPublicEmbed::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

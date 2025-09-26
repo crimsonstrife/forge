@@ -5,8 +5,10 @@ namespace App\Models;
 use App\Support\ActivityContext;
 use App\Traits\HasExternalId;
 use App\Traits\IsPermissible;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -46,6 +48,7 @@ class Issue extends BaseModel implements HasMedia
         'summary',
         'starts_at',
         'due_at',
+        'is_public',
     ];
 
     protected $guarded = ['id', 'key', 'number'];
@@ -66,6 +69,7 @@ class Issue extends BaseModel implements HasMedia
         'starts_at' => 'immutable_datetime',
         'due_at'    => 'immutable_datetime',
         'closed_at' => 'immutable_datetime',
+        'is_public' => 'bool',
     ];
 
     public static function boot(): void
@@ -89,6 +93,16 @@ class Issue extends BaseModel implements HasMedia
                 $model->number = $model->number ?: $next;
                 $model->key = $model->key ?: "{$projectKey}-{$model->number}";
             }
+        });
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(static function (Issue $i): void {
+            cache()->tags(['project-public-'.$i->project_id])->flush();
+        });
+        static::deleted(static function (Issue $i): void {
+            cache()->tags(['project-public-'.$i->project_id])->flush();
         });
     }
 
@@ -351,5 +365,11 @@ class Issue extends BaseModel implements HasMedia
             get: fn () => $this->issue_priority_id,
             set: static fn ($value) => ['issue_priority_id' => $value],
         );
+    }
+
+    /** @return Builder<Model, static> */
+    public function scopePublicVisible(Builder $query): Builder
+    {
+        return $query->where('is_public', true);
     }
 }
