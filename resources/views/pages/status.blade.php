@@ -1,10 +1,11 @@
 <?php
 use function Laravel\Folio\name;
+
 name('status');
 ?>
 <x-app-layout>
     <x-slot name="header"><h1 class="h3 mb-0">Status</h1></x-slot>
-    <div class="container py-4">
+    <div class="container mx-auto py-4">
         <div class="alert alert-success mb-4">
             All systems operational.
         </div>

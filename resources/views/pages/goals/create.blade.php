@@ -12,7 +12,7 @@ middleware(['auth', 'verified']);
     </x-slot>
 
     <div class="py-4">
-        <div class="container mx-auto px-3" style="max-width: 720px">
+        <div class="container mx-auto px-3">
             <livewire:goals.create-goal-form />
         </div>
     </div>

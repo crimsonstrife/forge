@@ -1,5 +1,6 @@
 <?php
 use function Laravel\Folio\{name, middleware};
+
 /** @var \App\Models\Organization $organization */
 name('organizations.edit');
 middleware(['auth','verified']);
@@ -15,7 +16,7 @@ middleware(['auth','verified']);
     </x-slot>
 
     <div class="py-4">
-        <div class="container" style="max-width: 720px">
+        <div class="container mx-auto py-4">
             <livewire:organizations.form :organization="$organization" />
         </div>
     </div>

@@ -1,6 +1,7 @@
 <?php
 use App\Models\Project;
 use App\Models\Issue;
+
 use function Laravel\Folio\{name, middleware};
 
 name('issues.edit');
@@ -17,7 +18,7 @@ middleware(['auth','verified']);
     </x-slot>
 
     <div class="py-4">
-        <div class="container">
+        <div class="container mx-auto py-4">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-10 col-lg-8 col-xl-7">
                     <livewire:issues.update-issue-form :project="$project" :issue="$issue" />

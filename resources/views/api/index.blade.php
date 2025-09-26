@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="py-4">
-        <div class="container" style="max-width: 900px">
+        <div class="container mx-auto py-4">
             @livewire('api.api-token-manager')
         </div>
     </div>

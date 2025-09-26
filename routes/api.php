@@ -12,12 +12,15 @@ Route::get('/user', static function (Request $request) {
 Route::post('/webhooks/github', [GitHubWebhookController::class, 'handle'])
     ->name('webhooks.github');
 
-
 Route::prefix('v1')->name('api.v1.')->group(function () {
     // Public (throttled) ingest; optionally protect with 'ingest.key' later.
     Route::post('tickets', [V1\TicketController::class, 'store'])
         ->name('tickets.store')
         ->middleware(['ingest.key', 'throttle:ticket-ingest']);
+
+    Route::get('/public/projects/{slug}/issues', [V1\PublicProjectIssuesController::class, 'index'])
+        ->name('public.projects.issues')
+        ->middleware('throttle:60,1');
 });
 
 Route::prefix('v1')->middleware(['auth:sanctum', 'throttle:api'])->group(function (): void {

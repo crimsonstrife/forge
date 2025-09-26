@@ -1,57 +1,80 @@
-@props([
-  'title' => __('Confirm Password'),
-  'content' => __('For your security, please confirm your password to continue.'),
-  'button' => __('Confirm'),
-])
-
-@php $confirmableId = md5($attributes->wire('then')); @endphp
+@props(['title' => __('Confirm Password')])
 
 <span
     {{ $attributes->wire('then') }}
-    x-data
-    x-ref="span"
-    x-on:click="$wire.startConfirmingPassword('{{ $confirmableId }}')"
-    x-on:password-confirmed.window="setTimeout(() => $event.detail.id === '{{ $confirmableId }}' && $refs.span.dispatchEvent(new CustomEvent('then', { bubbles: false })), 250);"
+    x-data="{
+        show: false,
+        id: (window.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)),
+        pw: '',
+    }"
+    x-on:click.prevent="$wire.startConfirmingPassword(id); show = true"
+    x-on:password-confirmed.window="
+        if ($event.detail.id === id) {
+            show = false; pw = '';
+            $el.dispatchEvent(new CustomEvent('then', { bubbles: false }));
+        }
+    "
 >
-  {{ $slot }}
-</span>
+    {{ $slot }}
 
-@once
-    <x-dialog-modal wire:model.live="confirmingPassword">
-        <x-slot name="title">
-            {{ $title }}
-        </x-slot>
+    {{-- Teleport modal + backdrop to <body> so stacking is always correct --}}
+    <template x-teleport="body">
+        <!-- Modal -->
+        <div class="modal fade"
+             x-cloak
+             x-bind:class="{ 'show d-block': show }"
+             role="dialog"
+             aria-modal="true"
+             :aria-hidden="(!show).toString()"
+             x-on:keydown.escape.window="show = false; pw=''; $wire.stopConfirmingPassword()"
+             x-on:confirming-password.window="setTimeout(() => $refs.cpwd?.focus(), 250)">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ $title }}</h5>
+                        <button type="button" class="btn-close"
+                                @click="show=false; pw=''; $wire.stopConfirmingPassword()"
+                                aria-label="{{ __('Close') }}"></button>
+                    </div>
 
-        <x-slot name="content">
-            {{ $content }}
+                    <div class="modal-body">
+                        {{ __('For your security, please confirm your password to continue.') }}
 
-            <div class="mt-3"
-                 x-data
-                 x-on:confirming-password.window="setTimeout(() => $refs.confirmable_password.focus(), 250)">
-                {{-- Bridge WA input to Livewire --}}
-                <x-input
-                    type="password"
-                    placeholder="{{ __('Password') }}"
-                    autocomplete="current-password"
-                    x-ref="confirmable_password"
-                    wire:ignore
-                    x-on:input="$wire.set('confirmablePassword', $event.target.value)"
-                    x-on:keydown.enter="$wire.confirmPassword()"
-                />
+                        <div class="mt-3">
+                            <wa-input type="password"
+                                      placeholder="{{ __('Password') }}"
+                                      autocomplete="current-password"
+                                      x-ref="cpwd"
+                                      :value="pw"
+                                      x-on:input="pw = $event.target.value; $wire.set('confirmablePassword', pw)"
+                                      x-on:keydown.enter="$wire.confirmPassword()">
+                            </wa-input>
 
-                {{-- Keep Jetstream’s error key (`confirmable_password`) --}}
-                <x-input-error for="confirmable_password" class="mt-2" />
+                            @error('confirmablePassword')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <wa-button type="button" variant="neutral" appearance="outlined"
+                                   @click="show=false; pw=''; $wire.stopConfirmingPassword()"
+                                   wire:loading.attr="disabled">
+                            {{ __('Cancel') }}
+                        </wa-button>
+                        <wa-button type="submit" variant="brand" appearance="accent" class="ms-2"
+                                   dusk="confirm-password-button"
+                                   wire:click="confirmPassword" wire:loading.attr="disabled">
+                            {{ __('Confirm') }}
+                        </wa-button>
+                    </div>
+                </div>
             </div>
-        </x-slot>
+        </div>
 
-        <x-slot name="footer">
-            <x-secondary-button wire:click="stopConfirmingPassword" wire:loading.attr="disabled">
-                {{ __('Cancel') }}
-            </x-secondary-button>
-
-            <x-button class="ms-2" dusk="confirm-password-button" wire:click="confirmPassword" wire:loading.attr="disabled">
-                {{ $button }}
-            </x-button>
-        </x-slot>
-    </x-dialog-modal>
-@endonce
+        <!-- Backdrop -->
+        <div class="modal-backdrop fade"
+             x-cloak
+             x-bind:class="{ 'show d-block': show }"></div>
+    </template>
+</span>

@@ -33,7 +33,8 @@ class ProjectForm
                         Forms\Components\TextInput::make('name')
                             ->required()->maxLength(120)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn ($state, Set $set) => $set('key', app(\App\Support\Keys\ProjectKeyGenerator::class)->suggest((string) $state, 3))
+                            ->afterStateUpdated(
+                                fn ($state, Set $set) => $set('key', app(\App\Support\Keys\ProjectKeyGenerator::class)->suggest((string) $state, 3))
                             ),
                         Forms\Components\TextInput::make('key')
                             ->required()
@@ -45,7 +46,7 @@ class ProjectForm
                             ->formatStateUsing(fn ($state) => \Illuminate\Support\Str::upper($state)),
                         Forms\Components\Textarea::make('description')->rows(4)->columnSpanFull(),
                         Forms\Components\Select::make('stage')
-                            ->options(collect(ProjectStage::cases())->mapWithKeys(fn($c)=>[$c->value=>ucfirst($c->value)])->all())
+                            ->options(collect(ProjectStage::cases())->mapWithKeys(fn ($c) => [$c->value => ucfirst($c->value)])->all())
                             ->required(),
                         Forms\Components\Select::make('lead_id')
                             ->label('Project Lead')
@@ -53,6 +54,41 @@ class ProjectForm
                             ->relationship('users', 'name') // optional; or preload User::query()
                             ->preload()
                             ->nullable(),
+                    ])->columns(2),
+                    Section::make('Public Tracker')->schema([
+                        Forms\Components\Toggle::make('public_tracker_enabled')->label('Enable public tracker'),
+                        Forms\Components\TextInput::make('public_slug')
+                            ->helperText('Public URL slug (must be unique).')
+                            ->unique(ignoreRecord: true)
+                            ->visible(fn ($get) => $get('public_tracker_enabled') === true),
+                        Forms\Components\Toggle::make('count_private_in_progress')
+                            ->label('Include private issues in progress counters')
+                            ->visible(fn ($get) => $get('public_tracker_enabled') === true),
+                        Forms\Components\Repeater::make('embed_domains')
+                            ->label('Allowed embed parent origins (frame-ancestors)')
+                            ->schema([
+                                Forms\Components\TextInput::make('origin')
+                                    ->label('Origin')
+                                    ->required()
+                                    ->placeholder('https://example.com')
+                            ])
+                            ->addActionLabel('Add origin')
+                            ->visible(fn ($get) => $get('public_tracker_enabled') === true)
+                            ->columns(1)
+                            ->formatStateUsing(function ($state) {
+                                // Convert array of strings to array of objects with 'origin' key
+                                if (is_array($state) && (count($state) === 0 || is_string(array_values($state)[0]))) {
+                                    return collect($state)->map(fn ($item) => ['origin' => $item])->all();
+                                }
+                                return $state;
+                            })
+                            ->dehydrateStateUsing(function ($state) {
+                                // Convert array of objects with 'origin' key to array of strings
+                                if (is_array($state) && (count($state) === 0 || is_array(array_values($state)[0]))) {
+                                    return collect($state)->pluck('origin')->filter()->values()->all();
+                                }
+                                return $state;
+                            }),
                     ])->columns(2),
                 ]),
                 Grid::make(1)->schema([

@@ -2,6 +2,7 @@
 use App\Models\Project;
 use App\Models\Issue;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('issues.create.global');
@@ -38,7 +39,7 @@ render(function (View $view) {
         ->orderBy('name')
         ->get();
 
-    return $view->with(compact('project','projectOptions','parentId'));
+    return $view->with(compact('project', 'projectOptions', 'parentId'));
 });
 ?>
 <x-app-layout>
@@ -49,7 +50,7 @@ render(function (View $view) {
     </x-slot>
 
     <div class="py-4">
-        <div class="container">
+        <div class="container mx-auto py-4">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-10 col-lg-8 col-xl-7">
                     <livewire:issues.create-issue-form

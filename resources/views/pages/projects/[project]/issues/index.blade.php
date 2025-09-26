@@ -3,6 +3,7 @@ use App\Models\Project;
 use App\Models\Issue;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('issues.index');
@@ -11,14 +12,14 @@ middleware(['auth','verified']);
 render(function (View $view, Project $project, Request $request) {
     $issues = Issue::query()
         ->where('project_id', $project->id)
-        ->when($request->filled('status'), fn ($q) => $q->whereRelation('status','id',$request->string('status')))
+        ->when($request->filled('status'), fn ($q) => $q->whereRelation('status', 'id', $request->string('status')))
         ->when($request->boolean('assigned_to_me'), fn ($q) => $q->where('assignee_id', auth()->id()))
         ->withMeta()
         ->latest()
         ->paginate(20)
         ->withQueryString();
 
-    return $view->with(compact('project','issues'));
+    return $view->with(compact('project', 'issues'));
 });
 ?>
 <x-app-layout>
@@ -41,7 +42,7 @@ render(function (View $view, Project $project, Request $request) {
     </x-slot>
 
     <div class="py-4">
-        <div class="container">
+        <div class="container mx-auto py-4">
             <form class="d-flex align-items-center gap-2 mb-3" method="get">
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Search summary…" class="form-control w-auto" style="min-width: 18rem;">
                 <div class="form-check">

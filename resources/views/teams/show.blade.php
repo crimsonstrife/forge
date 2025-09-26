@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-4">
-        <div class="container" style="max-width: 900px">
+        <div class="container mx-auto py-4">
             <div class="d-grid gap-4">
                 @livewire('teams.update-team-name-form', ['team' => $team])
 

@@ -1,5 +1,6 @@
 <?php
 use function Laravel\Folio\{name, middleware};
+
 name('projects.transitions');
 middleware(['auth','verified']);
 ?>
@@ -33,7 +34,7 @@ middleware(['auth','verified']);
     </x-slot>
 
     <div class="py-4">
-        <div class="container">
+        <div class="container mx-auto py-4">
             <x-projects.page-card :project="$project">
                 <x-slot name="actions">
                 </x-slot>

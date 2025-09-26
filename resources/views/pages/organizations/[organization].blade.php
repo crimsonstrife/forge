@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Organization;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('organizations.show');
@@ -29,7 +30,7 @@ render(function (\Illuminate\View\View $view, Organization $organization) {
     @endif>
 
     <div class="py-4">
-        <div class="container" style="max-width: 800px">
+        <div class="container mx-auto py-4">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <dl class="row row-cols-1 row-cols-sm-3 g-3 mb-0">
