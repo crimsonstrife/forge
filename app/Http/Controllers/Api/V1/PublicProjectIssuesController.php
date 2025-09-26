@@ -32,7 +32,7 @@ class PublicProjectIssuesController extends Controller
         return JsonResource::collection($q->limit(500)->get()->map(fn ($i) => [
             'id' => (string) $i->id,
             'title' => $i->summary,
-            'description'=> $i->description,
+            'description' => $i->description,
             'status' => $i->status?->only(['id','name','is_done']),
             'type' => $i->type?->only(['id','name']),
             'assignee' => $i->assignee?->only(['id','name']),
