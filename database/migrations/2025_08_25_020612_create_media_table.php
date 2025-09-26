@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('media', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->uuidMorphs('model');
             $table->uuid()->nullable()->unique();
             $table->string('collection_name');
@@ -27,5 +27,10 @@ return new class extends Migration
 
             $table->nullableTimestamps();
         });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('media');
     }
 };
