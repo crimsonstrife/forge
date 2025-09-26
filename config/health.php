@@ -141,7 +141,7 @@ return [
      * The response code to use for HealthCheckJsonResultsController when a health
      * check has failed
      */
-    'json_results_failure_status' => 200,
+    'json_results_failure_status' => 503,
 
     /*
      * You can specify a secret token that needs to be sent in the X-Secret-Token for secured access.
