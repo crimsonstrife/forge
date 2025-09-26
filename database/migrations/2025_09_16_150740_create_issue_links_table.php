@@ -36,9 +36,6 @@ return new class () extends Migration {
 
             // Only one link per type between two issues (regardless of direction)
             $table->unique(['issue_link_type_id', 'canonical_a', 'canonical_b'], 'issue_links_unique_pair');
-
-            // Optional: prevent self-links
-            $table->check('from_issue_id <> to_issue_id');
         });
     }
 
