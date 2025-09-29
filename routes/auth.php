@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\GitHubAuthController;
 use App\Http\Controllers\Auth\SocialAccountLinkController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Middleware\EnsureRegistrationIsEnabled;
 use App\Livewire\Auth\ConfirmPassword;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
@@ -13,7 +14,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     Route::get('login', Login::class)->name('login');
-    Route::get('register', Register::class)->name('register');
+    Route::get('register', Register::class)->name('register')
+        ->middleware(EnsureRegistrationIsEnabled::class);
     Route::get('forgot-password', ForgotPassword::class)->name('password.request');
     Route::get('reset-password/{token}', ResetPassword::class)->name('password.reset');
 });

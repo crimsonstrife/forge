@@ -18,7 +18,7 @@
         "dedoc/scramble": "^0.12.34",
         "doctrine/dbal": "^4.3",
         "filament/filament": "^4.0",
-        "filament/spatie-laravel-settings-plugin": "^v4.0.19",
+        "filament/spatie-laravel-settings-plugin": "^4.0",
         "guzzlehttp/guzzle": "^7.10",
         "kalnoy/nestedset": "^6.0",
         "knuckleswtf/scribe": "^5.3",

@@ -1,5 +1,6 @@
 <x-guest-layout>
 {{-- MAIN --}}
+    @php($allowReg = app(\App\Settings\AuthSettings::class)->allowRegistration ?? true)
 <x-slot class="flex-fill">
     <div class="container py-5">
         <div class="row g-4 align-items-center">
@@ -26,10 +27,12 @@
                         <a href="{{ route('login') }}" class="btn btn-dark">
                             <i class="fa-solid fa-right-to-bracket me-1"></i> Sign in
                         </a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="btn btn-outline-secondary">
-                                <i class="fa-regular fa-id-card me-1"></i> Create an account
-                            </a>
+                        @if ($allowReg)
+                            @if (Route::has('register'))
+                                <a href="{{ route('register') }}" class="btn btn-outline-secondary">
+                                    <i class="fa-regular fa-id-card me-1"></i> Create an account
+                                </a>
+                            @endif
                         @endif
                     </div>
                 @endauth
