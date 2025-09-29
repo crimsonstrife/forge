@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AllowPublicEmbed;
+use App\Http\Middleware\EnsureRegistrationIsEnabled;
 use App\Http\Middleware\EnsureSupportIdentity;
 use App\Http\Middleware\SetPermissionsTeamContext;
 use App\Http\Middleware\VerifyIngestKey;
@@ -23,12 +24,16 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'support.identity' => EnsureSupportIdentity::class,
             'ingest.key' => VerifyIngestKey::class,
+            'auth.registration' => EnsureRegistrationIsEnabled::class,
         ]);
         $middleware->group('api', [
             EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             SubstituteBindings::class,
         ]);
+        // $middleware->web(append: [
+        //     EnsureRegistrationIsEnabled::class,
+        // ]);
         $middleware->group('embed', [
             AllowPublicEmbed::class
         ]);
