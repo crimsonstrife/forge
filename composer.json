@@ -11,6 +11,7 @@
         "ext-libxml": "*",
         "ext-mbstring": "*",
         "ext-zip": "*",
+        "achyutn/filament-log-viewer": "^1.4",
         "ashallendesign/short-url": "^8.3",
         "blaspsoft/blasp": "^3.0",
         "calebporzio/sushi": "^2.5",
