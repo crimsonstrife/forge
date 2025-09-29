@@ -9,7 +9,7 @@ use Spatie\LaravelSettings\Settings;
  */
 class AuthSettings extends Settings
 {
-    public bool $allowRegistration;
+    public bool $allowRegistration = false;
 
     public static function group(): string
     {
