@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use AchyutN\FilamentLogViewer\FilamentLogViewer;
 use App\Filament\Pages\ConnectorsAndSyncSettings;
 use App\Listeners\SwitchTeam;
 use Filament\Events\TenantSet;
@@ -13,6 +14,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -63,6 +65,19 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->plugins([
+                FilamentLogViewer::make()
+                    ->navigationGroup('System')
+                    ->authorize(function () {
+                        $user = auth()->user();
+                        return $user
+                            && (
+                                $user->can('view.system-logs') ||
+                                $user->can('is-super-admin') ||
+                                $user->can('is-admin')
+                            );
+                    }),
+        ]);
     }
 }
