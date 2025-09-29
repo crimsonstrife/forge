@@ -12,7 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
  */
 readonly class EnsureRegistrationIsEnabled
 {
-    public function __construct(private AuthSettings $settings) {}
+    public function __construct(private AuthSettings $settings)
+    {
+    }
 
     public function handle(Request $request, Closure $next): Response
     {
