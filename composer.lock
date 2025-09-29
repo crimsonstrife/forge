@@ -15544,16 +15544,16 @@
         },
         {
             "name": "tapp/filament-auditing",
-            "version": "v4.0.3",
+            "version": "v4.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TappNetwork/filament-auditing.git",
-                "reference": "d985ec8c276b245d3a4f8000854c73386a804582"
+                "reference": "2e079adae23a842739807214af3a3eeb13f54db4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TappNetwork/filament-auditing/zipball/d985ec8c276b245d3a4f8000854c73386a804582",
-                "reference": "d985ec8c276b245d3a4f8000854c73386a804582",
+                "url": "https://api.github.com/repos/TappNetwork/filament-auditing/zipball/2e079adae23a842739807214af3a3eeb13f54db4",
+                "reference": "2e079adae23a842739807214af3a3eeb13f54db4",
                 "shasum": ""
             },
             "require": {
@@ -15617,7 +15617,7 @@
                 "issues": "https://github.com/TappNetwork/filament-auditing/issues",
                 "source": "https://github.com/TappNetwork/filament-auditing"
             },
-            "time": "2025-09-17T02:26:45+00:00"
+            "time": "2025-09-28T23:49:40+00:00"
         },
         {
             "name": "teamtnt/laravel-scout-tntsearch-driver",
