@@ -6,11 +6,11 @@ return new class extends SettingsMigration
 {
     public function up(): void
     {
-        $this->migrator->add('auth.allow_registration', true);
+        $this->migrator->add('auth.allowRegistration', true);
     }
 
     public function down(): void
     {
-        $this->migrator->delete('auth.allow_registration');
+        $this->migrator->delete('auth.allowRegistration');
     }
 };
