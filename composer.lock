@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a21d930d8ace580aef7d0328dc474d62",
+    "content-hash": "2a9be949badfd9b906b55c791c57f5fc",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -430,16 +430,16 @@
         },
         {
             "name": "blaspsoft/blasp",
-            "version": "v2.1.0",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Blaspsoft/blasp.git",
-                "reference": "2673f7c8d3072d47672ac3b8edaa5cb05514abcd"
+                "reference": "8352bea04142e5edd903f21fc1994f0d2201796d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Blaspsoft/blasp/zipball/2673f7c8d3072d47672ac3b8edaa5cb05514abcd",
-                "reference": "2673f7c8d3072d47672ac3b8edaa5cb05514abcd",
+                "url": "https://api.github.com/repos/Blaspsoft/blasp/zipball/8352bea04142e5edd903f21fc1994f0d2201796d",
+                "reference": "8352bea04142e5edd903f21fc1994f0d2201796d",
                 "shasum": ""
             },
             "require": {
@@ -485,9 +485,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Blaspsoft/blasp/issues",
-                "source": "https://github.com/Blaspsoft/blasp/tree/v2.1.0"
+                "source": "https://github.com/Blaspsoft/blasp/tree/v3.0.0"
             },
-            "time": "2025-02-27T21:57:21+00:00"
+            "time": "2025-09-05T10:31:13+00:00"
         },
         {
             "name": "brick/math",

@@ -12,7 +12,7 @@
         "ext-mbstring": "*",
         "ext-zip": "*",
         "ashallendesign/short-url": "^8.3",
-        "blaspsoft/blasp": "^2.1",
+        "blaspsoft/blasp": "^3.0",
         "calebporzio/sushi": "^2.5",
         "codedge/laravel-selfupdater": "^3.10",
         "dedoc/scramble": "^0.12.34",
