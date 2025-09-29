@@ -2,7 +2,7 @@
     use App\Models\{Project, Organization, Issue, Goal};
     /** @var \App\Models\User|null $user */
     $user = auth()->user();
-    $allowReg = app(\App\Settings\AuthSettings::class)->allowRegistration ?? true
+    $allowReg = app(\App\Settings\AuthSettings::class)->allowRegistration ?? true;
 @endphp
 <nav class="navbar navbar-expand-md bg-body border-bottom" x-data>
     <div class="container mx-auto py-4">
