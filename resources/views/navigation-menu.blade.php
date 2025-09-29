@@ -2,15 +2,14 @@
     use App\Models\{Project, Organization, Issue, Goal};
     /** @var \App\Models\User|null $user */
     $user = auth()->user();
+    $allowReg = app(\App\Settings\AuthSettings::class)->allowRegistration ?? true
 @endphp
-
 <nav class="navbar navbar-expand-md bg-body border-bottom" x-data>
     <div class="container mx-auto py-4">
         <!-- Brand -->
         <a class="navbar-brand d-flex align-items-center gap-2" href="{{ $user ? route('dashboard') : url('/') }}">
             <x-application-logo />
         </a>
-
         <!-- Toggler -->
         <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#appNavbar"
                 aria-controls="appNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -239,9 +238,11 @@
                     @if (Route::has('login'))
                         <a class="btn btn-outline-secondary" href="{{ route('login') }}">{{ __('Log in') }}</a>
                     @endif
-                    @if (Route::has('register'))
-                        <a class="btn btn-primary" href="{{ route('register') }}">{{ __('Register') }}</a>
-                    @endif
+                        @if ($allowReg)
+                            @if (Route::has('register'))
+                                <a class="btn btn-primary" href="{{ route('register') }}">{{ __('Register') }}</a>
+                            @endif
+                        @endif
                 @endauth
             </div>
         </div>
