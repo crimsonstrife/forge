@@ -5,6 +5,7 @@ return [
     App\Providers\AuthServiceProvider::class,
     App\Providers\Filament\AdminPanelProvider::class,
     App\Providers\CookiesServiceProvider::class,
+    App\Providers\EventServiceProvider::class,
     App\Providers\FolioServiceProvider::class,
     App\Providers\FortifyServiceProvider::class,
     App\Providers\HealthServiceProvider::class,
