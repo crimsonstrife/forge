@@ -26,4 +26,4 @@ Schedule::command(ReverbHealthCheck::class)
     ->everyFiveMinutes();
 
 Schedule::command(RunHealthChecksCommand::class)
-    ->everyMinute();
+    ->everyFiveMinutes();
