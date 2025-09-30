@@ -1,12 +1,12 @@
 /* Typography & header */
 .kanban-h1 { font-size: 1.25rem; }
-.kanban__title h2 { color: #607D8B; font-size: 1rem; }
-.kanban__title h2 .material-icons { color: #B0BEC5; }
+.kanban__title h2 { color: var(--bs-heading-color); font-size: 1rem; }
+.kanban__title h2 .material-icons { color: var(--bs-heading-color); }
 
 /* Column shell */
 .kanban-col {
     --kanban-accent: #78909C;
-    background: #fff;
+    background: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity));
     border-radius: 4px;
     box-shadow: 0 2px 2px rgba(0,0,0,.14),
     0 3px 1px -2px rgba(0,0,0,.2),
@@ -26,11 +26,10 @@
 
 /* Cards */
 .dd-item {
-    background: #fff;
+    background: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity));
     border: 1px solid #eee;
     border-radius: 4px;
     margin: .5rem 0;
-    font-family: "Roboto","Helvetica","Arial",sans-serif;
     box-shadow: 0 1px 2px rgba(0,0,0,.06);
 }
 .dd-item:hover { box-shadow: 0 5px 6px rgba(0,0,0,.14), 0 3px 1px -6px rgba(0,0,0,.2), 2px 5px 3px rgba(0,0,0,.12); }
@@ -40,12 +39,13 @@
     display: flex; align-items: center; gap: .5rem;
     font-size: 1.1rem; padding: .5rem .75rem; margin: 0;
     cursor: grab;
+    background-color: var(--tier-color);
 }
 .title.dd-handle .material-icons { color: #607D8B; }
 
 /* Body + actions */
-.text { color: #666; border-top: 1px solid rgba(0,0,0,.08); padding: .5rem .75rem; }
-.actions { border-top: 1px solid rgba(0,0,0,.08); padding: .5rem; color: #B0BEC5; }
+.dd-item .text { color: var(--bs-body-color); border-top: 1px solid rgba(0,0,0,.08); padding: .5rem .75rem; }
+.dd-item .actions { border-top: 1px solid rgba(0,0,0,.08); padding: .5rem; color: var(--bs-body-color); }
 
 /* Add button */
 .addbutt { background: #EEE; color: #607D8B; width: 100%; font-weight: 600; }
