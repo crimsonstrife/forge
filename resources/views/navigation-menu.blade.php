@@ -205,6 +205,10 @@
                         </div>
                     @endif
 
+                    @auth
+                        <livewire:notifications.menu />
+                    @endauth
+
                     <!-- Settings / Profile -->
                     <div class="dropdown">
                         <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button"
