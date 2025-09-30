@@ -76,7 +76,9 @@ render(function (View $view, Project $project, Request $request) {
     if ($statuses->isEmpty()) {
         $statuses = IssueStatus::query()
             ->select('issue_statuses.id', 'issue_statuses.name', 'issue_statuses.color')
-            ->whereIn('issue_statuses.id', Issue::query()
+            ->whereIn(
+                'issue_statuses.id',
+                Issue::query()
                 ->where('project_id', $project->id)
                 ->whereNotNull('issue_status_id')
                 ->select('issue_status_id')
