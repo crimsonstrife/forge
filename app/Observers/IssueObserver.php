@@ -146,19 +146,4 @@ class IssueObserver
         RecalculateIssueRollups::dispatch($parentIssueId)->afterCommit();
     }
 
-    private function notifyAssigned(Issue $issue, string $userId): void
-    {
-        /** @var User|null $user */
-        $user = User::query()->find($userId);
-        if (! $user) {
-            return;
-        }
-
-        $url = Route::has('issues.show')
-            ? route('issues.show', $issue) // adjust if your show route differs
-            : url('/issues/' . $issue->getKey());
-
-        // IssueAssigned implements ShouldQueue and sets $afterCommit = true (see below).
-        $user->notify(new IssueAssigned(issue: $issue, url: $url));
-    }
 }
