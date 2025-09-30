@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Resources\Api\V1;
 
 use Illuminate\Http\Request;
@@ -30,7 +31,6 @@ class PublicIssueResource extends JsonResource
             : ((bool) ($this->status['is_done'] ?? false) ? 100 : 0);
 
         return [
-            'id' => (string) $this->id,
             'description' => $this->description,
             'summary' => $this->summary,
             'status' => $this->status?->only(['id', 'name', 'is_done']),

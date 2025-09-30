@@ -3,7 +3,9 @@
 namespace App\Livewire\Projects;
 
 use App\Models\Project;
+use DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 final class ProjectTransitions extends Component
@@ -22,12 +24,14 @@ final class ProjectTransitions extends Component
 
         $existing = $project->statusTransitions()
             ->get(['from_status_id','to_status_id'])
-            ->map(fn($t)=> $t->from_status_id.':'.$t->to_status_id)
+            ->map(fn ($t) => $t->from_status_id.':'.$t->to_status_id)
             ->all();
 
         foreach ($project->issueStatuses as $sFrom) {
             foreach ($project->issueStatuses as $sTo) {
-                if ($sFrom->id === $sTo->id) { continue; }
+                if ($sFrom->id === $sTo->id) {
+                    continue;
+                }
                 $key = (string)$sFrom->id . ':' . (string)$sTo->id;
                 $this->matrix[$key] = in_array($key, $existing, true);
             }
@@ -40,7 +44,9 @@ final class ProjectTransitions extends Component
 
         $keep = [];
         foreach ($this->matrix as $key => $on) {
-            if (! $on) { continue; }
+            if (! $on) {
+                continue;
+            }
             [$from, $to] = explode(':', $key, 2);
             $keep[] = ['from_status_id' => $from, 'to_status_id' => $to];
         }
@@ -48,7 +54,8 @@ final class ProjectTransitions extends Component
         // Sync by delete-then-insert set difference (global transitions only)
         $this->project->statusTransitions()->delete();
         if (! empty($keep)) {
-            $rows = array_map(fn($r) => [
+            $rows = array_map(fn ($r) => [
+                'id' => Str::uuid(),
                 'project_id' => $this->project->id,
                 'from_status_id' => $r['from_status_id'],
                 'to_status_id' => $r['to_status_id'],
@@ -58,7 +65,7 @@ final class ProjectTransitions extends Component
                 'updated_at' => now(),
             ], $keep);
 
-            \DB::table('project_status_transitions')->insert($rows);
+            DB::table('project_status_transitions')->insert($rows);
         }
 
         session()->flash('flash.banner', 'Transitions saved.');

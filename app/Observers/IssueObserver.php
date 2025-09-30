@@ -2,15 +2,19 @@
 
 namespace App\Observers;
 
+use App\Domain\Issues\Events\IssueAssigneeChanged;
 use App\Domain\Issues\IssueRollupService;
 use App\Jobs\RecalculateIssueRollups;
 use App\Models\Goal;
 use App\Models\Issue;
 use App\Models\Project;
+use App\Models\User;
+use App\Notifications\IssueAssigned;
 use App\Services\GoalProgressService;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use RuntimeException;
 use Throwable;
 
@@ -50,8 +54,10 @@ class IssueObserver
                 $project->save();
             }, 3);
         } catch (QueryException|Throwable $e) {
-             if ($attempts < 3) { goto retry; }
-             throw $e;
+            if ($attempts < 3) {
+                goto retry;
+            }
+            throw $e;
         }
     }
 
@@ -73,6 +79,13 @@ class IssueObserver
         if ($issue->parent_id) {
             $this->dispatchRollup((string) $issue->parent_id);
         }
+
+        if ($issue->assignee_id) {
+            event(new IssueAssigneeChanged(
+                issueId: (string) $issue->getKey(),
+                newAssigneeId: (string) $issue->assignee_id,
+            ));
+        }
     }
 
     public function deleted(Issue $issue): void
@@ -85,7 +98,7 @@ class IssueObserver
     public function updated(Issue $issue): void
     {
         $changed = $issue->getChanges();
-        $touched = array_intersect_key($changed, array_flip(['parent_id', 'issue_status_id', 'story_points']));
+        $touched = array_intersect_key($changed, array_flip(['parent_id', 'issue_status_id', 'story_points', 'assignee_id']));
         if ($touched === []) {
             return;
         }
@@ -106,6 +119,17 @@ class IssueObserver
         if ($newParent) {
             $this->dispatchRollup($newParent);
         }
+
+        // Assignee changed? Notify the new assignee (and optionally the old one).
+        if ($issue->wasChanged('assignee_id')) {
+            $newId = (string) ($issue->assignee_id ?? '');
+            if ($newId !== '') {
+                event(new IssueAssigneeChanged(
+                    issueId: (string) $issue->getKey(),
+                    newAssigneeId: (string) $issue->assignee_id,
+                ));
+            }
+        }
     }
 
     private function dispatchRollup(string $parentIssueId): void
@@ -121,4 +145,5 @@ class IssueObserver
         // Queue and guarantee it runs after DB commit.
         RecalculateIssueRollups::dispatch($parentIssueId)->afterCommit();
     }
+
 }
