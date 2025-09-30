@@ -51,9 +51,11 @@
     <script>
         (() => {
             // Guard: Echo may not be present in all pages
-            if (! window.Echo) { return; }
+            if (!window.Echo) {
+                return;
+            }
 
-            const userId = @json(auth()->id());
+            const userId = @json(auth()->id(), JSON_THROW_ON_ERROR);
             const channel = `private-App.Models.User.${userId}`;
 
             window.Echo.private(channel)
