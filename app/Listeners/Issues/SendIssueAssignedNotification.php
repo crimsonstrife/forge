@@ -37,7 +37,7 @@ final class SendIssueAssignedNotification implements ShouldQueue
         }
 
         $url = Route::has('issues.show')
-            ? route('issues.show', ['project' => $$issue->project, 'issue' => $issue])
+            ? route('issues.show', ['project' => $issue->project, 'issue' => $issue])
             : url('projects' . $issue->project()->id . '/issues/' . $issue->getKey());
 
         $user->notify(new IssueAssigned(issue: $issue, url: $url));
