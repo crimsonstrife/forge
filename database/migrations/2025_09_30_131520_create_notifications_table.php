@@ -12,7 +12,7 @@ return new class () extends Migration {
     {
         if (! Schema::hasTable('notifications')) {
             Schema::create('notifications', static function (Blueprint $table): void {
-                $table->id();
+                $table->uuid('id')->primary();
                 $table->string('type');
                 $table->uuidMorphs('notifiable'); // notifiable_type, notifiable_id
                 $table->text('data'); // json in text keeps sqlite compat; cast in model
