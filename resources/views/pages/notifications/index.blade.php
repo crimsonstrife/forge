@@ -69,4 +69,3 @@ render(function (View $view, Request $request) {
         <div class="mt-3">{{ $notifications->withQueryString()->links() }}</div>
     </div>
 </x-app-layout>
-<?php
