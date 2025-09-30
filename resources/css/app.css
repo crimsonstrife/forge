@@ -57,4 +57,3 @@ main {
 [data-bs-theme="dark"] {
     --wa-color-surface-default: var(--bs-body-bg);
 }
-
