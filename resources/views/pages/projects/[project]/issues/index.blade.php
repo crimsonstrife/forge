@@ -1,6 +1,9 @@
 <?php
 use App\Models\Project;
 use App\Models\Issue;
+use App\Models\IssueStatus;
+use App\Models\IssueType;
+use App\Models\IssuePriority;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -10,16 +13,94 @@ name('issues.index');
 middleware(['auth','verified']);
 
 render(function (View $view, Project $project, Request $request) {
+    $term = trim((string) $request->string('q'));
+
+    $numberSearch = null;
+    $keySearch = null;
+
+    if ($term !== '') {
+        if (preg_match('/^#?(\d+)$/', $term, $m)) {
+            $numberSearch = (int) $m[1];
+        }
+        if (preg_match('/^[A-Z]+-\d+$/i', $term)) {
+            $keySearch = strtoupper($term);
+        }
+    }
+
     $issues = Issue::query()
         ->where('project_id', $project->id)
-        ->when($request->filled('status'), fn ($q) => $q->whereRelation('status', 'id', $request->string('status')))
-        ->when($request->boolean('assigned_to_me'), fn ($q) => $q->where('assignee_id', auth()->id()))
+        ->when($term !== '', function ($q) use ($term, $numberSearch, $keySearch) {
+            $q->where(function ($qq) use ($term, $numberSearch, $keySearch) {
+                $qq->where('summary', 'like', '%' . $term . '%')
+                    ->orWhere('description', 'like', '%' . $term . '%');
+
+                if ($numberSearch !== null) {
+                    $qq->orWhere('number', $numberSearch);
+                }
+
+                if ($keySearch !== null) {
+                    $qq->orWhere('key', $keySearch);
+                }
+            });
+        })
+        ->when($request->filled('status'), function ($q) use ($request) {
+            $q->whereRelation('status', 'id', (string) $request->string('status'));
+        })
+        ->when($request->filled('type'), function ($q) use ($request) {
+            $q->whereRelation('type', 'id', (string) $request->string('type'));
+        })
+        ->when($request->filled('priority'), function ($q) use ($request) {
+            $q->whereRelation('priority', 'id', (string) $request->string('priority'));
+        })
+        ->when($request->boolean('assigned_to_me'), function ($q) {
+            $q->where('assignee_id', auth()->id());
+        })
+        ->with(['status:id,name,color', 'priority:id,name', 'assignee:id,name,profile_photo_path'])
         ->withMeta()
         ->latest()
         ->paginate(20)
         ->withQueryString();
 
-    return $view->with(compact('project', 'issues'));
+    // Preferred: statuses explicitly enabled for this project via pivot
+    $statuses = IssueStatus::query()
+        ->select('issue_statuses.id', 'issue_statuses.name', 'issue_statuses.color')
+        ->whereIn('issue_statuses.id', function ($q) use ($project) {
+            $q->select('issue_status_id')
+                ->from('project_issue_statuses')
+                ->where('project_id', $project->id);
+        })
+        ->orderBy('issue_statuses.name')
+        ->get();
+
+    // Fallback #1: any statuses actually used by issues in this project
+    if ($statuses->isEmpty()) {
+        $statuses = IssueStatus::query()
+            ->select('issue_statuses.id', 'issue_statuses.name', 'issue_statuses.color')
+            ->whereIn('issue_statuses.id', Issue::query()
+                ->where('project_id', $project->id)
+                ->whereNotNull('issue_status_id')
+                ->select('issue_status_id')
+            )
+            ->orderBy('issue_statuses.name')
+            ->get();
+    }
+
+    // Fallback #2: all statuses (global)
+    if ($statuses->isEmpty()) {
+        $statuses = IssueStatus::query()
+            ->orderBy('name')
+            ->get(['id', 'name', 'color']);
+    }
+
+    $types = IssueType::query()
+        ->orderBy('name')
+        ->get(['id','name']);
+
+    $priorities = IssuePriority::query()
+        ->orderBy('name')
+        ->get(['id','name']);
+
+    return $view->with(compact('project', 'issues', 'statuses', 'types', 'priorities'));
 });
 ?>
 <x-app-layout>
@@ -43,13 +124,42 @@ render(function (View $view, Project $project, Request $request) {
 
     <div class="py-4">
         <div class="container mx-auto py-4">
-            <form class="d-flex align-items-center gap-2 mb-3" method="get">
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search summary…" class="form-control w-auto" style="min-width: 18rem;">
-                <div class="form-check">
+            <form class="d-flex flex-wrap align-items-center gap-2 mb-3" method="get" role="search">
+                <input type="text"
+                       name="q"
+                       value="{{ request('q') }}"
+                       placeholder="Search summary, description, #123, ABC-123…"
+                       class="form-control w-auto"
+                       style="min-width: 18rem;">
+
+                <select name="status" class="form-select w-auto">
+                    <option value="">All statuses</option>
+                    @foreach($statuses as $s)
+                        <option value="{{ $s->id }}" @selected((string)request('status') === (string)$s->id)>{{ $s->name }}</option>
+                    @endforeach
+                </select>
+
+                <select name="type" class="form-select w-auto">
+                    <option value="">All types</option>
+                    @foreach($types as $t)
+                        <option value="{{ $t->id }}" @selected((string)request('type') === (string)$t->id)>{{ $t->name }}</option>
+                    @endforeach
+                </select>
+
+                <select name="priority" class="form-select w-auto">
+                    <option value="">All priorities</option>
+                    @foreach($priorities as $p)
+                        <option value="{{ $p->id }}" @selected((string)request('priority') === (string)$p->id)>{{ $p->name }}</option>
+                    @endforeach
+                </select>
+
+                <div class="form-check ms-2">
                     <input class="form-check-input" type="checkbox" name="assigned_to_me" value="1" id="me" @checked(request('assigned_to_me'))>
                     <label class="form-check-label" for="me">Assigned to me</label>
                 </div>
+
                 <button class="btn btn-outline-secondary">Filter</button>
+                <a href="{{ route('issues.index', ['project' => $project]) }}" class="btn btn-link text-decoration-none">Clear</a>
             </form>
 
             <div class="list-group">
@@ -68,12 +178,12 @@ render(function (View $view, Project $project, Request $request) {
                                 <span>{{ $issue->priority?->name }}</span>
                                 @if($issue->assignee)
                                     <span class="d-inline-flex align-items-center gap-2">
-                                         <x-avatar :src="$issue->assignee->profile_photo_url" :name="$issue->assignee->name" preset="sm" />
+                                        <x-avatar :src="$issue->assignee->profile_photo_url" :name="$issue->assignee->name" preset="sm" />
                                         {{ $issue->assignee->name }}
                                     </span>
                                 @endif
-                                <span title="Attachments">📎 {{ $issue->attachments_count }}</span>
-                                <span title="Comments">💬 {{ $issue->comments_count }}</span>
+                                <span title="Attachments"><wa-icon family="solid" name="paperclip" /> {{ $issue->attachments_count ?? "0" }}</span>
+                                <span title="Comments"><wa-icon family="solid" name="comment" /> {{ $issue->comments_count ?? "0" }}</span>
                                 <span>{{ $issue->updated_at?->diffForHumans() }}</span>
                             </div>
                         </div>
@@ -84,7 +194,7 @@ render(function (View $view, Project $project, Request $request) {
                         @endif
                     </a>
                 @empty
-                    <div class="text-center text-body-secondary py-4">No issues yet.</div>
+                    <div class="text-center text-body-secondary py-4">No issues match your filters.</div>
                 @endforelse
             </div>
 
