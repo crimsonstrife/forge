@@ -3,7 +3,9 @@
 namespace App\Livewire\Projects;
 
 use App\Models\Project;
+use DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 final class ProjectTransitions extends Component
@@ -49,6 +51,7 @@ final class ProjectTransitions extends Component
         $this->project->statusTransitions()->delete();
         if (! empty($keep)) {
             $rows = array_map(fn($r) => [
+                'id' => Str::uuid(),
                 'project_id' => $this->project->id,
                 'from_status_id' => $r['from_status_id'],
                 'to_status_id' => $r['to_status_id'],
@@ -58,7 +61,7 @@ final class ProjectTransitions extends Component
                 'updated_at' => now(),
             ], $keep);
 
-            \DB::table('project_status_transitions')->insert($rows);
+            DB::table('project_status_transitions')->insert($rows);
         }
 
         session()->flash('flash.banner', 'Transitions saved.');
