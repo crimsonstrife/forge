@@ -52,12 +52,22 @@ render(function (View $view, Request $request) {
             @forelse($notifications as $n)
                 @php $data = $n->data ?? []; @endphp
                 <a class="list-group-item list-group-item-action d-flex justify-content-between {{ $n->read_at ? '' : 'list-group-item-info' }}"
-                   href="{{ $data['url'] ?? '#' }}">
-                    <div>
-                        <div class="fw-semibold">{{ class_basename($n->type) }}</div>
-                        @if(isset($data['summary']))
-                            <div class="small text-muted">{{ $data['summary'] }}</div>
+                   href="{{ $data['url'] ?? '#' }}"
+                   @if(!$n->read_at) aria-unread="true" @endif>
+                    <div class="d-flex align-items-center">
+                        @if(!$n->read_at)
+                            <span class="me-2" aria-label="{{ __('Unread notification') }}" title="{{ __('Unread notification') }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16" style="vertical-align: middle;">
+                                    <circle cx="8" cy="8" r="6"/>
+                                </svg>
+                            </span>
                         @endif
+                        <div>
+                            <div class="fw-semibold">{{ class_basename($n->type) }}</div>
+                            @if(isset($data['summary']))
+                                <div class="small text-muted">{{ $data['summary'] }}</div>
+                            @endif
+                        </div>
                     </div>
                     <small class="text-muted">{{ $n->created_at->diffForHumans() }}</small>
                 </a>
