@@ -13,7 +13,7 @@
 /* Column shell */
 .kanban-col {
     --kanban-accent: #78909c;
-    background: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity));
+    background: var(--bs-body-bg);
     border-radius: 4px;
     box-shadow:
         0 2px 2px rgba(0, 0, 0, 0.14),
