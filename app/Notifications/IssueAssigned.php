@@ -49,7 +49,7 @@ class IssueAssigned extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->subject(__('New assignment: :summary', ['summary' => $this->issue->summary ?? __('Issue')]))
             ->line(__('You were assigned to an issue.'))
             ->action(__('View Issue'), $this->url);

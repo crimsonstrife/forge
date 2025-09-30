@@ -26,7 +26,7 @@ render(function (View $view, Request $request) {
 
     $notifications = $query->paginate(20);
 
-    $view->with(compact('notifications','filter'));
+    $view->with(compact('notifications', 'filter'));
 });
 ?>
 

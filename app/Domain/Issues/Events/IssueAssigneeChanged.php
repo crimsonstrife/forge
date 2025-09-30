@@ -16,5 +16,6 @@ final class IssueAssigneeChanged
     public function __construct(
         public string $issueId,
         public string $newAssigneeId,
-    ) {}
+    ) {
+    }
 }
