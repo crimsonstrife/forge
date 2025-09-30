@@ -64,7 +64,7 @@
     padding: 0.5rem 0.75rem;
     margin: 0;
     cursor: grab;
-    background-color: var(--tier-color);
+    background-color: var(--tier-color, #f0f0f0);
 }
 .title.dd-handle .material-icons {
     color: #607d8b;
