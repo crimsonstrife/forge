@@ -14,11 +14,12 @@ class ReverbHealthCheck extends Command
         $host = env('REVERB_HOST', '127.0.0.1');
         $port = (int) env('REVERB_PORT', 8080);
 
-        $errno = 0; $errstr = '';
+        $errno = 0;
+        $errstr = '';
         $fp = @fsockopen($host, $port, $errno, $errstr, 2.0);
 
         if ($fp === false) {
-            logger()->error('Reverb health check failed', compact('host','port','errno','errstr'));
+            logger()->error('Reverb health check failed', compact('host', 'port', 'errno', 'errstr'));
             $this->error("Reverb unreachable at {$host}:{$port} ({$errno}) {$errstr}");
             return 1;
         }
