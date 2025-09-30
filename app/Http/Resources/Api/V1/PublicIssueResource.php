@@ -30,7 +30,6 @@ class PublicIssueResource extends JsonResource
             : ((bool) ($this->status['is_done'] ?? false) ? 100 : 0);
 
         return [
-            'id' => (string) $this->id,
             'description' => $this->description,
             'summary' => $this->summary,
             'status' => $this->status?->only(['id', 'name', 'is_done']),

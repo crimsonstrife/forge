@@ -56,44 +56,6 @@ class PublicProjectIssuesController extends Controller
             });
         }
 
-        // Aggregates that include *all* children (public + private)
-        // children_count
-        $visible->selectSub(
-            Issue::query()
-                ->from('issues as c')
-                ->selectRaw('count(*)')
-                ->whereColumn('c.parent_id', 'issues.id'),
-            'children_count'
-        );
-        // children_done_count
-        $visible->selectSub(
-            Issue::query()
-                ->from('issues as c')
-                ->join('issue_statuses as s', 's.id', '=', 'c.issue_status_id')
-                ->where('s.is_done', true)
-                ->whereColumn('c.parent_id', 'issues.id')
-                ->selectRaw('count(*)'),
-            'children_done_count'
-        );
-        // children_points_total
-        $visible->selectSub(
-            Issue::query()
-                ->from('issues as c')
-                ->whereColumn('c.parent_id', 'issues.id')
-                ->selectRaw('COALESCE(SUM(c.story_points), 0)'),
-            'children_points_total'
-        );
-        // children_points_done
-        $visible->selectSub(
-            Issue::query()
-                ->from('issues as c')
-                ->join('issue_statuses as s', 's.id', '=', 'c.issue_status_id')
-                ->where('s.is_done', true)
-                ->whereColumn('c.parent_id', 'issues.id')
-                ->selectRaw('COALESCE(SUM(c.story_points), 0)'),
-            'children_points_done'
-        );
-
         // Sorting
         if ($sort !== '') {
             $dir = str_starts_with($sort, '-') ? 'desc' : 'asc';
@@ -127,7 +89,6 @@ class PublicProjectIssuesController extends Controller
         $progressPercent = $total > 0 ? (int) round(($done / $total) * 100) : 0;
 
         $projectSummary = [
-            'id' => (string) $project->id,
             'name' => $project->name,
             'key' => $project->key,
             'public_slug' => $project->public_slug,
