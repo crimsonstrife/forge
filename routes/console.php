@@ -2,10 +2,12 @@
 
 use App\Console\Commands\CheckForAppUpdate;
 use App\Console\Commands\RecalcIssueRollups;
+use App\Console\Commands\ReverbHealthCheck;
 use App\Console\Commands\SyncRepositoryIssues;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use Spatie\Health\Commands\RunHealthChecksCommand;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -19,3 +21,9 @@ Schedule::command(SyncRepositoryIssues::class)
 
 Schedule::command(RecalcIssueRollups::class)
     ->everyFiveMinutes();
+
+Schedule::command(ReverbHealthCheck::class)
+    ->everyFiveMinutes();
+
+Schedule::command(RunHealthChecksCommand::class)
+    ->everyMinute();
