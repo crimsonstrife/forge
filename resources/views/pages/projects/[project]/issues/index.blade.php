@@ -53,21 +53,8 @@ render(function (View $view, Project $project, Request $request) {
 
     $query = Issue::query()
         ->select('issues.*')
-        // subselect counts so we can sort these columns
-        ->selectSub(
-            DB::table('media')
-                ->selectRaw('COUNT(*)')
-                ->where('model_type', \App\Models\Issue::class)
-                ->whereColumn('model_id', 'issues.id'),
-            'attachments_count'
-        )
-        ->selectSub(
-            DB::table('comments')
-                ->selectRaw('COUNT(*)')
-                ->where('commentable_type', \App\Models\Issue::class)
-                ->whereColumn('commentable_id', 'issues.id'),
-            'comments_count'
-        )
+        // use withCount for attachments and comments for better performance
+        ->withCount(['attachments', 'comments'])
         ->selectSub(
             IssuePriority::query()
                 ->select('name')
