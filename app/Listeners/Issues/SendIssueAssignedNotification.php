@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Notifications\IssueAssigned;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -22,19 +23,42 @@ final class SendIssueAssignedNotification implements ShouldQueue
 
     public function handle(IssueAssigneeChanged $event): void
     {
-        /** @var Issue|null $issue */
-        $issue = Issue::query()
-            ->select(['id', 'summary', 'project_id'])
-            ->find($event->issueId);
+        // Self-assignment: don't notify the actor about their own action
+        if ($event->actorId !== null && (string) $event->actorId === (string) $event->newAssigneeId) {
+            return;
+        }
 
-        /** @var User|null $user */
-        $user = User::query()
-            ->select(['id', 'name', 'email'])
-            ->find($event->newAssigneeId);
-
+        $issue = Issue::query()->select(['id','summary','project_id'])->find($event->issueId);
+        $user  = User::query()->select(['id','name','email'])->find($event->newAssigneeId);
         if (! $issue || ! $user) {
             return;
         }
+
+        // ---- DEDUPE: same issue to same user, unread, very recent
+        $query = $user->notifications()
+            ->where('type', IssueAssigned::class)
+            ->whereNull('read_at')
+            ->where('created_at', '>=', now()->subMinutes(2));
+
+        // JSON filter by driver
+        $driver = DB::getDriverName();
+        if ($driver === 'pgsql') {
+            $query->whereRaw("data->>'issue_id' = ?", [(string) $issue->getKey()]);
+        } elseif ($driver === 'mysql') {
+            $query->where('data->issue_id', (string) $issue->getKey());
+        } else {
+            // fallback: simple LIKE (SQLite/dev)
+            $needle = '"issue_id":"' . $issue->getKey() . '"';
+            // Escape %, _, and \ for LIKE pattern
+            $escapedNeedle = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $needle);
+            $likePattern = '%' . $escapedNeedle . '%';
+            $query->whereRaw("data LIKE ? ESCAPE '\\'", [$likePattern]);
+        }
+
+        if ($query->exists()) {
+            return; // skip duplicate
+        }
+        // ---- /DEDUPE
 
         $url = Route::has('issues.show')
             ? route('issues.show', ['project' => $issue->project, 'issue' => $issue])

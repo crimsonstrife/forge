@@ -84,6 +84,7 @@ class IssueObserver
             event(new IssueAssigneeChanged(
                 issueId: (string) $issue->getKey(),
                 newAssigneeId: (string) $issue->assignee_id,
+                actorId: auth()->id() ? (string) auth()->id() : null,
             ));
         }
     }
@@ -127,6 +128,7 @@ class IssueObserver
                 event(new IssueAssigneeChanged(
                     issueId: (string) $issue->getKey(),
                     newAssigneeId: (string) $issue->assignee_id,
+                    actorId: auth()->id() ? (string) auth()->id() : null,
                 ));
             }
         }

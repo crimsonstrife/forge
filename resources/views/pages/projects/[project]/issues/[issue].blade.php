@@ -7,6 +7,7 @@ use App\Models\IssueType;
 use App\Models\Project;
 use App\Models\Issue;
 use App\Models\User;
+use App\Services\Issues\IssueStatusTransitionService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -43,6 +44,8 @@ render(function (View $view, Project $project, Issue $issue) {
         'comments',
         'media as attachments_count' => fn ($m) => $m->where('collection_name', 'attachments'),
     ]);
+
+    $allowedToStatuses = app(IssueStatusTransitionService::class)->allowedToStatusesForIssue($issue);
 
     // Recent activity for THIS issue
     /** @var Collection<int, Activity> $rawActivity */
@@ -227,8 +230,8 @@ render(function (View $view, Project $project, Issue $issue) {
 
     // Linked repository
     $projectRepoLink = $project->repositoryLink;        // App\Models\ProjectRepository|null
-    $projectRepo     = $projectRepoLink?->repository;    // App\Models\Repository|null
-    $defaultBranch   = $projectRepo?->default_branch ?: 'main';
+    $projectRepo = $projectRepoLink?->repository;    // App\Models\Repository|null
+    $defaultBranch = $projectRepo?->default_branch ?: 'main';
 
     return $view->with(compact(
         'attachments',
@@ -243,6 +246,7 @@ render(function (View $view, Project $project, Issue $issue) {
         'activityGroups',
         'projectRepo',
         'defaultBranch',
+        'allowedToStatuses',
     ));
 });
 ?>
@@ -252,26 +256,57 @@ render(function (View $view, Project $project, Issue $issue) {
         <div class="d-flex align-items-center justify-content-between gap-3">
             <div>
                 <h2 class="h4 mb-1">{{ $project->key }} — {{ $issue->key }}</h2>
-                <a href="{{ route('projects.show', ['project' => $project]) }}" class="link-primary small">Back to project</a>
+                <a href="{{ route('projects.show', ['project' => $project]) }}" class="link-primary small">Back to
+                    project</a>
                 @if($issue->parent)
                     <div class="small mt-1">
                         <span class="text-body-secondary">Parent:</span>
-                        <a class="link-primary" href="{{ route('issues.show', ['project' => $project, 'issue' => $issue->parent]) }}">
+                        <a class="link-primary"
+                           href="{{ route('issues.show', ['project' => $project, 'issue' => $issue->parent]) }}">
                             {{ $issue->parent->key }} — {{ $issue->parent->summary }}
                         </a>
                     </div>
                 @endif
             </div>
             <div class="d-flex gap-2">
-                <a href="{{ route('projects.timeline', ['project' => $project]) }}" class="btn btn-outline-secondary btn-sm">Timeline</a>
-                <a href="{{ route('projects.calendar', ['project' => $project]) }}" class="btn btn-outline-secondary btn-sm">Calendar</a>
-                <a href="{{ route('projects.board', ['project' => $project]) }}" class="btn btn-outline-secondary btn-sm">Kanban</a>
-                <a href="{{ route('projects.scrum', ['project' => $project]) }}" class="btn btn-outline-secondary btn-sm">Sprint</a>
+                <a href="{{ route('projects.timeline', ['project' => $project]) }}"
+                   class="btn btn-outline-secondary btn-sm">Timeline</a>
+                <a href="{{ route('projects.calendar', ['project' => $project]) }}"
+                   class="btn btn-outline-secondary btn-sm">Calendar</a>
+                <a href="{{ route('projects.board', ['project' => $project]) }}"
+                   class="btn btn-outline-secondary btn-sm">Kanban</a>
+                <a href="{{ route('projects.scrum', ['project' => $project]) }}"
+                   class="btn btn-outline-secondary btn-sm">Sprint</a>
                 @can('issues.create')
-                    <a href="{{ route('issues.create', ['project' => $project]) }}" class="btn btn-primary btn-sm">New issue</a>
+                    <a href="{{ route('issues.create', ['project' => $project]) }}" class="btn btn-primary btn-sm">New
+                        issue</a>
                 @endcan
                 @can('update', $issue)
-                    <a href="{{ route('issues.edit', ['project'=>$project, 'issue'=>$issue]) }}" class="btn btn-outline-secondary btn-sm">Edit</a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Change status
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            @forelse($allowedToStatuses as $st)
+                                <li>
+                                    <form method="POST" action="{{ route('issues.transition', [$project, $issue]) }}">
+                                        @csrf
+                                        <input type="hidden" name="to_status_id" value="{{ $st->id }}">
+                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-2">
+                                            <span class="rounded-circle d-inline-block" style="width:.5rem;height:.5rem;background: {{ $st->color ?? '#9ca3af' }}"></span>
+                                            <span>{{ $st->name }}</span>
+                                        </button>
+                                    </form>
+                                </li>
+                            @empty
+                                <li><span class="dropdown-item-text text-body-secondary">No transitions</span></li>
+                            @endforelse
+                        </ul>
+                    </div>
+                @endcan
+            @can('update', $issue)
+                    <a href="{{ route('issues.edit', ['project'=>$project, 'issue'=>$issue]) }}"
+                       class="btn btn-outline-secondary btn-sm">Edit</a>
                 @endcan
                 @can('delete', $issue)
                     <x-delete-button
@@ -294,7 +329,8 @@ render(function (View $view, Project $project, Issue $issue) {
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge text-bg-light">{{ $issue->key }}</span>
                                 <span class="d-inline-flex align-items-center gap-1 small">
-                                    <span class="rounded-circle d-inline-block" style="width:.5rem;height:.5rem;background: {{ $issue->status?->color ?? '#9ca3af' }}"></span>
+                                    <span class="rounded-circle d-inline-block"
+                                          style="width:.5rem;height:.5rem;background: {{ $issue->status?->color ?? '#9ca3af' }}"></span>
                                     {{ $issue->status?->name }}
                                 </span>
                                 <span class="small">{{ $issue->type?->name }}</span>
@@ -325,7 +361,8 @@ render(function (View $view, Project $project, Issue $issue) {
                                     <dt class="text-body-secondary">Reporter</dt>
                                     <dd class="mb-0 d-flex align-items-center gap-2">
                                         @if($issue->reporter)
-                                            <x-avatar :src="$issue->reporter->profile_photo_url" :name="$issue->reporter->name" preset="md" />
+                                            <x-avatar :src="$issue->reporter->profile_photo_url"
+                                                      :name="$issue->reporter->name" preset="md"/>
                                             {{ $issue->reporter->name }}
                                         @else
                                             —
@@ -337,7 +374,8 @@ render(function (View $view, Project $project, Issue $issue) {
                                     <dd class="mb-0 d-flex align-items-center gap-2">
                                         <x-avatar-group class="tw-flex">
                                             @if($issue->assignee)
-                                                <x-avatar :src="$issue->assignee->profile_photo_url" :name="$issue->assignee->name" preset="md" />
+                                                <x-avatar :src="$issue->assignee->profile_photo_url"
+                                                          :name="$issue->assignee->name" preset="md"/>
                                                 {{ $issue->assignee->name }}
                                             @else
                                                 {{ __('Unassigned') }}
@@ -355,7 +393,10 @@ render(function (View $view, Project $project, Issue $issue) {
                                 </div>
                                 <div class="pt-2">
                                     <div class="text-body-secondary small mb-1">Progress</div>
-                                    <wa-progress-bar aria-label="Progress" value="{{round($issue->progress())}}" style="--track-height: 6px;">{{ (int) round($issue->progress() * 100) }}%</wa-progress-bar>
+                                    <wa-progress-bar aria-label="Progress" value="{{round($issue->progress())}}"
+                                                     style="--track-height: 6px;">{{ (int) round($issue->progress() * 100) }}
+                                        %
+                                    </wa-progress-bar>
                                 </div>
                                 <div class="pt-2 text-body-secondary small">
                                     {{ __('Updated') }} {{ $issue->updated_at?->diffForHumans() }}
@@ -372,7 +413,7 @@ render(function (View $view, Project $project, Issue $issue) {
                                 <h3 class="h6 mb-2">{{ __('Related Works') }}</h3>
                             </div>
                             <div class="card-body d-flex gap-4 justify-content-between">
-                                <livewire:issues.manage-links :issue="$issue" />
+                                <livewire:issues.manage-links :issue="$issue"/>
                             </div>
                         </div>
                     </div>
@@ -399,7 +440,8 @@ render(function (View $view, Project $project, Issue $issue) {
                                     <!-- Overview: description moved from header -->
                                     <wa-tab-panel name="overview" aria-hidden="false" active>
                                         @if($issue->description)
-                                            <div id="issue-body" class="text-body issue-content">{!! $issue->description !!}</div>
+                                            <div id="issue-body"
+                                                 class="text-body issue-content">{!! $issue->description !!}</div>
                                         @else
                                             <p class="text-body-secondary small mb-0">{{ __('No description yet.') }}</p>
                                         @endif
@@ -415,11 +457,16 @@ render(function (View $view, Project $project, Issue $issue) {
                                                         · {{ $childrenPointsDone }}/{{ $childrenPointsTotal }} pts
                                                     @endif
                                                 </div>
-                                                <wa-progress-bar aria-label="Progress" value="{{ $childrenProgressPct }}" style="--track-height: 6px;">{{ $childrenProgressPct }}%</wa-progress-bar>
+                                                <wa-progress-bar aria-label="Progress"
+                                                                 value="{{ $childrenProgressPct }}"
+                                                                 style="--track-height: 6px;">{{ $childrenProgressPct }}
+                                                    %
+                                                </wa-progress-bar>
                                             </div>
                                             <div>
                                                 @can('create', [App\Models\Issue::class, $project])
-                                                    <a href="{{ route('issues.create', ['project' => $project, 'parent' => $issue->key]) }}" class="btn btn-outline-secondary btn-sm">
+                                                    <a href="{{ route('issues.create', ['project' => $project, 'parent' => $issue->key]) }}"
+                                                       class="btn btn-outline-secondary btn-sm">
                                                         + New sub-issue
                                                     </a>
                                                 @endcan
@@ -446,21 +493,26 @@ render(function (View $view, Project $project, Issue $issue) {
                                                     @foreach($children as $child)
                                                         <tr>
                                                             <td>
-                                                                <a class="link-primary" href="{{ route('issues.show', ['project'=>$project, 'issue'=>$child]) }}">
+                                                                <a class="link-primary"
+                                                                   href="{{ route('issues.show', ['project'=>$project, 'issue'=>$child]) }}">
                                                                     {{ $child->key }}
                                                                 </a>
                                                             </td>
                                                             <td>{{ $child->summary }}</td>
                                                             <td>
                                                                 <span class="d-inline-flex align-items-center gap-1">
-                                                                    <span class="rounded-circle d-inline-block" style="width:.5rem;height:.5rem;background: {{ $child->status?->color ?? '#9ca3af' }}"></span>
+                                                                    <span class="rounded-circle d-inline-block"
+                                                                          style="width:.5rem;height:.5rem;background: {{ $child->status?->color ?? '#9ca3af' }}"></span>
                                                                     {{ $child->status?->name ?? '—' }}
                                                                 </span>
                                                             </td>
                                                             <td>
                                                                 @if($child->assignee)
-                                                                    <span class="d-inline-flex align-items-center gap-2">
-                                                                        <x-avatar :src="$child->assignee->profile_photo_url" :name="$child->assignee->name" preset="sm" />
+                                                                    <span
+                                                                        class="d-inline-flex align-items-center gap-2">
+                                                                        <x-avatar
+                                                                            :src="$child->assignee->profile_photo_url"
+                                                                            :name="$child->assignee->name" preset="sm"/>
                                                                         {{ $child->assignee->name }}
                                                                     </span>
                                                                 @else
@@ -483,31 +535,42 @@ render(function (View $view, Project $project, Issue $issue) {
                                         <div>
                                             @forelse($activityGroups as $groupLabel => $items)
                                                 <div class="mb-3">
-                                                    <div class="text-uppercase text-body-secondary small fw-semibold">{{ $groupLabel }}</div>
+                                                    <div
+                                                        class="text-uppercase text-body-secondary small fw-semibold">{{ $groupLabel }}</div>
                                                     <ul class="list-unstyled mb-0 mt-2">
                                                         @foreach($items as $i)
                                                             <li class="border rounded p-3 mb-2">
                                                                 <div class="d-flex gap-2">
-                                                                    <x-avatar :src="$i['actor_avatar'] ?? asset('images/default-avatar.png')" :name="$i['actor_name']" preset="sm" />
+                                                                    <x-avatar
+                                                                        :src="$i['actor_avatar'] ?? asset('images/default-avatar.png')"
+                                                                        :name="$i['actor_name']" preset="sm"/>
                                                                     <div class="flex-grow-1">
                                                                         <div class="small">
-                                                                            <span class="fw-semibold">{{ $i['actor_name'] }}</span>
-                                                                            <span class="text-body-secondary">{{ strtolower($i['verb']) }}</span>
+                                                                            <span
+                                                                                class="fw-semibold">{{ $i['actor_name'] }}</span>
+                                                                            <span
+                                                                                class="text-body-secondary">{{ strtolower($i['verb']) }}</span>
                                                                             @if($i['target_url'])
-                                                                                <a href="{{ $i['target_url'] }}" class="link-primary fw-semibold">{{ $i['target_label'] }}</a>
+                                                                                <a href="{{ $i['target_url'] }}"
+                                                                                   class="link-primary fw-semibold">{{ $i['target_label'] }}</a>
                                                                             @else
-                                                                                <span class="fw-semibold">{{ $i['target_label'] }}</span>
+                                                                                <span
+                                                                                    class="fw-semibold">{{ $i['target_label'] }}</span>
                                                                             @endif
                                                                         </div>
-                                                                        <div class="text-body-secondary small">{{ $i['ago'] }}</div>
+                                                                        <div
+                                                                            class="text-body-secondary small">{{ $i['ago'] }}</div>
 
                                                                         @php $statusChange = collect($i['changes'])->firstWhere('key','issue_status_id'); @endphp
                                                                         @if($statusChange)
-                                                                            <div class="small mt-2 d-flex align-items-center gap-2">
+                                                                            <div
+                                                                                class="small mt-2 d-flex align-items-center gap-2">
                                                                                 <span class="text-body-secondary">{{ $statusChange['label'] }}:</span>
-                                                                                <span class="badge text-bg-light">{{ $statusChange['from'] ?? '—' }}</span>
+                                                                                <span
+                                                                                    class="badge text-bg-light">{{ $statusChange['from'] ?? '—' }}</span>
                                                                                 <span>→</span>
-                                                                                <span class="badge" style="background-color: {{ $statusChange['to_color'] ?? 'transparent' }}20;color: inherit;">
+                                                                                <span class="badge"
+                                                                                      style="background-color: {{ $statusChange['to_color'] ?? 'transparent' }}20;color: inherit;">
                                                                                     {{ $statusChange['to'] ?? '—' }}
                                                                                 </span>
                                                                             </div>
@@ -515,18 +578,28 @@ render(function (View $view, Project $project, Issue $issue) {
 
                                                                         @if(!empty($i['changes']))
                                                                             <div x-data="{ open:false }" class="mt-2">
-                                                                                <button type="button" class="btn btn-link btn-sm p-0" @click="open = !open">
-                                                                                    <span x-show="!open">Show details</span>
-                                                                                    <span x-show="open">Hide details</span>
+                                                                                <button type="button"
+                                                                                        class="btn btn-link btn-sm p-0"
+                                                                                        @click="open = !open">
+                                                                                    <span
+                                                                                        x-show="!open">Show details</span>
+                                                                                    <span
+                                                                                        x-show="open">Hide details</span>
                                                                                 </button>
-                                                                                <div x-show="open" x-cloak class="mt-2 border rounded p-2 small">
+                                                                                <div x-show="open" x-cloak
+                                                                                     class="mt-2 border rounded p-2 small">
                                                                                     @foreach($i['changes'] as $c)
                                                                                         <div class="d-flex gap-2">
-                                                                                            <div class="text-body-secondary" style="width: 9rem">{{ $c['label'] }}</div>
-                                                                                            <div class="flex-grow-1 d-flex align-items-center gap-2">
-                                                                                                <span class="badge text-bg-light">{{ $c['from'] ?? '—' }}</span>
+                                                                                            <div
+                                                                                                class="text-body-secondary"
+                                                                                                style="width: 9rem">{{ $c['label'] }}</div>
+                                                                                            <div
+                                                                                                class="flex-grow-1 d-flex align-items-center gap-2">
+                                                                                                <span
+                                                                                                    class="badge text-bg-light">{{ $c['from'] ?? '—' }}</span>
                                                                                                 <span>→</span>
-                                                                                                <span class="badge" @if($c['to_color']) style="background-color: {{ $c['to_color'] }}20;color: inherit;" @endif>
+                                                                                                <span class="badge"
+                                                                                                      @if($c['to_color']) style="background-color: {{ $c['to_color'] }}20;color: inherit;" @endif>
                                                                                                     {{ $c['to'] ?? '—' }}
                                                                                                 </span>
                                                                                             </div>
@@ -550,7 +623,7 @@ render(function (View $view, Project $project, Issue $issue) {
                                     <!-- Time panel: focus timer + entries (moved) -->
                                     <wa-tab-panel name="time">
                                         <div class="mb-2">
-                                            <livewire:issues.focus-timer :issue="$issue" />
+                                            <livewire:issues.focus-timer :issue="$issue"/>
                                         </div>
                                         <livewire:issues.time-entries-panel :issue="$issue"/>
                                     </wa-tab-panel>
@@ -564,7 +637,8 @@ render(function (View $view, Project $project, Issue $issue) {
                         </div>
                         <div class="card shadow-sm">
                             <div class="card-body d-flex align-items-center justify-content-between">
-                                <h4 class="h6 mb-0">Attachments (<span x-ref="attachmentsCount">{{ $issue->attachments_count }}</span>)</h4>
+                                <h4 class="h6 mb-0">Attachments (<span
+                                        x-ref="attachmentsCount">{{ $issue->attachments_count }}</span>)</h4>
                                 @can('update', $issue)
                                     <livewire:issues.attachment-upload :issue="$issue"/>
                                 @endcan
@@ -591,8 +665,9 @@ render(function (View $view, Project $project, Issue $issue) {
             document.dispatchEvent(new CustomEvent('notify', { detail: { title: 'Deleted', body: 'Attachment removed.' } }));
         }
                                 }"
-                                x-on:issue-attachments-updated.window="if ($refs.attachments) { $refs.attachments.innerHTML = event.detail.html }
-                                if ($refs.attachmentsCount && event.detail?.count !== undefined) { $refs.attachmentsCount.textContent = event.detail.count }" x-on:issue-attachment-delete.window="remove($event.detail.id)">
+                                 x-on:issue-attachments-updated.window="if ($refs.attachments) { $refs.attachments.innerHTML = event.detail.html }
+                                if ($refs.attachmentsCount && event.detail?.count !== undefined) { $refs.attachmentsCount.textContent = event.detail.count }"
+                                 x-on:issue-attachment-delete.window="remove($event.detail.id)">
                                 <div x-ref="attachments">
                                     @include('partials.issues.attachments_list', ['attachments' => $attachments, 'issue' => $issue, 'project' => $project,])
                                 </div>
@@ -611,10 +686,13 @@ render(function (View $view, Project $project, Issue $issue) {
                         <!-- Code Links -->
                         @php $defaultPrTitle = "[$issue->key] $issue->summary"; @endphp
                         @if($projectRepo)
-                            <div x-data="window.issueVcs({ repoId: '{{ $projectRepo->id }}', issueKey: '{{ $issue->key }}', defaultBranch: '{{ $defaultBranch }}', prTitleInitial: @js($defaultPrTitle),})" x-init="init()" class="card shadow-sm">
+                            <div
+                                x-data="window.issueVcs({ repoId: '{{ $projectRepo->id }}', issueKey: '{{ $issue->key }}', defaultBranch: '{{ $defaultBranch }}', prTitleInitial: @js($defaultPrTitle),})"
+                                x-init="init()" class="card shadow-sm">
                                 <div class="card-body d-flex align-items-center justify-content-between">
                                     <h4 class="h6 mb-0">Code Links</h4>
-                                    <div class="small text-body-secondary">Repo: {{ $projectRepo->owner }}/{{ $projectRepo->name }}</div>
+                                    <div class="small text-body-secondary">Repo: {{ $projectRepo->owner }}
+                                        /{{ $projectRepo->name }}</div>
                                 </div>
 
                                 <div class="card-body d-flex flex-column gap-3">
@@ -625,8 +703,10 @@ render(function (View $view, Project $project, Issue $issue) {
                                             <ul class="list-unstyled mb-0">
                                                 @forelse($issue->branchLinks as $b)
                                                     <li class="d-flex justify-content-between align-items-center">
-                                                        <a href="{{ $b->url }}" target="_blank" rel="noreferrer">{{ $b->name }}</a>
-                                                        <small class="text-body-secondary">{{ $b->created_at?->diffForHumans() }}</small>
+                                                        <a href="{{ $b->url }}" target="_blank"
+                                                           rel="noreferrer">{{ $b->name }}</a>
+                                                        <small
+                                                            class="text-body-secondary">{{ $b->created_at?->diffForHumans() }}</small>
                                                     </li>
                                                 @empty
                                                     <li class="text-body-secondary small">None yet.</li>
@@ -644,10 +724,12 @@ render(function (View $view, Project $project, Issue $issue) {
                                                                 #{{ $pr->number }} — {{ $pr->name ?? 'Pull Request' }}
                                                             </a>
                                                             @if($pr->state)
-                                                                <span class="badge bg-secondary ms-2">{{ $pr->state }}</span>
+                                                                <span
+                                                                    class="badge bg-secondary ms-2">{{ $pr->state }}</span>
                                                             @endif
                                                         </span>
-                                                        <small class="text-body-secondary">{{ $pr->created_at?->diffForHumans() }}</small>
+                                                        <small
+                                                            class="text-body-secondary">{{ $pr->created_at?->diffForHumans() }}</small>
                                                     </li>
                                                 @empty
                                                     <li class="text-body-secondary small">None yet.</li>
@@ -684,15 +766,23 @@ render(function (View $view, Project $project, Issue $issue) {
                                                x-model.debounce.300ms="branchQuery" @input="searchBranches()">
                                         <div class="list-group mt-2" x-show="branchResults.length">
                                             <template x-for="b in branchResults" :key="b.name">
-                                                <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
+                                                <div
+                                                    class="list-group-item d-flex justify-content-between align-items-center gap-3">
                                                     <div class="text-truncate">
                                                         <span class="fw-semibold" x-text="b.name"></span>
-                                                        <small class="text-body-secondary ms-2" x-text="b.default ? 'default' : ''"></small>
+                                                        <small class="text-body-secondary ms-2"
+                                                               x-text="b.default ? 'default' : ''"></small>
                                                     </div>
                                                     <div class="d-flex gap-2">
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary" @click="prHead = b.name">Use as head</button>
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary" @click="prBase = b.name">Use as base</button>
-                                                        <button type="button" class="btn btn-sm btn-outline-primary"  @click="linkBranch(b)">Link</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                                @click="prHead = b.name">Use as head
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                                @click="prBase = b.name">Use as base
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary"
+                                                                @click="linkBranch(b)">Link
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </template>
@@ -711,8 +801,11 @@ render(function (View $view, Project $project, Issue $issue) {
                                             </small>
                                         </div>
                                         <div class="col-12 d-flex gap-2">
-                                            <input type="text" class="form-control" placeholder="{{ $defaultBranch }}" x-model="baseRef">
-                                            <button class="btn btn-outline-primary" @click="createBranch()" :disabled="!canCreateBranch">Create</button>
+                                            <input type="text" class="form-control" placeholder="{{ $defaultBranch }}"
+                                                   x-model="baseRef">
+                                            <button class="btn btn-outline-primary" @click="createBranch()"
+                                                    :disabled="!canCreateBranch">Create
+                                            </button>
                                         </div>
                                     </div>
 
@@ -721,17 +814,21 @@ render(function (View $view, Project $project, Issue $issue) {
                                     <!-- Search & link PR -->
                                     <div>
                                         <label class="form-label">Link existing pull request</label>
-                                        <input type="text" class="form-control" placeholder="Search PRs by title/number/head/base…"
+                                        <input type="text" class="form-control"
+                                               placeholder="Search PRs by title/number/head/base…"
                                                x-model.debounce.300ms="prQuery" @input="searchPulls()">
                                         <div class="list-group mt-2" x-show="prResults.length">
                                             <template x-for="pr in prResults" :key="pr.number">
-                                                <button type="button" class="list-group-item list-group-item-action" @click="linkPr(pr)">
+                                                <button type="button" class="list-group-item list-group-item-action"
+                                                        @click="linkPr(pr)">
                                                     <div class="d-flex justify-content-between align-items-center">
-                                                        <span>#<span x-text="pr.number"></span> — <span x-text="pr.title"></span></span>
+                                                        <span>#<span x-text="pr.number"></span> — <span
+                                                                x-text="pr.title"></span></span>
                                                         <small class="text-body-secondary" x-text="pr.state"></small>
                                                     </div>
                                                     <small class="text-body-secondary">
-                                                        head: <span x-text="pr.head"></span> → base: <span x-text="pr.base"></span>
+                                                        head: <span x-text="pr.head"></span> → base: <span
+                                                            x-text="pr.base"></span>
                                                     </small>
                                                 </button>
                                             </template>
@@ -747,9 +844,13 @@ render(function (View $view, Project $project, Issue $issue) {
                                             <small class="text-body-secondary">Base: {{ $defaultBranch }}</small>
                                         </div>
                                         <div class="col-12 d-flex gap-2">
-                                            <input type="text" class="form-control" placeholder="feature/…" x-model="prHead">
-                                            <input type="text" class="form-control" :placeholder="defaultBranch" x-model="prBase">
-                                            <button class="btn btn-primary" @click="createPr()" :disabled="!canCreatePr">Open PR</button>
+                                            <input type="text" class="form-control" placeholder="feature/…"
+                                                   x-model="prHead">
+                                            <input type="text" class="form-control" :placeholder="defaultBranch"
+                                                   x-model="prBase">
+                                            <button class="btn btn-primary" @click="createPr()"
+                                                    :disabled="!canCreatePr">Open PR
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -765,7 +866,7 @@ render(function (View $view, Project $project, Issue $issue) {
     /**
      * Expose globally so Alpine/Livewire can find it no matter init timing.
      */
-    window.issueVcs = function ({ repoId, issueKey, defaultBranch, prTitleInitial = '' }) {
+    window.issueVcs = function ({repoId, issueKey, defaultBranch, prTitleInitial = ''}) {
         return {
             repoId, issueKey, defaultBranch,
             loading: false,
@@ -795,23 +896,30 @@ render(function (View $view, Project $project, Issue $issue) {
                         this.defaultBranch = data.default;
                         if (!this.prBase || this.prBase === '') this.prBase = data.default;
                     }
-                } catch (_) { /* error already surfaced */ }
+                } catch (_) { /* error already surfaced */
+                }
             },
             async request(url, opts = {}) {
-            this.loading = true;
-            this.error = null;
-            this.notice = null;
+                this.loading = true;
+                this.error = null;
+                this.notice = null;
                 try {
                     const r = await fetch(url, {
-                        headers: { 'Accept': 'application/json', ...(opts.headers || {}) },
+                        headers: {'Accept': 'application/json', ...(opts.headers || {})},
                         ...opts,
                     });
-                    const maybeJson = await (async () => { try { return await r.clone().json(); } catch { return null; } })();
+                    const maybeJson = await (async () => {
+                        try {
+                            return await r.clone().json();
+                        } catch {
+                            return null;
+                        }
+                    })();
                     if (!r.ok) {
                         const title = (maybeJson && (maybeJson.title || maybeJson.error)) || r.statusText || 'Request failed';
                         const message = (maybeJson && (maybeJson.message || maybeJson.detail)) || `HTTP ${r.status}`;
-                        this.error = { title, message };
-                        throw Object.assign(new Error(message), { response: r, body: maybeJson });
+                        this.error = {title, message};
+                        throw Object.assign(new Error(message), {response: r, body: maybeJson});
                     }
                     return maybeJson;
                 } finally {
@@ -835,46 +943,46 @@ render(function (View $view, Project $project, Issue $issue) {
 
             async linkBranch(b) {
                 await this.request(`{{ route('issues.vcs.link.branch', ['issue' => $issue->key]) }}`, {
-                      method: 'POST',
-                      headers: {
+                    method: 'POST',
+                    headers: {
                         'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                      },
-                  body: JSON.stringify({
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
                         repository_id: this.repoId,
                         name: b.name,
                         url: b.url,
                         payload: b,
-                      })
+                    })
                 });
                 this.notice = 'Branch linked.';
-                setTimeout(()=>window.location.reload(), 500);
+                setTimeout(() => window.location.reload(), 500);
             },
 
             async linkPr(pr) {
                 await this.request(`{{ route('issues.vcs.link.pr', ['issue' => $issue->key]) }}`, {
-                      method: 'POST',
-                      headers: {
+                    method: 'POST',
+                    headers: {
                         'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                      },
-                  body: JSON.stringify({
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
                         repository_id: this.repoId,
                         number: pr.number,
                         title: pr.title,
                         state: pr.state,
                         url: pr.url,
                         payload: pr,
-                      })
+                    })
                 });
                 this.notice = 'Pull request linked.';
-                setTimeout(()=>window.location.reload(), 500);
+                setTimeout(() => window.location.reload(), 500);
             },
 
             async createBranch() {
                 const link = await this.request(`{{ route('issues.vcs.create.branch', ['issue' => $issue->key]) }}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
                     body: JSON.stringify({
                         repository_id: this.repoId,
                         name: this.newBranchName.trim(),
@@ -889,7 +997,7 @@ render(function (View $view, Project $project, Issue $issue) {
             async createPr() {
                 await this.request(`{{ route('issues.vcs.create.pr', ['issue' => $issue->key]) }}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
                     body: JSON.stringify({
                         repository_id: this.repoId,
                         title: this.prTitle.trim() || `[${this.issueKey}]`,
@@ -912,12 +1020,13 @@ render(function (View $view, Project $project, Issue $issue) {
 
         const next = li.getAttribute('data-ai-checked') !== 'true';
         li.setAttribute('data-ai-checked', String(next));
-        const cb = li.querySelector('input[type="checkbox"]'); if (cb) cb.checked = next;
+        const cb = li.querySelector('input[type="checkbox"]');
+        if (cb) cb.checked = next;
 
         try {
             await fetch(`{{ route('issues.action-items.toggle', [$project, $issue]) }}`, {
                 method: 'POST',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' },
+                headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     listId: list?.getAttribute('data-ai-list-id'),
                     itemId: li.getAttribute('data-ai-id'),
