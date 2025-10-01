@@ -5,6 +5,7 @@ use App\Http\Controllers\HealthCheckResultsController;
 use App\Http\Controllers\IssueActionItemController;
 use App\Http\Controllers\IssueController;
 use App\Http\Controllers\IssueVcsController;
+use App\Http\Controllers\Notifications\MarkAllReadController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\IssueAttachmentController;
 use App\Http\Controllers\ProjectCalendarController;
@@ -39,6 +40,8 @@ Route::middleware([
     Route::get('/dashboard', static function () {
         return view('dashboard');
     })->name('dashboard');
+    Route::post('/notifications/mark-all-read', MarkAllReadController::class)
+        ->name('notifications.markAllRead');
     Route::get('/status', HealthCheckResultsController::class)->name('status');
     Route::get(
         '/projects/{project}/issues/{issue}/attachments/{media}/download',

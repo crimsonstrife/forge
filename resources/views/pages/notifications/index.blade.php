@@ -41,9 +41,8 @@ render(function (View $view, Request $request) {
                 <a class="btn btn-sm {{ $filter === 'unread' ? 'btn-primary' : 'btn-outline-primary' }}"
                    href="{{ route('notifications.index', ['filter' => 'unread']) }}">{{ __('Unread') }}</a>
             </div>
-            <form method="POST">
+            <form method="POST" action="{{ route('notifications.markAllRead') }}">
                 @csrf
-                <input type="hidden" name="action" value="mark-all-read">
                 <button class="btn btn-sm btn-outline-secondary">{{ __('Mark all as read') }}</button>
             </form>
         </div>
