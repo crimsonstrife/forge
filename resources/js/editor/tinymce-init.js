@@ -6,7 +6,8 @@ window.tinyEditor = function tinyEditor(opts) {
         toolbar: String(opts.toolbar ?? 'undo redo | bold italic link | bullist numlist | code'),
         pluginsStr: String(opts.plugins ?? 'link lists code'),
         wireModel: opts.wireModel ?? null,
-        contentCss: Array.isArray(opts.contentCss) ? opts.contentCss : [],
+        skin: opts.skin,
+        content_css: opts.contentCss,
         externalPlugins: opts.externalPlugins ?? {},
         suffix: '.min',
         initial: opts.initial ?? null,
@@ -66,7 +67,12 @@ window.tinyEditor = function tinyEditor(opts) {
     };
 
     return {
-        async init() {
+        setTheme({ skin, contentCss }) {
+            if (skin) { st.skin = skin; }
+            if (contentCss) { st.content_css = contentCss; }
+        },
+
+        async init(initialHtml = undefined) {
             const node = document.getElementById(st.id);
             if (!node) { return; }
 
@@ -91,11 +97,13 @@ window.tinyEditor = function tinyEditor(opts) {
                 height: st.height,
                 plugins: normalizePlugins(),
                 toolbar: st.toolbar,
-                content_css: st.contentCss,
+                skin: st.skin,
+                content_css: st.content_css,
                 extended_valid_elements: 'li[data-ai-id|data-ai-checked]',
                 setup: (ed) => {
                     ed.on('init', () => {
-                        if (st.initial != null) { ed.setContent(st.initial); }
+                        const val = (initialHtml !== undefined) ? initialHtml : st.initial;
+                        if (val != null) { ed.setContent(val); }
                     });
 
                     const pushNow = () => {
@@ -115,6 +123,7 @@ window.tinyEditor = function tinyEditor(opts) {
                 },
             });
         },
+
         destroy() { try { if (window.tinymce) { tinymce.remove('#' + st.id); } } catch {} },
     };
 };

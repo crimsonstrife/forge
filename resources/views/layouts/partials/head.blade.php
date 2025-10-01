@@ -53,8 +53,12 @@
                 if (!meta) { meta = document.createElement('meta'); meta.name = 'theme-color'; document.head.appendChild(meta); }
                 meta.content = theme === 'dark' ? '#0b0f13' : '#ffffff';
 
+                window.__isDarkTheme = () => document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
                 // Let Alpine/Livewire listeners react if needed
                 window.dispatchEvent(new CustomEvent('theme:changed', { detail: { theme } }));
+
+                window.dispatchEvent(new Event('tiny-reinit'));
             };
 
             // Public setter for UI controls
