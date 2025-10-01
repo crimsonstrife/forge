@@ -20,6 +20,7 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Tags\HasTags;
 
 class Issue extends BaseModel implements HasMedia
@@ -182,6 +183,11 @@ class Issue extends BaseModel implements HasMedia
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable')->orderBy('created_at');
+    }
+
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(Media::class, 'model');
     }
 
     public function sprint(): BelongsTo
