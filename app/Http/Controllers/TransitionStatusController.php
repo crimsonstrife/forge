@@ -12,7 +12,8 @@ final class TransitionStatusController
 {
     public function __construct(
         private IssueStatusTransitionService $transitions
-    ) {}
+    ) {
+    }
 
     public function __invoke(TransitionIssueStatusRequest $request, Project $project, Issue $issue): RedirectResponse
     {
