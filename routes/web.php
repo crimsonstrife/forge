@@ -9,6 +9,7 @@ use App\Http\Controllers\Notifications\MarkAllReadController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\IssueAttachmentController;
 use App\Http\Controllers\ProjectCalendarController;
+use App\Http\Controllers\TransitionStatusController;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -48,8 +49,9 @@ Route::middleware([
         [IssueAttachmentController::class, 'download']
     )->name('issues.attachments.download');
     Route::post('/projects/{project}/issues/{issue}/action-items/toggle', [IssueActionItemController::class, 'toggle'])
-        ->middleware(['auth'])
         ->name('issues.action-items.toggle');
+    Route::post('/projects/{project}/issues/{issue}/transition', TransitionStatusController::class)
+        ->name('issues.transition');
     Route::delete(
         '/projects/{project}/issues/{issue}/attachments/{media}',
         [IssueAttachmentController::class, 'destroy']

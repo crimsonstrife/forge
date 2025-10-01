@@ -6,6 +6,7 @@ use App\Support\ActivityContext;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -48,5 +49,32 @@ class ProjectStatusTransition extends Model
         ]);
         $activity->event = $activity->event ?: 'updated'; // create/update/delete auto-populate
         $activity->description = 'project.status.' . $activity->event;
+    }
+
+    /** Relationships */
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function from(): BelongsTo
+    {
+        return $this->belongsTo(IssueStatus::class, 'from_status_id');
+    }
+
+    public function to(): BelongsTo
+    {
+        return $this->belongsTo(IssueStatus::class, 'to_status_id');
+    }
+
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(IssueType::class, 'issue_type_id');
+    }
+
+    /** Quick helper: constrain to a project + from status */
+    public function scopeForProjectFrom($q, string $projectId, int $fromStatusId)
+    {
+        return $q->where('project_id', $projectId)->where('from_status_id', $fromStatusId);
     }
 }
