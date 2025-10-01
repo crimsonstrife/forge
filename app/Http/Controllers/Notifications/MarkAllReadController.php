@@ -9,7 +9,10 @@ final class MarkAllReadController
     public function __invoke(): RedirectResponse
     {
         $user = auth()->user();
-        $user?->unreadNotifications->markAsRead();
+        if (!$user) {
+            abort(401);
+        }
+        $user->unreadNotifications->markAsRead();
 
         return back();
     }
