@@ -19,6 +19,14 @@ class AppHealthServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        //
+    }
+
+    /**
+     * Bootstrap services.
+     */
+    public function boot(): void
+    {
         Health::checks([
             CacheCheck::new()
                 ->everyFifteenMinutes()
@@ -41,13 +49,5 @@ class AppHealthServiceProvider extends ServiceProvider
             SecurityAdvisoriesCheck::new()
                 ->daily(),
         ]);
-    }
-
-    /**
-     * Bootstrap services.
-     */
-    public function boot(): void
-    {
-        //
     }
 }
