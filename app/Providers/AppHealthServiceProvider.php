@@ -27,27 +27,29 @@ class AppHealthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Health::checks([
-            CacheCheck::new()
-                ->everyFifteenMinutes()
-                ->name('Cache Check'),
-            OptimizedAppCheck::new()
-                ->everyThirtyMinutes()
-                ->name('Check Optimization'),
-            UsedDiskSpaceCheck::new()
-                ->daily()
-                ->name('Check Used DiskSpace'),
-            DatabaseCheck::new()
-                ->name('Check Database Connection')
-                ->everyMinute(),
-            QueueCheck::new()
-                ->everyFiveMinutes()
-                ->name('Check Job Queue'),
-            CpuLoadCheck::new()
-                ->failWhenLoadIsHigherInTheLast5Minutes(2.0)
-                ->failWhenLoadIsHigherInTheLast15Minutes(1.5),
-            SecurityAdvisoriesCheck::new()
-                ->daily(),
-        ]);
+        $this->app->booted(function (): void {
+            Health::checks([
+                CacheCheck::new()
+                    ->everyFifteenMinutes()
+                    ->name('Cache Check'),
+                OptimizedAppCheck::new()
+                    ->everyThirtyMinutes()
+                    ->name('Check Optimization'),
+                UsedDiskSpaceCheck::new()
+                    ->daily()
+                    ->name('Check Used DiskSpace'),
+                DatabaseCheck::new()
+                    ->name('Check Database Connection')
+                    ->everyMinute(),
+                QueueCheck::new()
+                    ->everyFiveMinutes()
+                    ->name('Check Job Queue'),
+                CpuLoadCheck::new()
+                    ->failWhenLoadIsHigherInTheLast5Minutes(2.0)
+                    ->failWhenLoadIsHigherInTheLast15Minutes(1.5),
+                SecurityAdvisoriesCheck::new()
+                    ->daily(),
+            ]);
+        });
     }
 }
