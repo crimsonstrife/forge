@@ -31,6 +31,8 @@ final class TransitionStatusController
         $issue->issue_status_id = $to;
         $issue->save();
 
-        return back()->with('success', 'Status updated.');
+        // Retrieve the new status name for better user feedback
+        $statusName = $issue->status->name ?? 'Unknown';
+        return back()->with('success', "Status updated to: {$statusName}.");
     }
 }
