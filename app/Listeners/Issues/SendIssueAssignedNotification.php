@@ -49,7 +49,10 @@ final class SendIssueAssignedNotification implements ShouldQueue
         } else {
             // fallback: simple LIKE (SQLite/dev)
             $needle = '"issue_id":"' . $issue->getKey() . '"';
-            $query->where('data', 'like', '%' . $needle . '%');
+            // Escape %, _, and \ for LIKE pattern
+            $escapedNeedle = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $needle);
+            $likePattern = '%' . $escapedNeedle . '%';
+            $query->whereRaw("data LIKE ? ESCAPE '\\'", [$likePattern]);
         }
 
         if ($query->exists()) {
