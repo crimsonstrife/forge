@@ -66,7 +66,13 @@ class BuildProjectDailyReportsJob implements ShouldQueue
             if ($status->is_done) {
                 $done++;
             } else {
-                $issue->updated_at->greaterThan($start->copy()->subDays(7)) ? $wip++ : $open++;
+                // If the issue was updated within the last 7 days (relative to the report date), count as WIP.
+                // Otherwise, count as Open. This is the "7-day rule" for WIP vs Open status.
+                if ($issue->updated_at->greaterThan($start->copy()->subDays(7))) {
+                    $wip++;
+                } else {
+                    $open++;
+                }
             }
         }
 
