@@ -86,7 +86,7 @@ class SprintBurndown extends ChartWidget
             $last   = $end->copy();
 
             // Start line from first day's remaining points
-            $startPoints = (int) ($map[$start->toDateString()]->remaining_points ?? 0);
+            $startPoints = (int) ($map[$start->toDateString()]?->remaining_points ?? 0);
             $days = max(1, $start->diffInDays($end));
             $ideal = [];
 
