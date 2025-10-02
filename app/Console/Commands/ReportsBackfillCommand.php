@@ -27,7 +27,9 @@ class ReportsBackfillCommand extends Command
 
         // Projects
         $projQ = Project::query()->select('id');
-        if (!empty($projectIds)) { $projQ->whereIn('id', $projectIds); }
+        if (!empty($projectIds)) {
+            $projQ->whereIn('id', $projectIds);
+        }
 
         $projQ->chunkById(200, function ($projects) use ($dates): void {
             foreach ($projects as $p) {
@@ -39,7 +41,9 @@ class ReportsBackfillCommand extends Command
 
         // Sprints
         $sprQ = Sprint::query()->select(['id', 'project_id']);
-        if (!empty($sprintIds)) { $sprQ->whereIn('id', $sprintIds); }
+        if (!empty($sprintIds)) {
+            $sprQ->whereIn('id', $sprintIds);
+        }
 
         $sprQ->chunkById(200, function ($sprints) use ($dates): void {
             foreach ($sprints as $s) {

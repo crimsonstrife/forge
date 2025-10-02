@@ -75,7 +75,8 @@ final class ProjectAnalytics extends Page
                 ->label('Export Throughput CSV')
                 ->icon(Heroicon::OutlinedArrowDownTray)
                 ->visible(fn (): bool => filled($this->projectId))
-                ->url(fn () => filled($this->projectId)
+                ->url(
+                    fn () => filled($this->projectId)
                     ? route('reports.throughput.csv', ['project' => (string) $this->projectId, 'from' => $this->dateFrom, 'to' => $this->dateTo])
                     : null
                 )

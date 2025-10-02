@@ -32,7 +32,8 @@ class SprintBurndown extends ChartWidget
         return $schema->schema([
             Select::make('sprintId')
                 ->label('Sprint')
-                ->options(fn (): array => Sprint::query()
+                ->options(
+                    fn (): array => Sprint::query()
                     ->where('project_id', $this->projectId)
                     ->orderByDesc('starts_at')
                     ->pluck('name', 'id')

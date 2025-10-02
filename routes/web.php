@@ -42,8 +42,12 @@ Route::get('/reports/{project}/throughput.csv', static function (string $project
         ->where('project_id', $project)
         ->orderBy('report_date');
 
-    if ($from) { $q->whereDate('report_date', '>=', $from); }
-    if ($to)   { $q->whereDate('report_date', '<=', $to); }
+    if ($from) {
+        $q->whereDate('report_date', '>=', $from);
+    }
+    if ($to) {
+        $q->whereDate('report_date', '<=', $to);
+    }
 
     $rows = $q->get(['report_date','throughput_count']);
 

@@ -26,8 +26,12 @@ class CumulativeFlowChart extends ChartWidget
             $q = DB::table('report_cfd_snapshots')
                 ->where('project_id', $this->projectId);
 
-            if ($this->dateFrom) { $q->whereDate('report_date', '>=', $this->dateFrom); }
-            if ($this->dateTo)   { $q->whereDate('report_date', '<=', $this->dateTo); }
+            if ($this->dateFrom) {
+                $q->whereDate('report_date', '>=', $this->dateFrom);
+            }
+            if ($this->dateTo) {
+                $q->whereDate('report_date', '<=', $this->dateTo);
+            }
 
             $rows = $q->orderBy('report_date')
                 ->get(['report_date', 'issue_status_id', 'count'])

@@ -16,13 +16,17 @@ use Illuminate\Support\Str;
 
 final class BuildSprintDailyReportsJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public function __construct(
         private readonly string $projectId,
         private readonly string $sprintId,
         private readonly Carbon $forDate
-    ) {}
+    ) {
+    }
 
     public function handle(): void
     {
