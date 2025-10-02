@@ -5,6 +5,7 @@ namespace App\Filament\Pages\Reports;
 use App\Filament\Widgets\AssigneeWorkloadTable;
 use App\Filament\Widgets\CumulativeFlowChart;
 use App\Filament\Widgets\ProjectHealthStats;
+use App\Filament\Widgets\SprintBurndown;
 use App\Filament\Widgets\ThroughputTrend;
 use App\Models\Project;
 use DB;
@@ -96,7 +97,7 @@ final class ProjectAnalytics extends Page
 
     protected function getFooterWidgets(): array
     {
-        return [ CumulativeFlowChart::class, ThroughputTrend::class, AssigneeWorkloadTable::class ];
+        return [ CumulativeFlowChart::class, ThroughputTrend::class, AssigneeWorkloadTable::class, SprintBurndown::class, ];
     }
 
     public function getHeaderWidgetsColumns(): int|array
@@ -111,6 +112,7 @@ final class ProjectAnalytics extends Page
             CumulativeFlowChart::class   => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
             ThroughputTrend::class       => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
             AssigneeWorkloadTable::class => ['projectId' => $this->projectId],
+            SprintBurndown::class        => ['projectId' => $this->projectId],
         ];
     }
 
