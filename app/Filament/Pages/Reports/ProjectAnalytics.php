@@ -8,7 +8,7 @@ use App\Filament\Widgets\ProjectHealthStats;
 use App\Filament\Widgets\SprintBurndown;
 use App\Filament\Widgets\ThroughputTrend;
 use App\Models\Project;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Filament\Actions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
