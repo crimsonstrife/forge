@@ -54,7 +54,7 @@ class SprintBurndown extends ChartWidget
         return Cache::remember($cacheKey, 300, function (): array {
             /** @var Sprint|null $sprint */
             $sprint = Sprint::query()
-                ->select(['id','starts_at','ends_at'])
+                ->select(['id', 'starts_at', 'ends_at'])
                 ->whereKey($this->sprintId)
                 ->first();
 
