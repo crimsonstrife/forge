@@ -12,6 +12,7 @@ return [
     App\Providers\HealthServiceProvider::class,
     App\Providers\HorizonServiceProvider::class,
     App\Providers\JetstreamServiceProvider::class,
+    App\Providers\ModelObserverServiceProvider::class,
     App\Providers\RepositoryServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
     App\Providers\VoltServiceProvider::class,
