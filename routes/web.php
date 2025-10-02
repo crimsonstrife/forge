@@ -50,7 +50,7 @@ Route::get('/reports/{project}/throughput.csv', static function (string $project
         $q->whereDate('report_date', '<=', $to);
     }
 
-    $rows = $q->cursor(['report_date','throughput_count']);
+    $rows = $q->cursor(['report_date', 'throughput_count']);
 
     return response()->streamDownload(function () use ($rows): void {
         $out = fopen('php://output', 'wb');
