@@ -18,12 +18,16 @@ use Throwable;
 
 class BuildProjectDailyReportsJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public function __construct(
         private readonly string $projectId,
         private readonly Carbon $forDate
-    ) {}
+    ) {
+    }
 
     /**
      * @throws Throwable
@@ -43,7 +47,9 @@ class BuildProjectDailyReportsJob implements ShouldQueue
             ->get()
             ->keyBy('id');
 
-        $open = 0; $wip = 0; $done = 0;
+        $open = 0;
+        $wip = 0;
+        $done = 0;
 
         foreach ($issues as $issue) {
             $status = $statusById[(int) $issue->issue_status_id] ?? null;
