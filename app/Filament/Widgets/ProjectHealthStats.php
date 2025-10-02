@@ -18,11 +18,11 @@ class ProjectHealthStats extends BaseWidget
             ->orderByDesc('report_date')
             ->first();
 
-        $open    = (int) ($row->open_count ?? 0);
-        $wip     = (int) ($row->wip_count ?? 0);
-        $done    = (int) ($row->done_count ?? 0);
-        $tp      = (int) ($row->throughput_count ?? 0);
-        $median  = (int) ($row->median_cycle_time_minutes ?? 0);
+        $open    = (int) ($row?->open_count ?? 0);
+        $wip     = (int) ($row?->wip_count ?? 0);
+        $done    = (int) ($row?->done_count ?? 0);
+        $tp      = (int) ($row?->throughput_count ?? 0);
+        $median  = (int) ($row?->median_cycle_time_minutes ?? 0);
 
         return [
             Stat::make('Open', (string) $open),
