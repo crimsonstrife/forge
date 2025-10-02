@@ -43,6 +43,8 @@ class ReportsBackfillCommand extends Command
         $sprQ = Sprint::query()->select(['id', 'project_id']);
         if (!empty($sprintIds)) {
             $sprQ->whereIn('id', $sprintIds);
+        } elseif (!empty($projectIds)) {
+            $sprQ->whereIn('project_id', $projectIds);
         }
 
         $sprQ->chunkById(200, function ($sprints) use ($dates): void {
