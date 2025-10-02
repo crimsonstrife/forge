@@ -4,6 +4,11 @@ namespace App\Providers\Filament;
 
 use AchyutN\FilamentLogViewer\FilamentLogViewer;
 use App\Filament\Pages\ConnectorsAndSyncSettings;
+use App\Filament\Pages\Reports\ProjectAnalytics;
+use App\Filament\Widgets\AssigneeWorkloadTable;
+use App\Filament\Widgets\CumulativeFlowChart;
+use App\Filament\Widgets\ProjectHealthStats;
+use App\Filament\Widgets\ThroughputTrend;
 use App\Listeners\SwitchTeam;
 use Filament\Events\TenantSet;
 use Filament\Http\Middleware\Authenticate;
@@ -44,11 +49,16 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
                 ConnectorsAndSyncSettings::class,
+                ProjectAnalytics::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,
+                AssigneeWorkloadTable::class,
+                CumulativeFlowChart::class,
+                ProjectHealthStats::class,
+                ThroughputTrend::class,
             ])
             ->middleware([
                 EncryptCookies::class,
