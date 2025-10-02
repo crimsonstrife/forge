@@ -138,7 +138,7 @@ class IssueObserver
         if ($issue->wasChanged('issue_status_id')) {
             IssueStatusEvent::query()->create([
                 'issue_id'       => $issue->getKey(),
-                'from_status_id' => (int) $issue->getOriginal('issue_status_id'),
+                'from_status_id' => $issue->getOriginal('issue_status_id') !== null ? (int) $issue->getOriginal('issue_status_id') : null,
                 'to_status_id'   => (int) $issue->issue_status_id,
                 'changed_by_id'  => Auth::id(),
                 'changed_at'     => now(),
