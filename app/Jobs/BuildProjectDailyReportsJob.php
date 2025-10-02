@@ -13,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -55,7 +56,7 @@ class BuildProjectDailyReportsJob implements ShouldQueue
         foreach ($issues as $issue) {
             $status = $statusById[(int) $issue->issue_status_id] ?? null;
             if ($status === null) {
-                \Log::warning('Issue status not found', [
+                Log::warning('Issue status not found', [
                     'issue_id' => $issue->id,
                     'issue_status_id' => $issue->issue_status_id,
                 ]);
