@@ -44,7 +44,9 @@ class IssueStatusEvent extends Model
         parent::boot();
 
         static::creating(static function ($model) {
-            $model->id = Str::uuid();
+            if (empty($model->id)) {
+                $model->id = Str::uuid();
+            }
         });
     }
 
