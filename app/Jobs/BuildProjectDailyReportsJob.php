@@ -147,7 +147,6 @@ class BuildProjectDailyReportsJob implements ShouldQueue
             ['project_id', 'report_date', 'issue_status_id'],
             ['count', 'updated_at'],
         );
-
     }
 
     /**
