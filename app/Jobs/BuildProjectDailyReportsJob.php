@@ -40,6 +40,7 @@ class BuildProjectDailyReportsJob implements ShouldQueue
         $issues = Issue::query()
             ->select(['id', 'project_id', 'issue_status_id', 'created_at', 'updated_at'])
             ->where('project_id', $this->projectId)
+            ->where('created_at', '<=', $end)
             ->get();
 
         $statusById = IssueStatus::query()
