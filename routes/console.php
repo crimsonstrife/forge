@@ -4,7 +4,12 @@ use App\Console\Commands\CheckForAppUpdate;
 use App\Console\Commands\RecalcIssueRollups;
 use App\Console\Commands\ReverbHealthCheck;
 use App\Console\Commands\SyncRepositoryIssues;
+use App\Jobs\BuildProjectDailyReportsJob;
+use App\Jobs\BuildSprintDailyReportsJob;
+use App\Models\Project;
+use App\Models\Sprint;
 use Illuminate\Foundation\Inspiring;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 use Spatie\Health\Commands\RunHealthChecksCommand;
@@ -27,3 +32,25 @@ Schedule::command(ReverbHealthCheck::class)
 
 Schedule::command(RunHealthChecksCommand::class)
     ->everyMinute();
+
+Schedule::call(static function (): void {
+    $yesterday = Carbon::yesterday();
+    Project::query()
+        ->select('id')
+        ->chunkById(200, static function ($projects) use ($yesterday): void {
+            foreach ($projects as $p) {
+                dispatch(new BuildProjectDailyReportsJob($p->id, $yesterday))->onQueue('reports');
+            }
+        });
+})->dailyAt('01:15');
+
+Schedule::call(static function (): void {
+    $yesterday = Carbon::yesterday();
+    Sprint::query()
+        ->select(['id', 'project_id'])
+        ->chunkById(200, static function ($sprints) use ($yesterday): void {
+            foreach ($sprints as $s) {
+                dispatch(new BuildSprintDailyReportsJob($s->project_id, $s->id, $yesterday))->onQueue('reports');
+            }
+        });
+})->dailyAt('01:25');

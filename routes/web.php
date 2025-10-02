@@ -13,7 +13,9 @@ use App\Http\Controllers\TransitionStatusController;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,6 +34,33 @@ Route::middleware(['auth'])->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+
+Route::get('/reports/{project}/throughput.csv', static function (string $project): StreamedResponse {
+    $from = request('from');
+    $to   = request('to');
+
+    $q = DB::table('report_project_daily_summaries')
+        ->where('project_id', $project)
+        ->orderBy('report_date');
+
+    if ($from) {
+        $q->whereDate('report_date', '>=', $from);
+    }
+    if ($to) {
+        $q->whereDate('report_date', '<=', $to);
+    }
+
+    $rows = $q->cursor(['report_date', 'throughput_count']);
+
+    return response()->streamDownload(function () use ($rows): void {
+        $out = fopen('php://output', 'wb');
+        fputcsv($out, ['date', 'throughput']);
+        foreach ($rows as $r) {
+            fputcsv($out, [$r->report_date, (int) $r->throughput_count]);
+        }
+        fclose($out);
+    }, 'throughput.csv', ['Content-Type' => 'text/csv']);
+})->middleware(['auth','verified','can:view.reports'])->name('reports.throughput.csv');
 
 Route::middleware([
     'auth:sanctum',

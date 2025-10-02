@@ -7,11 +7,13 @@ use App\Domain\Issues\IssueRollupService;
 use App\Jobs\RecalculateIssueRollups;
 use App\Models\Goal;
 use App\Models\Issue;
+use App\Models\IssueStatusEvent;
 use App\Models\Project;
 use App\Models\User;
 use App\Notifications\IssueAssigned;
 use App\Services\GoalProgressService;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -131,6 +133,16 @@ class IssueObserver
                     actorId: auth()->id() ? (string) auth()->id() : null,
                 ));
             }
+        }
+
+        if ($issue->wasChanged('issue_status_id')) {
+            IssueStatusEvent::query()->create([
+                'issue_id'       => $issue->getKey(),
+                'from_status_id' => $issue->getOriginal('issue_status_id') !== null ? (int) $issue->getOriginal('issue_status_id') : null,
+                'to_status_id'   => (int) $issue->issue_status_id,
+                'changed_by_id'  => Auth::id(),
+                'changed_at'     => now(),
+            ]);
         }
     }
 

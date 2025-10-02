@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,              // creates roles & attaches permissions
             PermissionSetSeeder::class,     // creates permission sets & attaches permissions
             PermissionSetGroupSeeder::class, // creates groups & attaches sets
+            ReportPermissionsSeeder::class,
             IssueLinkTypeSeeder::class // creates typings for linking issue relationships
         ]);
 
