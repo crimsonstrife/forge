@@ -98,7 +98,7 @@ final class ProjectAnalytics extends Page
 
     protected function getFooterWidgets(): array
     {
-        return [ CumulativeFlowChart::class, ThroughputTrend::class, AssigneeWorkloadTable::class, SprintBurndown::class, ];
+        return [CumulativeFlowChart::class, ThroughputTrend::class, AssigneeWorkloadTable::class, SprintBurndown::class];
     }
 
     public function getHeaderWidgetsColumns(): int|array
