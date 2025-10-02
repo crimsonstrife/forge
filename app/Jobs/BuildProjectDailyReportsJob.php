@@ -124,6 +124,7 @@ class BuildProjectDailyReportsJob implements ShouldQueue
         $counts = Issue::query()
             ->selectRaw('issue_status_id, COUNT(*) as total')
             ->where('project_id', $this->projectId)
+            ->where('created_at', '<=', $end)
             ->groupBy('issue_status_id')
             ->pluck('total', 'issue_status_id');
 
