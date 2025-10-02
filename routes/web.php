@@ -60,7 +60,7 @@ Route::get('/reports/{project}/throughput.csv', static function (string $project
         }
         fclose($out);
     }, 'throughput.csv', ['Content-Type' => 'text/csv']);
-})->middleware(['auth','verified'])->name('reports.throughput.csv');
+})->middleware(['auth','verified','can:view.reports'])->name('reports.throughput.csv');
 
 Route::middleware([
     'auth:sanctum',
