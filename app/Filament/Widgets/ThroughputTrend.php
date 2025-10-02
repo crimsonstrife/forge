@@ -50,7 +50,7 @@ class ThroughputTrend extends ChartWidget
             while ($cursor->lte($last)) {
                 $key = $cursor->toDateString();
                 $labels[] = $key;
-                $data[] = (int) ($map[$key]->throughput_count ?? 0);
+                $data[] = (int) ($map[$key]?->throughput_count ?? 0);
                 $cursor->addDay();
             }
 
