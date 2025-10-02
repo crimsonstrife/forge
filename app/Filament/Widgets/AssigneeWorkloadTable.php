@@ -15,7 +15,7 @@ class AssigneeWorkloadTable extends BaseWidget
     protected static ?string $heading = 'Assignee Workload';
     public ?string $projectId = null;
 
-    protected function getTableQuery(): \Illuminate\Database\Eloquent\Builder| Relation | null
+    protected function getTableQuery(): \Illuminate\Database\Eloquent\Builder|Relation|null
     {
         if ($this->projectId === null) {
             return User::query()->whereRaw('0 = 1');
