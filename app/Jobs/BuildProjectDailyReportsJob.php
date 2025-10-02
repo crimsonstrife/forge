@@ -53,7 +53,15 @@ class BuildProjectDailyReportsJob implements ShouldQueue
 
         foreach ($issues as $issue) {
             $status = $statusById[(int) $issue->issue_status_id] ?? null;
-            if ($status?->is_done) {
+            if ($status === null) {
+                \Log::warning('Issue status not found', [
+                    'issue_id' => $issue->id,
+                    'issue_status_id' => $issue->issue_status_id,
+                ]);
+                // Optionally, skip counting this issue
+                continue;
+            }
+            if ($status->is_done) {
                 $done++;
             } else {
                 $issue->updated_at->greaterThan($start->copy()->subDays(7)) ? $wip++ : $open++;
