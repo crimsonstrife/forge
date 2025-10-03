@@ -247,6 +247,11 @@ class Issue extends BaseModel implements HasMedia
         return $this->belongsToMany(Ticket::class, 'ticket_issue_links');
     }
 
+    public function notes(): HasMany
+    {
+        return $this->hasMany(Note::class);
+    }
+
     /**
      * Quick helper: does this issue come from (at least one) support ticket?
      */

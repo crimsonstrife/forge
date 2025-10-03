@@ -16,7 +16,6 @@ return new class extends Migration
             $t->text('body')->nullable();
             $t->json('tags')->nullable();
             $t->timestamps();
-
             $t->index(['user_id', 'created_at']);
         });
     }

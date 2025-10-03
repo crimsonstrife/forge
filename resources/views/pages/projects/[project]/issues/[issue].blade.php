@@ -435,6 +435,7 @@ render(function (View $view, Project $project, Issue $issue) {
                                             <wa-tab panel="subissues">Sub-issues</wa-tab>
                                             <wa-tab panel="activity">Activity</wa-tab>
                                             <wa-tab panel="time">Time</wa-tab>
+                                            <wa-tab panel="notes">Notes</wa-tab>
                                         </div>
                                     </div>
 
@@ -627,6 +628,11 @@ render(function (View $view, Project $project, Issue $issue) {
                                             <livewire:issues.focus-timer :issue="$issue"/>
                                         </div>
                                         <livewire:issues.time-entries-panel :issue="$issue"/>
+                                    </wa-tab-panel>
+
+                                    <!-- Notes panel -->
+                                    <wa-tab-panel name="notes">
+                                        <livewire:issues.issue-notes-panel :issue="$issue" />
                                     </wa-tab-panel>
                                 </wa-tab-group>
 

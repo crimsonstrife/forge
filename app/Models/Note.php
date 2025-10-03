@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 /**
@@ -19,6 +20,7 @@ class Note extends BaseModel
 {
     use HasUuids;
     use IsPermissible;
+    use SoftDeletes;
 
     protected $keyType = 'string';
     public $incrementing = false;

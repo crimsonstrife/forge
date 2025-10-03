@@ -3,6 +3,7 @@
 namespace App\Livewire\Issues;
 
 use App\Models\Issue;
+use App\Models\Note;
 use App\Models\TimeEntry;
 use App\Settings\PersonalizationSettings;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -29,6 +30,8 @@ final class FocusTimer extends Component
     public string $focusUrl = '';
     public string $publicUrl = '';
     public string $runningNotes = '';
+
+    public bool $saveNoteOnStop = true;
 
     /**
      * @throws AuthorizationException
@@ -102,6 +105,18 @@ final class FocusTimer extends Component
         }
 
         $this->runningEntry->finalizeNow();
+
+        // Persist a Note snapshot from the timer notes
+        if ($this->saveNoteOnStop && trim((string)$this->runningNotes) !== '') {
+            Note::query()->create([
+                'user_id' => (string) auth()->id(),
+                'issue_id' => $this->issue->id,
+                'title' => 'Work log',
+                'body' => $this->runningNotes,
+                'tags' => null,
+            ]);
+        }
+
         $this->isRunning = false;
         $this->elapsedSeconds = (int) $this->runningEntry->duration_seconds;
         $this->runningEntry = null;
