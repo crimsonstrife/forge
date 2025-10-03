@@ -49,9 +49,8 @@ final class ComputeIssueMetricsJob implements ShouldQueue
             $firstDoneAt = $firstDoneEvent
                 ? Carbon::parse($firstDoneEvent->changed_at)
             // first time it entered a "done" status
-            $doneStatusIds = DB::table('issue_statuses')->where('is_done', true)->pluck('id')->all();
-            $firstDoneAt = $events->firstWhere(fn ($e) => in_array((int) $e->to_status_id, $doneStatusIds, true))
-                ? Carbon::parse($events->firstWhere(fn ($e) => in_array((int) $e->to_status_id, $doneStatusIds, true))->changed_at)
+            $doneEvent = $events->firstWhere(fn ($e) => in_array((int) $e->to_status_id, $doneStatusIds, true));
+            $firstDoneAt = $doneEvent ? Carbon::parse($doneEvent->changed_at) : null;
                 : null;
         }
 
