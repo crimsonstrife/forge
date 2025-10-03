@@ -39,13 +39,29 @@ class ProjectHealthStats extends BaseWidget
             $mq->whereDate('first_done_at', '<=', $this->dateTo);
         }
 
-        // MySQL-friendly median: order + offset
-        $median = (int) (optional(
-            $mq->orderBy('cycle_time_min')
-                ->skip(max(0, (int) floor(max(0, $mq->count() - 1) / 2)))
+        // True median: average two middle values if even, or take the middle if odd
+        $count = $mq->count();
+        if ($count === 0) {
+            $median = 0;
+        } elseif ($count % 2 === 1) {
+            // Odd: take the middle value
+            $medianRow = $mq->orderBy('cycle_time_min')
+                ->skip(floor($count / 2))
                 ->take(1)
-                ->first(['cycle_time_min'])
-        )->cycle_time_min ?? 0);
+                ->first(['cycle_time_min']);
+            $median = (int) ($medianRow?->cycle_time_min ?? 0);
+        } else {
+            // Even: average the two middle values
+            $middleRows = $mq->orderBy('cycle_time_min')
+                ->skip($count / 2 - 1)
+                ->take(2)
+                ->get(['cycle_time_min']);
+            if ($middleRows->count() === 2) {
+                $median = (int) round(($middleRows[0]->cycle_time_min + $middleRows[1]->cycle_time_min) / 2);
+            } else {
+                $median = (int) ($middleRows[0]->cycle_time_min ?? 0);
+            }
+        }
 
         return [
             Stat::make('Open', (string) $open),
