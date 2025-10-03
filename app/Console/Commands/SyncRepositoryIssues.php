@@ -65,7 +65,13 @@ final class SyncRepositoryIssues extends Command
         // Stream results to keep memory usage low.
         foreach (ProjectRepository::query()->with($with)->whereHas('repository')->cursor() as $link) {
             /** @var ProjectRepository $link */
-            $ok = $this->syncLink($link);
+            try {
+                $ok = $this->syncLink($link);
+            } catch (\Throwable $e) {
+                $failures++;
+                $this->error("Failed to sync link (ID: {$link->id}): " . $e->getMessage());
+                continue;
+            }
             if (!$ok) {
                 $failures++;
             }
