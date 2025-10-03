@@ -32,8 +32,12 @@ class CycleTimeHistogram extends ChartWidget
                 ->where('project_id', $this->projectId)
                 ->whereNotNull('first_done_at');
 
-            if ($this->dateFrom) { $q->whereDate('first_done_at', '>=', $this->dateFrom); }
-            if ($this->dateTo)   { $q->whereDate('first_done_at', '<=', $this->dateTo); }
+            if ($this->dateFrom) {
+                $q->whereDate('first_done_at', '>=', $this->dateFrom);
+            }
+            if ($this->dateTo) {
+                $q->whereDate('first_done_at', '<=', $this->dateTo);
+            }
 
             $mins = $q->pluck('cycle_time_min')->map(fn ($v) => (int) $v);
 
@@ -57,7 +61,10 @@ class CycleTimeHistogram extends ChartWidget
 
             foreach ($mins as $m) {
                 foreach ($buckets as $i => $b) {
-                    if ($m <= $b['max']) { $data[$i]++; break; }
+                    if ($m <= $b['max']) {
+                        $data[$i]++;
+                        break;
+                    }
                 }
             }
 

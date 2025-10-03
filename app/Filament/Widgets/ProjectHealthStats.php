@@ -32,8 +32,12 @@ class ProjectHealthStats extends BaseWidget
             ->where('project_id', $this->projectId)
             ->whereNotNull('first_done_at');
 
-        if ($this->dateFrom) { $mq->whereDate('first_done_at', '>=', $this->dateFrom); }
-        if ($this->dateTo)   { $mq->whereDate('first_done_at', '<=', $this->dateTo); }
+        if ($this->dateFrom) {
+            $mq->whereDate('first_done_at', '>=', $this->dateFrom);
+        }
+        if ($this->dateTo) {
+            $mq->whereDate('first_done_at', '<=', $this->dateTo);
+        }
 
         // MySQL-friendly median: order + offset
         $median = (int) (optional(

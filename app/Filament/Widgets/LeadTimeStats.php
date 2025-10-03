@@ -30,8 +30,12 @@ class LeadTimeStats extends BaseWidget
                 ->where('project_id', $this->projectId)
                 ->whereNotNull('first_done_at');
 
-            if ($this->dateFrom) { $q->whereDate('first_done_at', '>=', $this->dateFrom); }
-            if ($this->dateTo)   { $q->whereDate('first_done_at', '<=', $this->dateTo); }
+            if ($this->dateFrom) {
+                $q->whereDate('first_done_at', '>=', $this->dateFrom);
+            }
+            if ($this->dateTo) {
+                $q->whereDate('first_done_at', '<=', $this->dateTo);
+            }
 
             /** @var Collection<int,int> $mins */
             $mins = $q->orderBy('lead_time_min')->pluck('lead_time_min')->map(fn ($v) => (int) $v)->values();
@@ -54,11 +58,15 @@ class LeadTimeStats extends BaseWidget
     private function percentile(\Illuminate\Support\Collection $sorted, float $p): int
     {
         $n = $sorted->count();
-        if ($n === 0) { return 0; }
+        if ($n === 0) {
+            return 0;
+        }
         $rank = ($n - 1) * $p;
         $low  = (int) floor($rank);
         $high = (int) ceil($rank);
-        if ($low === $high) { return (int) $sorted[$low]; }
+        if ($low === $high) {
+            return (int) $sorted[$low];
+        }
         $w = $rank - $low;
         return (int) round((1 - $w) * (int) $sorted[$low] + $w * (int) $sorted[$high]);
     }
