@@ -1,5 +1,6 @@
 <?php
 
+use App\Settings\PersonalizationSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use function Laravel\Folio\{name, render};
@@ -7,30 +8,71 @@ use function Laravel\Folio\{name, render};
 name('stream.overlay');
 
 render(function (Request $request) {
-    // If ?url is missing, default to the authenticated JSON when logged in.
-    $jsonUrl = (string) $request->string('url', '');
+    $jsonUrl = (string)$request->string('url', '');
+
     if ($jsonUrl === '' && Auth::check()) {
-        $jsonUrl = route('stream.now');
+        /** @var PersonalizationSettings $prefs */
+        $prefs = app(PersonalizationSettings::class);
+        if ((bool)($prefs->streamer_mode ?? false)) {
+            $jsonUrl = route('stream.now');
+        }
     }
 
     view()->share('jsonUrl', $jsonUrl);
 });
 ?>
-<!doctype html>
+    <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Now Working On</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        html,body{background:transparent;margin:0}
-        body{font:16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif}
-        .wrap{padding:.5rem .75rem; background: rgba(0,0,0,.66); color:#fff; border-radius:.5rem;
-            display:inline-flex; gap:.5rem; align-items:center; max-width:95vw}
-        .key{opacity:.85; font-family: ui-monospace, Menlo, Consolas, monospace; white-space:nowrap}
-        .summary{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70vw}
-        .time{opacity:.85}
-        .warn{background:#fff3cd;color:#664d03;border:1px solid #ffecb5;border-radius:.5rem;padding:.5rem .75rem;margin:.5rem}
+        html, body {
+            background: transparent;
+            margin: 0
+        }
+
+        body {
+            font: 16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif
+        }
+
+        .wrap {
+            padding: .5rem .75rem;
+            background: rgba(0, 0, 0, .66);
+            color: #fff;
+            border-radius: .5rem;
+            display: inline-flex;
+            gap: .5rem;
+            align-items: center;
+            max-width: 95vw
+        }
+
+        .key {
+            opacity: .85;
+            font-family: ui-monospace, Menlo, Consolas, monospace;
+            white-space: nowrap
+        }
+
+        .summary {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70vw
+        }
+
+        .time {
+            opacity: .85
+        }
+
+        .warn {
+            background: #fff3cd;
+            color: #664d03;
+            border: 1px solid #ffecb5;
+            border-radius: .5rem;
+            padding: .5rem .75rem;
+            margin: .5rem
+        }
     </style>
 </head>
 <body>
@@ -43,7 +85,8 @@ render(function (Request $request) {
 <div id="warning" class="warn" style="display:none">
     Missing <code>?url=</code> param. While logged in, this page will default to your auth feed.
     For public/OBS, open the overlay with:
-    <code>{{ route('stream.overlay') }}?url={{ urlencode(URL::signedRoute('stream.now.public', ['user' => auth()->id()])) }}</code>
+    <code>{{ route('stream.overlay') }}
+        ?url={{ urlencode(URL::signedRoute('stream.now.public', ['user' => auth()->id()])) }}</code>
 </div>
 
 <script>
@@ -51,10 +94,10 @@ render(function (Request $request) {
     let startedAt = null;
 
     const fmt = s => {
-        s = Math.max(0, Math.floor(Number(s)||0));
-        const h = String(Math.floor(s/3600)).padStart(2,'0');
-        const m = String(Math.floor((s%3600)/60)).padStart(2,'0');
-        const a = String(s%60).padStart(2,'0');
+        s = Math.max(0, Math.floor(Number(s) || 0));
+        const h = String(Math.floor(s / 3600)).padStart(2, '0');
+        const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+        const a = String(s % 60).padStart(2, '0');
         return `${h}:${m}:${a}`;
     };
 
@@ -68,7 +111,7 @@ render(function (Request $request) {
     } else {
         async function poll() {
             try {
-                const r = await fetch(url, {cache:'no-store'});
+                const r = await fetch(url, {cache: 'no-store'});
                 const j = await r.json();
                 const run = j?.running;
                 if (!run) {
@@ -81,7 +124,7 @@ render(function (Request $request) {
                 document.getElementById('key').textContent = run.issue_key || '';
                 document.getElementById('summary').textContent = run.issue_summary || '';
                 const serverElapsed = Number(run.elapsed_seconds || 0);
-                startedAt = Date.now()/1000 - serverElapsed;
+                startedAt = Date.now() / 1000 - serverElapsed;
                 document.getElementById('elapsed').textContent = fmt(serverElapsed);
             } catch (e) {
                 // Keep overlay resilient during hiccups
@@ -91,12 +134,13 @@ render(function (Request $request) {
         // Smooth local tick
         setInterval(() => {
             if (startedAt != null) {
-                const now = Date.now()/1000;
+                const now = Date.now() / 1000;
                 document.getElementById('elapsed').textContent = fmt(now - startedAt);
             }
         }, 1000);
 
-        poll(); setInterval(poll, 5000);
+        poll();
+        setInterval(poll, 5000);
     }
 </script>
 </body>

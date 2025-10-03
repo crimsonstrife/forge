@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\TimeEntry;
+use App\Settings\PersonalizationSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 
@@ -11,7 +12,23 @@ name('stream.now.public');
 render(function (Request $request) {
     abort_unless(URL::hasValidSignature($request), 403);
 
-    $userId = (string) $request->string('user');
+    $userId = (string)$request->string('user');
+
+    /** @var PersonalizationSettings $prefs */
+    $prefs = app(PersonalizationSettings::class);
+
+    $enabled = false;
+    if (method_exists($prefs, 'forUser')) {
+        /** @var PersonalizationSettings $owner */
+        $owner = $prefs::forUser($userId);
+        $enabled = (bool)($owner->streamer_mode ?? false);
+    } else {
+        $enabled = (bool)($prefs->streamer_mode ?? false);
+    }
+
+    abort_unless($enabled, 404);
+
+    $userId = (string)$request->string('user');
 
     $running = TimeEntry::query()
         ->where('user_id', $userId)
@@ -21,18 +38,18 @@ render(function (Request $request) {
         ->first();
 
     $payload = $running ? [
-        'user_id'         => $userId,
-        'issue_id'        => (string) $running->issue_id,
-        'issue_key'       => $running->issue?->key,
-        'issue_summary'   => $running->issue?->summary,
-        'project_id'      => $running->issue?->project_id,
-        'project_key'     => $running->issue?->project?->key,
-        'started_at'      => optional($running->started_at)?->toIso8601String(),
+        'user_id' => $userId,
+        'issue_id' => (string)$running->issue_id,
+        'issue_key' => $running->issue?->key,
+        'issue_summary' => $running->issue?->summary,
+        'project_id' => $running->issue?->project_id,
+        'project_key' => $running->issue?->project?->key,
+        'started_at' => optional($running->started_at)?->toIso8601String(),
         'elapsed_seconds' => max(0, now()->getTimestamp() - $running->started_at->getTimestamp()),
-        'issue_url'       => $running->issue
+        'issue_url' => $running->issue
             ? route('issues.show', ['project' => $running->issue->project_id, 'issue' => $running->issue])
             : null,
-        'updated_at'      => now()->toIso8601String(),
+        'updated_at' => now()->toIso8601String(),
     ] : null;
 
     return response()
