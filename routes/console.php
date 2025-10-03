@@ -21,7 +21,7 @@ Artisan::command('inspire', function () {
 Schedule::command(CheckForAppUpdate::class)
     ->dailyAt('09:00');
 
-Schedule::command(SyncRepositoryIssues::class)
+Schedule::command(SyncRepositoryIssues::class, ['--all'])
     ->everyFifteenMinutes();
 
 Schedule::command(RecalcIssueRollups::class)
@@ -39,7 +39,7 @@ Schedule::call(static function (): void {
         ->select('id')
         ->chunkById(200, static function ($projects) use ($yesterday): void {
             foreach ($projects as $p) {
-                dispatch(new BuildProjectDailyReportsJob($p->id, $yesterday))->onQueue('reports');
+                dispatch(new BuildProjectDailyReportsJob($p->id, $yesterday));
             }
         });
 })->dailyAt('01:15');
@@ -50,7 +50,7 @@ Schedule::call(static function (): void {
         ->select(['id', 'project_id'])
         ->chunkById(200, static function ($sprints) use ($yesterday): void {
             foreach ($sprints as $s) {
-                dispatch(new BuildSprintDailyReportsJob($s->project_id, $s->id, $yesterday))->onQueue('reports');
+                dispatch(new BuildSprintDailyReportsJob($s->project_id, $s->id, $yesterday));
             }
         });
 })->dailyAt('01:25');
