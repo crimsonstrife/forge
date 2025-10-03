@@ -4,6 +4,7 @@ namespace App\Livewire\Issues;
 
 use App\Models\Issue;
 use App\Models\TimeEntry;
+use App\Settings\PersonalizationSettings;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -63,13 +64,6 @@ final class FocusTimer extends Component
 
     public function start(): void
     {
-        $this->authorize('update', $this->issue);
-
-        if ($this->hasAnyRunningTimer(Auth::id())) {
-            $this->dispatch('banner-message', type: 'warning', message: 'You already have a running timer. Stop it first.');
-            return;
-        }
-
         $entry = new TimeEntry([
             'issue_id' => $this->issue->id,
             'user_id' => Auth::id(),
@@ -78,12 +72,18 @@ final class FocusTimer extends Component
             'duration_seconds' => 0,
             'notes' => $this->runningNotes ?: null,
         ]);
-
         $entry->save();
 
         $this->runningEntry = $entry;
         $this->isRunning = true;
         $this->elapsedSeconds = 0;
+
+        $settings = app(PersonalizationSettings::class);
+        if (property_exists($settings, 'in_progress_status_id') && ! empty($settings->in_progress_status_id) && (int)$this->issue->issue_status_id !== (int)$settings->in_progress_status_id) {
+            $this->issue->issue_status_id = (int)$settings->in_progress_status_id;
+            $this->issue->save();
+        }
+
         $this->dispatch('timer-started');
     }
 

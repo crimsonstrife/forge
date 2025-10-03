@@ -468,6 +468,9 @@ render(function (View $view, Project $project, Request $request) {
                                             @endforelse
                                         </ul>
                                     </div>
+                                    <span class="ms-2 align-middle">
+                                        <livewire:issues.issue-quick-timer :issue-id="$issue->id" :wire:key="'qt-row-'.$issue->id" />
+                                    </span>
                                 @endcan
                             </td>
                         </tr>
