@@ -71,10 +71,21 @@ class LeadTimeStats extends BaseWidget
         return (int) round((1 - $w) * (int) $sorted[$low] + $w * (int) $sorted[$high]);
     }
 
-    private function fmt(int $mins): string
+        private function fmt(int $mins): string
     {
         $d = intdiv($mins, 1440);
         $h = intdiv($mins % 1440, 60);
-        return $d > 0 ? "{$d}d {$h}h" : "{$h}h";
+        $m = $mins % 60;
+        if ($d > 0) {
+            return $m > 0
+                ? "{$d}d {$h}h {$m}m"
+                : "{$d}d {$h}h";
+        } elseif ($h > 0) {
+            return $m > 0
+                ? "{$h}h {$m}m"
+                : "{$h}h";
+        } else {
+            return "{$m}m";
+        }
     }
 }
