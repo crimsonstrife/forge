@@ -22,10 +22,10 @@ class ProjectHealthStats extends BaseWidget
             ->orderByDesc('report_date')
             ->first();
 
-        $open   = (int) ($row->open_count ?? 0);
-        $wip    = (int) ($row->wip_count ?? 0);
-        $done   = (int) ($row->done_count ?? 0);
-        $tp24h  = (int) ($row->throughput_count ?? 0);
+        $open   = (int) ($row?->open_count ?? 0);
+        $wip    = (int) ($row?->wip_count ?? 0);
+        $done   = (int) ($row?->done_count ?? 0);
+        $tp24h  = (int) ($row?->throughput_count ?? 0);
 
         // True cycle-time median over selected range using issue_metrics
         $mq = DB::table('issue_metrics')
