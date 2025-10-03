@@ -32,9 +32,22 @@ final class TodayPanel extends Component
             ->latest('started_at')
             ->first();
 
-        $onDeck = Issue::query()
-            ->select(['id','summary','project_id','issue_status_id','updated_at'])
+        // Pinned “Next”
+        $pinned = Issue::query()
+            ->select(['id','summary','project_id','issue_status_id','updated_at','is_next'])
             ->where('assignee_id', $userId)
+            ->where('is_next', true)
+            ->whereRelation('status', 'is_done', false)
+            ->with(['status:id,name,color', 'project:id,key'])
+            ->latest('updated_at')
+            ->limit(10)
+            ->get();
+
+        // On Deck (not pinned)
+        $onDeck = Issue::query()
+            ->select(['id','summary','project_id','issue_status_id','updated_at','is_next'])
+            ->where('assignee_id', $userId)
+            ->where('is_next', false)
             ->whereRelation('status', 'is_done', false)
             ->with(['status:id,name,color', 'project:id,key'])
             ->latest('updated_at')
@@ -44,6 +57,7 @@ final class TodayPanel extends Component
         return view('livewire.today.today-panel', [
             'running' => $running,
             'onDeck'  => $onDeck,
+            'pinned'  => $pinned,
         ]);
     }
 }

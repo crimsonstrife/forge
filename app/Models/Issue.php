@@ -71,6 +71,7 @@ class Issue extends BaseModel implements HasMedia
         'due_at'    => 'immutable_datetime',
         'closed_at' => 'immutable_datetime',
         'is_public' => 'bool',
+        'is_next' => 'bool',
     ];
 
     public static function boot(): void

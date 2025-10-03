@@ -103,6 +103,9 @@ render(function (View $view, Project $project, Request $request) {
         ->when($request->filled('priority'), function ($q) use ($request) {
             $q->whereRelation('priority', 'id', (string)$request->string('priority'));
         })
+        ->when($request->boolean('next'), function ($q) {
+            $q->where('is_next', true);
+        })
         ->when($request->boolean('assigned_to_me'), function ($q) {
             $q->where('assignee_id', auth()->id());
         })
@@ -303,6 +306,11 @@ render(function (View $view, Project $project, Request $request) {
                     @endforeach
                 </select>
 
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="next" value="1" id="next" @checked(request('next'))>
+                    <label class="form-check-label" for="next">Only “Next”</label>
+                </div>
+
                 <div class="form-check ms-2">
                     <input class="form-check-input" type="checkbox" name="assigned_to_me" value="1"
                            id="me" @checked(request('assigned_to_me'))>
@@ -470,6 +478,9 @@ render(function (View $view, Project $project, Request $request) {
                                     </div>
                                     <span class="ms-2 align-middle">
                                         <livewire:issues.issue-quick-timer :issue-id="$issue->id" :wire:key="'qt-row-'.$issue->id" />
+                                    </span>
+                                    <span class="ms-2 align-middle">
+                                        <livewire:issues.next-toggle :issue-id="$issue->id" :is-next="$issue->is_next" :wire:key="'next-row-'.$issue->id" />
                                     </span>
                                 @endcan
                             </td>

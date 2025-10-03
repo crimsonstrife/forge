@@ -304,6 +304,7 @@ render(function (View $view, Project $project, Issue $issue) {
                         </ul>
                     </div>
                     <livewire:issues.issue-quick-timer :issue-id="$issue->id" :wire:key="'qt-show-'.$issue->id" />
+                    <livewire:issues.next-toggle :issue-id="$issue->id" :is-next="$issue->is_next" :wire:key="'next-'.$issue->id" />
                 @endcan
             @can('update', $issue)
                     <a href="{{ route('issues.edit', ['project'=>$project, 'issue'=>$issue]) }}"
