@@ -5,9 +5,11 @@ namespace App\Filament\Pages\Reports;
 use App\Filament\Widgets\AssigneeWorkloadTable;
 use App\Filament\Widgets\CumulativeFlowChart;
 use App\Filament\Widgets\CycleTimeHistogram;
+use App\Filament\Widgets\LeadTimeStats;
 use App\Filament\Widgets\ProjectHealthStats;
 use App\Filament\Widgets\SprintBurndown;
 use App\Filament\Widgets\ThroughputTrend;
+use App\Filament\Widgets\WipAgingTable;
 use App\Models\Project;
 use Illuminate\Support\Facades\DB;
 use Filament\Actions;
@@ -94,12 +96,12 @@ final class ProjectAnalytics extends Page
 
     protected function getHeaderWidgets(): array
     {
-        return [ ProjectHealthStats::class ];
+        return [ ProjectHealthStats::class, LeadTimeStats::class ];
     }
 
     protected function getFooterWidgets(): array
     {
-        return [CumulativeFlowChart::class, ThroughputTrend::class, AssigneeWorkloadTable::class, SprintBurndown::class, CycleTimeHistogram::class ];
+        return [CumulativeFlowChart::class, ThroughputTrend::class, AssigneeWorkloadTable::class, SprintBurndown::class, CycleTimeHistogram::class, WipAgingTable::class];
     }
 
     public function getHeaderWidgetsColumns(): int|array
@@ -111,12 +113,14 @@ final class ProjectAnalytics extends Page
     {
         return [
             ProjectHealthStats::class    => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
+                LeadTimeStats::class      => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
             CumulativeFlowChart::class   => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
             ThroughputTrend::class       => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
             AssigneeWorkloadTable::class => ['projectId' => $this->projectId],
             SprintBurndown::class        => ['projectId' => $this->projectId],
             CycleTimeHistogram::class    => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
-        ];
+            WipAgingTable::class => ['projectId' => $this->projectId],
+        ] + parent::getWidgetData();
     }
 
     public function hasReportData(): bool
