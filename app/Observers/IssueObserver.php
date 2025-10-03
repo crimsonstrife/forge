@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Domain\Issues\Events\IssueAssigneeChanged;
 use App\Domain\Issues\IssueRollupService;
+use App\Jobs\ComputeIssueMetricsJob;
 use App\Jobs\RecalculateIssueRollups;
 use App\Models\Goal;
 use App\Models\Issue;
@@ -149,6 +150,8 @@ class IssueObserver
                     'changed_by_id'  => Auth::id(),
                 ],
             );
+
+            dispatch(new ComputeIssueMetricsJob($issue->getKey()));
         }
     }
 
