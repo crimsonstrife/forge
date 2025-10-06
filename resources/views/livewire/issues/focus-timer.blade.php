@@ -27,6 +27,13 @@
             <wa-textarea class="form-control" wire:model.debounce.750ms="runningNotes" rows="3" placeholder="What are you focusing on?" x-bind:disabled="!isRunning"></wa-textarea>
             <div class="form-text">Notes save automatically while the timer runs.</div>
         </div>
+
+        <div class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" id="saveNoteOnStop" wire:model="saveNoteOnStop" :disabled="!isRunning">
+            <label class="form-check-label small" for="saveNoteOnStop">
+                Save these notes as an Issue note when I stop
+            </label>
+        </div>
     </div>
 </div>
 <script>
