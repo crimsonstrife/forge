@@ -17,8 +17,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', static function () {
+    if (!auth()->check()) {
+        return view('welcome'); // Send non-logged-in users to the welcome page
+    }
+
+    if (Feature::active('solo-mode')) {
+        return redirect()->route('today.index');
+    }
+
+    // Team-focused fallback: e.g., projects list/board
+    return redirect()->route('dashboard');
 });
 
 Route::middleware(['auth'])->group(function () {

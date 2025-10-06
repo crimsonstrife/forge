@@ -6,6 +6,7 @@ use App\Console\Commands\ReverbHealthCheck;
 use App\Console\Commands\SyncRepositoryIssues;
 use App\Jobs\BuildProjectDailyReportsJob;
 use App\Jobs\BuildSprintDailyReportsJob;
+use App\Jobs\RefreshOpenIssueAgesJob;
 use App\Models\Project;
 use App\Models\Sprint;
 use Illuminate\Foundation\Inspiring;
@@ -54,3 +55,11 @@ Schedule::call(static function (): void {
             }
         });
 })->dailyAt('01:25');
+
+Schedule::call(static function (): void {
+    Project::query()->select('id')->chunkById(200, static function ($projects): void {
+        foreach ($projects as $p) {
+            dispatch(new RefreshOpenIssueAgesJob($p->id));
+        }
+    });
+})->dailyAt('01:40');
