@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 Route::get('/', static function () {
     if (!auth()->check()) {
-        return view('welcome');// Send non-logged-in users to the welcome page
+        return view('welcome'); // Send non-logged-in users to the welcome page
     }
 
     if (Feature::active('solo-mode')) {
