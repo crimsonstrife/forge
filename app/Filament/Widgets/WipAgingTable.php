@@ -21,7 +21,7 @@ class WipAgingTable extends BaseWidget
 
         return Issue::query()
             ->select([
-                'issues.id', 'issues.key', 'issues.title', 'issues.assignee_id',
+                'issues.id', 'issues.key', 'issues.summary as title', 'issues.assignee_id',
                 'issues.issue_status_id', 'issue_statuses.name as status_name',
                 'issue_metrics.age_min',
             ])
