@@ -34,8 +34,7 @@ final class IssueQuickTimer extends Component
         TimeEntry::query()
             ->where('user_id', Auth::id())
             ->whereNull('ended_at')
-            ->get()
-            ->each(static fn (TimeEntry $t) => $t->finalizeNow());
+            ->update(['ended_at' => now()]);
 
         $entry = TimeEntry::query()->create([
             'issue_id' => $this->issueId,
