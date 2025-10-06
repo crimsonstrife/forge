@@ -34,7 +34,7 @@ final class RefreshOpenIssueAgesJob implements ShouldQueue
             $ageExpr = "CAST((strftime('%s','now') - strftime('%s', i.created_at)) / 60 AS INTEGER)";
             $nowExpr = "CURRENT_TIMESTAMP";
         } else {
-            throw new \RuntimeException("Unsupported database driver: $driver");
+            throw new RuntimeException("Unsupported database driver: $driver");
         }
 
         $sql = "
