@@ -117,7 +117,7 @@ final class FocusTimer extends Component
         // Persist a Note snapshot from the timer notes
         if ($this->saveNoteOnStop && trim((string)$this->runningNotes) !== '') {
             Note::query()->create([
-                'user_id' => (string) auth()->id(),
+                'user_id' => Auth::id(),
                 'issue_id' => $this->issue->id,
                 'title' => 'Work log',
                 'body' => $this->runningNotes,
