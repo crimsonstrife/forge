@@ -14,6 +14,7 @@ return [
     App\Providers\JetstreamServiceProvider::class,
     App\Providers\ModelObserverServiceProvider::class,
     App\Providers\RepositoryServiceProvider::class,
+    App\Providers\SoloModeServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
     App\Providers\VoltServiceProvider::class,
     SocialiteProviders\Manager\ServiceProvider::class,
