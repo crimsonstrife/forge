@@ -50,7 +50,12 @@ final class IssueQuickTimer extends Component
         if (isset($settings->in_progress_status_id) && ! empty($settings->in_progress_status_id)) {
             /** @var Issue|null $issue */
             $issue = Issue::query()->find($this->issueId);
-            if ($issue && (int)$issue->issue_status_id !== (int)$settings->in_progress_status_id) {
+            if (
+                $issue &&
+                $issue->issue_status_id !== null &&
+                $settings->in_progress_status_id !== null &&
+                (int)$issue->issue_status_id !== (int)$settings->in_progress_status_id
+            ) {
                 $issue->issue_status_id = (int)$settings->in_progress_status_id;
                 $issue->save();
             }
