@@ -86,8 +86,11 @@ render(function (Request $request) {
 <div id="warning" class="warn" style="display:none">
     Missing <code>?url=</code> param. While logged in, this page will default to your auth feed.
     For public/OBS, open the overlay with:
-    <code>{{ route('stream.overlay') }}
-        ?url={{ urlencode(URL::signedRoute('stream.now.public', ['user' => auth()->id()])) }}</code>
+    @if(Auth::check())
+        <code>{{ route('stream.overlay') }}?url={{ urlencode(URL::signedRoute('stream.now.public', ['user' => auth()->id()])) }}</code>
+    @else
+        <code>{{ route('stream.overlay') }}?url=...</code>
+    @endif
 </div>
 
 <script>
