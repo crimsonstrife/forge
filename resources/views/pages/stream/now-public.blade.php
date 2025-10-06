@@ -28,8 +28,6 @@ render(function (Request $request) {
 
     abort_unless($enabled, 404);
 
-    $userId = (string)$request->string('user');
-
     $running = TimeEntry::query()
         ->where('user_id', $userId)
         ->whereNull('ended_at')
