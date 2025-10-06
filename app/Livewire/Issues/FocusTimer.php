@@ -77,8 +77,7 @@ final class FocusTimer extends Component
         }
         // Enforce single-timer rule: prevent starting a timer if user has any running timer
         $existingRunningEntry = TimeEntry::where('user_id', Auth::id())
-            ->whereNull('ended_at')
-            ->where('duration_seconds', 0)
+            ->running()
             ->first();
         if ($existingRunningEntry !== null) {
             // Optionally, you could throw an exception or show a message
