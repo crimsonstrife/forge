@@ -48,7 +48,7 @@ class IssueMetric extends Model
         parent::boot();
 
         static::creating(static function ($model) {
-            $model->id = Str::uuid();
+            $model->issue_id = Str::uuid();
         });
     }
 }
