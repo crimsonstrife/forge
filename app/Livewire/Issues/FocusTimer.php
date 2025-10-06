@@ -67,6 +67,14 @@ final class FocusTimer extends Component
 
     public function start(): void
     {
+        // Authorization check
+        $this->authorize('view', $this->issue);
+
+        // Prevent duplicate running timers for this user and issue
+        if ($this->runningEntry !== null) {
+            // Optionally, you could throw an exception or show a message
+            return;
+        }
         $entry = new TimeEntry([
             'issue_id' => $this->issue->id,
             'user_id' => Auth::id(),
