@@ -90,7 +90,7 @@ final class FocusTimer extends Component
         $this->elapsedSeconds = 0;
 
         $settings = app(PersonalizationSettings::class);
-        if (property_exists($settings, 'in_progress_status_id') && ! empty($settings->in_progress_status_id) && (int)$this->issue->issue_status_id !== (int)$settings->in_progress_status_id) {
+        if (!empty($settings->in_progress_status_id) && (int)$this->issue->issue_status_id !== (int)$settings->in_progress_status_id) {
             $this->issue->issue_status_id = (int)$settings->in_progress_status_id;
             $this->issue->save();
         }
