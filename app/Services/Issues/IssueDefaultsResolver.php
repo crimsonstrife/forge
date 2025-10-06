@@ -14,7 +14,9 @@ use RuntimeException;
  */
 final class IssueDefaultsResolver
 {
-    public function __construct(private Project $project) {}
+    public function __construct(private Project $project)
+    {
+    }
 
     public static function for(Project $project): self
     {

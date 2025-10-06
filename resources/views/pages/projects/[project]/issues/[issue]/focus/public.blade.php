@@ -4,6 +4,7 @@ use App\Models\Issue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, render};
 
 name('issues.focus.public');

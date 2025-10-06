@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware};
 
 name('today.index');
