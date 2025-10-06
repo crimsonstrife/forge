@@ -31,7 +31,7 @@ render(function (Request $request) {
     <style>
         html, body {
             background: transparent;
-            margin: 0
+            margin: 0;
         }
 
         body {
