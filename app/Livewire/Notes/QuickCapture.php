@@ -46,7 +46,9 @@ final class QuickCapture extends Component
             }
         }
     }
-    /** List of selectable projects when no fixed project is passed. */
+    /**
+     * List of selectable projects when no fixed project is passed.
+     */
     #[Computed]
     public function projectOptions(): Collection
     {
