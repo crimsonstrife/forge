@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Laravel\Pennant\Feature;
 use RuntimeException;
 use Throwable;
 
@@ -51,6 +52,10 @@ class IssueObserver
                 // Assign
                 $issue->number = $next;
                 $issue->key = sprintf('%s-%d', strtoupper($project->key), $next);
+
+                if (empty($issue->assignee_id) && Feature::active('solo-mode') && Auth::check()) {
+                    $issue->assignee_id = Auth::id();
+                }
 
                 // Bump counter
                 $project->next_issue_number = $next;

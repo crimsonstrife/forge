@@ -18,6 +18,9 @@
                         <a href="{{ route('dashboard') }}" class="btn btn-dark">
                             <i class="fa-solid fa-house me-1"></i> Go to Dashboard
                         </a>
+                        <a href="{{ route('today.index') }}" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-calendar-day me-1"></i> Today's Work
+                        </a>
                         <a href="{{ route('projects.index') }}" class="btn btn-outline-secondary">
                             <i class="fa-solid fa-diagram-project me-1"></i> Browse Projects
                         </a>
