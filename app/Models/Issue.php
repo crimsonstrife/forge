@@ -71,6 +71,7 @@ class Issue extends BaseModel implements HasMedia
         'due_at'    => 'immutable_datetime',
         'closed_at' => 'immutable_datetime',
         'is_public' => 'bool',
+        'is_next' => 'bool',
     ];
 
     public static function boot(): void
@@ -245,6 +246,11 @@ class Issue extends BaseModel implements HasMedia
     public function tickets(): BelongsToMany
     {
         return $this->belongsToMany(Ticket::class, 'ticket_issue_links');
+    }
+
+    public function notes(): HasMany
+    {
+        return $this->hasMany(Note::class);
     }
 
     /**

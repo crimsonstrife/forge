@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasExternalId;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -93,4 +94,23 @@ final class TimeEntry extends Model
         $this->save();
     }
 
+    public function scopeForIssue(Builder $q, string $issueId): Builder
+    {
+        return $q->where('issue_id', $issueId);
+    }
+
+    public function scopeForUser(Builder $q, string $userId): Builder
+    {
+        return $q->where('user_id', $userId);
+    }
+
+    public function scopeRunning(Builder $q): Builder
+    {
+        return $q->whereNull('ended_at');
+    }
+
+    public function getIsRunningAttribute(): bool
+    {
+        return $this->ended_at === null;
+    }
 }

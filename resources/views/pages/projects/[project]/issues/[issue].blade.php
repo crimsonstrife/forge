@@ -303,6 +303,8 @@ render(function (View $view, Project $project, Issue $issue) {
                             @endforelse
                         </ul>
                     </div>
+                    <livewire:issues.issue-quick-timer :issue-id="$issue->id" :wire:key="'qt-show-'.$issue->id" />
+                    <livewire:issues.next-toggle :issue-id="$issue->id" :is-next="$issue->is_next" :wire:key="'next-'.$issue->id" />
                 @endcan
             @can('update', $issue)
                     <a href="{{ route('issues.edit', ['project'=>$project, 'issue'=>$issue]) }}"
@@ -434,6 +436,7 @@ render(function (View $view, Project $project, Issue $issue) {
                                             <wa-tab panel="subissues">Sub-issues</wa-tab>
                                             <wa-tab panel="activity">Activity</wa-tab>
                                             <wa-tab panel="time">Time</wa-tab>
+                                            <wa-tab panel="notes">Notes</wa-tab>
                                         </div>
                                     </div>
 
@@ -626,6 +629,11 @@ render(function (View $view, Project $project, Issue $issue) {
                                             <livewire:issues.focus-timer :issue="$issue"/>
                                         </div>
                                         <livewire:issues.time-entries-panel :issue="$issue"/>
+                                    </wa-tab-panel>
+
+                                    <!-- Notes panel -->
+                                    <wa-tab-panel name="notes">
+                                        <livewire:issues.issue-notes-panel :issue="$issue" />
                                     </wa-tab-panel>
                                 </wa-tab-group>
 
