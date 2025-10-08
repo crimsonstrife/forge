@@ -40,7 +40,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         $page   = 1;
 
         do {
-            $resp = Http::withToken($token)
+            $resp = $this->httpWithToken($token)
                 ->withHeaders([
                     'User-Agent'              => config('app.name', 'Forge'),
                     'Accept'                  => 'application/vnd.github+json',
@@ -187,7 +187,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
     public function searchBranches(Repository $repository, string $token, string $query = '', int $limit = 20): array
     {
         // GitHub branches list (no server-side search param) → client filter
-        $resp = Http::withToken($token)
+        $resp = $this->httpWithToken($token)
             ->withHeaders([
                 'User-Agent' => config('app.name', 'Forge'),
                 'Accept' => 'application/vnd.github+json',
@@ -220,7 +220,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
     public function searchPullRequests(Repository $repository, string $token, string $query = '', int $limit = 20): array
     {
         // List PRs (state=all), client-side filter on title/number/head/base
-        $resp = Http::withToken($token)
+        $resp = $this->httpWithToken($token)
             ->withHeaders([
                 'User-Agent' => config('app.name', 'Forge'),
                 'Accept' => 'application/vnd.github+json',
@@ -235,7 +235,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             throw new RuntimeException("GitHub API error (pulls): {$resp->status()} ".substr($resp->body(), 0, 1000));
         }
 
-        $items = collect($resp->json() ?? [])
+        return collect($resp->json() ?? [])
             ->map(fn ($pr) => [
                 'number' => (int) $pr['number'],
                 'title' => $pr['title'],
@@ -257,16 +257,17 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             ->take($limit)
             ->values()
             ->all();
-
-        return $items;
     }
 
+    /**
+     * @throws ConnectionException
+     */
     public function createBranch(Repository $repository, string $token, string $newBranch, ?string $fromRef = null): array
     {
         // Resolve base ref SHA
         $from = $fromRef ?: ($repository->default_branch ?: $this->getDefaultBranch($repository, $token));
 
-        $refResp = Http::withToken($token)
+        $refResp = $this->httpWithToken($token)
             ->withHeaders([
                 'User-Agent' => config('app.name', 'Forge'),
                 'Accept' => 'application/vnd.github+json',
@@ -284,7 +285,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         }
 
         // Create the new ref
-        $createResp = Http::withToken($token)
+        $createResp = $this->httpWithToken($token)
             ->withHeaders([
                 'User-Agent' => config('app.name', 'Forge'),
                 'Accept' => 'application/vnd.github+json',
@@ -305,6 +306,9 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         ];
     }
 
+    /**
+     * @throws ConnectionException
+     */
     public function createPullRequest(
         Repository $repository,
         string $token,
@@ -313,7 +317,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         string $base,
         ?string $body = null
     ): array {
-        $resp = Http::withToken($token)
+        $resp = $this->httpWithToken($token)
             ->withHeaders([
                 'User-Agent' => config('app.name', 'Forge'),
                 'Accept' => 'application/vnd.github+json',
@@ -345,7 +349,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             return $repository->default_branch;
         }
 
-        $resp = Http::withToken($token)
+        $resp = $this->httpWithToken($token)
             ->withHeaders([
                 'User-Agent' => config('app.name', 'Forge'),
                 'Accept' => 'application/vnd.github+json',
