@@ -45,16 +45,6 @@ final class InitialImportRepositoryIssues implements ShouldQueue
             $link->update([
                 'initial_import_started_at'  => now(),
                 'last_sync_status'           => 'error',
-                'last_sync_error'            => 'No usable token found on link or integrator.',
-                'initial_import_finished_at' => now(),
-            ]);
-            return;
-        }
-
-        if (!$token) {
-            $link->update([
-                'initial_import_started_at'  => now(),
-                'last_sync_status'           => 'error',
                 'last_sync_error'            => 'No OAuth/PAT token available for the integrator or link.',
                 'initial_import_finished_at' => now(),
             ]);
