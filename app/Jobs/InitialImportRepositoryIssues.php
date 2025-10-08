@@ -65,8 +65,7 @@ final class InitialImportRepositoryIssues implements ShouldQueue
             'link_id'  => $link->id,
             'source'   => $link->token ? 'link' : 'integrator',
             'provider' => $repo->provider,
-            'prefix'   => substr($token, 0, 8),
-            'length'   => strlen($token),
+            // Token details omitted to avoid sensitive data exposure
         ]);
 
         try {
