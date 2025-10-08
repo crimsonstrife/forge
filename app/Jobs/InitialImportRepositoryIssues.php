@@ -100,7 +100,7 @@ final class InitialImportRepositoryIssues implements ShouldQueue
         $repository = $link->repository;
         $project = $link->project;
 
-        $statusMap = $repository->statusMappings->keyBy(fn($m) => strtolower($m->external_state));
+        $statusMap = $repository->statusMappings->keyBy(fn ($m) => strtolower($m->external_state));
         [$defaultTypeId, $typeByKey, $typeByName, $typeByTier] = $this->prepareIssueTypeLookups();
         [$defaultPriorityId, $prioByKey, $prioByName] = $this->preparePriorityLookups();
 
@@ -133,8 +133,8 @@ final class InitialImportRepositoryIssues implements ShouldQueue
 
         $existingExternalRef = IssueExternalRef::query()
             ->where('repository_id', $repository->id)
-            ->when($externalIssueId !== '', fn($q) => $q->where('external_issue_id', $externalIssueId))
-            ->when($externalIssueId === '' && $number > 0, fn($q) => $q->where('number', $number))
+            ->when($externalIssueId !== '', fn ($q) => $q->where('external_issue_id', $externalIssueId))
+            ->when($externalIssueId === '' && $number > 0, fn ($q) => $q->where('number', $number))
             ->first();
 
         if ($existingExternalRef) {
@@ -152,8 +152,8 @@ final class InitialImportRepositoryIssues implements ShouldQueue
         return $statusId ?? IssueStatus::query()
             ->when(
                 $state === 'closed',
-                fn($q) => $q->where('is_done', true),
-                fn($q) => $q->where('is_done', false)
+                fn ($q) => $q->where('is_done', true),
+                fn ($q) => $q->where('is_done', false)
             )
             ->orderBy('order')
             ->value('id');
