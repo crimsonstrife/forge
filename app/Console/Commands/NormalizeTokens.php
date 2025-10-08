@@ -246,7 +246,7 @@ final class NormalizeTokens extends Command
             return null;
         }
 
-        $v = preg_replace('/\s+/', '', trim($value));
+        $v = trim($value);
         return $v === '' ? null : $v;
     }
 
