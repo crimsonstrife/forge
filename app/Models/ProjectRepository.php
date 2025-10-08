@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\EncryptedOrPlainToken;
 use App\Utilities\TokenUtils;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +16,7 @@ class ProjectRepository extends Model
     public $incrementing = false;
     protected $casts = [
         'id' => 'string',
-        'token' => 'encrypted',
+        'token' => EncryptedOrPlainToken::class,
         'token_expires_at'           => 'datetime',
         'initial_import_started_at'  => 'datetime',
         'initial_import_finished_at' => 'datetime',

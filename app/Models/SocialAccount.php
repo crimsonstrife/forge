@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\EncryptedOrPlainToken;
 use App\Utilities\TokenUtils;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,8 +20,8 @@ class SocialAccount extends Model
     ];
 
     protected $casts = [
-        'token' => 'encrypted',
-        'refresh_token' => 'encrypted',
+        'token' => EncryptedOrPlainToken::class,
+        'refresh_token' => EncryptedOrPlainToken::class,
         'expires_at' => 'datetime',
     ];
 
