@@ -100,7 +100,7 @@ final class InitialImportRepositoryIssues implements ShouldQueue
         $repository = $link->repository;
         $project = $link->project;
 
-        $statusMap = $repository->statusMappings->keyBy(fn($m) => strtolower($m->external_state));
+        $statusMap = $repository->statusMappings->keyBy(fn ($m) => strtolower($m->external_state));
         [$defaultTypeId, $typeByKey, $typeByName, $typeByTier] = $this->prepareIssueTypeLookups();
         [$defaultPriorityId, $prioByKey, $prioByName] = $this->preparePriorityLookups();
 
