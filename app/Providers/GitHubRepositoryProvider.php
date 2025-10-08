@@ -57,10 +57,14 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
                 $status = $resp->status();
                 $body   = substr((string) $resp->body(), 0, 2000);
 
+                // Mask token in body if present
+                $maskedToken = substr($token, 0, 4) . str_repeat('*', max(0, strlen($token) - 8)) . substr($token, -4);
+                $bodyMasked = str_replace($token, $maskedToken, $body);
+
                 if ($status === 401) {
                     throw new RuntimeException(
                         "GitHub API error (401 {$state}): Bad credentials. " .
-                        "Likely bad/expired token, masked value saved, or whitespace in token. Body: {$body}"
+                        "Likely bad/expired token, masked value saved, or whitespace in token. Body: {$bodyMasked}"
                     );
                 }
 
