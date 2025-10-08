@@ -34,9 +34,18 @@ class ProjectRepository extends Model
     ];
 
 
-    public function project(): BelongsTo { return $this->belongsTo(Project::class); }
-    public function repository(): BelongsTo { return $this->belongsTo(Repository::class); }
-    public function integrator(): BelongsTo { return $this->belongsTo(User::class, 'integrator_user_id'); }
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+    public function repository(): BelongsTo
+    {
+        return $this->belongsTo(Repository::class);
+    }
+    public function integrator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'integrator_user_id');
+    }
 
     public static function boot(): void
     {
