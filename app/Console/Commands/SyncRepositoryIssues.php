@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\ProjectRepository;
 use App\Models\Repository;
 use Illuminate\Console\Command;
+use Throwable;
 
 final class SyncRepositoryIssues extends Command
 {
@@ -67,7 +68,7 @@ final class SyncRepositoryIssues extends Command
             /** @var ProjectRepository $link */
             try {
                 $ok = $this->syncLink($link);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $failures++;
                 $this->error("Failed to sync link (ID: {$link->id}): " . $e->getMessage());
                 continue;

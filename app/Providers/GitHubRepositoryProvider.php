@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Repository;
 use App\Contracts\RepositoryProviderInterface;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use JsonException;
@@ -27,8 +28,11 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
     }
 
     /**
+     * @param Repository $repository
+     * @param string $token
      * @param 'open'|'closed' $state
      * @return array<int, array<string,mixed>>
+     * @throws ConnectionException
      */
     private function fetchIssuesByState(Repository $repository, string $token, string $state): array
     {
@@ -50,9 +54,17 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
                 ]);
 
             if ($resp->failed()) {
-                throw new RuntimeException(
-                    "GitHub API error ({$resp->status()} {$state}): " . substr($resp->body(), 0, 2000)
-                );
+                $status = $resp->status();
+                $body   = substr((string) $resp->body(), 0, 2000);
+
+                if ($status === 401) {
+                    throw new RuntimeException(
+                        "GitHub API error (401 {$state}): Bad credentials. " .
+                        "Likely bad/expired token, masked value saved, or whitespace in token. Body: {$body}"
+                    );
+                }
+
+                throw new RuntimeException("GitHub API error ({$status} {$state}): {$body}");
             }
 
             // Map this page
@@ -330,5 +342,23 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         }
 
         return (string) ($resp->json('default_branch') ?? 'main');
+    }
+
+    private function sanitizeToken(string $token): string
+    {
+        return preg_replace('/\s+/', '', trim($token));
+    }
+
+    private function httpWithToken(string $token): PendingRequest
+    {
+        $clean = $this->sanitizeToken($token);
+
+        return Http::withToken($clean)
+            ->withHeaders([
+                'User-Agent'           => config('app.name', 'Forge'),
+                'Accept'               => 'application/vnd.github+json',
+                'X-GitHub-Api-Version' => '2022-11-28',
+            ])
+            ->acceptJson();
     }
 }

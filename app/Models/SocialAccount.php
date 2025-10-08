@@ -27,4 +27,25 @@ class SocialAccount extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function setTokenAttribute(?string $value): void
+    {
+        if ($value === null) {
+            $this->attributes['token'] = null;
+            return;
+        }
+
+        $v = trim($value);
+
+        if ($v === '' || preg_match('/^\*+$/', $v) === 1 || str_starts_with($v, '***')) {
+            return;
+        }
+
+        $this->attributes['token'] = $v;
+    }
+
+    public function setRefreshTokenAttribute(?string $value): void
+    {
+        $this->attributes['refresh_token'] = $value ? trim($value) : null;
+    }
 }

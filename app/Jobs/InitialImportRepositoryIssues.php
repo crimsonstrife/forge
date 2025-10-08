@@ -12,6 +12,8 @@ use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 final class InitialImportRepositoryIssues implements ShouldQueue
 {
@@ -34,9 +36,17 @@ final class InitialImportRepositoryIssues implements ShouldQueue
         $project = $link->project;
         $repo    = $link->repository;
 
-        $token = $link->token ?: optional(
-            $link->integrator?->socialAccounts->firstWhere('provider', $repo->provider)
-        )->token;
+        $token = $link->effectiveToken($repo->provider);
+
+        if (!$token) {
+            $link->update([
+                'initial_import_started_at'  => now(),
+                'last_sync_status'           => 'error',
+                'last_sync_error'            => 'No usable token found on link or integrator.',
+                'initial_import_finished_at' => now(),
+            ]);
+            return;
+        }
 
         if (!$token) {
             $link->update([
@@ -48,10 +58,12 @@ final class InitialImportRepositoryIssues implements ShouldQueue
             return;
         }
 
-        $link->update([
-            'initial_import_started_at' => now(),
-            'last_sync_status'          => null,
-            'last_sync_error'           => null,
+        Log::info('Repo sync token source', [
+            'link_id'  => $link->id,
+            'source'   => $link->token ? 'link' : 'integrator',
+            'provider' => $repo->provider,
+            'prefix'   => substr($token, 0, 8),
+            'length'   => strlen($token),
         ]);
 
         try {
@@ -188,7 +200,7 @@ final class InitialImportRepositoryIssues implements ShouldQueue
                 'last_sync_status'           => 'ok',
                 'last_sync_error'            => null,
             ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $link->update([
                 'last_sync_status'           => 'error',
                 'last_sync_error'            => mb_strimwidth($e->getMessage(), 0, 8000),

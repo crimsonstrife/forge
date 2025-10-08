@@ -46,4 +46,59 @@ class ProjectRepository extends Model
             $model->id = Str::uuid();
         });
     }
+
+    /**
+     * Ignore masked or whitespace-only values from forms; trim valid input.
+     */
+    public function setTokenAttribute(?string $value): void
+    {
+        if ($value === null) {
+            $this->attributes['token'] = null;
+            return;
+        }
+
+        $v = trim($value);
+
+        if ($v === '' || preg_match('/^\*+$/', $v) === 1 || str_starts_with($v, '***')) {
+            return;
+        }
+
+        $this->attributes['token'] = $v;
+    }
+
+    /**
+     * Basic GitHub token shape check.
+     */
+    public function isLikelyGithubToken(?string $token): bool
+    {
+        if (!$token) {
+            return false;
+        }
+
+        $t = trim($token);
+
+        return (bool) preg_match('/^(github_pat|ghp|gho|ghu|ghs|ghr)_/i', $t) && strlen($t) >= 20;
+    }
+
+    /**
+     * Select a usable token, ignoring stale installation tokens and masked junk.
+     */
+    public function effectiveToken(string $provider): ?string
+    {
+        $primary = $this->token ? trim((string) $this->token) : null;
+
+        if ($this->token_type === 'installation' && $this->token_expires_at !== null && now()->greaterThan($this->token_expires_at->subMinutes(2))) {
+            $primary = null; // stale; do not use
+        }
+
+        if ($this->isLikelyGithubToken($primary)) {
+            return $primary;
+        }
+
+        $fallback = trim((string) optional(
+            $this->integrator?->socialAccounts->firstWhere('provider', $provider)
+        )->token);
+
+        return $this->isLikelyGithubToken($fallback) ? $fallback : null;
+    }
 }
