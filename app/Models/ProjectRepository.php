@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Utilities\TokenUtils;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -68,7 +69,7 @@ class ProjectRepository extends Model
 
         $v = trim($value);
 
-        if ($v === '' || preg_match('/^\*+$/', $v) === 1 || str_starts_with($v, '***')) {
+        if (TokenUtils::isMaskedToken($v)) {
             return;
         }
 
