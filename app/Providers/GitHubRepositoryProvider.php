@@ -41,12 +41,6 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
 
         do {
             $resp = $this->httpWithToken($token)
-                ->withHeaders([
-                    'User-Agent'              => config('app.name', 'Forge'),
-                    'Accept'                  => 'application/vnd.github+json',
-                    'X-GitHub-Api-Version'    => '2022-11-28',
-                ])
-                ->acceptJson()
                 ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}/issues", [
                     'state'    => $state,
                     'per_page' => 100,
@@ -184,15 +178,13 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             ->first();
     }
 
+    /**
+     * @throws ConnectionException
+     */
     public function searchBranches(Repository $repository, string $token, string $query = '', int $limit = 20): array
     {
         // GitHub branches list (no server-side search param) → client filter
         $resp = $this->httpWithToken($token)
-            ->withHeaders([
-                'User-Agent' => config('app.name', 'Forge'),
-                'Accept' => 'application/vnd.github+json',
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ])
             ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}/branches", [
                 'per_page' => 100,
             ]);
@@ -217,15 +209,13 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         return $items;
     }
 
+    /**
+     * @throws ConnectionException
+     */
     public function searchPullRequests(Repository $repository, string $token, string $query = '', int $limit = 20): array
     {
         // List PRs (state=all), client-side filter on title/number/head/base
         $resp = $this->httpWithToken($token)
-            ->withHeaders([
-                'User-Agent' => config('app.name', 'Forge'),
-                'Accept' => 'application/vnd.github+json',
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ])
             ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}/pulls", [
                 'state' => 'all',
                 'per_page' => 100,
@@ -268,11 +258,6 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         $from = $fromRef ?: ($repository->default_branch ?: $this->getDefaultBranch($repository, $token));
 
         $refResp = $this->httpWithToken($token)
-            ->withHeaders([
-                'User-Agent' => config('app.name', 'Forge'),
-                'Accept' => 'application/vnd.github+json',
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ])
             ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}/git/ref/heads/{$from}");
 
         if ($refResp->failed()) {
@@ -286,11 +271,6 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
 
         // Create the new ref
         $createResp = $this->httpWithToken($token)
-            ->withHeaders([
-                'User-Agent' => config('app.name', 'Forge'),
-                'Accept' => 'application/vnd.github+json',
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ])
             ->post("https://api.github.com/repos/{$repository->owner}/{$repository->name}/git/refs", [
                 'ref' => "refs/heads/{$newBranch}",
                 'sha' => $sha,
@@ -318,11 +298,6 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         ?string $body = null
     ): array {
         $resp = $this->httpWithToken($token)
-            ->withHeaders([
-                'User-Agent' => config('app.name', 'Forge'),
-                'Accept' => 'application/vnd.github+json',
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ])
             ->post("https://api.github.com/repos/{$repository->owner}/{$repository->name}/pulls", [
                 'title' => $title,
                 'head'  => $head, // same-repo branch name OR "owner:branch" cross-fork
@@ -343,6 +318,9 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         ];
     }
 
+    /**
+     * @throws ConnectionException
+     */
     public function getDefaultBranch(Repository $repository, string $token): string
     {
         if (!empty($repository->default_branch)) {
@@ -350,11 +328,6 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         }
 
         $resp = $this->httpWithToken($token)
-            ->withHeaders([
-                'User-Agent' => config('app.name', 'Forge'),
-                'Accept' => 'application/vnd.github+json',
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ])
             ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}");
 
         if ($resp->failed()) {
