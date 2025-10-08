@@ -38,7 +38,15 @@ final class EncryptedOrPlainToken implements CastsAttributes
 
         if ($v === '' || preg_match('/^\*+$/', $v) === 1 || str_starts_with($v, '***')) {
             /** Keep existing stored value when user submits a masked token */
-            return $model->getRawOriginal($key);
+            $original = $model->getRawOriginal($key);
+            try {
+                // If decryption succeeds, it's already encrypted
+                Crypt::decryptString((string) $original);
+                return $original;
+            } catch (Throwable $e) {
+                // If decryption fails, encrypt the original value
+                return Crypt::encryptString((string) $original);
+            }
         }
 
         return Crypt::encryptString($v);
