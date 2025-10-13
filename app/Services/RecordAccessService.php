@@ -114,7 +114,7 @@ class RecordAccessService
     private function principalPairsFor(User $user): Collection
     {
         return collect()
-            ->push(['type' => \App\Models\User::class, 'id' => $user->id])
+            ->push(['type' => User::class, 'id' => $user->id])
             ->when(method_exists($user, 'roles'), fn ($c) => $c->merge(
                 $user->roles->map(fn ($r) => ['type' => Role::class, 'id' => $r->id])
             ))
