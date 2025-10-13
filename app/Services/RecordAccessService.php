@@ -83,7 +83,9 @@ class RecordAccessService
 
     public function bustCacheForShareable(Model $record): void
     {
-        $this->cache()->flush();
+        // Remove only the cache entry for this record's share existence
+        $key = sprintf('rs:any:%s:%s', $record::class, $record->id);
+        $this->cache()->forget($key);
     }
 
     private function highestLevelFromShares(object $shareable, Collection $pairs, bool $requirePropagation = false): ?AccessLevel
