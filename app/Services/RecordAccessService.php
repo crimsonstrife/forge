@@ -134,11 +134,16 @@ class RecordAccessService
             return Cache::tags(['record-shares']);
         }
 
+        // Fallback: Use a dedicated cache prefix to avoid key conflicts (cache pollution)
+        // when tags are not supported.
+        // Note: Laravel's Cache facade does not provide a withPrefix() method directly,
+        // so we ensure the prefix is unique in cacheKeyFor().
         return Cache::store();
     }
 
     private function cacheKeyFor(User $user, Model $record): string
     {
-        return sprintf('rs:%s:%s:%s', $user->id, $record::class, $record->id);
+        // Use a unique prefix to avoid cache pollution when tags are not supported.
+        return sprintf('record-shares:%s:%s:%s', $user->id, $record::class, $record->id);
     }
 }
