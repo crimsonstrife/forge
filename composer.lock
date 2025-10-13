@@ -12778,16 +12778,16 @@
         },
         {
             "name": "spatie/security-advisories-health-check",
-            "version": "1.3.0",
+            "version": "1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/security-advisories-health-check.git",
-                "reference": "7ebe168f3da908ce6e87fe5811575c036ac92911"
+                "reference": "150a9ef1f90cedc7289bc34e6f2fa181d0d74765"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/security-advisories-health-check/zipball/7ebe168f3da908ce6e87fe5811575c036ac92911",
-                "reference": "7ebe168f3da908ce6e87fe5811575c036ac92911",
+                "url": "https://api.github.com/repos/spatie/security-advisories-health-check/zipball/150a9ef1f90cedc7289bc34e6f2fa181d0d74765",
+                "reference": "150a9ef1f90cedc7289bc34e6f2fa181d0d74765",
                 "shasum": ""
             },
             "require": {
@@ -12827,7 +12827,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/security-advisories-health-check/tree/1.3.0"
+                "source": "https://github.com/spatie/security-advisories-health-check/tree/1.3.1"
             },
             "funding": [
                 {
@@ -12835,7 +12835,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-09-28T19:10:32+00:00"
+            "time": "2025-10-02T14:36:02+00:00"
         },
         {
             "name": "spatie/shiki-php",
