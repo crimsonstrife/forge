@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 class ProjectPolicy
 {
-    public function __construct(private RecordAccessService $shares) {
+    public function __construct(private RecordAccessService $shares)
+    {
     }
 
     public function view(User $user, Project $project): bool

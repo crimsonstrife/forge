@@ -24,8 +24,12 @@ enum AccessLevel: int
 
     public static function max(?self $a, ?self $b): ?self
     {
-        if (! $a) { return $b; }
-        if (! $b) { return $a; }
+        if (! $a) {
+            return $b;
+        }
+        if (! $b) {
+            return $a;
+        }
         return $a->value >= $b->value ? $a : $b;
     }
 }

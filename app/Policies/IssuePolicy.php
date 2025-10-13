@@ -8,7 +8,8 @@ use App\Services\RecordAccessService;
 
 class IssuePolicy
 {
-    public function __construct(private RecordAccessService $shares) {
+    public function __construct(private RecordAccessService $shares)
+    {
     }
 
     public function view(User $user, Issue $issue): bool
