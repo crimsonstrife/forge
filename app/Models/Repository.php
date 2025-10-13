@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasRecordShares;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,7 @@ class Repository extends BaseModel
 {
     use HasUuids;
     use IsPermissible;
+    use HasRecordShares;
 
     protected $fillable = [
         'provider',

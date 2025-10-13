@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\ActivityContext;
 use App\Traits\HasExternalId;
+use App\Traits\HasRecordShares;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -31,6 +32,7 @@ class Issue extends BaseModel implements HasMedia
     use InteractsWithMedia;
     use IsPermissible;
     use HasExternalId;
+    use HasRecordShares;
 
     protected $keyType = 'string';
     public $incrementing = false;
@@ -377,6 +379,11 @@ class Issue extends BaseModel implements HasMedia
             get: fn () => $this->issue_priority_id,
             set: static fn ($value) => ['issue_priority_id' => $value],
         );
+    }
+
+    public function parentShareable(): ?object
+    {
+        return $this->project;
     }
 
     /** @return Builder<Model, static> */

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ProjectStage;
 use App\Support\ActivityContext;
 use App\Traits\HasExternalId;
+use App\Traits\HasRecordShares;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -23,6 +24,7 @@ class Project extends BaseModel
     use LogsActivity;
     use IsPermissible;
     use HasExternalId;
+    use HasRecordShares;
 
     protected $keyType = 'string';
     public $incrementing = false;
