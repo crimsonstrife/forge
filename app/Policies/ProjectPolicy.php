@@ -82,7 +82,10 @@ class ProjectPolicy
     /** Resolve once: does the user have projects.manage via any role? */
     private function hasManageViaRole(User $user): bool
     {
-        $permId = Permission::query()->where('name', 'projects.manage')->value('id');
+        static $permId = null;
+        if ($permId === null) {
+            $permId = Permission::query()->where('name', 'projects.manage')->value('id');
+        }
         if (! $permId) {
             return false;
         }
