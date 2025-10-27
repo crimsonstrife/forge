@@ -86,6 +86,18 @@ class RecordAccessService
         // Remove only the cache entry for this record's share existence
         $key = sprintf('rs:any:%s:%s', $record::class, $record->id);
         $this->cache()->forget($key);
+
+        // Also remove all user-specific access level caches for this record
+        $userIds = RecordShare::query()
+            ->where('shareable_type', $record::class)
+            ->where('shareable_id', $record->id)
+            ->where('principal_type', User::class)
+            ->pluck('principal_id');
+
+        foreach ($userIds as $userId) {
+            $user = new User(['id' => $userId]);
+            $this->cache()->forget($this->cacheKeyFor($user, $record));
+        }
     }
 
     private function highestLevelFromShares(object $shareable, Collection $pairs, bool $requirePropagation = false): ?AccessLevel
