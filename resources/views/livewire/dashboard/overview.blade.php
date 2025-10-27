@@ -18,10 +18,16 @@
                             @foreach($myIssues as $issue)
                                 <li class="d-flex align-items-start justify-content-between gap-2">
                                     <div class="flex-grow-1 min-w-0">
-                                        <a class="fw-medium small text-reset text-decoration-none d-block text-break"
-                                           href="{{ route('issues.show', ['project' => $issue->project, 'issue' => $issue]) }}">
-                                            {{ $issue->project->key }}-{{ $issue->key }} — {{ $issue->summary }}
-                                        </a>
+                                        @can('view', $issue)
+                                            <a class="fw-medium small text-reset text-decoration-none d-block text-break"
+                                               href="{{ route('issues.show', ['project' => $issue->project, 'issue' => $issue]) }}">
+                                                {{ $issue->key }} — {{ $issue->summary }}
+                                            </a>
+                                        @else
+                                            <span class="fw-medium small d-block text-break">
+                                                {{ $issue->key }} — {{ $issue->summary }}
+                                            </span>
+                                        @endcan
                                         <div class="small text-body-secondary mt-1">
                                             {{ $issue->status?->name ?? '—' }}
                                             @if($issue->due_at)
@@ -33,8 +39,8 @@
                                     @if($issue->status)
                                         <span class="badge rounded-pill flex-shrink-0 text-nowrap"
                                               style="background-color: {{ $issue->status->color }}20; color: {{ $issue->status->color }}">
-                                        {{ $issue->status->name }}
-                                    </span>
+                                            {{ $issue->status->name }}
+                                        </span>
                                     @endif
                                 </li>
                             @endforeach
@@ -55,10 +61,16 @@
                         <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
                             @foreach($upcomingDue as $issue)
                                 <li class="d-flex align-items-center justify-content-between gap-2">
-                                    <a class="small text-reset text-decoration-none d-block text-break"
-                                       href="{{ route('issues.show', ['project' => $issue->project, 'issue' => $issue]) }}">
-                                        {{ $issue->project->key }}-{{ $issue->key }} — {{ $issue->summary }}
-                                    </a>
+                                    @can('view', $issue)
+                                        <a class="small text-reset text-decoration-none d-block text-break"
+                                           href="{{ route('issues.show', ['project' => $issue->project, 'issue' => $issue]) }}">
+                                            {{ $issue->key }} — {{ $issue->summary }}
+                                        </a>
+                                    @else
+                                        <span class="small d-block text-break">
+                                            {{ $issue->key }} — {{ $issue->summary }}
+                                        </span>
+                                    @endcan
                                     <span class="small text-body-secondary flex-shrink-0">
                                         {{ $issue->due_at->toFormattedDateString() }}
                                     </span>
@@ -88,16 +100,29 @@
                     <div class="row row-cols-1 row-cols-sm-1 g-3">
                         @foreach($myProjects as $project)
                             <div class="col">
-                                <a href="{{ route('projects.show', ['project' => $project]) }}" class="card h-100 text-reset text-decoration-none border">
-                                    <div class="card-body p-3">
-                                        <div class="small fw-semibold text-truncate">
-                                            {{ $project->name }}
+                                @can('view', $project)
+                                    <a href="{{ route('projects.show', ['project' => $project]) }}" class="card h-100 text-reset text-decoration-none border">
+                                        <div class="card-body p-3">
+                                            <div class="small fw-semibold text-truncate">
+                                                {{ $project->name }}
+                                            </div>
+                                            <div class="small text-body-secondary mt-1">
+                                                {{ $project->key }} • {{ $project->open_issues_count }} {{ __('open') }}
+                                            </div>
                                         </div>
-                                        <div class="small text-body-secondary mt-1">
-                                            {{ $project->key }} • {{ $project->open_issues_count }} {{ __('open') }}
+                                    </a>
+                                @else
+                                    <div class="card h-100 border">
+                                        <div class="card-body p-3">
+                                            <div class="small fw-semibold text-truncate">
+                                                {{ $project->name }}
+                                            </div>
+                                            <div class="small text-body-secondary mt-1">
+                                                {{ $project->key }} • {{ $project->open_issues_count }} {{ __('open') }}
+                                            </div>
                                         </div>
                                     </div>
-                                </a>
+                                @endcan
                             </div>
                         @endforeach
                     </div>
@@ -150,7 +175,6 @@
                                                     {{ $i['ago'] }}
                                                 </div>
 
-                                                {{-- Compact “headline” for Status change --}}
                                                 @php $statusChange = collect($i['changes'])->firstWhere('key','issue_status_id'); @endphp
                                                 @if($statusChange)
                                                     <div class="small d-flex align-items-center gap-2 mt-2">
@@ -159,12 +183,11 @@
                                                         <span>→</span>
                                                         <span class="badge"
                                                               style="background-color: {{ $statusChange['to_color'] ?? 'transparent' }}20;">
-                              {{ $statusChange['to'] ?? '—' }}
-                            </span>
+                                                            {{ $statusChange['to'] ?? '—' }}
+                                                        </span>
                                                     </div>
                                                 @endif
 
-                                                {{-- Toggle full diff --}}
                                                 @if(!empty($i['changes']))
                                                     <div x-data="{ open: false }" class="mt-2">
                                                         <button type="button"
@@ -186,8 +209,8 @@
                                                                             <span>→</span>
                                                                             <span class="badge border"
                                                                                   @if($c['to_color']) style="background-color: {{ $c['to_color'] }}20" @endif>
-                                        {{ $c['to'] ?? '—' }}
-                                      </span>
+                                                                                {{ $c['to'] ?? '—' }}
+                                                                            </span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
