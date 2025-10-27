@@ -17,7 +17,7 @@ class MakeUserCommand extends Command
         $email = $this->ask('What is the user\'s email?');
         $password = $this->secret('What is the user\'s password?');
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
             $this->error('Invalid email address.');
             return;
         }
