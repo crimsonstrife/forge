@@ -21,7 +21,7 @@
         "sortablejs": "^1.15.6",
         "tailwindcss": "^4.0.7",
         "tinymce": "^8.1.2",
-        "vite": "^7.0.4"
+        "vite": "^7.1.12"
     },
     "optionalDependencies": {
         "@rollup/rollup-linux-x64-gnu": "^4.52.3",
