@@ -73,6 +73,6 @@ class IssuePolicy
         }
 
         $level = $this->shares->levelFor($user, $issue);
-        return $level?->allows('manage') === true;
+        return $level?->allows('manage') ?? false;
     }
 }
