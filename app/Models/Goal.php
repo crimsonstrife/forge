@@ -7,6 +7,7 @@ use App\Enums\GoalHealth;
 use App\Enums\GoalStatus;
 use App\Enums\GoalType;
 use App\Observers\GoalObserver;
+use App\Traits\HasRecordShares;
 use App\Traits\IsPermissible;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -32,6 +33,7 @@ class Goal extends Model
 {
     use HasFactory;
     use IsPermissible;
+    use HasRecordShares;
 
     protected $keyType = 'string';
     public $incrementing = false;
