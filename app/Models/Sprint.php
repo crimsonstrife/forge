@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\SprintState;
+use App\Traits\HasRecordShares;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,7 @@ class Sprint extends Model
 {
     use HasUuids;
     use SoftDeletes;
+    use HasRecordShares;
 
     protected $fillable = [
         'project_id', 'name', 'goal', 'start_date', 'end_date', 'sort_order',

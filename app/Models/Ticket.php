@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Services\Support\TicketKeyService;
 use App\Support\ActivityContext;
+use App\Traits\HasRecordShares;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,6 +26,7 @@ class Ticket extends BaseModel
     use HasUlids;
     use LogsActivity;
     use IsPermissible;
+    use HasRecordShares;
 
     protected $guarded = [];
 
