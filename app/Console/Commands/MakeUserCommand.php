@@ -17,13 +17,22 @@ class MakeUserCommand extends Command
         $email = $this->ask('What is the user\'s email?');
         $password = $this->secret('What is the user\'s password?');
 
-        User::create([
-            'name' => $name,
-            'email' => $email,
-            'password' => Hash::make($password),
-            'email_verified_at' => now(),
-        ]);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->error('Invalid email address.');
+            return;
+        }
 
+        try {
+            User::create([
+                'name' => $name,
+                'email' => $email,
+                'password' => Hash::make($password),
+                'email_verified_at' => now(),
+            ]);
+        } catch (\Exception $e) {
+            $this->error('Failed to create user: ' . $e->getMessage());
+            return;
+        }
         $this->info('User created successfully!');
     }
 }
