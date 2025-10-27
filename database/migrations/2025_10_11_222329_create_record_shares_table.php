@@ -18,7 +18,7 @@ return new class () extends Migration {
             $t->boolean('propagate_to_children')->default(false);
             $t->timestampTz('expires_at')->nullable();
 
-            $t->foreignUuid('grantor_id')->nullable(); // who shared
+            $t->foreignUuid('grantor_id')->nullable()->constrained('users')->nullOnDelete(); // who shared
             $t->timestamps();
 
             $t->unique([
