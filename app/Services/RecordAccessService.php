@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Laravel\Pennant\Feature;
 
 /**
  * Resolves effective per-record share level only.
@@ -23,7 +24,11 @@ class RecordAccessService
 {
     public function levelFor(User $user, Model $record): ?AccessLevel
     {
-        if (! feature('PerRecordSharing')->active($user)) {
+        if (! Feature::active('PerRecordSharing')) {
+            return null;
+        }
+
+        if (! Feature::for($record->organization ?? $user)->active('PerRecordSharing')) {
             return null;
         }
 

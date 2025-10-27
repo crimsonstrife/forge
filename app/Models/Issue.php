@@ -391,4 +391,13 @@ class Issue extends BaseModel implements HasMedia
     {
         return $query->where('is_public', true);
     }
+
+    /** Determine if the user can access this issue via its project. */
+    public function isAccessibleBy(User $user): bool
+    {
+        $project = $this->parentShareable();
+
+        return $project?->isAccessibleBy($user) ?? false;
+    }
+
 }

@@ -39,7 +39,17 @@ final class Overview extends Component
         $user = auth()->user();
         $teamId = $user->currentTeam?->id;
 
-        // my issues
+        // Subquery of projects visible to the user (lead, direct member, or via team)
+        $visibleProjectsSub = Project::query()
+            ->visibleTo($user)
+            ->select('id');
+
+        // Materialized set for activity hydration
+        $visibleProjectIds = Project::query()
+            ->visibleTo($user)
+            ->pluck('id');
+
+        // My issues (only from visible projects)
         $this->myIssues = Issue::query()
             ->select(['id', 'summary', 'key', 'project_id', 'issue_status_id', 'issue_type_id', 'assignee_id', 'updated_at', 'due_at'])
             ->with([
@@ -48,32 +58,36 @@ final class Overview extends Component
                 'type:id,key,name',
             ])
             ->where('assignee_id', $user->id)
+            ->whereIn('project_id', $visibleProjectsSub)
             ->whereHas('status', fn ($q) => $q->where('is_done', false))
             ->latest('updated_at')
             ->limit(10)
             ->get();
 
-        // status summary
+        // Status summary (only from visible projects)
         $this->statusSummary = Issue::query()
             ->where('assignee_id', $user->id)
+            ->whereIn('project_id', $visibleProjectsSub)
             ->selectRaw('issue_status_id, COUNT(*) as total')
             ->groupBy('issue_status_id')
             ->pluck('total', 'issue_status_id')
             ->toArray();
 
-        // due soon
+        // Due soon (only from visible projects)
         $this->upcomingDue = Issue::query()
             ->select(['id', 'summary', 'key', 'project_id', 'due_at', 'issue_status_id'])
             ->with(['project:id,key,name', 'status:id,name,color,is_done'])
             ->where('assignee_id', $user->id)
+            ->whereIn('project_id', $visibleProjectsSub)
             ->whereNotNull('due_at')
             ->whereBetween('due_at', [now(), now()->addDays(14)])
             ->orderBy('due_at')
             ->limit(10)
             ->get();
 
-        // my projects
-        $this->myProjects = $user->projects()
+        // My projects (already visibility-scoped)
+        $this->myProjects = Project::query()
+            ->visibleTo($user)
             ->select(['projects.id', 'projects.name', 'projects.key'])
             ->withCount([
                 'issues as open_issues_count' => fn ($q) => $q->whereHas(
@@ -133,8 +147,17 @@ final class Overview extends Component
             }
         }
 
+        // Only hydrate projects the user can access
+        $projectsById = Project::query()
+            ->whereIn('id', array_filter($projectIds->all()))
+            ->whereIn('id', $visibleProjectIds)
+            ->get(['id', 'key', 'name'])
+            ->keyBy('id');
+
+        // Only hydrate issues whose projects the user can access
         $issuesById = Issue::query()
             ->whereIn('id', array_filter($issueIds->all()))
+            ->whereIn('project_id', $visibleProjectIds)
             ->with(['project:id,key,name'])
             ->get(['id', 'key', 'summary', 'project_id'])
             ->keyBy('id');
@@ -142,11 +165,6 @@ final class Overview extends Component
         $usersById = User::query()
             ->whereIn('id', array_filter($causerIds->all()))
             ->get(['id', 'name', 'profile_photo_path'])
-            ->keyBy('id');
-
-        $projectsById = Project::query()
-            ->whereIn('id', array_filter($projectIds->all()))
-            ->get(['id', 'key', 'name'])
             ->keyBy('id');
 
         $statusMap   = IssueStatus::query()->whereIn('id', array_filter($statusIds))->get(['id', 'name', 'color'])->keyBy('id');
@@ -185,7 +203,6 @@ final class Overview extends Component
             $actorName   = $actor?->name ?? 'System';
             $actorAvatar = $actor?->profile_photo_url ?? $actor?->profile_photo_path ?? null;
 
-            // Target + link resolution (dashboard-wide)
             $targetType  = $a->subject_type === Issue::class ? 'issue'
                 : ($a->subject_type === Project::class ? 'project' : ($a->log_name ?: 'record'));
             $targetLabel = 'record';
@@ -213,11 +230,9 @@ final class Overview extends Component
                 }
             }
 
-            // Verb
             $verb = $a->event ?: (Str::contains((string)$a->description, '.') ? Str::after((string)$a->description, '.') : (string)$a->description);
             $verb = Str::of($verb)->replace(['issue.', 'project.'], '')->headline();
 
-            // Field diffs
             $changes = [];
             $keys = array_unique(array_merge(array_keys($new), array_keys($old)));
             foreach ($keys as $k) {
@@ -258,16 +273,16 @@ final class Overview extends Component
             }
 
             return [
-                'id'          => $a->id,
-                'actor_name'  => $actorName,
+                'id'           => $a->id,
+                'actor_name'   => $actorName,
                 'actor_avatar' => $actorAvatar,
-                'verb'        => (string)$verb,
-                'target_type' => $targetType,
+                'verb'         => (string)$verb,
+                'target_type'  => $targetType,
                 'target_label' => $targetLabel,
-                'target_url'  => $targetUrl,
-                'changes'     => $changes,
-                'created_at'  => $a->created_at,
-                'ago'         => $a->created_at?->diffForHumans(),
+                'target_url'   => $targetUrl,
+                'changes'      => $changes,
+                'created_at'   => $a->created_at,
+                'ago'          => $a->created_at?->diffForHumans(),
             ];
         });
 

@@ -184,9 +184,9 @@ class Project extends BaseModel
             ->withTimestamps();
     }
 
-    public function lead(): HasOne
+    public function lead(): BelongsTo
     {
-        return $this->hasOne(User::class, 'lead_id');
+        return $this->belongsTo(User::class, 'lead_id');
     }
 
     public function issues(): HasMany
@@ -295,17 +295,30 @@ class Project extends BaseModel
     /** Quick access check */
     public function isAccessibleBy(User $user): bool
     {
+        // If this Project model has no primary key loaded, don’t try to build relations.
+        if (! filled($this->id)) {
+            return false;
+        }
+
         if ($user->hasPermissionTo('is-super-admin')) {
             return true;
         }
+
         if ((string) $this->lead_id === (string) $user->id) {
             return true;
         }
+
+        // Direct project membership
         if ($this->users()->whereKey($user->id)->exists()) {
             return true;
         }
-        // Jetstream pivot is team_user (team_id, user_id)
-        return $this->teams()->whereHas('allUsers', fn ($q) => $q->where('users.id', $user->id))->exists();
+
+        // Team membership (owner or member)
+        return $this->teams()->where(function ($t) use ($user) {
+            // if teams table has owner column:
+            $t->where('teams.user_id', $user->id) // owner
+            ->orWhereHas('users', fn ($u) => $u->whereKey($user->id)); // members via team_user
+        })->exists();
     }
 
     /** Scope: projects visible to a user (lead, direct member, or member of any attached team) */
