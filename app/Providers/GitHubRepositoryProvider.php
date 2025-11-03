@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Repository;
 use App\Contracts\RepositoryProviderInterface;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use JsonException;
@@ -27,8 +28,11 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
     }
 
     /**
+     * @param Repository $repository
+     * @param string $token
      * @param 'open'|'closed' $state
      * @return array<int, array<string,mixed>>
+     * @throws ConnectionException
      */
     private function fetchIssuesByState(Repository $repository, string $token, string $state): array
     {
@@ -36,13 +40,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         $page   = 1;
 
         do {
-            $resp = Http::withToken($token)
-                ->withHeaders([
-                    'User-Agent'              => config('app.name', 'Forge'),
-                    'Accept'                  => 'application/vnd.github+json',
-                    'X-GitHub-Api-Version'    => '2022-11-28',
-                ])
-                ->acceptJson()
+            $resp = $this->httpWithToken($token)
                 ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}/issues", [
                     'state'    => $state,
                     'per_page' => 100,
@@ -50,9 +48,21 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
                 ]);
 
             if ($resp->failed()) {
-                throw new RuntimeException(
-                    "GitHub API error ({$resp->status()} {$state}): " . substr($resp->body(), 0, 2000)
-                );
+                $status = $resp->status();
+                $body   = substr((string) $resp->body(), 0, 2000);
+
+                // Mask token in body if present
+                $maskedToken = substr($token, 0, 4) . str_repeat('*', max(0, strlen($token) - 8)) . substr($token, -4);
+                $bodyMasked = str_replace($token, $maskedToken, $body);
+
+                if ($status === 401) {
+                    throw new RuntimeException(
+                        "GitHub API error (401 {$state}): Bad credentials. " .
+                        "Likely bad/expired token, masked value saved, or whitespace in token. Body: {$bodyMasked}"
+                    );
+                }
+
+                throw new RuntimeException("GitHub API error ({$status} {$state}): {$body}");
             }
 
             // Map this page
@@ -110,17 +120,25 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
     public function normalizeWebhook(array $headers, string $rawPayload): ?array
     {
         $event = $headers['X-GitHub-Event'] ?? null;
-        if ($event !== 'issues') { return null; }
+        if ($event !== 'issues') {
+            return null;
+        }
 
         $payload = json_decode($rawPayload, true, 512, JSON_THROW_ON_ERROR);
-        if (!$payload) { return null; }
+        if (!$payload) {
+            return null;
+        }
 
         $action = $payload['action'] ?? null;
         $issue  = $payload['issue']  ?? null;
         $repo   = $payload['repository'] ?? null;
-        if (!$issue || !$repo) { return null; }
+        if (!$issue || !$repo) {
+            return null;
+        }
 
-        if (!empty($issue['pull_request'])) { return null; } // ignore PRs
+        if (!empty($issue['pull_request'])) {
+            return null;
+        } // ignore PRs
 
         return [
             'provider'          => 'github',
@@ -148,7 +166,9 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
     {
         $payload = json_decode($rawPayload, true, 512, JSON_THROW_ON_ERROR);
         $repo = $payload['repository'] ?? null;
-        if (!$repo) { return null; }
+        if (!$repo) {
+            return null;
+        }
 
         return Repository::query()
             ->where('provider', 'github')
@@ -158,32 +178,30 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             ->first();
     }
 
+    /**
+     * @throws ConnectionException
+     */
     public function searchBranches(Repository $repository, string $token, string $query = '', int $limit = 20): array
     {
         // GitHub branches list (no server-side search param) → client filter
-        $resp = Http::withToken($token)
-            ->withHeaders([
-                'User-Agent' => config('app.name', 'Forge'),
-                'Accept' => 'application/vnd.github+json',
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ])
+        $resp = $this->httpWithToken($token)
             ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}/branches", [
                 'per_page' => 100,
             ]);
 
         if ($resp->failed()) {
-            throw new RuntimeException("GitHub API error (branches): {$resp->status()} ".substr($resp->body(),0,1000));
+            throw new RuntimeException("GitHub API error (branches): {$resp->status()} ".substr($resp->body(), 0, 1000));
         }
 
         $items = collect($resp->json() ?? [])
-            ->map(fn($b) => [
+            ->map(fn ($b) => [
                 'name' => $b['name'],
                 'commit_sha' => Arr::get($b, 'commit.sha'),
                 'protected' => (bool) ($b['protected'] ?? false),
                 'default' => $b['name'] === ($repository->default_branch ?? ''),
                 'url' => "https://github.com/{$repository->owner}/{$repository->name}/tree/{$b['name']}",
             ])
-            ->filter(fn($b) => $query === '' || str_contains(strtolower($b['name']), strtolower($query)))
+            ->filter(fn ($b) => $query === '' || str_contains(strtolower($b['name']), strtolower($query)))
             ->take($limit)
             ->values()
             ->all();
@@ -191,26 +209,24 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         return $items;
     }
 
+    /**
+     * @throws ConnectionException
+     */
     public function searchPullRequests(Repository $repository, string $token, string $query = '', int $limit = 20): array
     {
         // List PRs (state=all), client-side filter on title/number/head/base
-        $resp = Http::withToken($token)
-            ->withHeaders([
-                'User-Agent' => config('app.name', 'Forge'),
-                'Accept' => 'application/vnd.github+json',
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ])
+        $resp = $this->httpWithToken($token)
             ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}/pulls", [
                 'state' => 'all',
                 'per_page' => 100,
             ]);
 
         if ($resp->failed()) {
-            throw new RuntimeException("GitHub API error (pulls): {$resp->status()} ".substr($resp->body(),0,1000));
+            throw new RuntimeException("GitHub API error (pulls): {$resp->status()} ".substr($resp->body(), 0, 1000));
         }
 
-        $items = collect($resp->json() ?? [])
-            ->map(fn($pr) => [
+        return collect($resp->json() ?? [])
+            ->map(fn ($pr) => [
                 'number' => (int) $pr['number'],
                 'title' => $pr['title'],
                 'state' => $pr['state'],
@@ -219,7 +235,9 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
                 'url'  => $pr['html_url'],
             ])
             ->filter(function ($pr) use ($query) {
-                if ($query === '') { return true; }
+                if ($query === '') {
+                    return true;
+                }
                 $q = strtolower($query);
                 return str_contains(strtolower($pr['title']), $q)
                     || str_contains((string) $pr['number'], $q)
@@ -229,25 +247,21 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             ->take($limit)
             ->values()
             ->all();
-
-        return $items;
     }
 
+    /**
+     * @throws ConnectionException
+     */
     public function createBranch(Repository $repository, string $token, string $newBranch, ?string $fromRef = null): array
     {
         // Resolve base ref SHA
         $from = $fromRef ?: ($repository->default_branch ?: $this->getDefaultBranch($repository, $token));
 
-        $refResp = Http::withToken($token)
-            ->withHeaders([
-                'User-Agent' => config('app.name', 'Forge'),
-                'Accept' => 'application/vnd.github+json',
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ])
+        $refResp = $this->httpWithToken($token)
             ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}/git/ref/heads/{$from}");
 
         if ($refResp->failed()) {
-            throw new RuntimeException("GitHub API error (get ref): {$refResp->status()} ".substr($refResp->body(),0,1000));
+            throw new RuntimeException("GitHub API error (get ref): {$refResp->status()} ".substr($refResp->body(), 0, 1000));
         }
 
         $sha = Arr::get($refResp->json(), 'object.sha');
@@ -256,19 +270,14 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         }
 
         // Create the new ref
-        $createResp = Http::withToken($token)
-            ->withHeaders([
-                'User-Agent' => config('app.name', 'Forge'),
-                'Accept' => 'application/vnd.github+json',
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ])
+        $createResp = $this->httpWithToken($token)
             ->post("https://api.github.com/repos/{$repository->owner}/{$repository->name}/git/refs", [
                 'ref' => "refs/heads/{$newBranch}",
                 'sha' => $sha,
             ]);
 
         if ($createResp->failed()) {
-            throw new RuntimeException("GitHub API error (create branch): {$createResp->status()} ".substr($createResp->body(),0,1000));
+            throw new RuntimeException("GitHub API error (create branch): {$createResp->status()} ".substr($createResp->body(), 0, 1000));
         }
 
         return [
@@ -277,6 +286,9 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         ];
     }
 
+    /**
+     * @throws ConnectionException
+     */
     public function createPullRequest(
         Repository $repository,
         string $token,
@@ -285,12 +297,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         string $base,
         ?string $body = null
     ): array {
-        $resp = Http::withToken($token)
-            ->withHeaders([
-                'User-Agent' => config('app.name', 'Forge'),
-                'Accept' => 'application/vnd.github+json',
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ])
+        $resp = $this->httpWithToken($token)
             ->post("https://api.github.com/repos/{$repository->owner}/{$repository->name}/pulls", [
                 'title' => $title,
                 'head'  => $head, // same-repo branch name OR "owner:branch" cross-fork
@@ -299,7 +306,7 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
             ]);
 
         if ($resp->failed()) {
-            throw new RuntimeException("GitHub API error (create PR): {$resp->status()} ".substr($resp->body(),0,1000));
+            throw new RuntimeException("GitHub API error (create PR): {$resp->status()} ".substr($resp->body(), 0, 1000));
         }
 
         $pr = $resp->json();
@@ -311,24 +318,40 @@ final class GitHubRepositoryProvider implements RepositoryProviderInterface
         ];
     }
 
+    /**
+     * @throws ConnectionException
+     */
     public function getDefaultBranch(Repository $repository, string $token): string
     {
         if (!empty($repository->default_branch)) {
             return $repository->default_branch;
         }
 
-        $resp = Http::withToken($token)
-            ->withHeaders([
-                'User-Agent' => config('app.name', 'Forge'),
-                'Accept' => 'application/vnd.github+json',
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ])
+        $resp = $this->httpWithToken($token)
             ->get("https://api.github.com/repos/{$repository->owner}/{$repository->name}");
 
         if ($resp->failed()) {
-            throw new RuntimeException("GitHub API error (repo): {$resp->status()} ".substr($resp->body(),0,1000));
+            throw new RuntimeException("GitHub API error (repo): {$resp->status()} ".substr($resp->body(), 0, 1000));
         }
 
         return (string) ($resp->json('default_branch') ?? 'main');
+    }
+
+    private function sanitizeToken(string $token): string
+    {
+        return preg_replace('/\s+/', '', trim($token));
+    }
+
+    private function httpWithToken(string $token): PendingRequest
+    {
+        $clean = $this->sanitizeToken($token);
+
+        return Http::withToken($clean)
+            ->withHeaders([
+                'User-Agent'           => config('app.name', 'Forge'),
+                'Accept'               => 'application/vnd.github+json',
+                'X-GitHub-Api-Version' => '2022-11-28',
+            ])
+            ->acceptJson();
     }
 }

@@ -3,7 +3,9 @@
 namespace App\Livewire\Issues;
 
 use App\Models\Issue;
+use App\Models\Note;
 use App\Models\TimeEntry;
+use App\Settings\PersonalizationSettings;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -28,6 +30,8 @@ final class FocusTimer extends Component
     public string $focusUrl = '';
     public string $publicUrl = '';
     public string $runningNotes = '';
+
+    public bool $saveNoteOnStop = true;
 
     /**
      * @throws AuthorizationException
@@ -63,13 +67,22 @@ final class FocusTimer extends Component
 
     public function start(): void
     {
+        // Authorization check
         $this->authorize('update', $this->issue);
 
-        if ($this->hasAnyRunningTimer(Auth::id())) {
-            $this->dispatch('banner-message', type: 'warning', message: 'You already have a running timer. Stop it first.');
+        // Prevent duplicate running timers for this user and issue
+        if ($this->runningEntry !== null) {
+            // Optionally, you could throw an exception or show a message
             return;
         }
-
+        // Enforce single-timer rule: prevent starting a timer if user has any running timer
+        $existingRunningEntry = TimeEntry::where('user_id', Auth::id())
+            ->running()
+            ->first();
+        if ($existingRunningEntry !== null) {
+            // Optionally, you could throw an exception or show a message
+            return;
+        }
         $entry = new TimeEntry([
             'issue_id' => $this->issue->id,
             'user_id' => Auth::id(),
@@ -78,12 +91,18 @@ final class FocusTimer extends Component
             'duration_seconds' => 0,
             'notes' => $this->runningNotes ?: null,
         ]);
-
         $entry->save();
 
         $this->runningEntry = $entry;
         $this->isRunning = true;
         $this->elapsedSeconds = 0;
+
+        $settings = app(PersonalizationSettings::class);
+        if (!empty($settings->in_progress_status_id) && (int)$this->issue->issue_status_id !== (int)$settings->in_progress_status_id) {
+            $this->issue->issue_status_id = (int)$settings->in_progress_status_id;
+            $this->issue->save();
+        }
+
         $this->dispatch('timer-started');
     }
 
@@ -102,6 +121,18 @@ final class FocusTimer extends Component
         }
 
         $this->runningEntry->finalizeNow();
+
+        // Persist a Note snapshot from the timer notes
+        if ($this->saveNoteOnStop && trim((string)$this->runningNotes) !== '') {
+            Note::query()->create([
+                'user_id' => Auth::id(),
+                'issue_id' => $this->issue->id,
+                'title' => 'Work log',
+                'body' => $this->runningNotes,
+                'tags' => null,
+            ]);
+        }
+
         $this->isRunning = false;
         $this->elapsedSeconds = (int) $this->runningEntry->duration_seconds;
         $this->runningEntry = null;
@@ -165,4 +196,3 @@ final class FocusTimer extends Component
         return max(0, $now - $start);
     }
 }
-

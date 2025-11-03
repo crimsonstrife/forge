@@ -7,7 +7,7 @@
 <nav class="navbar navbar-expand-md bg-body border-bottom" x-data>
     <div class="container mx-auto py-4">
         <!-- Brand -->
-        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ $user ? route('dashboard') : url('/') }}">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url('/') }}">
             <x-application-logo />
         </a>
         <!-- Toggler -->
@@ -204,6 +204,10 @@
                             </ul>
                         </div>
                     @endif
+
+                    @auth
+                        <livewire:notifications.menu />
+                    @endauth
 
                     <!-- Settings / Profile -->
                     <div class="dropdown">

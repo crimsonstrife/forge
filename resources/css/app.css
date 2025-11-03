@@ -53,3 +53,7 @@ main {
         max-height: 40rem;
     }
 }
+
+[data-bs-theme="dark"] {
+    --wa-color-surface-default: var(--bs-body-bg);
+}

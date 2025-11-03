@@ -2,7 +2,13 @@
 
 namespace App\Providers\Filament;
 
+use AchyutN\FilamentLogViewer\FilamentLogViewer;
 use App\Filament\Pages\ConnectorsAndSyncSettings;
+use App\Filament\Pages\Reports\ProjectAnalytics;
+use App\Filament\Widgets\AssigneeWorkloadTable;
+use App\Filament\Widgets\CumulativeFlowChart;
+use App\Filament\Widgets\ProjectHealthStats;
+use App\Filament\Widgets\ThroughputTrend;
 use App\Listeners\SwitchTeam;
 use Filament\Events\TenantSet;
 use Filament\Http\Middleware\Authenticate;
@@ -13,6 +19,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -27,8 +34,6 @@ use Laravel\Jetstream\Jetstream;
 
 class AdminPanelProvider extends PanelProvider
 {
-
-
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -44,11 +49,16 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
                 ConnectorsAndSyncSettings::class,
+                ProjectAnalytics::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,
+                AssigneeWorkloadTable::class,
+                CumulativeFlowChart::class,
+                ProjectHealthStats::class,
+                ThroughputTrend::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -63,6 +73,19 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->plugins([
+                FilamentLogViewer::make()
+                    ->navigationGroup('System')
+                    ->authorize(function () {
+                        $user = auth()->user();
+                        return $user
+                            && (
+                                $user->can('view.system-logs') ||
+                                $user->can('is-super-admin') ||
+                                $user->can('is-admin')
+                            );
+                    }),
+        ]);
     }
 }

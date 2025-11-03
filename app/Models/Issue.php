@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\ActivityContext;
 use App\Traits\HasExternalId;
+use App\Traits\HasRecordShares;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -20,6 +21,7 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Tags\HasTags;
 
 class Issue extends BaseModel implements HasMedia
@@ -30,6 +32,7 @@ class Issue extends BaseModel implements HasMedia
     use InteractsWithMedia;
     use IsPermissible;
     use HasExternalId;
+    use HasRecordShares;
 
     protected $keyType = 'string';
     public $incrementing = false;
@@ -70,6 +73,7 @@ class Issue extends BaseModel implements HasMedia
         'due_at'    => 'immutable_datetime',
         'closed_at' => 'immutable_datetime',
         'is_public' => 'bool',
+        'is_next' => 'bool',
     ];
 
     public static function boot(): void
@@ -184,6 +188,11 @@ class Issue extends BaseModel implements HasMedia
         return $this->morphMany(Comment::class, 'commentable')->orderBy('created_at');
     }
 
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(Media::class, 'model');
+    }
+
     public function sprint(): BelongsTo
     {
         return $this->belongsTo(Sprint::class);
@@ -239,6 +248,11 @@ class Issue extends BaseModel implements HasMedia
     public function tickets(): BelongsToMany
     {
         return $this->belongsToMany(Ticket::class, 'ticket_issue_links');
+    }
+
+    public function notes(): HasMany
+    {
+        return $this->hasMany(Note::class);
     }
 
     /**
@@ -367,9 +381,23 @@ class Issue extends BaseModel implements HasMedia
         );
     }
 
+    public function parentShareable(): ?object
+    {
+        return $this->project;
+    }
+
     /** @return Builder<Model, static> */
     public function scopePublicVisible(Builder $query): Builder
     {
         return $query->where('is_public', true);
     }
+
+    /** Determine if the user can access this issue via its project. */
+    public function isAccessibleBy(User $user): bool
+    {
+        $project = $this->parentShareable();
+
+        return $project?->isAccessibleBy($user) ?? false;
+    }
+
 }

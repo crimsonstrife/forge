@@ -31,9 +31,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'throttle:api',
             SubstituteBindings::class,
         ]);
-        // $middleware->web(append: [
-        //     EnsureRegistrationIsEnabled::class,
-        // ]);
         $middleware->group('embed', [
             AllowPublicEmbed::class
         ]);
