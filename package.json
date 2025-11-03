@@ -8,7 +8,7 @@
         "dev:plugins": "node scripts/build-editor-plugins.js --watch"
     },
     "dependencies": {
-        "@awesome.me/webawesome": "^3.0.0-beta.6",
+        "@awesome.me/webawesome": "^3.0.0",
         "@popperjs/core": "^2.11.8",
         "@tailwindcss/vite": "^4.1.16",
         "autoprefixer": "^10.4.20",
@@ -21,10 +21,10 @@
         "sortablejs": "^1.15.6",
         "tailwindcss": "^4.0.7",
         "tinymce": "^8.1.2",
-        "vite": "^7.0.4"
+        "vite": "^7.1.12"
     },
     "optionalDependencies": {
-        "@rollup/rollup-linux-x64-gnu": "^4.52.3",
+        "@rollup/rollup-linux-x64-gnu": "^4.52.5",
         "@tailwindcss/oxide-linux-x64-gnu": "^4.0.1",
         "lightningcss-linux-x64-gnu": "^1.29.1"
     },
