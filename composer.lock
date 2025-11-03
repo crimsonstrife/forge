@@ -16439,16 +16439,16 @@
         },
         {
             "name": "whitecube/laravel-cookie-consent",
-            "version": "v1.3.6",
+            "version": "v1.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/whitecube/laravel-cookie-consent.git",
-                "reference": "212ebacb20b56d150c7e85ae726269cbb1e344db"
+                "reference": "cc89189ec1b37a233858d9577988ab5bd157ea6d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/whitecube/laravel-cookie-consent/zipball/212ebacb20b56d150c7e85ae726269cbb1e344db",
-                "reference": "212ebacb20b56d150c7e85ae726269cbb1e344db",
+                "url": "https://api.github.com/repos/whitecube/laravel-cookie-consent/zipball/cc89189ec1b37a233858d9577988ab5bd157ea6d",
+                "reference": "cc89189ec1b37a233858d9577988ab5bd157ea6d",
                 "shasum": ""
             },
             "require": {
@@ -16502,7 +16502,7 @@
             ],
             "support": {
                 "issues": "https://github.com/whitecube/laravel-cookie-consent/issues",
-                "source": "https://github.com/whitecube/laravel-cookie-consent/tree/v1.3.6"
+                "source": "https://github.com/whitecube/laravel-cookie-consent/tree/v1.3.7"
             },
             "funding": [
                 {
@@ -16510,7 +16510,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-09-24T08:48:54+00:00"
+            "time": "2025-10-21T09:28:38+00:00"
         },
         {
             "name": "xetaio/xetaravel-mentions",
