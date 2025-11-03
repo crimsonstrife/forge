@@ -8,7 +8,7 @@
         "dev:plugins": "node scripts/build-editor-plugins.js --watch"
     },
     "dependencies": {
-        "@awesome.me/webawesome": "^3.0.0-beta.6",
+        "@awesome.me/webawesome": "^3.0.0",
         "@popperjs/core": "^2.11.8",
         "@tailwindcss/vite": "^4.1.11",
         "autoprefixer": "^10.4.20",
