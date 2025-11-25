@@ -34,7 +34,7 @@ final class TodayPanel extends Component
 
         // Pinned “Next”
         $pinned = Issue::query()
-            ->select(['id','summary','project_id','issue_status_id','updated_at','is_next'])
+            ->select(['id','summary','project_id','issue_status_id','updated_at','is_next', 'key'])
             ->where('assignee_id', $userId)
             ->where('is_next', true)
             ->whereRelation('status', 'is_done', false)
@@ -45,7 +45,7 @@ final class TodayPanel extends Component
 
         // On Deck (not pinned)
         $onDeck = Issue::query()
-            ->select(['id','summary','project_id','issue_status_id','updated_at','is_next'])
+            ->select(['id','summary','project_id','issue_status_id','updated_at','is_next', 'key'])
             ->where('assignee_id', $userId)
             ->where('is_next', false)
             ->whereRelation('status', 'is_done', false)
