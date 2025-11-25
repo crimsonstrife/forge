@@ -45,7 +45,7 @@
                     <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
                         <div class="flex-grow-1">
                             <a class="text-decoration-none fw-semibold"
-                               href="{{ route('issues.show', ['project' => $i->project_id, 'issue' => $i->id]) }}">
+                               href="{{ route('issues.show', ['project' => $i->project_id, 'issue' => $i->key]) }}">
                                 {{ $i->summary }}
                             </a>
                             <span class="badge ms-2"
@@ -56,9 +56,9 @@
                         </div>
                         <div class="d-inline-flex gap-2 flex-shrink-0">
                             {{-- Start/Stop timer --}}
-                            <livewire:issues.issue-quick-timer :issue-id="$i->id" :wire:key="'qt-next-'.$i->id" />
+                            <livewire:issues.issue-quick-timer :issue-id="$i->key" :wire:key="'qt-next-'.$i->key" />
                             {{-- Unpin/Pin --}}
-                            <livewire:issues.next-toggle :issue-id="$i->id" :is-next="$i->is_next" :wire:key="'next-next-'.$i->id" />
+                            <livewire:issues.next-toggle :issue-id="$i->key" :is-next="$i->is_next" :wire:key="'next-next-'.$i->key" />
                         </div>
                     </div>
                 @endforeach
@@ -78,7 +78,7 @@
                 <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
                     <div class="flex-grow-1">
                         <a class="text-decoration-none fw-semibold"
-                           href="{{ route('issues.show', ['project' => $i->project_id, 'issue' => $i->id]) }}">
+                           href="{{ route('issues.show', ['project' => $i->project_id, 'issue' => $i->key]) }}">
                             {{ $i->summary }}
                         </a>
                         <span class="badge ms-2"
@@ -88,8 +88,8 @@
                         <div class="small text-body-secondary">Updated {{ $i->updated_at?->diffForHumans() }}</div>
                     </div>
                     <div class="d-inline-flex gap-2 flex-shrink-0">
-                        <livewire:issues.issue-quick-timer :issue-id="$i->id" :wire:key="'qt-deck-'.$i->id" />
-                        <livewire:issues.next-toggle :issue-id="$i->id" :is-next="$i->is_next" :wire:key="'next-deck-'.$i->id" />
+                        <livewire:issues.issue-quick-timer :issue-id="$i->key" :wire:key="'qt-deck-'.$i->key" />
+                        <livewire:issues.next-toggle :issue-id="$i->key" :is-next="$i->is_next" :wire:key="'next-deck-'.$i->key" />
                     </div>
                 </div>
             @empty
