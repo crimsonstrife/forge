@@ -1,7 +1,12 @@
 @import "./kanban.css";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
+
+/* --- Fix Tailwind v4 vs Bootstrap .collapse conflict --- */
+.collapse {
+    visibility: visible;
+}
 
 [x-cloak] {
     display: none;
