@@ -26,3 +26,5 @@ forge.code-workspace
 .DS_Store
 /public/plugins/*
 /VERSION
+bad-deps.txt
+check-bad-deps.sh
