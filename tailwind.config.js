@@ -1,4 +1,5 @@
 import defaultTheme from "tailwindcss/defaultTheme";
+import tailwindcss from '@tailwindcss/vite';
 import forms from "@tailwindcss/forms";
 import typography from "@tailwindcss/typography";
 
@@ -9,7 +10,9 @@ export default {
         "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
         "./vendor/laravel/jetstream/**/*.blade.php",
         "./storage/framework/views/*.php",
-        "./resources/views/**/*.blade.php",
+        './resources/**/*.blade.php',
+        './resources/**/*.js',
+        './resources/**/*.vue',
     ],
 
     theme: {
@@ -20,7 +23,7 @@ export default {
         },
     },
 
-    plugins: [forms, typography],
+    plugins: [forms, typography, tailwindcss,],
 
     darkMode: "class",
 };
