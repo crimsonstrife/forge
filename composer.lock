@@ -4086,16 +4086,16 @@
         },
         {
             "name": "laravel/horizon",
-            "version": "v5.38.0",
+            "version": "v5.39.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/horizon.git",
-                "reference": "3a3145345221df6a0eaacc478c22040d1252a065"
+                "reference": "bf8f5242f48cff5870e7b30620d872077effe9da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/horizon/zipball/3a3145345221df6a0eaacc478c22040d1252a065",
-                "reference": "3a3145345221df6a0eaacc478c22040d1252a065",
+                "url": "https://api.github.com/repos/laravel/horizon/zipball/bf8f5242f48cff5870e7b30620d872077effe9da",
+                "reference": "bf8f5242f48cff5870e7b30620d872077effe9da",
                 "shasum": ""
             },
             "require": {
@@ -4160,9 +4160,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/horizon/issues",
-                "source": "https://github.com/laravel/horizon/tree/v5.38.0"
+                "source": "https://github.com/laravel/horizon/tree/v5.39.0"
             },
-            "time": "2025-10-26T17:03:39+00:00"
+            "time": "2025-11-04T14:35:53+00:00"
         },
         {
             "name": "laravel/jetstream",
@@ -12082,16 +12082,16 @@
         },
         {
             "name": "spatie/laravel-permission",
-            "version": "6.22.0",
+            "version": "6.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-permission.git",
-                "reference": "8c87966ddc21893bfda54b792047473703992625"
+                "reference": "9e41247bd512b1e6c229afbc1eb528f7565ae3bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/8c87966ddc21893bfda54b792047473703992625",
-                "reference": "8c87966ddc21893bfda54b792047473703992625",
+                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/9e41247bd512b1e6c229afbc1eb528f7565ae3bb",
+                "reference": "9e41247bd512b1e6c229afbc1eb528f7565ae3bb",
                 "shasum": ""
             },
             "require": {
@@ -12153,7 +12153,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-permission/issues",
-                "source": "https://github.com/spatie/laravel-permission/tree/6.22.0"
+                "source": "https://github.com/spatie/laravel-permission/tree/6.23.0"
             },
             "funding": [
                 {
@@ -12161,7 +12161,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-10-27T21:58:45+00:00"
+            "time": "2025-11-03T20:16:13+00:00"
         },
         {
             "name": "spatie/laravel-settings",
@@ -16096,16 +16096,16 @@
         },
         {
             "name": "tinymce/tinymce",
-            "version": "8.2.0",
+            "version": "8.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tinymce/tinymce-dist.git",
-                "reference": "7dcce3851a3c9bec77b73a303c62784a98758d3d"
+                "reference": "18afc89787771029c09238e08ef5c6f6b64169b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tinymce/tinymce-dist/zipball/7dcce3851a3c9bec77b73a303c62784a98758d3d",
-                "reference": "7dcce3851a3c9bec77b73a303c62784a98758d3d",
+                "url": "https://api.github.com/repos/tinymce/tinymce-dist/zipball/18afc89787771029c09238e08ef5c6f6b64169b5",
+                "reference": "18afc89787771029c09238e08ef5c6f6b64169b5",
                 "shasum": ""
             },
             "type": "component",
@@ -16149,9 +16149,9 @@
                 "wysiwyg"
             ],
             "support": {
-                "source": "https://github.com/tinymce/tinymce-dist/tree/8.2.0"
+                "source": "https://github.com/tinymce/tinymce-dist/tree/8.2.1"
             },
-            "time": "2025-10-23T01:11:24+00:00"
+            "time": "2025-11-06T00:55:35+00:00"
         },
         {
             "name": "ueberdosis/tiptap-php",
@@ -17928,12 +17928,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "d2e1583e5f89f53f7882861c1639c14c9a154585"
+                "reference": "a9c2212e5dd9e6ad9aba0413e53484f49284e4b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/d2e1583e5f89f53f7882861c1639c14c9a154585",
-                "reference": "d2e1583e5f89f53f7882861c1639c14c9a154585",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/a9c2212e5dd9e6ad9aba0413e53484f49284e4b3",
+                "reference": "a9c2212e5dd9e6ad9aba0413e53484f49284e4b3",
                 "shasum": ""
             },
             "conflict": {
@@ -18368,7 +18368,7 @@
                 "maikuolan/phpmussel": ">=1,<1.6",
                 "mainwp/mainwp": "<=4.4.3.3",
                 "manogi/nova-tiptap": "<=3.2.6",
-                "mantisbt/mantisbt": "<=2.26.3",
+                "mantisbt/mantisbt": "<2.27.2",
                 "marcwillmann/turn": "<0.3.3",
                 "marshmallow/nova-tiptap": "<5.7",
                 "matomo/matomo": "<1.11",
@@ -18911,7 +18911,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-10-30T18:07:16+00:00"
+            "time": "2025-11-03T18:07:28+00:00"
         },
         {
             "name": "sebastian/cli-parser",
