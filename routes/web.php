@@ -99,7 +99,6 @@ Route::middleware([
         ->name('projects.calendar.ics');
     Route::delete('/projects/{project}', ProjectController::class)
         ->name('projects.destroy');
-
     Route::delete('/projects/{project}/issues/{issue}', IssueController::class)
         ->name('issues.destroy');
 });
