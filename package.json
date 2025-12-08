@@ -21,7 +21,7 @@
         "shiki": "^3.13.0",
         "sortablejs": "^1.15.6",
         "tinymce": "^8.1.2",
-        "vite": "^7.2.4"
+        "vite": "^7.2.6"
     },
     "optionalDependencies": {
         "@rollup/rollup-linux-x64-gnu": "^4.52.5",
