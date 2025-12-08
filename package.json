@@ -18,7 +18,7 @@
         "concurrently": "^9.0.1",
         "laravel-precognition-alpine": "^0.7.2",
         "laravel-vite-plugin": "^2.0",
-        "shiki": "^3.13.0",
+        "shiki": "^3.19.0",
         "sortablejs": "^1.15.6",
         "tinymce": "^8.1.2",
         "vite": "^7.2.4"
