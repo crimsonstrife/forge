@@ -10,7 +10,7 @@
     "dependencies": {
         "@awesome.me/webawesome": "^3.0.0",
         "@popperjs/core": "^2.11.8",
-        "@tailwindcss/postcss": "^4.1.16",
+        "@tailwindcss/postcss": "^4.1.18",
         "@tailwindcss/vite": "^4.1.16",
         "autoprefixer": "^10.4.20",
         "axios": "^1.12.2",
