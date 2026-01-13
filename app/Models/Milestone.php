@@ -50,10 +50,14 @@ class Milestone extends BaseModel
         return $this->belongsTo(Project::class);
     }
 
-    /** @return HasMany<Issue> */
     public function issues(): HasMany
     {
         return $this->hasMany(Issue::class);
+    }
+
+    public function sprints(): HasMany
+    {
+        return $this->hasMany(Sprint::class);
     }
 
     /** Convenience scopes */
