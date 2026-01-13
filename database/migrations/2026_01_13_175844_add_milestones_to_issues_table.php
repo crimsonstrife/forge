@@ -12,8 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('issues', function (Blueprint $table) {
-            $table->dropColumn('milestone_id'); //drop existing bigint that was unused
-            $table->foreignUuid('milestone_id')->nullable()->references('id', 'milestone_id_project_index')->on('milestones');
+            if (Schema::hasColumn('issues', 'milestone_id')) {
+                $table->dropColumn('milestone_id');
+            }
+
+            $table->foreignUuid('milestone_id')
+                ->nullable()
+                ->constrained('milestones')
+                ->nullOnDelete();
         });
     }
 
@@ -23,8 +29,13 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('issues', function (Blueprint $table) {
-            $table->dropForeign('milestone_id_project_index');
-            $table->unsignedBigInteger('milestone_id')->nullable();
+            Schema::table('issues', function (Blueprint $table): void {
+                $table->dropForeign(['milestone_id']);
+                $table->dropColumn('milestone_id');
+
+                // If you truly need the old type back (bigint), restore it here:
+                // $table->unsignedBigInteger('milestone_id')->nullable();
+            });
         });
     }
 };

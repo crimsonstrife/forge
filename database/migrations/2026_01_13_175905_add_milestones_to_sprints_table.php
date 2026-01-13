@@ -12,7 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('sprints', function (Blueprint $table) {
-            $table->foreignUuid('milestone_id')->nullable()->constrained('milestones', 'id', 'milestone_id_sprint_index');
+            Schema::table('sprints', function (Blueprint $table): void {
+                if (Schema::hasColumn('sprints', 'milestone_id')) {
+                    $table->dropColumn('milestone_id');
+                }
+
+                $table->foreignUuid('milestone_id')
+                    ->nullable()
+                    ->constrained('milestones')
+                    ->nullOnDelete();
+            });
         });
     }
 
@@ -22,7 +31,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('sprints', function (Blueprint $table) {
-            $table->dropForeign('milestone_id_sprint_index');
+            $table->dropForeign(['milestone_id']);
+            $table->dropColumn('milestone_id');
         });
     }
 };

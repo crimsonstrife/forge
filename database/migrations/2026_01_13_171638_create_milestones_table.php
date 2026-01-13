@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\MilestoneState;
 use App\Enums\MilestoneType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,18 +15,30 @@ return new class extends Migration
     {
         Schema::create('milestones', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('project_id')->references('id')->on('projects');
-            $table->enum('type', MilestoneType::cases());
-            $table->enum('state', MilestoneType::cases());
+            $table->foreignUuid('project_id')
+                ->constrained('projects')
+                ->cascadeOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->dateTime('starts_at')->nullable();
-            $table->dateTime('due_at')->nullable();
-            $table->dateTime('released_at')->nullable(); // only relevant to Releases
-            $table->string('version')->nullable(); // only relevant to Releases
-            $table->json('meta')->nullable();
-            $table->softDeletes();
+            $table->enum('type', array_map(
+                static fn (MilestoneType $case): string => $case->value,
+                MilestoneType::cases(),
+            ))->index();
+
+            $table->enum('state', array_map(
+                static fn (MilestoneState $case): string => $case->value,
+                MilestoneState::cases(),
+            ))->index();
+            $table->timestamp('starts_at')->nullable();
+            $table->timestamp('due_at')->nullable();
+
+            $table->string('version')->nullable();
+            $table->timestamp('released_at')->nullable();
+
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->index(['project_id', 'type']);
         });
     }
 
