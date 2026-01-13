@@ -9,6 +9,7 @@ use App\Http\Controllers\Notifications\MarkAllReadController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\IssueAttachmentController;
 use App\Http\Controllers\ProjectCalendarController;
+use App\Http\Controllers\ProjectMilestoneController;
 use App\Http\Controllers\TransitionStatusController;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
@@ -101,6 +102,23 @@ Route::middleware([
         ->name('projects.destroy');
     Route::delete('/projects/{project}/issues/{issue}', IssueController::class)
         ->name('issues.destroy');
+    Route::get('/projects/{project}/milestones', [ProjectMilestoneController::class, 'index'])
+        ->name('projects.milestones.index');
+
+    Route::get('/projects/{project}/milestones/create', [ProjectMilestoneController::class, 'create'])
+        ->name('projects.milestones.create');
+
+    Route::post('/projects/{project}/milestones', [ProjectMilestoneController::class, 'store'])
+        ->name('projects.milestones.store');
+
+    Route::get('/projects/{project}/milestones/{milestone}/edit', [ProjectMilestoneController::class, 'edit'])
+        ->name('projects.milestones.edit');
+
+    Route::put('/projects/{project}/milestones/{milestone}', [ProjectMilestoneController::class, 'update'])
+        ->name('projects.milestones.update');
+
+    Route::delete('/projects/{project}/milestones/{milestone}', [ProjectMilestoneController::class, 'destroy'])
+        ->name('projects.milestones.destroy');
 });
 
 Route::middleware(['web', 'auth', 'verified'])->group(function () {
