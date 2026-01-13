@@ -73,14 +73,18 @@
                     <tbody>
                     @forelse ($milestones as $milestone)
                         <tr>
+                            @php
+                                $typeValue = $milestone->type instanceof BackedEnum ? $milestone->type->value : (string) $milestone->type;
+                                $stateValue = $milestone->state instanceof BackedEnum ? $milestone->state->value : (string) $milestone->state;
+                            @endphp
                             <td class="fw-semibold">
                                 {{ $milestone->name }}
-                                @if ($milestone->type === 'release' && $milestone->version)
+                                @if ($typeValue === 'release' && $milestone->version)
                                     <span class="text-muted ms-2">{{ $milestone->version }}</span>
                                 @endif
                             </td>
-                            <td>{{ $typeOptions[$milestone->type] ?? ucfirst($milestone->type) }}</td>
-                            <td>{{ $stateOptions[$milestone->state] ?? ucfirst($milestone->state) }}</td>
+                            <td>{{ $typeOptions[$typeValue] ?? ucfirst($typeValue) }}</td>
+                            <td>{{ $stateOptions[$stateValue] ?? ucfirst($stateValue) }}</td>
                             <td>{{ $milestone->due_at?->format('M j, Y') ?? '—' }}</td>
                             <td class="text-end">{{ $milestone->issues_count }}</td>
                             <td class="text-end">{{ $milestone->sprints_count }}</td>

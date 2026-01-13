@@ -1,5 +1,9 @@
 @php
-    $isRelease = old('type', $milestone->type ?? 'milestone') === 'release';
+    $milestoneType = $milestone?->type instanceof \BackedEnum ? $milestone->type->value : ($milestone->type ?? null);
+    $milestoneState = $milestone?->state instanceof \BackedEnum ? $milestone->state->value : ($milestone->state ?? null);
+
+    $currentType = old('type', $milestoneType ?? 'milestone');
+    $currentState = old('state', $milestoneState ?? 'planned');
 @endphp
 
 <div class="row g-3">
@@ -14,9 +18,9 @@
 
     <div class="col-md-2">
         <label class="form-label">Type</label>
-        <select name="type" class="form-select @error('type') is-invalid @enderror" required>
+        <select name="type" class="form-select" required>
             @foreach ($typeOptions as $value => $label)
-                <option value="{{ $value }}" @selected(old('type', $milestone->type ?? 'milestone') === $value)>{{ $label }}</option>
+                <option value="{{ $value }}" @selected($currentType === $value)>{{ $label }}</option>
             @endforeach
         </select>
         @error('type') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -24,9 +28,9 @@
 
     <div class="col-md-2">
         <label class="form-label">State</label>
-        <select name="state" class="form-select @error('state') is-invalid @enderror" required>
+        <select name="state" class="form-select" required>
             @foreach ($stateOptions as $value => $label)
-                <option value="{{ $value }}" @selected(old('state', $milestone->state ?? 'planned') === $value)>{{ $label }}</option>
+                <option value="{{ $value }}" @selected($currentState === $value)>{{ $label }}</option>
             @endforeach
         </select>
         @error('state') <div class="invalid-feedback">{{ $message }}</div> @enderror
