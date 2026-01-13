@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\MilestoneType;
 use App\Models\Activity;
 use App\Models\Project;
 use App\Models\Issue;
@@ -7,6 +8,7 @@ use App\Models\User;
 use App\Models\IssueStatus;
 use App\Models\IssuePriority;
 use App\Models\IssueType;
+use App\Models\Milestone;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -251,7 +253,19 @@ render(function (View $view, Project $project) {
         return $dt?->toFormattedDateString() ?? 'Recent';
     });
 
-    return $view->with(compact('statusSummary', 'myIssues', 'activityGroups'));
+    $milestoneCounts = $project->milestones()
+        ->selectRaw('type, COUNT(*) as total')
+        ->groupBy('type')
+        ->pluck('total', 'type')
+        ->all();
+
+    $milestonePreview = $project->milestones()
+        ->orderByRaw('CASE WHEN due_at IS NULL THEN 1 ELSE 0 END, due_at ASC')
+        ->orderByRaw('CASE WHEN starts_at IS NULL THEN 1 ELSE 0 END, starts_at ASC')
+        ->limit(5)
+        ->get(['id', 'project_id', 'type', 'state', 'name', 'version', 'starts_at', 'due_at', 'released_at']);
+
+    return $view->with(compact('statusSummary', 'myIssues', 'activityGroups', 'milestonePreview'));
 });
 ?>
 
@@ -274,9 +288,13 @@ render(function (View $view, Project $project) {
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                @can('issues.create')
+                @can('issues.create', $project)
                     <a href="{{ route('issues.create', ['project' => $project]) }}"
                        class="btn btn-outline-primary btn-sm">New issue</a>
+                @endcan
+                @can('milestones.create', $project)
+                        <a href="{{ route('projects.milestones.index', $project) }}"
+                           class="btn btn-outline-secondary btn-sm">Milestones</a>
                 @endcan
                 @can('update', $project)
                     <a href="{{ route('projects.edit', ['project' => $project]) }}" class="btn btn-secondary btn-sm">Edit
@@ -503,6 +521,74 @@ render(function (View $view, Project $project) {
                                 </div>
                             </div>
                         @endcan
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h3 class="h6 mb-0">Milestones</h3>
+                                    <a class="small text-decoration-underline"
+                                       href="{{ route('projects.milestones.index', $project) }}">View all</a>
+                                </div>
+
+                                @php
+                                    $milestoneTotal = (int) ($milestoneCounts[\App\Enums\MilestoneType::Milestone->value] ?? 0);
+                                    $releaseTotal = (int) ($milestoneCounts[\App\Enums\MilestoneType::Release->value] ?? 0);
+                                @endphp
+
+                                <div class="small text-body-secondary mt-1">
+                                    {{ $milestoneTotal }} milestones · {{ $releaseTotal }} releases
+                                </div>
+
+                                <div class="mt-3 d-flex flex-column gap-2">
+                                    @forelse($milestonePreview as $m)
+                                        @php
+                                            $typeValue = $m->type instanceof \BackedEnum ? $m->type->value : (string) $m->type;
+                                            $stateValue = $m->state instanceof \BackedEnum ? $m->state->value : (string) $m->state;
+                                        @endphp
+
+                                        <div class="border rounded p-2 bg-body-tertiary">
+                                            <div class="d-flex justify-content-between gap-2">
+                                                <div class="flex-grow-1">
+                                                    <div class="fw-semibold">
+                                                        {{ $m->name }}
+                                                        @if($typeValue === 'release' && $m->version)
+                                                            <span class="text-body-secondary ms-1">{{ $m->version }}</span>
+                                                        @endif
+                                                    </div>
+
+                                                    <div class="small text-body-secondary">
+                                                        <span class="badge bg-white text-body border">{{ ucfirst($typeValue) }}</span>
+                                                        <span class="badge bg-white text-body border">{{ ucfirst($stateValue) }}</span>
+
+                                                        @if($m->due_at)
+                                                            <span class="ms-1">· Due {{ $m->due_at->toFormattedDateString() }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
+                                                @can('update', $project)
+                                                    <a class="btn btn-outline-secondary btn-sm"
+                                                       href="{{ route('projects.milestones.edit', [$project, $m]) }}">
+                                                        Edit
+                                                    </a>
+                                                @endcan
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <div class="small text-body-secondary">No milestones yet.</div>
+                                    @endforelse
+                                </div>
+
+                                @can('update', $project)
+                                    <div class="mt-3">
+                                        <a href="{{ route('projects.milestones.create', $project) }}"
+                                           class="btn btn-outline-primary btn-sm w-100">
+                                            New milestone
+                                        </a>
+                                    </div>
+                                @endcan
+                            </div>
+                        </div>
                     </aside>
                 </div>
             </x-projects.page-card>
