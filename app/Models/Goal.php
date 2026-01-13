@@ -44,6 +44,7 @@ class Goal extends Model
         return [
             Project::class,
             Issue::class,
+            Milestone::class,
             // Extend here later (e.g., Repository::class, Milestone::class, etc.)
         ];
     }
@@ -106,6 +107,12 @@ class Goal extends Model
     public function issues(): MorphToMany
     {
         return $this->morphedByMany(Issue::class, 'linkable', 'goal_links');
+    }
+
+    /** @return MorphToMany<Milestone> */
+    public function milestones(): MorphToMany
+    {
+        return $this->morphedByMany(Milestone::class, 'linkable', 'goal_links');
     }
 
     public function blockers(): BelongsToMany

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\MilestoneType;
 use App\Enums\ProjectStage;
 use App\Support\ActivityContext;
 use App\Traits\HasExternalId;
@@ -223,6 +224,16 @@ class Project extends BaseModel
     public function statusTransitions(): HasMany
     {
         return $this->hasMany(ProjectStatusTransition::class);
+    }
+
+    public function milestones(): HasMany
+    {
+        return $this->hasMany(Milestone::class);
+    }
+
+    public function releases(): HasMany
+    {
+        return $this->milestones()->where('type', MilestoneType::Release);
     }
 
     /** IDs / selections (with global fallback) */
