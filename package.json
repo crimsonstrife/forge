@@ -16,7 +16,7 @@
         "axios": "^1.12.2",
         "bootstrap": "^5.3.8",
         "concurrently": "^9.0.1",
-        "laravel-precognition-alpine": "^0.7.2",
+        "laravel-precognition-alpine": "^1.0.0",
         "laravel-vite-plugin": "^2.0",
         "shiki": "^3.13.0",
         "sortablejs": "^1.15.6",
