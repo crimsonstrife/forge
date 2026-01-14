@@ -5,10 +5,12 @@ namespace App\Livewire\Issues;
 use App\Enums\IssueTier;
 use App\Models\Issue;
 use App\Models\IssueType;
+use App\Models\Milestone;
 use App\Models\Project;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -59,6 +61,12 @@ final class CreateIssueForm extends Component
     /** @var array<int, string> */
     private array $allowedTypeIds = [];
 
+    #[Validate('nullable|uuid')]
+    public ?string $milestoneId = null;
+
+    /** @var array<int, array{id:string,name:string}> */
+    public array $milestoneOptions = [];
+
     public function mount(?string $projectId = null, ?string $parentId = null, array $projectOptions = []): void
     {
         $this->projectId      = $projectId;
@@ -66,6 +74,8 @@ final class CreateIssueForm extends Component
         $this->projectOptions = $projectOptions;
 
         if ($this->projectId) {
+            $this->typeOptions = $this->priorityOptions = $this->assigneeOptions = $this->milestoneOptions = [];
+            $this->typeId = $this->priorityId = $this->milestoneId = null;
             $this->hydrateProjectAndOptions($this->projectId);
             $this->hydrateParentIfAny();
         }
@@ -91,6 +101,15 @@ final class CreateIssueForm extends Component
         if ($this->parent) {
             $rules['typeId'] .= '|in:' . implode(',', $this->allowedTypeIds);
         }
+
+        $projectIdForMilestones = $this->project?->id ?? $this->selectedProjectId;
+
+        $milestoneExistsRule = Rule::exists('milestones', 'id');
+        if ($projectIdForMilestones) {
+            $milestoneExistsRule->where('project_id', $projectIdForMilestones);
+        }
+
+        $rules['milestoneId'] = ['nullable', 'uuid', $milestoneExistsRule];
 
         return $rules;
     }
@@ -141,6 +160,7 @@ final class CreateIssueForm extends Component
             'issue_status_id'   => $statusId,
             'assignee_id'       => $this->assigneeId,
             'reporter_id'       => auth()->id(),
+            'milestone_id'      => $this->milestoneId,
         ]);
 
         $issue->save();
@@ -190,6 +210,33 @@ final class CreateIssueForm extends Component
 
         if ($initial) {
             session(['project.initial_status.' . $this->project->id => $initial]);
+        }
+
+        $this->milestoneOptions = Milestone::query()
+            ->where('project_id', $this->project->id)
+            ->orderByRaw('coalesce(due_at, starts_at) asc')
+            ->limit(250)
+            ->get(['id', 'type', 'name', 'version', 'due_at'])
+            ->map(static function (Milestone $milestone): array {
+                $typeValue = $milestone->type instanceof \BackedEnum ? $milestone->type->value : (string) $milestone->type;
+
+                $label = $milestone->name;
+
+                if ($typeValue === 'release' && $milestone->version) {
+                    $label .= ' — ' . $milestone->version;
+                }
+
+                if ($milestone->due_at) {
+                    $label .= ' (due ' . $milestone->due_at->format('M j') . ')';
+                }
+
+                return ['id' => (string) $milestone->id, 'name' => $label];
+            })
+            ->all();
+
+        $allowedMilestoneIds = array_map(static fn ($row) => $row['id'], $this->milestoneOptions);
+        if ($this->milestoneId && ! in_array($this->milestoneId, $allowedMilestoneIds, true)) {
+            $this->milestoneId = null;
         }
     }
 

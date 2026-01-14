@@ -265,7 +265,18 @@ render(function (View $view, Project $project) {
         ->limit(5)
         ->get(['id', 'project_id', 'type', 'state', 'name', 'version', 'starts_at', 'due_at', 'released_at']);
 
-    return $view->with(compact('statusSummary', 'myIssues', 'activityGroups', 'milestonePreview'));
+    $upcomingMilestones = Milestone::query()
+        ->where('project_id', $project->id)
+        ->where(function ($q) {
+            $q->whereNull('due_at')->orWhereDate('due_at', '>=', now());
+        })
+        ->orderByRaw('case when due_at is null then 1 else 0 end')
+        ->orderBy('due_at')
+        ->orderBy('name')
+        ->limit(5)
+        ->get(['id', 'name', 'type', 'version', 'due_at']);
+
+    return $view->with(compact('statusSummary', 'myIssues', 'activityGroups', 'milestonePreview', 'upcomingMilestones'));
 });
 ?>
 
@@ -514,7 +525,53 @@ render(function (View $view, Project $project) {
                             </div>
                         @endcan
 
-                        @can('issues.create')
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h3 class="h6 mb-0">{{ __('Planning') }}</h3>
+                                    <a class="small link-primary text-decoration-underline"
+                                       href="{{ route('projects.milestones.index', $project) }}">{{ __('View all') }}</a>
+                                </div>
+
+                                @if(($upcomingMilestones ?? collect())->isEmpty())
+                                    <p class="small text-body-secondary mb-0">{{ __('No upcoming milestones/releases.') }}</p>
+                                @else
+                                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                                        @foreach($upcomingMilestones as $m)
+                                            @php
+                                                $label = $m->name;
+                                                if ($m->type?->value === 'release' && $m->version) {
+                                                    $label .= ' — ' . $m->version;
+                                                }
+                                            @endphp
+                                            <li class="d-flex justify-content-between gap-3">
+                        <span class="text-truncate">
+                            @can('update', $project)
+                                <a class="link-primary text-decoration-underline"
+                                   href="{{ route('projects.milestones.edit', [$project, $m]) }}">{{ $label }}</a>
+                            @else
+                                {{ $label }}
+                            @endcan
+                        </span>
+                                                <span class="text-body-secondary text-nowrap">
+                            {{ $m->due_at?->format('M j') ?? '—' }}
+                        </span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+
+                                @can('update', $project)
+                                    <div class="mt-3">
+                                        <a href="{{ route('projects.milestones.create', $project) }}" class="btn btn-outline-primary btn-sm">
+                                            {{ __('New milestone') }}
+                                        </a>
+                                    </div>
+                                @endcan
+                            </div>
+                        </div>
+
+                    @can('issues.create')
                             <div class="card">
                                 <div class="card-body">
                                     <livewire:issues.quick-create :project="$project"/>
@@ -531,8 +588,8 @@ render(function (View $view, Project $project) {
                                 </div>
 
                                 @php
-                                    $milestoneTotal = (int) ($milestoneCounts[\App\Enums\MilestoneType::Milestone->value] ?? 0);
-                                    $releaseTotal = (int) ($milestoneCounts[\App\Enums\MilestoneType::Release->value] ?? 0);
+                                    $milestoneTotal = (int) ($milestoneCounts[MilestoneType::Milestone->value] ?? 0);
+                                    $releaseTotal = (int) ($milestoneCounts[MilestoneType::Release->value] ?? 0);
                                 @endphp
 
                                 <div class="small text-body-secondary mt-1">
@@ -542,8 +599,8 @@ render(function (View $view, Project $project) {
                                 <div class="mt-3 d-flex flex-column gap-2">
                                     @forelse($milestonePreview as $m)
                                         @php
-                                            $typeValue = $m->type instanceof \BackedEnum ? $m->type->value : (string) $m->type;
-                                            $stateValue = $m->state instanceof \BackedEnum ? $m->state->value : (string) $m->state;
+                                            $typeValue = $m->type instanceof BackedEnum ? $m->type->value : (string) $m->type;
+                                            $stateValue = $m->state instanceof BackedEnum ? $m->state->value : (string) $m->state;
                                         @endphp
 
                                         <div class="border rounded p-2 bg-body-tertiary">
@@ -557,8 +614,8 @@ render(function (View $view, Project $project) {
                                                     </div>
 
                                                     <div class="small text-body-secondary">
-                                                        <span class="badge bg-white text-body border">{{ ucfirst($typeValue) }}</span>
-                                                        <span class="badge bg-white text-body border">{{ ucfirst($stateValue) }}</span>
+                                                        <span class="badge text-body border">{{ ucfirst($typeValue) }}</span>
+                                                        <span class="badge text-body border">{{ ucfirst($stateValue) }}</span>
 
                                                         @if($m->due_at)
                                                             <span class="ms-1">· Due {{ $m->due_at->toFormattedDateString() }}</span>

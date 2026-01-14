@@ -20,6 +20,7 @@ middleware(['auth', 'verified']);
 render(function (View $view, Project $project, Issue $issue) {
     $issue->loadMissing([
         'project:id,key',
+        'milestone:id,project_id,type,state,name,version,due_at,released_at',
         'status:id,name,color,is_done',
         'type:id,key,name',
         'priority:id,name',
@@ -277,7 +278,9 @@ render(function (View $view, Project $project, Issue $issue) {
                    class="btn btn-outline-secondary btn-sm">Kanban</a>
                 <a href="{{ route('projects.scrum', ['project' => $project]) }}"
                    class="btn btn-outline-secondary btn-sm">Sprint</a>
-                @can('issues.create')
+                <a href="{{ route('projects.milestones.index', ['project' => $project]) }}"
+                   class="btn btn-outline-secondary btn-sm">Milestones</a>
+            @can('issues.create')
                     <a href="{{ route('issues.create', ['project' => $project]) }}" class="btn btn-primary btn-sm">New
                         issue</a>
                 @endcan
@@ -337,6 +340,15 @@ render(function (View $view, Project $project, Issue $issue) {
                                 </span>
                                 <span class="small">{{ $issue->type?->name }}</span>
                                 <span class="small">{{ $issue->priority?->name }}</span>
+                                @if ($issue->milestone)
+                                    <a href="{{ route('projects.milestones.edit', [$project, $issue->milestone]) }}"
+                                       class="badge text-bg-secondary text-decoration-none">
+                                        {{ $issue->milestone->name }}
+                                        @if (($issue->milestone->type?->value ?? (string) $issue->milestone->type) === 'release' && $issue->milestone->version)
+                                            <span class="opacity-75 ms-1">{{ $issue->milestone->version }}</span>
+                                        @endif
+                                    </a>
+                                @endif
                             </div>
                             <h3 class="h5 mt-2 mb-2">{{ $issue->summary }}</h3>
 
@@ -392,6 +404,39 @@ render(function (View $view, Project $project, Issue $issue) {
                                 <div class="d-flex justify-content-between mb-1">
                                     <dt class="text-body-secondary">Estimate</dt>
                                     <dd class="mb-0">{{ $issue->estimate_minutes ? $issue->estimate_minutes.'m' : '—' }}</dd>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <dt class="text-body-secondary">Milestone</dt>
+                                    <dd class="mb-0 text-end">
+                                        @if($issue->milestone)
+                                            @php
+                                                $m = $issue->milestone;
+                                                $typeValue = $m->type instanceof \BackedEnum ? $m->type->value : (string) $m->type;
+                                                $label = $m->name;
+                                                if ($typeValue === 'release' && $m->version) {
+                                                    $label .= ' ' . $m->version;
+                                                }
+                                            @endphp
+
+                                            @can('update', $project)
+                                                <a class="link-primary text-decoration-underline"
+                                                   href="{{ route('projects.milestones.edit', [$project, $m]) }}">
+                                                    {{ $label }}
+                                                </a>
+                                            @else
+                                                <a class="link-primary text-decoration-underline"
+                                                   href="{{ route('projects.milestones.index', $project) }}">
+                                                    {{ $label }}
+                                                </a>
+                                            @endcan
+
+                                            @if($m->due_at)
+                                                <span class="text-body-secondary ms-1">· due {{ $m->due_at->format('M j') }}</span>
+                                            @endif
+                                        @else
+                                            —
+                                        @endif
+                                    </dd>
                                 </div>
                                 <div class="pt-2">
                                     <div class="text-body-secondary small mb-1">Progress</div>
