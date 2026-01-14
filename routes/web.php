@@ -105,6 +105,9 @@ Route::middleware([
     Route::get('/projects/{project}/milestones', [ProjectMilestoneController::class, 'index'])
         ->name('projects.milestones.index');
 
+    Route::get('/projects/{project}/milestones/{milestone}', [ProjectMilestoneController::class, 'show'])
+        ->name('projects.milestones.show');
+
     Route::get('/projects/{project}/milestones/create', [ProjectMilestoneController::class, 'create'])
         ->name('projects.milestones.create');
 

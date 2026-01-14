@@ -548,7 +548,7 @@ render(function (View $view, Project $project) {
                         <span class="text-truncate">
                             @can('update', $project)
                                 <a class="link-primary text-decoration-underline"
-                                   href="{{ route('projects.milestones.edit', [$project, $m]) }}">{{ $label }}</a>
+                                   href="{{ route('projects.milestones.show', [$project, $m]) }}">{{ $label }}</a>
                             @else
                                 {{ $label }}
                             @endcan
@@ -607,7 +607,10 @@ render(function (View $view, Project $project) {
                                             <div class="d-flex justify-content-between gap-2">
                                                 <div class="flex-grow-1">
                                                     <div class="fw-semibold">
-                                                        {{ $m->name }}
+                                                        <a href="{{ route('projects.milestones.show', [$project, $m]) }}"
+                                                           class="link-primary text-decoration-underline">
+                                                            {{ $m->name }}
+                                                        </a>
                                                         @if($typeValue === 'release' && $m->version)
                                                             <span class="text-body-secondary ms-1">{{ $m->version }}</span>
                                                         @endif
