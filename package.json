@@ -20,7 +20,7 @@
         "laravel-vite-plugin": "^2.0",
         "shiki": "^3.13.0",
         "sortablejs": "^1.15.6",
-        "tinymce": "^8.1.2",
+        "tinymce": "^8.3.2",
         "vite": "^7.2.4"
     },
     "optionalDependencies": {
