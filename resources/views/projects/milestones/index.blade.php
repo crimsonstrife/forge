@@ -80,7 +80,9 @@
                                 $stateValue = $milestone->state instanceof BackedEnum ? $milestone->state->value : (string) $milestone->state;
                             @endphp
                             <td class="fw-semibold">
-                                {{ $milestone->name }}
+                                <a class="text-decoration-none" href="{{ route('projects.milestones.show', [$project, $milestone]) }}">
+                                    {{ $milestone->name }}
+                                </a>
                                 @if ($typeValue === 'release' && $milestone->version)
                                     <span class="text-muted ms-2">{{ $milestone->version }}</span>
                                 @endif
