@@ -571,7 +571,7 @@ render(function (View $view, Project $project) {
                             </div>
                         </div>
 
-                    @can('issues.create')
+                    @can('issues.create', $project)
                             <div class="card">
                                 <div class="card-body">
                                     <livewire:issues.quick-create :project="$project"/>
