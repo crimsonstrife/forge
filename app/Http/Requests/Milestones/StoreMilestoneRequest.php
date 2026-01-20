@@ -50,7 +50,7 @@ class StoreMilestoneRequest extends FormRequest
                 'max:64',
                 Rule::requiredIf(fn (): bool => $this->input('type') === MilestoneType::Release->value),
             ],
-            'released_at' => ['nullable', 'date'],
+            'released_at' => ['nullable', 'date', 'date_format:Y-m-d\TH:i'],
             'meta' => ['nullable', 'array'],
         ];
     }
