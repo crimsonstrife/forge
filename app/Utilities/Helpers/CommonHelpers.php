@@ -71,11 +71,15 @@ class CommonHelpers
      * Extract the string value from a BackedEnum or return the value as a string.
      * Useful for handling enum properties that may be stored as strings or enums.
      *
-     * @param  mixed  $value  The value to extract (BackedEnum or string)
-     * @return string The string value
+     * @param  mixed  $value  The value to extract (BackedEnum, string, or null)
+     * @return string|null The string value or null
      */
-    public static function getEnumValue(mixed $value): string
+    public static function getEnumValue(mixed $value): ?string
     {
+        if ($value === null) {
+            return null;
+        }
+        
         return $value instanceof \BackedEnum ? $value->value : (string) $value;
     }
 }
