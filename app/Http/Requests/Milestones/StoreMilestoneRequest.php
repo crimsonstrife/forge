@@ -35,7 +35,14 @@ class StoreMilestoneRequest extends FormRequest
             'state' => ['required', Rule::in($stateValues)],
 
             'starts_at' => ['nullable', 'date'],
-            'due_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
+            'due_at' => [
+                'nullable',
+                'date',
+                Rule::when(
+                    fn (): bool => $this->filled('starts_at'),
+                    ['after_or_equal:starts_at'],
+                ),
+            ],
 
             'version' => [
                 'nullable',
