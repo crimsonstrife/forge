@@ -1,6 +1,6 @@
 @php
-    $milestoneType = $milestone?->type instanceof \BackedEnum ? $milestone->type->value : ($milestone->type ?? null);
-    $milestoneState = $milestone?->state instanceof \BackedEnum ? $milestone->state->value : ($milestone->state ?? null);
+    $milestoneType = $milestone?->type ? \App\Utilities\Helpers\CommonHelpers::getEnumValue($milestone->type) : null;
+    $milestoneState = $milestone?->state ? \App\Utilities\Helpers\CommonHelpers::getEnumValue($milestone->state) : null;
 
     $currentType = old('type', $milestoneType ?? 'milestone');
     $currentState = old('state', $milestoneState ?? 'planned');

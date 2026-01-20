@@ -66,4 +66,16 @@ class CommonHelpers
         // If no match found, fallback to a nice word-limited version
         return Str::words($safeText, ($radius / 4), '...');
     }
+
+    /**
+     * Extract the string value from a BackedEnum or return the value as a string.
+     * Useful for handling enum properties that may be stored as strings or enums.
+     *
+     * @param  mixed  $value  The value to extract (BackedEnum or string)
+     * @return string The string value
+     */
+    public static function getEnumValue(mixed $value): string
+    {
+        return $value instanceof \BackedEnum ? $value->value : (string) $value;
+    }
 }

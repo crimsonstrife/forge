@@ -7,6 +7,7 @@ use App\Models\Issue;
 use App\Models\IssueType;
 use App\Models\Milestone;
 use App\Models\Project;
+use App\Utilities\Helpers\CommonHelpers;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
@@ -220,7 +221,7 @@ final class CreateIssueForm extends Component
             ->limit(250)
             ->get(['id', 'type', 'name', 'version', 'due_at'])
             ->map(static function (Milestone $milestone): array {
-                $typeValue = $milestone->type instanceof \BackedEnum ? $milestone->type->value : (string) $milestone->type;
+                $typeValue = CommonHelpers::getEnumValue($milestone->type);
 
                 $label = $milestone->name;
 
