@@ -10,6 +10,7 @@ use App\Traits\HasRecordShares;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,6 +22,7 @@ use Spatie\Activitylog\LogOptions;
 
 class Project extends BaseModel
 {
+    use HasFactory;
     use HasUuids;
     use LogsActivity;
     use IsPermissible;
