@@ -91,20 +91,22 @@
                             <td class="text-end">{{ $milestone->issues_count }}</td>
                             <td class="text-end">{{ $milestone->sprints_count }}</td>
                             <td class="text-end">
-                                <div class="btn-group btn-group-sm">
-                                    <a class="btn btn-outline-primary"
-                                       href="{{ route('projects.milestones.edit', [$project, $milestone]) }}">
-                                        Edit
-                                    </a>
+                                @can('update', $project)
+                                    <div class="btn-group btn-group-sm">
+                                        <a class="btn btn-outline-primary"
+                                           href="{{ route('projects.milestones.edit', [$project, $milestone]) }}">
+                                            Edit
+                                        </a>
 
-                                    <form method="post"
-                                          action="{{ route('projects.milestones.destroy', [$project, $milestone]) }}"
-                                          onsubmit="return confirm('Delete this milestone?');">
-                                        @csrf
-                                        @method('delete')
-                                        <button class="btn btn-outline-danger" type="submit">Delete</button>
-                                    </form>
-                                </div>
+                                        <form method="post"
+                                              action="{{ route('projects.milestones.destroy', [$project, $milestone]) }}"
+                                              onsubmit="return confirm('Delete this milestone?');">
+                                            @csrf
+                                            @method('delete')
+                                            <button class="btn btn-outline-danger" type="submit">Delete</button>
+                                        </form>
+                                    </div>
+                                @endcan
                             </td>
                         </tr>
                     @empty
