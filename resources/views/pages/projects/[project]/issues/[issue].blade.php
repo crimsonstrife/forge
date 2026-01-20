@@ -341,7 +341,7 @@ render(function (View $view, Project $project, Issue $issue) {
                                 <span class="small">{{ $issue->type?->name }}</span>
                                 <span class="small">{{ $issue->priority?->name }}</span>
                                 @if ($issue->milestone)
-                                    <a href="{{ route('projects.milestones.show', [$project, $milestone]) }}"
+                                    <a href="{{ route('projects.milestones.show', [$project, $issue->milestone]) }}"
                                        class="badge text-bg-secondary text-decoration-none">
                                         {{ $issue->milestone->name }}
                                         @if (($issue->milestone->type?->value ?? (string) $issue->milestone->type) === 'release' && $issue->milestone->version)
