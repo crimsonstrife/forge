@@ -420,7 +420,7 @@ render(function (View $view, Project $project, Issue $issue) {
 
                                             @can('update', $project)
                                                 <a class="link-primary text-decoration-underline"
-                                                   href="{{ route('projects.milestones.edit', [$project, $m]) }}">
+                                                   href="{{ route('projects.milestones.show', [$project, $m]) }}">
                                                     {{ $label }}
                                                 </a>
                                             @else
