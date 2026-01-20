@@ -27,14 +27,12 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        Schema::table('issues', function (Blueprint $table) {
-            Schema::table('issues', function (Blueprint $table): void {
-                $table->dropForeign(['milestone_id']);
-                $table->dropColumn('milestone_id');
+        Schema::table('issues', function (Blueprint $table): void {
+            $table->dropForeign(['milestone_id']);
+            $table->dropColumn('milestone_id');
 
-                // If you truly need the old type back (bigint), restore it here:
-                // $table->unsignedBigInteger('milestone_id')->nullable();
-            });
+            // If you truly need the old type back (bigint), restore it here:
+            // $table->unsignedBigInteger('milestone_id')->nullable();
         });
     }
 };
