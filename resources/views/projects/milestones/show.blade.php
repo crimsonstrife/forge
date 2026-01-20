@@ -36,17 +36,19 @@
                 Back
             </a>
 
-            <a href="{{ route('projects.milestones.edit', [$project, $milestone]) }}" class="btn btn-primary">
-                Edit
-            </a>
+            @can('update', $project)
+                <a href="{{ route('projects.milestones.edit', [$project, $milestone]) }}" class="btn btn-primary">
+                    Edit
+                </a>
 
-            <form method="post"
-                  action="{{ route('projects.milestones.destroy', [$project, $milestone]) }}"
-                  onsubmit="return confirm('Delete this milestone?');">
-                @csrf
-                @method('delete')
-                <button class="btn btn-outline-danger" type="submit">Delete</button>
-            </form>
+                <form method="post"
+                      action="{{ route('projects.milestones.destroy', [$project, $milestone]) }}"
+                      onsubmit="return confirm('Delete this milestone?');">
+                    @csrf
+                    @method('delete')
+                    <button class="btn btn-outline-danger" type="submit">Delete</button>
+                </form>
+            @endcan
         </div>
     </x-slot>
 
