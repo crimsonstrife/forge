@@ -280,7 +280,7 @@ render(function (View $view, Project $project, Issue $issue) {
                    class="btn btn-outline-secondary btn-sm">Sprint</a>
                 <a href="{{ route('projects.milestones.index', ['project' => $project]) }}"
                    class="btn btn-outline-secondary btn-sm">Milestones</a>
-            @can('issues.create')
+            @can('issues.create', $project)
                     <a href="{{ route('issues.create', ['project' => $project]) }}" class="btn btn-primary btn-sm">New
                         issue</a>
                 @endcan
