@@ -6,9 +6,11 @@
                 <div class="text-muted small">{{ $project->name }}</div>
             </div>
 
-            <a href="{{ route('projects.milestones.create', $project) }}" class="btn btn-primary">
-                New
-            </a>
+            @can('update', $project)
+                <a href="{{ route('projects.milestones.create', $project) }}" class="btn btn-primary">
+                    New
+                </a>
+            @endcan
         </div>
     </x-slot>
 
