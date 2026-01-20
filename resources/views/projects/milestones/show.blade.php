@@ -89,7 +89,9 @@
                     <div class="card-header fw-semibold">Description</div>
                     <div class="card-body">
                         @if($milestone->description)
-                            <div class="issue-content">{!! $milestone->description !!}</div>
+                            <div class="issue-content">
+                                {!! \Illuminate\Support\Str::markdown($milestone->description) !!}
+                            </div>
                         @else
                             <div class="text-muted small">No description yet.</div>
                         @endif
