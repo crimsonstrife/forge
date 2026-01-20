@@ -79,7 +79,7 @@ class CommonHelpers
         if ($value === null) {
             return null;
         }
-        
+
         return $value instanceof \BackedEnum ? $value->value : (string) $value;
     }
 }
