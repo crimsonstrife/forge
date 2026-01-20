@@ -10,17 +10,15 @@ return new class () extends Migration {
      */
     public function up(): void
     {
-        Schema::table('sprints', function (Blueprint $table) {
-            Schema::table('sprints', function (Blueprint $table): void {
-                if (Schema::hasColumn('sprints', 'milestone_id')) {
-                    $table->dropColumn('milestone_id');
-                }
+        Schema::table('sprints', function (Blueprint $table): void {
+            if (Schema::hasColumn('sprints', 'milestone_id')) {
+                $table->dropColumn('milestone_id');
+            }
 
-                $table->foreignUuid('milestone_id')
-                    ->nullable()
-                    ->constrained('milestones')
-                    ->nullOnDelete();
-            });
+            $table->foreignUuid('milestone_id')
+                ->nullable()
+                ->constrained('milestones')
+                ->nullOnDelete();
         });
     }
 
