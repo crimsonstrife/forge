@@ -109,18 +109,22 @@ Route::middleware([
         ->name('projects.milestones.create');
 
     Route::get('/projects/{project}/milestones/{milestone}', [ProjectMilestoneController::class, 'show'])
-        ->name('projects.milestones.show');
+        ->name('projects.milestones.show')
+        ->scopedBindings();
     Route::post('/projects/{project}/milestones', [ProjectMilestoneController::class, 'store'])
         ->name('projects.milestones.store');
 
     Route::get('/projects/{project}/milestones/{milestone}/edit', [ProjectMilestoneController::class, 'edit'])
-        ->name('projects.milestones.edit');
+        ->name('projects.milestones.edit')
+        ->scopedBindings();
 
     Route::put('/projects/{project}/milestones/{milestone}', [ProjectMilestoneController::class, 'update'])
-        ->name('projects.milestones.update');
+        ->name('projects.milestones.update')
+        ->scopedBindings();
 
     Route::delete('/projects/{project}/milestones/{milestone}', [ProjectMilestoneController::class, 'destroy'])
-        ->name('projects.milestones.destroy');
+        ->name('projects.milestones.destroy')
+        ->scopedBindings();
 });
 
 Route::middleware(['web', 'auth', 'verified'])->group(function () {
