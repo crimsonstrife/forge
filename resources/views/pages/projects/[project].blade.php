@@ -572,7 +572,7 @@ render(function (View $view, Project $project) {
                                                 @can('update', $project)
                                                     <a class="btn btn-outline-secondary btn-sm"
                                                        href="{{ route('projects.milestones.edit', [$project, $m]) }}">
-                                                        Edit
+                                                        {{ __('Edit') }}
                                                     </a>
                                                 @endcan
                                             </div>
