@@ -152,27 +152,34 @@ final class ProjectMilestoneController extends Controller
 
         $issues = $issuesQuery->paginate(25)->withQueryString();
 
-        // Summary stats (kept simple + reliable)
-        $totalIssues = $milestone->issues()->count();
-        $doneIssues = $milestone->issues()
-            ->whereHas('status', fn ($q) => $q->where('is_done', true))
+        // Summary stats (kept simple + reliable, computed from a single issues collection)
+        $allIssues = $milestone->issues()
+            ->with('status')
+            ->get();
+
+        $now = now();
+
+        $totalIssues = $allIssues->count();
+
+        $doneIssuesCollection = $allIssues->filter(
+            fn ($issue) => $issue->status !== null && $issue->status->is_done
+        );
+
+        $doneIssues = $doneIssuesCollection->count();
+
+        $overdueIssues = $allIssues
+            ->filter(
+                fn ($issue) => $issue->due_at !== null
+                    && $issue->due_at < $now
+                    && ($issue->status === null || ! $issue->status->is_done)
+            )
             ->count();
 
-        $overdueIssues = $milestone->issues()
-            ->whereNotNull('due_at')
-            ->where('due_at', '<', now())
-            ->whereHas('status', fn ($q) => $q->where('is_done', false))
-            ->count();
+        $pointsTotal = (int) $allIssues->sum('story_points');
+        $pointsDone = (int) $doneIssuesCollection->sum('story_points');
 
-        $pointsTotal = (int) $milestone->issues()->sum('story_points');
-        $pointsDone = (int) $milestone->issues()
-            ->whereHas('status', fn ($q) => $q->where('is_done', true))
-            ->sum('story_points');
-
-        $estimateTotalMinutes = (int) $milestone->issues()->sum('estimate_minutes');
-        $estimateDoneMinutes = (int) $milestone->issues()
-            ->whereHas('status', fn ($q) => $q->where('is_done', true))
-            ->sum('estimate_minutes');
+        $estimateTotalMinutes = (int) $allIssues->sum('estimate_minutes');
+        $estimateDoneMinutes = (int) $doneIssuesCollection->sum('estimate_minutes');
 
         $sprints = $milestone->sprints()
             ->withCount('issues')
