@@ -33,6 +33,7 @@ return new class () extends Migration {
 
             $table->string('version')->nullable();
             $table->timestamp('released_at')->nullable();
+            $table->json('meta')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
