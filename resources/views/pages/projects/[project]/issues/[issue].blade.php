@@ -411,7 +411,7 @@ render(function (View $view, Project $project, Issue $issue) {
                                         @if($issue->milestone)
                                             @php
                                                 $m = $issue->milestone;
-                                                $typeValue = $m->type instanceof \BackedEnum ? $m->type->value : (string) $m->type;
+                                                $typeValue = \App\Utilities\Helpers\CommonHelpers::getEnumValue($m->type);
                                                 $label = $m->name;
                                                 if ($typeValue === 'release' && $m->version) {
                                                     $label .= ' ' . $m->version;

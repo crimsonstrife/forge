@@ -542,8 +542,8 @@ render(function (View $view, Project $project) {
                                 <div class="mt-3 d-flex flex-column gap-2">
                                     @forelse($milestonePreview as $m)
                                         @php
-                                            $typeValue = $m->type instanceof BackedEnum ? $m->type->value : (string) $m->type;
-                                            $stateValue = $m->state instanceof BackedEnum ? $m->state->value : (string) $m->state;
+                                            $typeValue = \App\Utilities\Helpers\CommonHelpers::getEnumValue($m->type);
+                                            $stateValue = \App\Utilities\Helpers\CommonHelpers::getEnumValue($m->state);
                                         @endphp
 
                                         <div class="border rounded p-2 bg-body-tertiary">
