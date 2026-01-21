@@ -8,11 +8,13 @@ use App\Traits\HasRecordShares;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Milestone extends BaseModel
 {
+    use HasFactory;
     use HasUuids;
     use IsPermissible;
     use HasRecordShares;
