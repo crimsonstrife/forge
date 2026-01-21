@@ -260,8 +260,7 @@ render(function (View $view, Project $project) {
         ->all();
 
     $milestonePreview = $project->milestones()
-        ->orderByRaw('CASE WHEN due_at IS NULL THEN 1 ELSE 0 END, due_at ASC')
-        ->orderByRaw('CASE WHEN starts_at IS NULL THEN 1 ELSE 0 END, starts_at ASC')
+        ->orderByRaw('CASE WHEN due_at IS NULL THEN 1 ELSE 0 END, due_at ASC, CASE WHEN starts_at IS NULL THEN 1 ELSE 0 END, starts_at ASC')
         ->limit(5)
         ->get(['id', 'project_id', 'type', 'state', 'name', 'version', 'starts_at', 'due_at', 'released_at']);
 
