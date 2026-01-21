@@ -215,9 +215,7 @@ final class CreateIssueForm extends Component
 
         $this->milestoneOptions = Milestone::query()
             ->where('project_id', $this->project->id)
-            ->orderByRaw('CASE WHEN due_at IS NOT NULL THEN 0 WHEN starts_at IS NOT NULL THEN 1 ELSE 2 END')
-            ->orderBy('due_at')
-            ->orderBy('starts_at')
+            ->orderByRaw('CASE WHEN due_at IS NOT NULL THEN 0 WHEN starts_at IS NOT NULL THEN 1 ELSE 2 END, due_at ASC, starts_at ASC')
             ->limit(250)
             ->get(['id', 'type', 'name', 'version', 'due_at'])
             ->map(static function (Milestone $milestone): array {
