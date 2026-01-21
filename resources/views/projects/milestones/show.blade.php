@@ -92,7 +92,7 @@
                     <div class="card-body">
                         @if($milestone->description)
                             <div class="issue-content">
-                                {!! \Illuminate\Support\Str::markdown($milestone->description) !!}
+                                {!! \Illuminate\Support\Str::markdown($milestone->description, ['html_input' => 'strip', 'allow_unsafe_links' => false]) !!}
                             </div>
                         @else
                             <div class="text-muted small">No description yet.</div>
