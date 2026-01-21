@@ -76,8 +76,8 @@
                     @forelse ($milestones as $milestone)
                         <tr>
                             @php
-                                $typeValue = $milestone->type instanceof BackedEnum ? $milestone->type->value : (string) $milestone->type;
-                                $stateValue = $milestone->state instanceof BackedEnum ? $milestone->state->value : (string) $milestone->state;
+                                $typeValue = \App\Utilities\Helpers\CommonHelpers::getEnumValue($milestone->type);
+                                $stateValue = \App\Utilities\Helpers\CommonHelpers::getEnumValue($milestone->state);
                             @endphp
                             <td class="fw-semibold">
                                 <a class="text-decoration-none" href="{{ route('projects.milestones.show', [$project, $milestone]) }}">
