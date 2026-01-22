@@ -44,6 +44,7 @@
         "nesbot/carbon": "^3.10",
         "omaressaouaf/laravel-id-generator": "^1.2",
         "owen-it/laravel-auditing": "^14.0",
+        "predis/predis": "^2.4",
         "ramsey/uuid": "^4.9",
         "scalar/laravel": "^0.2.0",
         "socialiteproviders/atlassian": "^4.0",

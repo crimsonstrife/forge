@@ -63,6 +63,17 @@
                 </div>
 
                 <div class="col-sm-6">
+                    <x-label for="milestone_id" value="Milestone / Release"/>
+                    <select id="milestone_id" wire:model.defer="milestone_id" class="form-select" @disabled(empty($this->milestoneOptions))>
+                        <option value="">{{ __('—') }}</option>
+                        @foreach($this->milestoneOptions as $opt)
+                            <option value="{{ $opt['id'] }}">{{ $opt['name'] }}</option>
+                        @endforeach
+                    </select>
+                    @error('milestone_id') <div class="form-text text-danger">{{ $message }}</div> @enderror
+                </div>
+
+                <div class="col-sm-6">
                     <x-label for="story_points" value="Story points"/>
                     <input id="story_points" type="number" min="0" wire:model.defer="story_points" class="form-control">
                     @error('story_points') <div class="form-text text-danger">{{ $message }}</div> @enderror
