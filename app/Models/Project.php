@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\MilestoneType;
 use App\Enums\ProjectStage;
 use App\Support\ActivityContext;
 use App\Traits\HasExternalId;
@@ -9,6 +10,7 @@ use App\Traits\HasRecordShares;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,6 +22,7 @@ use Spatie\Activitylog\LogOptions;
 
 class Project extends BaseModel
 {
+    use HasFactory;
     use HasUuids;
     use LogsActivity;
     use IsPermissible;
@@ -223,6 +226,16 @@ class Project extends BaseModel
     public function statusTransitions(): HasMany
     {
         return $this->hasMany(ProjectStatusTransition::class);
+    }
+
+    public function milestones(): HasMany
+    {
+        return $this->hasMany(Milestone::class);
+    }
+
+    public function releases(): HasMany
+    {
+        return $this->milestones()->where('type', MilestoneType::Release);
     }
 
     /** IDs / selections (with global fallback) */

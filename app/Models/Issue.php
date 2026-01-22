@@ -52,6 +52,7 @@ class Issue extends BaseModel implements HasMedia
         'starts_at',
         'due_at',
         'is_public',
+        'milestone_id',
     ];
 
     protected $guarded = ['id', 'key', 'number'];
@@ -74,6 +75,7 @@ class Issue extends BaseModel implements HasMedia
         'closed_at' => 'immutable_datetime',
         'is_public' => 'bool',
         'is_next' => 'bool',
+        'milestone_id' => 'string',
     ];
 
     public static function boot(): void
@@ -253,6 +255,11 @@ class Issue extends BaseModel implements HasMedia
     public function notes(): HasMany
     {
         return $this->hasMany(Note::class);
+    }
+
+    public function milestone(): BelongsTo
+    {
+        return $this->belongsTo(Milestone::class);
     }
 
     /**
