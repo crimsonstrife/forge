@@ -57,6 +57,7 @@ class ProjectResource extends Resource
             RelationManagers\IssueStatusesRelationManager::class,
             RelationManagers\IssuePrioritiesRelationManager::class,
             RelationManagers\StatusTransitionsRelationManager::class,
+            RelationManagers\MilestonesRelationManager::class,
         ];
     }
 
