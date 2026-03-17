@@ -109,10 +109,35 @@ final class InitialImportRepositoryIssues implements ShouldQueue
         }
     }
 
-    private function processSingleIssue($i, $repository, $project, $statusMap, $defaultTypeId, $typeByKey, $typeByName, $typeByTier, $defaultPriorityId, $prioByKey, $prioByName): void
+    private function resolveStatusId(string $state, $statusMap): int
     {
-        $state = strtolower($i['state'] ?? '');
+        $statusId = optional($statusMap->get($state))->issue_status_id;
+        return $statusId ?? IssueStatus::query()
+            ->when(
+                $state === 'closed',
+                fn($q) => $q->where('is_done', true),
+                fn($q) => $q->where('is_done', false)
+            )
+            ->orderBy('order')
+            ->value('id');
+    }
+
+    private function processSingleIssue(
+        array $i,
+              $repository,
+              $project,
+              $statusMap,
+        string $defaultTypeId,
+        array $typeByKey,
+        array $typeByName,
+        array $typeByTier,
+        string $defaultPriorityId,
+        array $prioByKey,
+        array $prioByName
+    ): void {
+        $state = strtolower((string) ($i['state'] ?? ''));
         $statusId = $this->resolveStatusId($state, $statusMap);
+
         $issueTypeId = $this->inferIssueTypeIdFromLabels(
             $i['labels'] ?? [],
             $typeByKey,
@@ -128,84 +153,92 @@ final class InitialImportRepositoryIssues implements ShouldQueue
             $defaultPriorityId
         );
 
-        $externalIssueId = (string)($i['external_issue_id'] ?? '');
-        $number = (int)($i['number'] ?? 0);
+        $externalIssueId = (string) ($i['external_issue_id'] ?? '');
+        $number = (int) ($i['number'] ?? 0);
 
         $existingExternalRef = IssueExternalRef::query()
             ->where('repository_id', $repository->id)
-            ->when($externalIssueId !== '', fn($q) => $q->where('external_issue_id', $externalIssueId))
-            ->when($externalIssueId === '' && $number > 0, fn($q) => $q->where('number', $number))
+            ->when(
+                $externalIssueId !== '',
+                fn ($query) => $query->where('external_issue_id', $externalIssueId)
+            )
+            ->when(
+                $externalIssueId === '' && $number > 0,
+                fn ($query) => $query->where('number', $number)
+            )
             ->first();
 
-        if ($existingExternalRef) {
-            $this->updateExistingIssue($existingExternalRef, $i, $statusId, $issueTypeId, $issuePriorityId);
-        } else {
-            $this->createNewIssue($i, $project, $repository, $statusId, $issueTypeId, $issuePriorityId);
-        }
+        $issue = $existingExternalRef
+            ? $this->updateExistingIssue($existingExternalRef, $i, $statusId, $issueTypeId, $issuePriorityId)
+            : $this->createNewIssue($i, $project, $repository, $statusId, $issueTypeId, $issuePriorityId);
 
-        $this->mapUsersToIssue($i, $repository, $existingExternalRef?->issue ?? null);
+        $this->mapUsersToIssue($i, $repository, $issue);
     }
 
-    private function resolveStatusId(string $state, $statusMap): int
-    {
-        $statusId = optional($statusMap->get($state))->issue_status_id;
-        return $statusId ?? IssueStatus::query()
-            ->when(
-                $state === 'closed',
-                fn($q) => $q->where('is_done', true),
-                fn($q) => $q->where('is_done', false)
-            )
-            ->orderBy('order')
-            ->value('id');
-    }
-
-    private function updateExistingIssue($existingExternalRef, $i, $statusId, $issueTypeId, $issuePriorityId): void
-    {
+    private function updateExistingIssue(
+        IssueExternalRef $existingExternalRef,
+        array $i,
+        int $statusId,
+        string $issueTypeId,
+        string $issuePriorityId
+    ): ?Issue {
         $issue = Issue::query()->find($existingExternalRef->issue_id);
-        if ($issue) {
+
+        if ($issue instanceof Issue) {
             $issue->fill([
-                'summary'           => $i['title'],
-                'description'       => $i['body'] ?? null,
-                'issue_status_id'   => $statusId,
-                'issue_type_id'     => $issueTypeId,
+                'summary' => $i['title'],
+                'description' => $i['body'] ?? null,
+                'issue_status_id' => $statusId,
+                'issue_type_id' => $issueTypeId,
                 'issue_priority_id' => $issuePriorityId,
-                'updated_at'        => $i['updated_at'] ?? now(),
-                'closed_at'         => $i['closed_at'] ?? null,
+                'updated_at' => $i['updated_at'] ?? now(),
+                'closed_at' => $i['closed_at'] ?? null,
             ])->save();
         }
 
         $existingExternalRef->fill([
-            'state'   => $i['state'] ?? null,
-            'url'     => $i['url'] ?? null,
+            'external_issue_id' => (string) ($i['external_issue_id'] ?? $existingExternalRef->external_issue_id),
+            'state' => $i['state'] ?? null,
+            'url' => $i['url'] ?? null,
             'payload' => $i['raw'] ?? null,
-            'number'  => $issue?->number ?? $existingExternalRef->number,
+            'number' => (int) ($i['number'] ?? $existingExternalRef->number),
         ])->save();
+
+        return $issue;
     }
 
-    private function createNewIssue($i, $project, $repository, $statusId, $issueTypeId, $issuePriorityId): void
-    {
+    private function createNewIssue(
+        array $i,
+              $project,
+              $repository,
+        int $statusId,
+        string $issueTypeId,
+        string $issuePriorityId
+    ): Issue {
         $issue = Issue::query()->create([
-            'project_id'        => $project->id,
-            'summary'           => $i['title'],
-            'description'       => $i['body'] ?? null,
-            'issue_status_id'   => $statusId,
-            'issue_type_id'     => $issueTypeId,
+            'project_id' => $project->id,
+            'summary' => $i['title'],
+            'description' => $i['body'] ?? null,
+            'issue_status_id' => $statusId,
+            'issue_type_id' => $issueTypeId,
             'issue_priority_id' => $issuePriorityId,
-            'created_at'        => $i['created_at'] ?? now(),
-            'updated_at'        => $i['updated_at'] ?? now(),
-            'closed_at'         => $i['closed_at'] ?? null,
+            'created_at' => $i['created_at'] ?? now(),
+            'updated_at' => $i['updated_at'] ?? now(),
+            'closed_at' => $i['closed_at'] ?? null,
         ]);
 
         IssueExternalRef::query()->create([
-            'issue_id'          => $issue->id,
-            'repository_id'     => $repository->id,
-            'provider'          => $repository->provider,
-            'external_issue_id' => (string)($i['external_issue_id'] ?? ''),
-            'number'            => (int)($i['number'] ?? 0),
-            'url'               => $i['url'] ?? null,
-            'state'             => $i['state'] ?? null,
-            'payload'           => $i['raw'] ?? null,
+            'issue_id' => $issue->id,
+            'repository_id' => $repository->id,
+            'provider' => $repository->provider,
+            'external_issue_id' => (string) ($i['external_issue_id'] ?? ''),
+            'number' => (int) ($i['number'] ?? 0),
+            'url' => $i['url'] ?? null,
+            'state' => $i['state'] ?? null,
+            'payload' => $i['raw'] ?? null,
         ]);
+
+        return $issue;
     }
 
     private function mapUsersToIssue($i, $repository, $issue): void
