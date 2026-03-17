@@ -41,6 +41,27 @@
                         @error('description') <div class="form-text text-danger">{{ $message }}</div> @enderror
                     </div>
 
+                    <div class="col-12">
+                        <x-label for="milestoneId" value="Milestone / Release"/>
+                        <select id="milestoneId"
+                                wire:model="milestoneId"
+                                class="form-select"
+                            @disabled(count($milestoneOptions) === 0)>
+                            <option value="">{{ __('None') }}</option>
+                            @foreach ($milestoneOptions as $opt)
+                                <option value="{{ $opt['id'] }}">{{ $opt['name'] }}</option>
+                            @endforeach
+                        </select>
+
+                        @if (count($milestoneOptions) === 0)
+                            <div class="form-text text-body-secondary">
+                                {{ __('No milestones have been created for this project yet.') }}
+                            </div>
+                        @endif
+
+                        @error('milestoneId') <div class="form-text text-danger">{{ $message }}</div> @enderror
+                    </div>
+
                     <div class="col-sm-4">
                         <x-label for="typeId" value="Type"/>
                         <select id="typeId" wire:model="typeId" class="form-select" @disabled(count($typeOptions)===1)>

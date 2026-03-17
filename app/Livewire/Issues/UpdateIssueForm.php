@@ -6,11 +6,13 @@ use App\Models\Issue;
 use App\Models\IssuePriority;
 use App\Models\IssueStatus;
 use App\Models\IssueType;
+use App\Models\Milestone;
 use App\Models\Project;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -67,6 +69,11 @@ final class UpdateIssueForm extends Component
     #[Validate(['due_at_input' => 'nullable|date_format:Y-m-d\TH:i'])]
     public ?string $due_at_input = null;
 
+    /** @var array<int, array{id:string,name:string}> */
+    public array $milestoneOptions = [];
+
+    #[Validate(['milestone_id' => 'nullable|uuid'])]
+    public ?string $milestone_id = null;
 
     public function mount(Project $project, Issue $issue): void
     {
@@ -106,6 +113,27 @@ final class UpdateIssueForm extends Component
         // You may want to scope to project members; for now list active users.
         $this->assigneeOptions = User::query()
             ->select('id', 'name')->orderBy('name')->limit(200)->get()->toArray();
+        $this->milestoneOptions = Milestone::query()
+            ->where('project_id', $project->id)
+            ->orderByRaw('case when due_at is null then 1 else 0 end')
+            ->orderBy('due_at')
+            ->orderBy('name')
+            ->limit(200)
+            ->get(['id', 'name', 'type', 'version', 'due_at'])
+            ->map(function (Milestone $m): array {
+                $label = $m->name;
+
+                if ($m->type?->value === 'release' && $m->version) {
+                    $label .= ' — ' . $m->version;
+                }
+
+                if ($m->due_at) {
+                    $label .= ' (due ' . $m->due_at->format('M j, Y') . ')';
+                }
+
+                return ['id' => (string) $m->id, 'name' => $label];
+            })
+            ->toArray();
 
         // Seed fields
         $this->summary          = (string) $issue->summary;
@@ -117,6 +145,7 @@ final class UpdateIssueForm extends Component
         $this->story_points     = $issue->story_points;
         $this->estimate_minutes = $issue->estimate_minutes;
         $this->tags             = $issue->tags->pluck('name')->implode(', ');
+        $this->milestone_id = $issue->milestone_id ?: null;
 
         $tz = auth()->user()->timezone ?? config('app.timezone', 'UTC');
 
@@ -136,6 +165,11 @@ final class UpdateIssueForm extends Component
             'starts_at_input' => 'nullable|date_format:Y-m-d\TH:i',
             'due_at_input'    => 'nullable|date_format:Y-m-d\TH:i',
             'issue_type_id' => 'required|exists:issue_types,id',
+            'milestone_id'    => [
+                'nullable',
+                'uuid',
+                Rule::exists('milestones', 'id')->where('project_id', $this->project->id),
+            ],
         ]);
 
         $tz = auth()->user()->timezone ?? config('app.timezone', 'UTC');
@@ -164,6 +198,7 @@ final class UpdateIssueForm extends Component
             'estimate_minutes'  => $this->estimate_minutes,
             'starts_at'         => $start,
             'due_at'            => $due,
+            'milestone_id'      => $this->milestone_id,
         ]);
 
         $this->issue->save();

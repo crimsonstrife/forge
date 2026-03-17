@@ -57,6 +57,7 @@ class ProjectResource extends Resource
             RelationManagers\IssueStatusesRelationManager::class,
             RelationManagers\IssuePrioritiesRelationManager::class,
             RelationManagers\StatusTransitionsRelationManager::class,
+            RelationManagers\MilestonesRelationManager::class,
         ];
     }
 
@@ -70,11 +71,11 @@ class ProjectResource extends Resource
         ];
     }
 
-//    public static function canAccess(): bool
-//    {
-//        $u = auth()->user();
-//        return ($u?->can('admin.panel.access') && $u?->can('projects.manage')) || $u?->can('is-super-admin');
-//    }
+    //    public static function canAccess(): bool
+    //    {
+    //        $u = auth()->user();
+    //        return ($u?->can('admin.panel.access') && $u?->can('projects.manage')) || $u?->can('is-super-admin');
+    //    }
 
     public static function getGloballySearchableAttributes(): array
     {
