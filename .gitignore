@@ -28,3 +28,4 @@ forge.code-workspace
 /VERSION
 bad-deps.txt
 check-bad-deps.sh
+/.ai/mcp/mcp.json
