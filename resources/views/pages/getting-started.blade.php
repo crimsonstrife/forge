@@ -73,7 +73,7 @@ middleware(['auth', 'verified']);
                         <p class="text-uppercase small text-body-secondary fw-semibold mb-2">{{ __('Hands-on walkthroughs') }}</p>
                         <h2 class="h4 mb-1">{{ __('Launch tours against a private sample project when you need more context') }}</h2>
                         <p class="text-body-secondary mb-0">
-                            {{ __('Project and issue walkthroughs create a private Forge Sandbox the first time you launch them, so new users can explore deeper screens without needing a real project on day one.') }}
+                            {{ __('Project and issue walkthroughs create a private Forge Sandbox the first time you launch them, so new users can explore deeper screens like backlog planning without needing a real project on day one.') }}
                         </p>
                     </div>
 

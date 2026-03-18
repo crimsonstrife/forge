@@ -270,6 +270,8 @@ render(function (View $view, Project $project, Issue $issue) {
                 @endif
             </div>
             <div class="d-flex gap-2" data-tour="issue-actions">
+                <a href="{{ route('projects.backlog', ['project' => $project]) }}"
+                   class="btn btn-outline-secondary btn-sm">Backlog</a>
                 <a href="{{ route('projects.timeline', ['project' => $project]) }}"
                    class="btn btn-outline-secondary btn-sm">Timeline</a>
                 <a href="{{ route('projects.calendar', ['project' => $project]) }}"
