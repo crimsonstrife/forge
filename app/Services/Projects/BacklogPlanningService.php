@@ -50,14 +50,23 @@ final class BacklogPlanningService
 
             $nextOrder = $this->nextPlanningOrder($project->id, $targetSprintId);
 
+            $issueUpdates = [];
+
             foreach ($orderedIds as $offset => $issueId) {
-                Issue::query()
-                    ->whereKey($issueId)
-                    ->where('project_id', $project->id)
-                    ->update([
-                        'sprint_id' => $targetSprintId,
-                        'planning_order' => $nextOrder + $offset,
-                    ]);
+                $issueUpdates[] = [
+                    'id' => $issueId,
+                    'project_id' => $project->id,
+                    'sprint_id' => $targetSprintId,
+                    'planning_order' => $nextOrder + $offset,
+                ];
+            }
+
+            if ($issueUpdates !== []) {
+                Issue::upsert(
+                    $issueUpdates,
+                    ['id', 'project_id'],
+                    ['sprint_id', 'planning_order']
+                );
             }
 
             foreach ($this->uniqueLaneIds($lanesToNormalize) as $laneSprintId) {
@@ -96,17 +105,28 @@ final class BacklogPlanningService
 
             $rank = 1;
 
+            $issueUpdates = [];
+
             foreach ($orderedIssueIds as $issueId) {
                 if (! in_array($issueId, $laneIssueIds, true)) {
                     continue;
                 }
 
-                Issue::query()
-                    ->whereKey($issueId)
-                    ->where('project_id', $project->id)
-                    ->update(['planning_order' => $rank]);
+                $issueUpdates[] = [
+                    'id' => $issueId,
+                    'project_id' => $project->id,
+                    'planning_order' => $rank,
+                ];
 
                 $rank++;
+            }
+
+            if ($issueUpdates !== []) {
+                Issue::upsert(
+                    $issueUpdates,
+                    ['id', 'project_id'],
+                    ['planning_order']
+                );
             }
         });
     }
