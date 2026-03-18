@@ -8,7 +8,7 @@ middleware(['auth', 'verified']);
 ?>
 
 <x-app-layout>
-    <div class="container mx-auto py-4">
+    <div class="container mx-auto py-4" data-tour="support-page">
         <h1 class="h4 mb-3 d-flex justify-content-between align-items-center">
             <span>Support triage</span>
             <a class="btn btn-outline-secondary btn-sm" href="{{ route('support.staff.products.index') }}">Manage Products</a>

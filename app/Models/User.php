@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Traits\HasPermissionSets;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -26,18 +26,21 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     use HasApiTokens;
-    use HasPermissionSets;
-    use HasPermissions;
     /** @use HasFactory<UserFactory> */
     use HasFactory;
+    use HasPermissions;
+
+    use HasPermissionSets;
+
     use HasProfilePhoto;
+    use HasRoles;
     use HasTeams;
+    use HasUuids;
     use Notifiable;
     use TwoFactorAuthenticatable;
-    use HasUuids;
-    use HasRoles;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     /**
@@ -82,7 +85,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'id' => 'string'
+            'id' => 'string',
         ];
     }
 
@@ -107,6 +110,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->hasMany(SocialAccount::class);
     }
 
+    public function tourStates(): HasMany
+    {
+        return $this->hasMany(UserTourState::class);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->hasAnyPermission(
@@ -115,9 +123,6 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         );
     }
 
-    /**
-     * @return MorphMany
-     */
     public function notifications(): MorphMany
     {
         /** @phpstan-ignore-next-line */
@@ -126,6 +131,6 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     public function broadcastChannelName(): string
     {
-        return 'App.Models.User.' . $this->getKey();
+        return 'App.Models.User.'.$this->getKey();
     }
 }

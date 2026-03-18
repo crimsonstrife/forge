@@ -3,6 +3,7 @@
     /** @var \App\Models\User|null $user */
     $user = auth()->user();
     $allowReg = app(\App\Settings\AuthSettings::class)->allowRegistration ?? true;
+    $canUseOnboarding = $user?->hasVerifiedEmail() ?? false;
 @endphp
 <nav class="navbar navbar-expand-md bg-body border-bottom" x-data>
     <div class="container mx-auto py-4">
@@ -12,6 +13,7 @@
         </a>
         <!-- Toggler -->
         <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#appNavbar"
+                data-tour="nav-toggle"
                 aria-controls="appNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -29,7 +31,7 @@
 
                     <!-- Projects -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="projectsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-tour="projects-nav">
                             {{ __('Projects') }}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="projectsDropdown">
@@ -80,7 +82,7 @@
 
                     <!-- Goals -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="goalDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="goalDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-tour="goals-nav">
                             {{ __('Goals') }}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="goalDropdown">
@@ -102,7 +104,7 @@
 
                     <!-- Support/Service Desk -->
                     <li class="nav-item">
-                        <x-nav-link href="{{ $user ? route('support.staff.index') : url('/support/staff') }}" :active="request()->routeIs('support.staff.index')">
+                        <x-nav-link href="{{ $user ? route('support.staff.index') : url('/support/staff') }}" :active="request()->routeIs('support.staff.index')" data-tour="support-nav">
                             {{ __('Support') }}
                         </x-nav-link>
                     </li>
@@ -137,6 +139,7 @@
             @auth
             <!-- Middle: global search -->
             <form action="{{ Route::has('search') ? route('search') : url('/search') }}" method="GET"
+                  data-tour="global-search"
                   class="d-none d-md-flex align-items-center me-3">
                 <label for="global-search" class="visually-hidden">{{ __('Search') }}</label>
                 <input id="global-search" name="q" type="search"
@@ -151,7 +154,7 @@
                     <!-- Create -->
                     <div class="dropdown">
                         <style>#recordCreate:after { content: none !important;}</style>
-                        <wa-button id="recordCreate" class="dropdown-toggle" variant="brand" data-bs-toggle="dropdown" aria-expanded="false">
+                        <wa-button id="recordCreate" class="dropdown-toggle" variant="brand" data-bs-toggle="dropdown" aria-expanded="false" data-tour="create-menu">
                             <wa-icon slot="start" name="plus"></wa-icon>
                             {{ __('Create') }}
                         </wa-button>
@@ -176,7 +179,7 @@
                         @php($currentTeam = $user?->currentTeam)
                         <div class="dropdown">
                             <button class="btn dropdown-toggle" type="button" id="teamsDropdown"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    data-bs-toggle="dropdown" aria-expanded="false" data-tour="teams-menu">
                                 {{ $currentTeam?->name ?? __('No team selected') }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="teamsDropdown">
@@ -212,7 +215,7 @@
                     <!-- Settings / Profile -->
                     <div class="dropdown">
                         <button class="btn dropdown-toggle d-flex align-items-center gap-2" type="button"
-                                id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-tour="account-menu">
                             @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                                 <x-avatar :src="$user?->profile_photo_url" :name="$user?->name" preset="md" />
                             @else
@@ -225,6 +228,16 @@
                             <li><x-dropdown-link href="{{ route('profile.show') }}">{{ __('Profile') }}</x-dropdown-link></li>
                             @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
                                 <li><x-dropdown-link href="{{ route('api-tokens.index') }}">{{ __('API Tokens') }}</x-dropdown-link></li>
+                            @endif
+
+                            @if ($canUseOnboarding)
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <button type="button" class="dropdown-item" data-start-tour="main-app">
+                                        {{ __('Take the tour') }}
+                                    </button>
+                                </li>
+                                <li><x-dropdown-link href="{{ route('getting-started') }}">{{ __('Getting Started') }}</x-dropdown-link></li>
                             @endif
 
                             <li><hr class="dropdown-divider"></li>

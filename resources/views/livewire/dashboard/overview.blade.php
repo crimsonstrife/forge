@@ -1,7 +1,7 @@
 <div class="row g-4">
     {{-- Column 1: My Work --}}
     <section class="col-lg-4 d-flex flex-column gap-4">
-        <div class="card">
+        <div class="card" data-tour="issues-overview">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <h3 class="h6 mb-0">{{ __('My open issues') }}</h3>

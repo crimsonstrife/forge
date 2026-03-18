@@ -8,7 +8,9 @@ import "./echo";
 import "./kanban.js";
 // Bootstrap (JS and CSS)
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import * as bootstrap from "bootstrap";
+window.bootstrap = bootstrap;
+import "./onboarding.js";
 
 // Web Awesome styles
 import "@awesome.me/webawesome/dist/styles/themes/default.css";
