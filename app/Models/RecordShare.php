@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\AccessLevel;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -19,6 +20,12 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 class RecordShare extends Model
 {
+    use HasUuids;
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
     /** @var array<int, string> */
     protected $fillable = [
         'shareable_type', 'shareable_id',

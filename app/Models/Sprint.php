@@ -13,20 +13,21 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Sprint extends Model
 {
+    use HasRecordShares;
     use HasUuids;
     use SoftDeletes;
-    use HasRecordShares;
 
     protected $fillable = [
-        'project_id', 'name', 'goal', 'start_date', 'end_date', 'sort_order',
+        'project_id', 'name', 'goal', 'start_date', 'end_date', 'capacity', 'sort_order',
     ];
 
     protected function casts(): array
     {
         return [
             'state' => SprintState::class,
+            'capacity' => 'integer',
             'start_date' => 'date',
-            'end_date'   => 'date',
+            'end_date' => 'date',
         ];
     }
 
