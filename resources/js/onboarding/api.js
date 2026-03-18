@@ -25,9 +25,9 @@ async function requestJson (url, method, payload = {}) {
         Accept: 'application/json',
         'Content-Type': 'application/json',
         'X-CSRF-TOKEN':
-          document
-            .querySelector('meta[name="csrf-token"]')
-            ?.getAttribute('content') ?? ''
+                    document
+                      .querySelector('meta[name="csrf-token"]')
+                      ?.getAttribute('content') ?? ''
       },
       credentials: 'same-origin',
       body: method === 'GET' ? undefined : JSON.stringify(payload)
@@ -35,7 +35,7 @@ async function requestJson (url, method, payload = {}) {
 
     if (!response.ok) {
       throw new Error(
-        `Onboarding request failed with status ${response.status}.`
+                `Onboarding request failed with status ${response.status}.`
       )
     }
 

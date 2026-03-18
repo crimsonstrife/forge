@@ -107,9 +107,9 @@ function coordinatesForPlacement (placement, rect, bounds) {
 function fitsViewport (coords, rect) {
   return (
     coords.top >= VIEWPORT_MARGIN &&
-    coords.left >= VIEWPORT_MARGIN &&
-    coords.top + rect.height <= window.innerHeight - VIEWPORT_MARGIN &&
-    coords.left + rect.width <= window.innerWidth - VIEWPORT_MARGIN
+        coords.left >= VIEWPORT_MARGIN &&
+        coords.top + rect.height <= window.innerHeight - VIEWPORT_MARGIN &&
+        coords.left + rect.width <= window.innerWidth - VIEWPORT_MARGIN
   )
 }
 

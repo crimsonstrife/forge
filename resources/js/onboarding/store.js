@@ -10,7 +10,7 @@ const DEFAULT_MESSAGES = {
   dismissAriaLabel: 'End tour',
   continueToPage: 'Continue to the next page to keep the tour moving.',
   collapsedNavigationHint:
-    'This step may be tucked inside a collapsible navigation area on smaller screens.'
+        'This step may be tucked inside a collapsible navigation area on smaller screens.'
 }
 
 export class OnboardingStore {
@@ -87,7 +87,8 @@ export class OnboardingStore {
   }
 
   message (key, replacements = {}) {
-    const template = this.config?.messages?.[key] ?? DEFAULT_MESSAGES[key] ?? ''
+    const template =
+            this.config?.messages?.[key] ?? DEFAULT_MESSAGES[key] ?? ''
 
     return interpolateTemplate(template, replacements)
   }

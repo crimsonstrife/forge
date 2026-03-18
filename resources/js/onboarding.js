@@ -294,7 +294,9 @@ function maybeExpandNavigation () {
     return false
   }
 
-  window.bootstrap.Collapse.getOrCreateInstance(navbar, { toggle: false }).show()
+  window.bootstrap.Collapse.getOrCreateInstance(navbar, {
+    toggle: false
+  }).show()
 
   return true
 }
@@ -316,10 +318,10 @@ function buildCardContent (step, options = {}) {
     dismissAriaLabel: store.message('dismissAriaLabel'),
     dismissLabel: store.message('endTour'),
     primaryLabel:
-      options.primaryLabel ??
-      (isLastStep ? store.message('finish') : store.message('next')),
+            options.primaryLabel ??
+            (isLastStep ? store.message('finish') : store.message('next')),
     primaryControl:
-      options.primaryControl ?? (isLastStep ? 'finish' : 'next'),
+            options.primaryControl ?? (isLastStep ? 'finish' : 'next'),
     showBack: stepIndex > 0,
     backLabel: store.message('back')
   }

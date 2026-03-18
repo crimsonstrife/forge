@@ -131,7 +131,7 @@ function renderCard (card, content) {
 
   const actions = createElement('div', {
     className:
-      'd-flex align-items-center justify-content-between flex-wrap gap-2 mt-3'
+            'd-flex align-items-center justify-content-between flex-wrap gap-2 mt-3'
   })
   const leftActions = createElement('div')
   const rightActions = createElement('div', {

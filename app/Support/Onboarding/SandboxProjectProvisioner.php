@@ -19,7 +19,8 @@ final class SandboxProjectProvisioner
 {
     public function __construct(
         private ProjectSchemeSeeder $schemeSeeder,
-    ) {}
+    ) {
+    }
 
     /**
      * @return array{project: Project, issue: Issue}
@@ -58,7 +59,7 @@ final class SandboxProjectProvisioner
     {
         $name = sprintf('Forge Sandbox %s', strtoupper(substr($user->getKey(), 0, 6)));
 
-        $project = new Project;
+        $project = new Project();
         $project->name = $name;
         $project->key = app(ProjectKeyGenerator::class)->uniqueForName($name, 4);
         $project->description = __('A private sample project for onboarding tours. It is safe to edit or delete once you are done exploring Forge.');
