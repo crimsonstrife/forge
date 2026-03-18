@@ -2,7 +2,7 @@
 
 return [
     'tours' => [
-        'main_app' => [
+        'main-app' => [
             'label' => 'Main app',
             'steps' => [
                 'dashboard' => [
@@ -40,6 +40,64 @@ return [
                 'account' => [
                     'title' => 'Account and help',
                     'body' => 'Manage your profile, API tokens, and relaunch this tour or the Getting Started guide later.',
+                ],
+            ],
+        ],
+        'project-detail' => [
+            'label' => 'Project walkthrough',
+            'steps' => [
+                'header' => [
+                    'title' => 'Project overview',
+                    'body' => 'This header gives you the project identity and the most common project-level actions.',
+                ],
+                'tabs' => [
+                    'title' => 'Project views',
+                    'body' => 'Move between overview, board, scrum, calendar, timeline, code, and transition screens from the project tabs.',
+                ],
+                'status_summary' => [
+                    'title' => 'Status summary',
+                    'body' => 'Use the status summary to see how work is distributed across the workflow at a glance.',
+                ],
+                'assigned_issues' => [
+                    'title' => 'Assigned work',
+                    'body' => 'This section keeps the issues assigned to you in the current project easy to revisit.',
+                ],
+                'activity' => [
+                    'title' => 'Recent activity',
+                    'body' => 'Project activity shows recent changes touching the project and its issues so you can catch up quickly.',
+                ],
+                'sidebar' => [
+                    'title' => 'Project details and admin tools',
+                    'body' => 'The sidebar is where you review core project metadata, quick-create work, and milestone or admin links.',
+                ],
+            ],
+        ],
+        'issue-detail' => [
+            'label' => 'Issue walkthrough',
+            'steps' => [
+                'actions' => [
+                    'title' => 'Issue actions',
+                    'body' => 'These actions let you move between project views, change status, start timers, and jump into editing.',
+                ],
+                'header' => [
+                    'title' => 'Issue summary',
+                    'body' => 'The issue header keeps the core record details together: status, type, priority, ownership, estimates, and tags.',
+                ],
+                'related_work' => [
+                    'title' => 'Related work',
+                    'body' => 'Use linked work to connect this issue to other issues or records when the work spans more than one item.',
+                ],
+                'details_tabs' => [
+                    'title' => 'Issue details',
+                    'body' => 'Overview, sub-issues, activity, time, and notes all live here so the issue stays the source of truth for execution.',
+                ],
+                'attachments' => [
+                    'title' => 'Attachments',
+                    'body' => 'Add screenshots, files, and other supporting material directly on the issue when the work needs context.',
+                ],
+                'comments' => [
+                    'title' => 'Comments',
+                    'body' => 'Comments are the main collaboration thread for the issue and are the best place for updates or decisions.',
                 ],
             ],
         ],

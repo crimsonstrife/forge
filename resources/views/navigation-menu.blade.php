@@ -233,8 +233,33 @@
                             @if ($canUseOnboarding)
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <button type="button" class="dropdown-item" data-start-tour="main-app">
+                                    <button
+                                        type="button"
+                                        class="dropdown-item"
+                                        data-start-tour="main-app"
+                                        data-start-tour-route="{{ route('onboarding.tours.start', ['tour' => 'main-app']) }}"
+                                    >
                                         {{ __('Take the tour') }}
+                                    </button>
+                                </li>
+                                <li>
+                                    <button
+                                        type="button"
+                                        class="dropdown-item"
+                                        data-start-tour="project-detail"
+                                        data-start-tour-route="{{ route('onboarding.tours.start', ['tour' => 'project-detail']) }}"
+                                    >
+                                        {{ __('Project walkthrough') }}
+                                    </button>
+                                </li>
+                                <li>
+                                    <button
+                                        type="button"
+                                        class="dropdown-item"
+                                        data-start-tour="issue-detail"
+                                        data-start-tour-route="{{ route('onboarding.tours.start', ['tour' => 'issue-detail']) }}"
+                                    >
+                                        {{ __('Issue walkthrough') }}
                                     </button>
                                 </li>
                                 <li><x-dropdown-link href="{{ route('getting-started') }}">{{ __('Getting Started') }}</x-dropdown-link></li>

@@ -33,6 +33,7 @@ class StartTourController extends Controller
         $state->save();
 
         return response()->json([
+            'tour' => TourRegistry::definition($tour, $user),
             'state' => $state->toResponsePayload(),
             'step' => $steps[0],
         ]);

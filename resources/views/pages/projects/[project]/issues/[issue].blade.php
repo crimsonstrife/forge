@@ -269,7 +269,7 @@ render(function (View $view, Project $project, Issue $issue) {
                     </div>
                 @endif
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2" data-tour="issue-actions">
                 <a href="{{ route('projects.timeline', ['project' => $project]) }}"
                    class="btn btn-outline-secondary btn-sm">Timeline</a>
                 <a href="{{ route('projects.calendar', ['project' => $project]) }}"
@@ -328,7 +328,7 @@ render(function (View $view, Project $project, Issue $issue) {
             <div class="d-grid gap-3">
 
                 {{-- Header card --}}
-                <div class="card shadow-sm">
+                <div class="card shadow-sm" data-tour="issue-overview-header">
                     <div class="card-body d-flex gap-4 justify-content-between">
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center gap-2">
@@ -455,7 +455,7 @@ render(function (View $view, Project $project, Issue $issue) {
 
                 <div class="row g-3">
                     <div class="col-lg-12 d-flex flex-column gap-3">
-                        <div class="card shadow-sm">
+                        <div class="card shadow-sm" data-tour="issue-related-works">
                             <div class="card-header">
                                 <h3 class="h6 mb-2">{{ __('Related Works') }}</h3>
                             </div>
@@ -469,7 +469,7 @@ render(function (View $view, Project $project, Issue $issue) {
                 <div class="row g-3">
                     <!-- Main content: tabs -->
                     <div class="col-lg-8 d-flex flex-column gap-3">
-                        <div class="card shadow-sm">
+                        <div class="card shadow-sm" data-tour="issue-details-tabs">
                             <div class="card-body">
                                 <h4 class="h6 mb-3">Issue Details</h4>
 
@@ -688,7 +688,7 @@ render(function (View $view, Project $project, Issue $issue) {
                                 </noscript>
                             </div>
                         </div>
-                        <div class="card shadow-sm">
+                        <div class="card shadow-sm" data-tour="issue-attachments">
                             <div class="card-body d-flex align-items-center justify-content-between">
                                 <h4 class="h6 mb-0">Attachments (<span
                                         x-ref="attachmentsCount">{{ $issue->attachments_count }}</span>)</h4>
@@ -726,7 +726,7 @@ render(function (View $view, Project $project, Issue $issue) {
                                 </div>
                             </div>
                         </div>
-                        <div class="card shadow-sm">
+                        <div class="card shadow-sm" data-tour="issue-comments">
                             <div class="card-body">
                                 <h4 class="h6">Comments ({{ $issue->comments_count }})</h4>
                                 <livewire:issues.comments :issue="$issue"/>

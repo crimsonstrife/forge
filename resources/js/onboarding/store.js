@@ -52,6 +52,12 @@ export class OnboardingStore {
     }
   }
 
+  setTour (tour) {
+    if (this.config) {
+      this.config.tour = tour
+    }
+  }
+
   currentRoute () {
     return this.config?.currentRoute ?? null
   }

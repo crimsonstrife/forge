@@ -270,7 +270,7 @@ render(function (View $view, Project $project) {
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+        <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap" data-tour="project-overview-header">
             <div>
                 <h2 class="h4 mb-1">{{ $project->key }} — {{ $project->name }}</h2>
                 <div class="small text-body-secondary d-flex flex-wrap gap-3">
@@ -318,7 +318,7 @@ render(function (View $view, Project $project) {
                     {{-- Left: Overview --}}
                     <div class="col-lg-8 d-flex flex-column gap-4">
                         {{-- Status summary --}}
-                        <div class="card">
+                        <div class="card" data-tour="project-status-summary">
                             <div class="card-body">
                                 <h3 class="h6 mb-2">{{ __('Issues by status') }}</h3>
                                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2 mt-1">
@@ -344,7 +344,7 @@ render(function (View $view, Project $project) {
                         </div>
 
                         {{-- My work --}}
-                        <div class="card">
+                        <div class="card" data-tour="project-assigned-issues">
                             <div class="card-body">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <h3 class="h6 mb-0">{{ __('My assigned issues') }}</h3>
@@ -376,7 +376,7 @@ render(function (View $view, Project $project) {
                         </div>
 
                         {{-- Activity --}}
-                        <div class="card">
+                        <div class="card" data-tour="project-activity">
                             <div class="card-body">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <h3 class="h6 mb-0">{{ __('Recent activity') }}</h3>
@@ -480,7 +480,7 @@ render(function (View $view, Project $project) {
                     </div>
 
                     {{-- Right: Sidebar --}}
-                    <aside class="col-lg-4 d-flex flex-column gap-4">
+                    <aside class="col-lg-4 d-flex flex-column gap-4" data-tour="project-sidebar">
                         <div class="card">
                             <div class="card-body">
                                 <h3 class="h6 mb-2">{{ __('Project info') }}</h3>

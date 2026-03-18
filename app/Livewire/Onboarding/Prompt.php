@@ -24,43 +24,26 @@ class Prompt extends Component
             return;
         }
 
-        $tour = TourRegistry::MAIN_APP;
         $currentRoute = request()->route()?->getName();
-        $steps = TourRegistry::steps($tour, $user);
+        $tour = $this->resolvedTourName($user->getKey());
+        $tourDefinition = TourRegistry::definition($tour, $user);
 
-        if ($steps === []) {
+        if ($tourDefinition === []) {
             return;
         }
 
-        $state = $currentRoute === 'dashboard'
-            ? UserTourState::query()->firstOrCreate(
-                [
-                    'user_id' => $user->getKey(),
-                    'tour' => $tour,
-                ],
-                [
-                    'status' => UserTourState::STATUS_PENDING,
-                ]
-            )
-            : UserTourState::query()
-                ->where('user_id', $user->getKey())
-                ->where('tour', $tour)
-                ->first();
+        $state = $this->resolvedState($user->getKey(), $tour, $currentRoute);
 
         $this->config = [
             'enabled' => true,
             'currentRoute' => $currentRoute,
-            'shouldPrompt' => $currentRoute === 'dashboard' && $this->shouldPrompt($state),
+            'shouldPrompt' => $tour === TourRegistry::MAIN_APP
+                && $currentRoute === 'dashboard'
+                && $this->shouldPrompt($state),
             'messages' => $this->messages(),
             'tour' => [
-                'name' => $tour,
-                'label' => __('onboarding.tours.main_app.label'),
-                'routes' => [
-                    'start' => route('onboarding.tours.start', ['tour' => $tour]),
-                    'update' => route('onboarding.tours.update', ['tour' => $tour]),
-                ],
+                ...$tourDefinition,
                 'state' => $this->statePayload($state),
-                'steps' => $steps,
             ],
         ];
     }
@@ -107,5 +90,35 @@ class Prompt extends Component
             'continueToPage' => __('onboarding.ui.continue_to_page'),
             'collapsedNavigationHint' => __('onboarding.ui.collapsed_navigation_hint'),
         ];
+    }
+
+    private function resolvedTourName(string $userId): string
+    {
+        return UserTourState::query()
+            ->where('user_id', $userId)
+            ->where('status', UserTourState::STATUS_ACTIVE)
+            ->whereIn('tour', TourRegistry::names())
+            ->latest('updated_at')
+            ->value('tour') ?? TourRegistry::MAIN_APP;
+    }
+
+    private function resolvedState(string $userId, string $tour, ?string $currentRoute): ?UserTourState
+    {
+        if ($tour === TourRegistry::MAIN_APP && $currentRoute === 'dashboard') {
+            return UserTourState::query()->firstOrCreate(
+                [
+                    'user_id' => $userId,
+                    'tour' => $tour,
+                ],
+                [
+                    'status' => UserTourState::STATUS_PENDING,
+                ]
+            );
+        }
+
+        return UserTourState::query()
+            ->where('user_id', $userId)
+            ->where('tour', $tour)
+            ->first();
     }
 }

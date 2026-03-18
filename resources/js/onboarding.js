@@ -67,7 +67,10 @@ async function handleOnboardingClick (event) {
   const startButton = event.target.closest('[data-start-tour]')
   if (startButton) {
     event.preventDefault()
-    await startTour(startButton.dataset.startTour)
+    await startTour(
+      startButton.dataset.startTour,
+      startButton.dataset.startTourRoute
+    )
     return
   }
 
@@ -87,19 +90,20 @@ async function handleOnboardingClick (event) {
   }
 }
 
-async function startTour (tourName) {
+async function startTour (tourName, startRoute = null) {
   const activeTour = store.tour()
 
-  if (!activeTour || activeTour.name !== tourName) {
+  const response = await startTourRequest(
+    activeTour?.name === tourName
+      ? activeTour
+      : { routes: { start: startRoute } }
+  )
+
+  if (!response?.state || !response?.tour) {
     return
   }
 
-  const response = await startTourRequest(activeTour)
-
-  if (!response?.state) {
-    return
-  }
-
+  store.setTour(response.tour)
   store.setState(response.state)
   store.dismissPrompt()
   hidePrompt()

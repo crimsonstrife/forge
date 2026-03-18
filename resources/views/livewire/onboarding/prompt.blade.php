@@ -44,7 +44,12 @@
                                 <button type="button" class="btn btn-link text-body-secondary text-decoration-none" data-onboarding-prompt-action="dismiss">
                                     {{ __("Don't show automatically again") }}
                                 </button>
-                                <button type="button" class="btn btn-primary" data-start-tour="main-app">
+                                <button
+                                    type="button"
+                                    class="btn btn-primary"
+                                    data-start-tour="main-app"
+                                    data-start-tour-route="{{ route('onboarding.tours.start', ['tour' => 'main-app']) }}"
+                                >
                                     {{ __('Start tour') }}
                                 </button>
                             </div>
