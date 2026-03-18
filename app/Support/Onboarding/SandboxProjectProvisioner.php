@@ -3,12 +3,15 @@
 namespace App\Support\Onboarding;
 
 use App\Enums\ProjectStage;
+use App\Enums\SprintState;
 use App\Models\Issue;
 use App\Models\IssuePriority;
 use App\Models\IssueStatus;
 use App\Models\IssueType;
 use App\Models\Project;
+use App\Models\Sprint;
 use App\Models\User;
+use App\Services\Projects\BacklogPlanningService;
 use App\Services\Projects\ProjectSchemeSeeder;
 use App\Support\Keys\ProjectKeyGenerator;
 use Illuminate\Support\Facades\DB;
@@ -19,8 +22,8 @@ final class SandboxProjectProvisioner
 {
     public function __construct(
         private ProjectSchemeSeeder $schemeSeeder,
-    ) {
-    }
+        private BacklogPlanningService $backlogPlanning,
+    ) {}
 
     /**
      * @return array{project: Project, issue: Issue}
@@ -33,6 +36,7 @@ final class SandboxProjectProvisioner
             $this->schemeSeeder->seed($project);
 
             $issue = $this->ensureIssues($project, $user);
+            $this->ensureBacklogPlanning($project, $issue);
 
             return [
                 'project' => $project->fresh(),
@@ -59,7 +63,7 @@ final class SandboxProjectProvisioner
     {
         $name = sprintf('Forge Sandbox %s', strtoupper(substr($user->getKey(), 0, 6)));
 
-        $project = new Project();
+        $project = new Project;
         $project->name = $name;
         $project->key = app(ProjectKeyGenerator::class)->uniqueForName($name, 4);
         $project->description = __('A private sample project for onboarding tours. It is safe to edit or delete once you are done exploring Forge.');
@@ -160,6 +164,45 @@ final class SandboxProjectProvisioner
         $project->save();
 
         return $primaryIssue;
+    }
+
+    private function ensureBacklogPlanning(Project $project, Issue $primaryIssue): void
+    {
+        $project->refresh();
+
+        $plannedSprint = $project->sprints()
+            ->where('state', SprintState::Planned->value)
+            ->orderBy('sort_order')
+            ->first();
+
+        if (! $plannedSprint instanceof Sprint) {
+            $plannedSprint = $project->sprints()->create([
+                'name' => __('Sample: Onboarding Sprint'),
+                'goal' => __('Show how backlog planning moves work into a sprint with visible capacity.'),
+                'state' => SprintState::Planned,
+                'start_date' => now()->toDateString(),
+                'end_date' => now()->addDays(14)->toDateString(),
+                'capacity' => 8,
+                'sort_order' => ((int) $project->sprints()->max('sort_order')) + 1,
+            ]);
+        } elseif ($plannedSprint->capacity === null) {
+            $plannedSprint->capacity = 8;
+            $plannedSprint->save();
+        }
+
+        $secondaryTopLevelIssue = $project->issues()
+            ->whereNull('parent_id')
+            ->whereKeyNot($primaryIssue->getKey())
+            ->orderBy('number')
+            ->first();
+
+        if ($secondaryTopLevelIssue instanceof Issue && $secondaryTopLevelIssue->sprint_id !== $plannedSprint->getKey()) {
+            $this->backlogPlanning->moveIssues(
+                $project,
+                [(string) $secondaryTopLevelIssue->getKey()],
+                (string) $plannedSprint->getKey()
+            );
+        }
     }
 
     /**

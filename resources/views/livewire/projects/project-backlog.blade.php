@@ -1,5 +1,5 @@
 <div class="d-flex flex-column gap-4">
-    <div class="rounded border bg-body-tertiary p-3">
+    <div class="rounded border bg-body-tertiary p-3" data-tour="backlog-planning-controls">
         <div class="d-flex flex-column gap-3">
             <div class="d-flex flex-wrap align-items-end gap-2">
                 <div style="min-width: 18rem;">
@@ -137,7 +137,7 @@
 
     <div class="row g-4 align-items-start">
         <div class="col-12 col-xl-5">
-            <div class="rounded border bg-body-tertiary">
+            <div class="rounded border bg-body-tertiary" data-tour="backlog-prioritized-list">
                 <div class="px-3 py-2 border-bottom d-flex align-items-center justify-content-between">
                     <div>
                         <div class="fw-semibold">Prioritized Backlog</div>
@@ -210,7 +210,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-xl-7">
+        <div class="col-12 col-xl-7" data-tour="backlog-sprint-plan">
             <div class="d-flex flex-column gap-3">
                 @forelse ($sprints as $sprint)
                     <div class="rounded border bg-body-tertiary" wire:key="sprint-{{ $sprint['id'] }}">

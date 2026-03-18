@@ -70,6 +70,18 @@ return [
                     'title' => 'Project details and admin tools',
                     'body' => 'The sidebar is where you review core project metadata, quick-create work, and milestone or admin links.',
                 ],
+                'backlog_controls' => [
+                    'title' => 'Backlog planning controls',
+                    'body' => 'Use the backlog surface to filter work, select issues in bulk, create a sprint, and move planned work into it.',
+                ],
+                'backlog_queue' => [
+                    'title' => 'Prioritized backlog',
+                    'body' => 'This queue is where you groom the work that is not in a sprint yet. Rank it, size it, and move the right issues into the next sprint.',
+                ],
+                'backlog_sprints' => [
+                    'title' => 'Sprint plan and capacity',
+                    'body' => 'Each planned sprint shows committed work, remaining capacity, and a place to review what is already scheduled before you start the sprint.',
+                ],
             ],
         ],
         'issue-detail' => [

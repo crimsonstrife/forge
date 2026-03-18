@@ -192,6 +192,24 @@ final class TourRegistry
                 'selector' => '[data-tour="project-sidebar"]',
                 'placement' => 'left',
             ],
+            'backlog_controls' => [
+                'route' => 'projects.backlog',
+                'routeParameters' => ['project' => $project],
+                'selector' => '[data-tour="backlog-planning-controls"]',
+                'placement' => 'bottom',
+            ],
+            'backlog_queue' => [
+                'route' => 'projects.backlog',
+                'routeParameters' => ['project' => $project],
+                'selector' => '[data-tour="backlog-prioritized-list"]',
+                'placement' => 'right',
+            ],
+            'backlog_sprints' => [
+                'route' => 'projects.backlog',
+                'routeParameters' => ['project' => $project],
+                'selector' => '[data-tour="backlog-sprint-plan"]',
+                'placement' => 'left',
+            ],
         ];
 
         foreach ($blueprint as $key => $definition) {

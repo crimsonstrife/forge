@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Issue;
 use App\Models\Project;
+use App\Models\Sprint;
 use App\Models\User;
 use App\Models\UserTourState;
 use App\Support\Onboarding\TourRegistry;
@@ -107,6 +108,10 @@ class OnboardingTest extends TestCase
             route('projects.show', ['project' => $project])
         );
 
+        $tourStepUrls = collect($response->json('tour.steps'))->pluck('url');
+
+        $this->assertTrue($tourStepUrls->contains(route('projects.backlog', ['project' => $project])));
+
         $this->assertTrue(data_get($project->settings, 'onboarding.sandbox'));
         $this->assertDatabaseHas('project_user', [
             'project_id' => $project->getKey(),
@@ -114,6 +119,7 @@ class OnboardingTest extends TestCase
             'role' => 'Owner',
         ]);
         $this->assertGreaterThan(0, $project->issueStatuses()->count());
+        $this->assertGreaterThan(0, Sprint::query()->count());
         $this->assertSame($project->getKey(), $issue->project_id);
         $this->assertSame($user->getKey(), $project->lead_id);
     }
