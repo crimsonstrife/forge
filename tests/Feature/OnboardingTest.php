@@ -119,7 +119,7 @@ class OnboardingTest extends TestCase
             'role' => 'Owner',
         ]);
         $this->assertGreaterThan(0, $project->issueStatuses()->count());
-        $this->assertGreaterThan(0, Sprint::query()->count());
+        $this->assertGreaterThan(0, $project->sprints()->count());
         $this->assertSame($project->getKey(), $issue->project_id);
         $this->assertSame($user->getKey(), $project->lead_id);
     }
