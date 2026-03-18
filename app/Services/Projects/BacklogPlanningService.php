@@ -38,14 +38,15 @@ final class BacklogPlanningService
 
                 $orderedIds[] = (string) $issue->id;
                 $lanesToNormalize[] = $issue->sprint_id;
-                $this->ensureLaneOrdering($project->id, $issue->sprint_id);
             }
 
             if ($orderedIds === []) {
                 return 0;
             }
 
-            $this->ensureLaneOrdering($project->id, $targetSprintId);
+            foreach ($this->uniqueLaneIds($lanesToNormalize) as $laneSprintId) {
+                $this->ensureLaneOrdering($project->id, $laneSprintId);
+            }
 
             $nextOrder = $this->nextPlanningOrder($project->id, $targetSprintId);
 
