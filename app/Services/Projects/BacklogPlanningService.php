@@ -103,12 +103,14 @@ final class BacklogPlanningService
                 ->map(fn ($id) => (string) $id)
                 ->all();
 
+            $laneIssueIdSet = array_flip($laneIssueIds);
+
             $rank = 1;
 
             $issueUpdates = [];
 
             foreach ($orderedIssueIds as $issueId) {
-                if (! in_array($issueId, $laneIssueIds, true)) {
+                if (! isset($laneIssueIdSet[$issueId])) {
                     continue;
                 }
 
