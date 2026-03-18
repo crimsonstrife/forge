@@ -55,6 +55,7 @@ class SetPermissionsTeamContext
             ?? $resolveTeamFromModel($request->route('project'))
             ?? $resolveTeamFromModel($request->route('issue'))
             ?? $resolveId($request->input('team_id'))
+            ?? $resolveId($request->user()?->current_team_id)
             ?? null;
 
         $registrar->setPermissionsTeamId($teamId);

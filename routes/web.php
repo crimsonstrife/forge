@@ -5,6 +5,7 @@ use App\Http\Controllers\HealthCheckResultsController;
 use App\Http\Controllers\IssueActionItemController;
 use App\Http\Controllers\IssueAttachmentController;
 use App\Http\Controllers\IssueController;
+use App\Http\Controllers\IssueSavedViewController;
 use App\Http\Controllers\IssueVcsController;
 use App\Http\Controllers\Notifications\MarkAllReadController;
 use App\Http\Controllers\Onboarding\StartTourController;
@@ -109,6 +110,10 @@ Route::middleware([
         ->name('projects.destroy');
     Route::delete('/projects/{project}/issues/{issue}', IssueController::class)
         ->name('issues.destroy');
+    Route::post('/issues/views', [IssueSavedViewController::class, 'store'])
+        ->name('issues.views.store');
+    Route::delete('/issues/views/{savedIssueView}', [IssueSavedViewController::class, 'destroy'])
+        ->name('issues.views.destroy');
     Route::get('/projects/{project}/milestones', [ProjectMilestoneController::class, 'index'])
         ->name('projects.milestones.index');
 

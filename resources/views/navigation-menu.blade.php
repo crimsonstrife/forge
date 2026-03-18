@@ -58,6 +58,12 @@
                         </ul>
                     </li>
 
+                    <li class="nav-item">
+                        <x-nav-link href="{{ Route::has('issues.explorer') ? route('issues.explorer') : url('/issues') }}" :active="request()->routeIs('issues.explorer')">
+                            {{ __('Issues') }}
+                        </x-nav-link>
+                    </li>
+
                     <!-- Organizations -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="orgDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
