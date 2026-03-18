@@ -1,450 +1,460 @@
-const CONFIG_SELECTOR = "[data-forge-onboarding-config]";
-const PROMPT_SELECTOR = "[data-forge-onboarding-prompt]";
-const TOUR_PADDING = 12;
-const TOUR_GAP = 16;
-const VIEWPORT_MARGIN = 16;
+const CONFIG_SELECTOR = '[data-forge-onboarding-config]'
+const PROMPT_SELECTOR = '[data-forge-onboarding-prompt]'
+const TOUR_PADDING = 12
+const TOUR_GAP = 16
+const VIEWPORT_MARGIN = 16
 
-let config = null;
-let ui = null;
-let expansionAttemptKey = null;
+let config = null
+let ui = null
+let expansionAttemptKey = null
 
-document.addEventListener("DOMContentLoaded", initializeOnboarding);
-document.addEventListener("livewire:navigated", initializeOnboarding);
-document.addEventListener("click", handleOnboardingClick);
+document.addEventListener('DOMContentLoaded', initializeOnboarding)
+document.addEventListener('livewire:navigated', initializeOnboarding)
+document.addEventListener('click', handleOnboardingClick)
 
-window.addEventListener("resize", () => {
-    if (tourState()?.status === "active") {
-        renderActiveStep();
-    }
-});
+window.addEventListener('resize', () => {
+  if (tourState()?.status === 'active') {
+    renderActiveStep()
+  }
+})
 
 window.addEventListener(
-    "scroll",
-    () => {
-        if (tourState()?.status === "active") {
-            renderActiveStep();
-        }
-    },
-    true,
-);
-
-function initializeOnboarding() {
-    config = readConfig();
-    expansionAttemptKey = null;
-
-    if (!config || config.enabled !== true || !tour()) {
-        hidePrompt();
-        clearTourUi();
-        return;
+  'scroll',
+  () => {
+    if (tourState()?.status === 'active') {
+      renderActiveStep()
     }
+  },
+  true
+)
 
-    if (config.shouldPrompt === true && tourState()?.status !== "active") {
-        showPrompt();
-    } else {
-        hidePrompt();
-    }
+function initializeOnboarding () {
+  config = readConfig()
+  expansionAttemptKey = null
 
-    if (tourState()?.status === "active") {
-        renderActiveStep();
-        return;
-    }
+  if (!config || config.enabled !== true || !tour()) {
+    hidePrompt()
+    clearTourUi()
+    return
+  }
 
-    clearTourUi();
+  if (config.shouldPrompt === true && tourState()?.status !== 'active') {
+    showPrompt()
+  } else {
+    hidePrompt()
+  }
+
+  if (tourState()?.status === 'active') {
+    renderActiveStep()
+    return
+  }
+
+  clearTourUi()
 }
 
-function readConfig() {
-    const node = document.querySelector(CONFIG_SELECTOR);
+function readConfig () {
+  const node = document.querySelector(CONFIG_SELECTOR)
 
-    if (!node) {
-        return null;
-    }
+  if (!node) {
+    return null
+  }
 
-    try {
-        return JSON.parse(node.textContent ?? "{}");
-    } catch (error) {
-        console.error("Unable to parse onboarding config.", error);
-        return null;
-    }
+  try {
+    return JSON.parse(node.textContent ?? '{}')
+  } catch (error) {
+    console.error('Unable to parse onboarding config.', error)
+    return null
+  }
 }
 
-function tour() {
-    return config?.tour ?? null;
+function tour () {
+  return config?.tour ?? null
 }
 
-function tourState() {
-    return tour()?.state ?? null;
+function tourState () {
+  return tour()?.state ?? null
 }
 
-function currentRoute() {
-    return config?.currentRoute ?? null;
+function currentRoute () {
+  return config?.currentRoute ?? null
 }
 
-function steps() {
-    return Array.isArray(tour()?.steps) ? tour().steps : [];
+function steps () {
+  return Array.isArray(tour()?.steps) ? tour().steps : []
 }
 
-function currentStepIndex() {
-    const stepCount = steps().length;
+function currentStepIndex () {
+  const stepCount = steps().length
 
-    if (stepCount === 0) {
-        return 0;
-    }
+  if (stepCount === 0) {
+    return 0
+  }
 
-    const rawIndex = tourState()?.lastStep;
+  const rawIndex = tourState()?.lastStep
 
-    if (!Number.isInteger(rawIndex) || rawIndex < 0) {
-        return 0;
-    }
+  if (!Number.isInteger(rawIndex) || rawIndex < 0) {
+    return 0
+  }
 
-    return Math.min(rawIndex, stepCount - 1);
+  return Math.min(rawIndex, stepCount - 1)
 }
 
-function currentStep() {
-    return steps()[currentStepIndex()] ?? null;
+function currentStep () {
+  return steps()[currentStepIndex()] ?? null
 }
 
-function ensureTourUi() {
-    if (ui) {
-        return ui;
-    }
+function ensureTourUi () {
+  if (ui) {
+    return ui
+  }
 
-    const scrim = document.createElement("div");
-    scrim.className = "forge-tour-scrim";
+  const scrim = document.createElement('div')
+  scrim.className = 'forge-tour-scrim'
 
-    const highlight = document.createElement("div");
-    highlight.className = "forge-tour-highlight";
+  const highlight = document.createElement('div')
+  highlight.className = 'forge-tour-highlight'
 
-    const card = document.createElement("div");
-    card.className = "forge-tour-card";
+  const card = document.createElement('div')
+  card.className = 'forge-tour-card'
 
-    document.body.append(scrim, highlight, card);
+  document.body.append(scrim, highlight, card)
 
-    ui = { scrim, highlight, card };
+  ui = { scrim, highlight, card }
 
-    return ui;
+  return ui
 }
 
-function clearTourUi() {
-    if (!ui) {
-        cleanupBootstrapModalArtifacts();
-        return;
-    }
+function clearTourUi () {
+  if (!ui) {
+    cleanupBootstrapModalArtifacts()
+    return
+  }
 
-    ui.scrim.classList.remove("is-visible");
-    ui.highlight.classList.remove("is-visible");
-    ui.card.classList.remove("is-visible");
-    ui.card.innerHTML = "";
-    ui.card.removeAttribute("style");
+  ui.scrim.classList.remove('is-visible')
+  ui.highlight.classList.remove('is-visible')
+  ui.card.classList.remove('is-visible')
+  ui.card.innerHTML = ''
+  ui.card.removeAttribute('style')
 
-    cleanupBootstrapModalArtifacts();
+  cleanupBootstrapModalArtifacts()
 }
 
-function showPrompt() {
-    const prompt = document.querySelector(PROMPT_SELECTOR);
+function showPrompt () {
+  const prompt = document.querySelector(PROMPT_SELECTOR)
 
-    if (!prompt) {
-        return;
-    }
+  if (!prompt) {
+    return
+  }
 
-    getBootstrap().Modal.getOrCreateInstance(prompt).show();
+  getBootstrap().Modal.getOrCreateInstance(prompt).show()
 }
 
-function hidePrompt() {
-    const prompt = document.querySelector(PROMPT_SELECTOR);
+function hidePrompt () {
+  const prompt = document.querySelector(PROMPT_SELECTOR)
 
-    if (!prompt) {
-        cleanupBootstrapModalArtifacts();
-        return;
-    }
+  if (!prompt) {
+    cleanupBootstrapModalArtifacts()
+    return
+  }
 
-    const instance = getBootstrap().Modal.getOrCreateInstance(prompt);
+  const instance = getBootstrap().Modal.getOrCreateInstance(prompt)
 
-    instance.hide();
+  instance.hide()
 
-    window.setTimeout(() => {
-        instance.dispose();
-        cleanupBootstrapModalArtifacts();
-    }, 300);
+  window.setTimeout(() => {
+    instance.dispose()
+    cleanupBootstrapModalArtifacts()
+  }, 300)
 }
 
-function cleanupBootstrapModalArtifacts() {
-    const openNonOnboardingModals = Array.from(document.querySelectorAll(".modal.show")).filter((modal) => {
-        return !modal.matches(PROMPT_SELECTOR);
-    });
+function cleanupBootstrapModalArtifacts () {
+  const openNonOnboardingModals = Array.from(
+    document.querySelectorAll('.modal.show')
+  ).filter((modal) => {
+    return !modal.matches(PROMPT_SELECTOR)
+  })
 
-    if (openNonOnboardingModals.length > 0) {
-        return;
-    }
+  if (openNonOnboardingModals.length > 0) {
+    return
+  }
 
-    document.querySelectorAll(".modal-backdrop").forEach((backdrop) => backdrop.remove());
-    document.body.classList.remove("modal-open");
-    document.body.style.removeProperty("overflow");
-    document.body.style.removeProperty("padding-right");
+  document
+    .querySelectorAll('.modal-backdrop')
+    .forEach((backdrop) => backdrop.remove())
+  document.body.classList.remove('modal-open')
+  document.body.style.removeProperty('overflow')
+  document.body.style.removeProperty('padding-right')
 }
 
-async function handleOnboardingClick(event) {
-    const startButton = event.target.closest("[data-start-tour]");
-    if (startButton) {
-        event.preventDefault();
-        await startTour(startButton.dataset.startTour);
-        return;
-    }
+async function handleOnboardingClick (event) {
+  const startButton = event.target.closest('[data-start-tour]')
+  if (startButton) {
+    event.preventDefault()
+    await startTour(startButton.dataset.startTour)
+    return
+  }
 
-    const promptAction = event.target.closest("[data-onboarding-prompt-action]");
-    if (promptAction) {
-        event.preventDefault();
-        await handlePromptAction(promptAction.dataset.onboardingPromptAction);
-        return;
-    }
+  const promptAction = event.target.closest(
+    '[data-onboarding-prompt-action]'
+  )
+  if (promptAction) {
+    event.preventDefault()
+    await handlePromptAction(promptAction.dataset.onboardingPromptAction)
+    return
+  }
 
-    const tourControl = event.target.closest("[data-tour-control]");
-    if (tourControl) {
-        event.preventDefault();
-        await handleTourControl(tourControl.dataset.tourControl);
-    }
+  const tourControl = event.target.closest('[data-tour-control]')
+  if (tourControl) {
+    event.preventDefault()
+    await handleTourControl(tourControl.dataset.tourControl)
+  }
 }
 
-async function startTour(tourName) {
-    const activeTour = tour();
+async function startTour (tourName) {
+  const activeTour = tour()
 
-    if (!activeTour || activeTour.name !== tourName) {
-        return;
-    }
+  if (!activeTour || activeTour.name !== tourName) {
+    return
+  }
 
-    const response = await requestJson(activeTour.routes.start, "POST");
+  const response = await requestJson(activeTour.routes.start, 'POST')
 
-    if (!response?.state) {
-        return;
-    }
+  if (!response?.state) {
+    return
+  }
 
-    activeTour.state = response.state;
-    config.shouldPrompt = false;
-    hidePrompt();
-    openCurrentStep();
+  activeTour.state = response.state
+  config.shouldPrompt = false
+  hidePrompt()
+  openCurrentStep()
 }
 
-async function handlePromptAction(action) {
-    if (!["snooze", "dismiss"].includes(action)) {
-        return;
-    }
+async function handlePromptAction (action) {
+  if (!['snooze', 'dismiss'].includes(action)) {
+    return
+  }
 
-    const response = await updateTourState(action);
+  const response = await updateTourState(action)
 
-    if (!response?.state) {
-        return;
-    }
+  if (!response?.state) {
+    return
+  }
 
-    config.shouldPrompt = false;
-    hidePrompt();
-    clearTourUi();
+  config.shouldPrompt = false
+  hidePrompt()
+  clearTourUi()
 }
 
-async function handleTourControl(control) {
-    const stepIndex = currentStepIndex();
-    const lastIndex = steps().length - 1;
+async function handleTourControl (control) {
+  const stepIndex = currentStepIndex()
+  const lastIndex = steps().length - 1
 
-    switch (control) {
-        case "open-current":
-            openCurrentStep();
-            return;
+  switch (control) {
+    case 'open-current':
+      openCurrentStep()
+      return
 
-        case "prev":
-            await setActiveStep(stepIndex - 1);
-            return;
+    case 'prev':
+      await setActiveStep(stepIndex - 1)
+      return
 
-        case "next":
-            if (stepIndex >= lastIndex) {
-                await completeTour(stepIndex);
-                return;
-            }
+    case 'next':
+      if (stepIndex >= lastIndex) {
+        await completeTour(stepIndex)
+        return
+      }
 
-            await setActiveStep(stepIndex + 1);
-            return;
+      await setActiveStep(stepIndex + 1)
+      return
 
-        case "finish":
-            await completeTour(stepIndex);
-            return;
+    case 'finish':
+      await completeTour(stepIndex)
+      return
 
-        case "dismiss":
-            await updateTourState("dismiss");
-            clearTourUi();
-            return;
-    }
+    case 'dismiss':
+      await updateTourState('dismiss')
+      clearTourUi()
+  }
 }
 
-async function setActiveStep(index) {
-    if (index < 0 || index >= steps().length) {
-        return;
-    }
+async function setActiveStep (index) {
+  if (index < 0 || index >= steps().length) {
+    return
+  }
 
-    const response = await updateTourState("set-step", { lastStep: index });
+  const response = await updateTourState('set-step', { lastStep: index })
 
-    if (!response?.state) {
-        return;
-    }
+  if (!response?.state) {
+    return
+  }
 
-    const nextStep = steps()[index];
+  const nextStep = steps()[index]
 
-    if (!nextStep) {
-        clearTourUi();
-        return;
-    }
+  if (!nextStep) {
+    clearTourUi()
+    return
+  }
 
-    if (currentRoute() !== nextStep.route) {
-        window.location.assign(nextStep.url);
-        return;
-    }
+  if (currentRoute() !== nextStep.route) {
+    window.location.assign(nextStep.url)
+    return
+  }
 
-    renderActiveStep();
+  renderActiveStep()
 }
 
-async function completeTour(stepIndex) {
-    const response = await updateTourState("complete", { lastStep: stepIndex });
+async function completeTour (stepIndex) {
+  const response = await updateTourState('complete', { lastStep: stepIndex })
 
-    if (!response?.state) {
-        return;
-    }
+  if (!response?.state) {
+    return
+  }
 
-    clearTourUi();
+  clearTourUi()
 }
 
-async function updateTourState(action, payload = {}) {
-    const activeTour = tour();
+async function updateTourState (action, payload = {}) {
+  const activeTour = tour()
 
-    if (!activeTour) {
-        return null;
+  if (!activeTour) {
+    return null
+  }
+
+  const response = await requestJson(activeTour.routes.update, 'PATCH', {
+    action,
+    ...payload
+  })
+
+  if (response?.state) {
+    activeTour.state = response.state
+    if (action !== 'set-step') {
+      config.shouldPrompt = false
     }
+  }
 
-    const response = await requestJson(activeTour.routes.update, "PATCH", {
-        action,
-        ...payload,
-    });
-
-    if (response?.state) {
-        activeTour.state = response.state;
-        if (action !== "set-step") {
-            config.shouldPrompt = false;
-        }
-    }
-
-    return response;
+  return response
 }
 
-function openCurrentStep() {
-    const step = currentStep();
+function openCurrentStep () {
+  const step = currentStep()
 
-    if (!step) {
-        clearTourUi();
-        return;
-    }
+  if (!step) {
+    clearTourUi()
+    return
+  }
 
-    if (currentRoute() !== step.route) {
-        window.location.assign(step.url);
-        return;
-    }
+  if (currentRoute() !== step.route) {
+    window.location.assign(step.url)
+    return
+  }
 
-    renderActiveStep();
+  renderActiveStep()
 }
 
-function renderActiveStep() {
-    const step = currentStep();
+function renderActiveStep () {
+  const step = currentStep()
 
-    if (!step || tourState()?.status !== "active") {
-        clearTourUi();
-        return;
+  if (!step || tourState()?.status !== 'active') {
+    clearTourUi()
+    return
+  }
+
+  if (currentRoute() !== step.route) {
+    expansionAttemptKey = null
+    renderCenteredStep(step, {
+      note: 'Continue to the next page to keep the tour moving.',
+      primaryLabel: 'Open page',
+      primaryControl: 'open-current'
+    })
+    return
+  }
+
+  let target = document.querySelector(step.selector)
+
+  if (!isVisible(target) && maybeExpandNavigation()) {
+    const stepKey = `${tour()?.name}:${currentStepIndex()}`
+
+    if (expansionAttemptKey !== stepKey) {
+      expansionAttemptKey = stepKey
+      window.setTimeout(renderActiveStep, 225)
+      return
     }
+  }
 
-    if (currentRoute() !== step.route) {
-        expansionAttemptKey = null;
-        renderCenteredStep(step, {
-            note: "Continue to the next page to keep the tour moving.",
-            primaryLabel: "Open page",
-            primaryControl: "open-current",
-        });
-        return;
-    }
+  target = document.querySelector(step.selector)
 
-    let target = document.querySelector(step.selector);
+  if (!isVisible(target)) {
+    renderCenteredStep(step, {
+      note: 'This step may be tucked inside a collapsible navigation area on smaller screens.'
+    })
+    return
+  }
 
-    if (!isVisible(target) && maybeExpandNavigation()) {
-        const stepKey = `${tour()?.name}:${currentStepIndex()}`;
+  expansionAttemptKey = null
+  target.scrollIntoView({ block: 'center', inline: 'nearest' })
 
-        if (expansionAttemptKey !== stepKey) {
-            expansionAttemptKey = stepKey;
-            window.setTimeout(renderActiveStep, 225);
-            return;
-        }
-    }
-
-    target = document.querySelector(step.selector);
-
-    if (!isVisible(target)) {
-        renderCenteredStep(step, {
-            note: "This step may be tucked inside a collapsible navigation area on smaller screens.",
-        });
-        return;
-    }
-
-    expansionAttemptKey = null;
-    target.scrollIntoView({ block: "center", inline: "nearest" });
-
-    const bounds = target.getBoundingClientRect();
-    renderAnchoredStep(step, bounds);
+  const bounds = target.getBoundingClientRect()
+  renderAnchoredStep(step, bounds)
 }
 
-function maybeExpandNavigation() {
-    if (window.innerWidth >= 768) {
-        return false;
-    }
+function maybeExpandNavigation () {
+  if (window.innerWidth >= 768) {
+    return false
+  }
 
-    const navbar = document.getElementById("appNavbar");
+  const navbar = document.getElementById('appNavbar')
 
-    if (!navbar || navbar.classList.contains("show")) {
-        return false;
-    }
+  if (!navbar || navbar.classList.contains('show')) {
+    return false
+  }
 
-    getBootstrap().Collapse.getOrCreateInstance(navbar, { toggle: false }).show();
+  getBootstrap()
+    .Collapse.getOrCreateInstance(navbar, { toggle: false })
+    .show()
 
-    return true;
+  return true
 }
 
-function renderAnchoredStep(step, bounds) {
-    const shell = ensureTourUi();
+function renderAnchoredStep (step, bounds) {
+  const shell = ensureTourUi()
 
-    shell.scrim.classList.remove("is-visible");
-    shell.highlight.classList.add("is-visible");
-    shell.card.classList.add("is-visible");
+  shell.scrim.classList.remove('is-visible')
+  shell.highlight.classList.add('is-visible')
+  shell.card.classList.add('is-visible')
 
-    positionHighlight(shell.highlight, bounds);
-    renderCard(shell.card, step);
-    positionCard(shell.card, bounds, step.placement);
+  positionHighlight(shell.highlight, bounds)
+  renderCard(shell.card, step)
+  positionCard(shell.card, bounds, step.placement)
 }
 
-function renderCenteredStep(step, options = {}) {
-    const shell = ensureTourUi();
+function renderCenteredStep (step, options = {}) {
+  const shell = ensureTourUi()
 
-    shell.scrim.classList.add("is-visible");
-    shell.highlight.classList.remove("is-visible");
-    shell.card.classList.add("is-visible");
+  shell.scrim.classList.add('is-visible')
+  shell.highlight.classList.remove('is-visible')
+  shell.card.classList.add('is-visible')
 
-    renderCard(shell.card, step, options);
-    positionCenteredCard(shell.card);
+  renderCard(shell.card, step, options)
+  positionCenteredCard(shell.card)
 }
 
-function renderCard(card, step, options = {}) {
-    const totalSteps = steps().length;
-    const stepIndex = currentStepIndex();
-    const isLastStep = stepIndex >= totalSteps - 1;
-    const primaryLabel = options.primaryLabel ?? (isLastStep ? "Finish" : "Next");
-    const primaryControl = options.primaryControl ?? (isLastStep ? "finish" : "next");
-    const backButton = stepIndex > 0
-        ? '<button type="button" class="btn btn-outline-secondary btn-sm" data-tour-control="prev">Back</button>'
-        : "";
-    const note = options.note
-        ? `<p class="small text-body-secondary mb-0">${escapeHtml(options.note)}</p>`
-        : "";
+function renderCard (card, step, options = {}) {
+  const totalSteps = steps().length
+  const stepIndex = currentStepIndex()
+  const isLastStep = stepIndex >= totalSteps - 1
+  const primaryLabel =
+        options.primaryLabel ?? (isLastStep ? 'Finish' : 'Next')
+  const primaryControl =
+        options.primaryControl ?? (isLastStep ? 'finish' : 'next')
+  const backButton =
+        stepIndex > 0
+          ? '<button type="button" class="btn btn-outline-secondary btn-sm" data-tour-control="prev">Back</button>'
+          : ''
+  const note = options.note
+    ? `<p class="small text-body-secondary mb-0">${escapeHtml(options.note)}</p>`
+    : ''
 
-    card.innerHTML = `
+  card.innerHTML = `
         <div class="d-flex align-items-start justify-content-between gap-3">
             <div>
                 <p class="forge-tour-step mb-2">Step ${stepIndex + 1} of ${totalSteps}</p>
@@ -461,147 +471,166 @@ function renderCard(card, step, options = {}) {
                 <button type="button" class="btn btn-primary btn-sm" data-tour-control="${primaryControl}">${escapeHtml(primaryLabel)}</button>
             </div>
         </div>
-    `;
+    `
 }
 
-function positionHighlight(highlight, bounds) {
-    const top = Math.max(bounds.top - TOUR_PADDING, VIEWPORT_MARGIN);
-    const left = Math.max(bounds.left - TOUR_PADDING, VIEWPORT_MARGIN);
-    const width = Math.min(bounds.width + TOUR_PADDING * 2, window.innerWidth - left - VIEWPORT_MARGIN);
-    const height = Math.min(bounds.height + TOUR_PADDING * 2, window.innerHeight - top - VIEWPORT_MARGIN);
+function positionHighlight (highlight, bounds) {
+  const top = Math.max(bounds.top - TOUR_PADDING, VIEWPORT_MARGIN)
+  const left = Math.max(bounds.left - TOUR_PADDING, VIEWPORT_MARGIN)
+  const width = Math.min(
+    bounds.width + TOUR_PADDING * 2,
+    window.innerWidth - left - VIEWPORT_MARGIN
+  )
+  const height = Math.min(
+    bounds.height + TOUR_PADDING * 2,
+    window.innerHeight - top - VIEWPORT_MARGIN
+  )
 
-    highlight.style.top = `${top}px`;
-    highlight.style.left = `${left}px`;
-    highlight.style.width = `${Math.max(width, 48)}px`;
-    highlight.style.height = `${Math.max(height, 48)}px`;
+  highlight.style.top = `${top}px`
+  highlight.style.left = `${left}px`
+  highlight.style.width = `${Math.max(width, 48)}px`
+  highlight.style.height = `${Math.max(height, 48)}px`
 }
 
-function positionCard(card, bounds, placement) {
-    card.style.left = "0px";
-    card.style.top = "0px";
+function positionCard (card, bounds, placement) {
+  card.style.left = '0px'
+  card.style.top = '0px'
 
-    const rect = card.getBoundingClientRect();
-    const placements = [placement, "bottom", "right", "top", "left"];
+  const rect = card.getBoundingClientRect()
+  const placements = [placement, 'bottom', 'right', 'top', 'left']
 
-    let top = bounds.bottom + TOUR_GAP;
-    let left = bounds.left;
+  let top = bounds.bottom + TOUR_GAP
+  let left = bounds.left
 
-    for (const candidate of placements) {
-        const coords = coordinatesForPlacement(candidate, rect, bounds);
-        if (fitsViewport(coords, rect)) {
-            ({ top, left } = coords);
-            break;
-        }
-
-        ({ top, left } = coords);
+  for (const candidate of placements) {
+    const coords = coordinatesForPlacement(candidate, rect, bounds)
+    if (fitsViewport(coords, rect)) {
+      ({ top, left } = coords)
+      break
     }
 
-    card.style.left = `${clamp(left, VIEWPORT_MARGIN, window.innerWidth - rect.width - VIEWPORT_MARGIN)}px`;
-    card.style.top = `${clamp(top, VIEWPORT_MARGIN, window.innerHeight - rect.height - VIEWPORT_MARGIN)}px`;
+    ({ top, left } = coords)
+  }
+
+  card.style.left = `${clamp(left, VIEWPORT_MARGIN, window.innerWidth - rect.width - VIEWPORT_MARGIN)}px`
+  card.style.top = `${clamp(top, VIEWPORT_MARGIN, window.innerHeight - rect.height - VIEWPORT_MARGIN)}px`
 }
 
-function positionCenteredCard(card) {
-    card.style.left = "0px";
-    card.style.top = "0px";
+function positionCenteredCard (card) {
+  card.style.left = '0px'
+  card.style.top = '0px'
 
-    const rect = card.getBoundingClientRect();
-    const left = clamp((window.innerWidth - rect.width) / 2, VIEWPORT_MARGIN, window.innerWidth - rect.width - VIEWPORT_MARGIN);
-    const top = clamp((window.innerHeight - rect.height) / 2, VIEWPORT_MARGIN, window.innerHeight - rect.height - VIEWPORT_MARGIN);
+  const rect = card.getBoundingClientRect()
+  const left = clamp(
+    (window.innerWidth - rect.width) / 2,
+    VIEWPORT_MARGIN,
+    window.innerWidth - rect.width - VIEWPORT_MARGIN
+  )
+  const top = clamp(
+    (window.innerHeight - rect.height) / 2,
+    VIEWPORT_MARGIN,
+    window.innerHeight - rect.height - VIEWPORT_MARGIN
+  )
 
-    card.style.left = `${left}px`;
-    card.style.top = `${top}px`;
+  card.style.left = `${left}px`
+  card.style.top = `${top}px`
 }
 
-function coordinatesForPlacement(placement, rect, bounds) {
-    switch (placement) {
-        case "top":
-            return {
-                top: bounds.top - rect.height - TOUR_GAP,
-                left: bounds.left + bounds.width / 2 - rect.width / 2,
-            };
+function coordinatesForPlacement (placement, rect, bounds) {
+  switch (placement) {
+    case 'top':
+      return {
+        top: bounds.top - rect.height - TOUR_GAP,
+        left: bounds.left + bounds.width / 2 - rect.width / 2
+      }
 
-        case "left":
-            return {
-                top: bounds.top + bounds.height / 2 - rect.height / 2,
-                left: bounds.left - rect.width - TOUR_GAP,
-            };
+    case 'left':
+      return {
+        top: bounds.top + bounds.height / 2 - rect.height / 2,
+        left: bounds.left - rect.width - TOUR_GAP
+      }
 
-        case "right":
-            return {
-                top: bounds.top + bounds.height / 2 - rect.height / 2,
-                left: bounds.right + TOUR_GAP,
-            };
+    case 'right':
+      return {
+        top: bounds.top + bounds.height / 2 - rect.height / 2,
+        left: bounds.right + TOUR_GAP
+      }
 
-        default:
-            return {
-                top: bounds.bottom + TOUR_GAP,
-                left: bounds.left + bounds.width / 2 - rect.width / 2,
-            };
-    }
+    default:
+      return {
+        top: bounds.bottom + TOUR_GAP,
+        left: bounds.left + bounds.width / 2 - rect.width / 2
+      }
+  }
 }
 
-function fitsViewport(coords, rect) {
-    return (
-        coords.top >= VIEWPORT_MARGIN &&
+function fitsViewport (coords, rect) {
+  return (
+    coords.top >= VIEWPORT_MARGIN &&
         coords.left >= VIEWPORT_MARGIN &&
         coords.top + rect.height <= window.innerHeight - VIEWPORT_MARGIN &&
         coords.left + rect.width <= window.innerWidth - VIEWPORT_MARGIN
-    );
+  )
 }
 
-function isVisible(element) {
-    if (!(element instanceof HTMLElement)) {
-        return false;
+function isVisible (element) {
+  if (!(element instanceof HTMLElement)) {
+    return false
+  }
+
+  if (element.getClientRects().length === 0) {
+    return false
+  }
+
+  return window.getComputedStyle(element).visibility !== 'hidden'
+}
+
+async function requestJson (url, method, payload = {}) {
+  try {
+    const response = await fetch(url, {
+      method,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN':
+                    document
+                      .querySelector('meta[name="csrf-token"]')
+                      ?.getAttribute('content') ?? ''
+      },
+      credentials: 'same-origin',
+      body: method === 'GET' ? undefined : JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      throw new Error(
+                `Onboarding request failed with status ${response.status}.`
+      )
     }
 
-    if (element.getClientRects().length === 0) {
-        return false;
-    }
-
-    return window.getComputedStyle(element).visibility !== "hidden";
+    return await response.json()
+  } catch (error) {
+    console.error(error)
+    return null
+  }
 }
 
-async function requestJson(url, method, payload = {}) {
-    try {
-        const response = await fetch(url, {
-            method,
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") ?? "",
-            },
-            credentials: "same-origin",
-            body: method === "GET" ? undefined : JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-            throw new Error(`Onboarding request failed with status ${response.status}.`);
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
+function clamp (value, min, max) {
+  return Math.min(Math.max(value, min), max)
 }
 
-function clamp(value, min, max) {
-    return Math.min(Math.max(value, min), max);
+function escapeHtml (value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;')
 }
 
-function escapeHtml(value) {
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-}
+function getBootstrap () {
+  if (!window.bootstrap) {
+    throw new Error('Bootstrap is not available on window.bootstrap.')
+  }
 
-function getBootstrap() {
-    if (!window.bootstrap) {
-        throw new Error("Bootstrap is not available on window.bootstrap.");
-    }
-
-    return window.bootstrap;
+  return window.bootstrap
 }
