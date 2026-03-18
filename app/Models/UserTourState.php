@@ -56,4 +56,26 @@ class UserTourState extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * @return array<string, int|string|null>
+     */
+    public function toResponsePayload(): array
+    {
+        return [
+            'status' => $this->status,
+            'lastStep' => $this->last_step,
+        ];
+    }
+
+    /**
+     * @return array<string, int|string|null>
+     */
+    public static function defaultResponsePayload(): array
+    {
+        return [
+            'status' => self::STATUS_PENDING,
+            'lastStep' => null,
+        ];
+    }
 }

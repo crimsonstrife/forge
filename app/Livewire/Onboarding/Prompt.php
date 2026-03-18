@@ -51,9 +51,10 @@ class Prompt extends Component
             'enabled' => true,
             'currentRoute' => $currentRoute,
             'shouldPrompt' => $currentRoute === 'dashboard' && $this->shouldPrompt($state),
+            'messages' => $this->messages(),
             'tour' => [
                 'name' => $tour,
-                'label' => 'Main app',
+                'label' => __('onboarding.tours.main_app.label'),
                 'routes' => [
                     'start' => route('onboarding.tours.start', ['tour' => $tour]),
                     'update' => route('onboarding.tours.update', ['tour' => $tour]),
@@ -87,16 +88,24 @@ class Prompt extends Component
      */
     private function statePayload(?UserTourState $state): array
     {
-        if ($state === null) {
-            return [
-                'status' => UserTourState::STATUS_PENDING,
-                'lastStep' => null,
-            ];
-        }
+        return $state?->toResponsePayload() ?? UserTourState::defaultResponsePayload();
+    }
 
+    /**
+     * @return array<string, string>
+     */
+    private function messages(): array
+    {
         return [
-            'status' => $state->status,
-            'lastStep' => $state->last_step,
+            'stepCounter' => __('onboarding.ui.step_counter'),
+            'next' => __('onboarding.ui.next'),
+            'back' => __('onboarding.ui.back'),
+            'finish' => __('onboarding.ui.finish'),
+            'openPage' => __('onboarding.ui.open_page'),
+            'endTour' => __('onboarding.ui.end_tour'),
+            'dismissAriaLabel' => __('onboarding.ui.dismiss_aria_label'),
+            'continueToPage' => __('onboarding.ui.continue_to_page'),
+            'collapsedNavigationHint' => __('onboarding.ui.collapsed_navigation_hint'),
         ];
     }
 }

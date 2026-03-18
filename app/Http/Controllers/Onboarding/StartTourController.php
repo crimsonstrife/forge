@@ -33,19 +33,8 @@ class StartTourController extends Controller
         $state->save();
 
         return response()->json([
-            'state' => $this->payload($state),
+            'state' => $state->toResponsePayload(),
             'step' => $steps[0],
         ]);
-    }
-
-    /**
-     * @return array<string, int|string|null>
-     */
-    private function payload(UserTourState $state): array
-    {
-        return [
-            'status' => $state->status,
-            'lastStep' => $state->last_step,
-        ];
     }
 }
