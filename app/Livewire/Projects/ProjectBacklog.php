@@ -165,7 +165,7 @@ final class ProjectBacklog extends Component
             'goal' => $data['goal'] ?: null,
             'start_date' => $data['start_date'] ?: null,
             'end_date' => $data['end_date'] ?: null,
-            'capacity' => $data['capacity'] !== '' ? (int) $data['capacity'] : null,
+            'capacity' => $data['capacity'],
             'state' => SprintState::Planned,
             'sort_order' => $sortOrder,
         ]);
