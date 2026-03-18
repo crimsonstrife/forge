@@ -9,32 +9,32 @@ final class OrganizationPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->can('is-admin') || $user->can('is-super-admin');
+        return true;
     }
 
     public function view(User $user, Organization $organization): bool
     {
-        return $user->can('is-admin') || $user->can('is-super-admin');
+        return $organization->isAccessibleBy($user);
     }
 
     public function create(User $user): bool
     {
-        return $user->can('is-admin') || $user->can('is-super-admin');
+        return $user->can('is-admin') || $user->hasPermissionTo('is-super-admin');
     }
 
     public function update(User $user, Organization $organization): bool
     {
-        return $user->can('is-admin') || $user->can('is-super-admin');
+        return $user->can('is-admin') || $user->hasPermissionTo('is-super-admin');
     }
 
     public function delete(User $user, Organization $organization): bool
     {
-        return $user->can('is-super-admin');
+        return $user->hasPermissionTo('is-super-admin');
     }
 
     public function restore(User $user, Organization $organization): bool
     {
-        return $user->can('is-super-admin');
+        return $user->hasPermissionTo('is-super-admin');
     }
 
     public function forceDelete(User $user, Organization $organization): bool

@@ -13,6 +13,7 @@ render(function (View $view) {
 
     $projects = Project::query()
         ->visibleTo($u)
+        ->with(['organization:id,name,slug', 'teams:id,name'])
         ->latest()
         ->paginate(12)
         ->withQueryString();
@@ -46,6 +47,14 @@ render(function (View $view) {
                                 </div>
                                 <div class="fw-semibold mt-2">{{ $project->name }}</div>
                                 <div class="small text-body-secondary mt-1">{{ $project->description }}</div>
+                                <div class="small text-body-secondary mt-2 d-flex flex-column gap-1">
+                                    @if($project->organization)
+                                        <span>{{ __('Org') }}: {{ $project->organization->name }}</span>
+                                    @endif
+                                    @if($project->teams->isNotEmpty())
+                                        <span>{{ __('Teams') }}: {{ $project->teams->pluck('name')->implode(', ') }}</span>
+                                    @endif
+                                </div>
                             </div>
                         </a>
                     </div>

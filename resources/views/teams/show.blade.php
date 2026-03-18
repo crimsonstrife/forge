@@ -2,6 +2,9 @@
     <x-slot name="header">
         <div class="d-flex align-items-center justify-content-between">
             <h2 class="h4 mb-0">{{ __('Team Settings') }}</h2>
+            <a class="btn btn-sm btn-outline-primary" href="{{ route('teams.dashboard', ['team' => $team]) }}">
+                {{ __('Team Dashboard') }}
+            </a>
         </div>
     </x-slot>
 

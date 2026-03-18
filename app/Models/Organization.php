@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use App\Traits\IsPermissible;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Spatie\Sluggable\HasSlug;
@@ -21,6 +24,7 @@ class Organization extends BaseModel
     protected $table = 'organizations';
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     /** @var array<string, string> */
@@ -29,9 +33,39 @@ class Organization extends BaseModel
     /** @var array<int, string> */
     protected $fillable = ['name', 'slug'];
 
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    public function goals(): MorphMany
+    {
+        return $this->morphMany(Goal::class, 'owner');
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function isAccessibleBy(User $user): bool
+    {
+        if ($user->hasPermissionTo('is-super-admin') || $user->can('is-admin')) {
+            return true;
+        }
+
+        return $this->projects()
+            ->visibleTo($user)
+            ->exists();
+    }
+
+    public function scopeVisibleTo(Builder $query, User $user): Builder
+    {
+        if ($user->hasPermissionTo('is-super-admin') || $user->can('is-admin')) {
+            return $query;
+        }
+
+        return $query->whereHas('projects', fn (Builder $projects) => $projects->visibleTo($user));
     }
 
     protected static function booted(): void
@@ -75,7 +109,7 @@ class Organization extends BaseModel
     /**
      * Get the options for generating the slug.
      */
-    public function getSlugOptions() : SlugOptions
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('name')

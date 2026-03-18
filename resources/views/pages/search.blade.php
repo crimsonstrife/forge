@@ -1,13 +1,18 @@
 <?php
 
-use App\Models\{Project, Issue, Organization, Goal};
+use App\Models\Goal;
+use App\Models\Issue;
+use App\Models\Organization;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-use function Laravel\Folio\{name, middleware, render};
+use function Laravel\Folio\middleware;
+use function Laravel\Folio\name;
+use function Laravel\Folio\render;
 
 name('search');
-middleware(['auth','verified']);
+middleware(['auth', 'verified']);
 /** Provide page data */
 render(function (View $view, Request $request) {
     $q = trim((string) $request->query('q', ''));
@@ -24,7 +29,7 @@ render(function (View $view, Request $request) {
         ]);
     }
 
-    $like = '%' . str_replace(['%', '_'], ['\%', '\_'], $q) . '%';
+    $like = '%'.str_replace(['%', '_'], ['\%', '\_'], $q).'%';
 
     $projects = Project::query()
         ->select(['id', 'name', 'key', 'description'])
@@ -48,6 +53,7 @@ render(function (View $view, Request $request) {
         ->get();
 
     $organizations = Organization::query()
+        ->visibleTo($user)
         ->select(['id', 'name', 'slug'])
         ->where(fn ($sub) => $sub
             ->where('name', 'like', $like))
@@ -123,7 +129,7 @@ render(function (View $view, Request $request) {
                             <h2 class="h6 mb-2">{{ __('Organizations') }}</h2>
                             <div class="list-group">
                                 @forelse ($organizations as $o)
-                                    <a class="list-group-item list-group-item-action" href="{{ route('organizations.show', $o) }}">
+                                    <a class="list-group-item list-group-item-action" href="{{ route('organizations.show', ['organization' => $o]) }}">
                                         {{ $o->name }}
                                     </a>
                                 @empty
