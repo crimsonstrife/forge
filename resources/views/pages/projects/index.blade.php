@@ -23,7 +23,7 @@ render(function (View $view) {
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2" data-tour="projects-page">
             <h2 class="h4 mb-0">{{ __('Projects') }}</h2>
             @can('create', App\Models\Project::class)
                 <a href="{{ route('projects.create') }}" class="btn btn-primary btn-sm">
@@ -60,4 +60,3 @@ render(function (View $view) {
         </div>
     </div>
 </x-app-layout>
-

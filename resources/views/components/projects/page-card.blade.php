@@ -1,7 +1,7 @@
 @props(['project'])
 
 <div class="card shadow-sm">
-    <div class="card-header d-flex align-items-center justify-content-between">
+    <div class="card-header d-flex align-items-center justify-content-between" data-tour="project-nav-tabs">
         {{-- Tabs (left) --}}
         <x-projects.nav-tabs :project="$project" />
 

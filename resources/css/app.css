@@ -62,3 +62,59 @@ main {
 [data-bs-theme="dark"] {
     --wa-color-surface-default: var(--bs-body-bg);
 }
+
+.forge-tour-scrim,
+.forge-tour-highlight,
+.forge-tour-card {
+    position: fixed;
+    z-index: 1090;
+}
+
+.forge-tour-scrim,
+.forge-tour-highlight,
+.forge-tour-card {
+    display: none;
+}
+
+.forge-tour-scrim.is-visible,
+.forge-tour-highlight.is-visible,
+.forge-tour-card.is-visible {
+    display: block;
+}
+
+.forge-tour-scrim {
+    inset: 0;
+    background: rgba(15, 23, 42, 0.58);
+    backdrop-filter: blur(2px);
+}
+
+.forge-tour-highlight {
+    border: 2px solid rgba(255, 255, 255, 0.92);
+    border-radius: 1rem;
+    box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.58);
+    pointer-events: none;
+    transition:
+        top 160ms ease,
+        left 160ms ease,
+        width 160ms ease,
+        height 160ms ease;
+}
+
+.forge-tour-card {
+    width: min(24rem, calc(100vw - 2rem));
+    max-width: calc(100vw - 2rem);
+    padding: 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    box-shadow: var(--bs-box-shadow-lg);
+}
+
+.forge-tour-step {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+}

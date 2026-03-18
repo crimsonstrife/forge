@@ -20,6 +20,10 @@
     {{-- Header partial (uses the $header slot if present) --}}
     @include('layouts.partials.header', ['header' => $header ?? null])
 
+    @auth
+        <livewire:onboarding.prompt />
+    @endauth
+
     <main>
         {{ $slot }}
     </main>

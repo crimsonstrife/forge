@@ -3,6 +3,7 @@
 use App\Models\{Project, Issue, Organization, Goal};
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+
 use function Laravel\Folio\{name, middleware, render};
 
 name('search');
@@ -77,7 +78,7 @@ render(function (View $view, Request $request) {
     <div class="py-4">
         <div class="container d-flex flex-column gap-3">
             <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
-                <form method="GET" action="{{ route('search') }}" class="mb-3">
+                <form method="GET" action="{{ route('search') }}" class="mb-3" data-tour="search-page">
                     <div class="input-group">
                         <input type="search" class="form-control" name="q" value="{{ $q }}" placeholder="{{ __('Search projects, issues, people…') }}">
                         <button class="btn btn-primary" type="submit">{{ __('Search') }}</button>
