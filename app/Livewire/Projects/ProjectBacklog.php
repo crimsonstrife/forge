@@ -144,6 +144,10 @@ final class ProjectBacklog extends Component
     {
         $this->authorize('create', [Sprint::class, $this->project]);
 
+        if (($this->newSprint['capacity'] ?? null) === '') {
+            $this->newSprint['capacity'] = null;
+        }
+
         $data = $this->validate([
             'newSprint.name' => ['required', 'string', 'max:255'],
             'newSprint.goal' => ['nullable', 'string', 'max:2000'],
