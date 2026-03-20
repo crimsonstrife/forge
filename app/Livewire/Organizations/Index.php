@@ -15,8 +15,8 @@ use Livewire\WithPagination;
  */
 final class Index extends Component
 {
-    use WithPagination;
     use AuthorizesRequests;
+    use WithPagination;
 
     #[Url]
     public string $q = '';
@@ -26,6 +26,10 @@ final class Index extends Component
         $this->authorize('viewAny', Organization::class);
 
         $query = Organization::query()
+            ->visibleTo(auth()->user())
+            ->withCount([
+                'projects as accessible_projects_count' => fn ($projects) => $projects->visibleTo(auth()->user()),
+            ])
             ->when($this->q !== '', static fn ($q) => $q->where('name', 'like', '%'.$this->q.'%'))
             ->orderBy('name');
 

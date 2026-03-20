@@ -1,19 +1,19 @@
 <?php
 
-use App\Models\Organization;
+use App\Models\Team;
 use App\Services\Dashboards\SharedDashboardService;
 use Illuminate\Support\Facades\Gate;
 
 use function Laravel\Folio\{name, middleware, render};
 
-name('organizations.show');
+name('teams.dashboard');
 middleware(['auth', 'verified']);
 
-render(function (\Illuminate\View\View $view, Organization $organization) {
-    Gate::authorize('view', $organization);
+render(function (\Illuminate\View\View $view, Team $team) {
+    Gate::authorize('view', $team);
 
     return $view->with(
-        ['organization' => $organization] + app(SharedDashboardService::class)->forOrganization(auth()->user(), $organization)
+        ['team' => $team] + app(SharedDashboardService::class)->forTeam(auth()->user(), $team)
     );
 });
 ?>
@@ -22,23 +22,19 @@ render(function (\Illuminate\View\View $view, Organization $organization) {
     <x-slot name="header">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
             <div>
-                <h2 class="h4 mb-0">{{ $organization->name }}</h2>
-                <div class="small text-body-secondary">{{ __('Organization dashboard') }}</div>
+                <h2 class="h4 mb-0">{{ $team->name }}</h2>
+                <div class="small text-body-secondary">{{ __('Team dashboard') }}</div>
             </div>
             <div class="d-flex gap-2">
-                @can('update', $organization)
-                    <a class="btn btn-sm btn-primary"
-                       href="{{ route('organizations.edit', ['organization' => $organization]) }}">Edit</a>
-                @endcan
-                <a class="btn btn-sm btn-outline-secondary"
-                   href="{{ route('organizations.index') }}">Back</a>
+                <a class="btn btn-sm btn-outline-primary" href="{{ route('teams.show', ['team' => $team]) }}">
+                    {{ __('Team Settings') }}
+                </a>
+                <a class="btn btn-sm btn-outline-secondary" href="{{ route('dashboard') }}">
+                    {{ __('Main Dashboard') }}
+                </a>
             </div>
         </div>
     </x-slot>
-
-    @if (session('status'))
-        <div class="alert alert-success my-3">{{ session('status') }}</div>
-    @endif
 
     <div class="py-4">
         <div class="container mx-auto py-4 d-flex flex-column gap-4">
@@ -46,16 +42,16 @@ render(function (\Illuminate\View\View $view, Organization $organization) {
                 <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body">
-                            <div class="text-uppercase small text-body-secondary">{{ __('Projects') }}</div>
-                            <div class="display-6 mb-0">{{ $projectCount }}</div>
+                            <div class="text-uppercase small text-body-secondary">{{ __('Members') }}</div>
+                            <div class="display-6 mb-0">{{ $members->count() }}</div>
                         </div>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body">
-                            <div class="text-uppercase small text-body-secondary">{{ __('Teams') }}</div>
-                            <div class="display-6 mb-0">{{ $teams->count() }}</div>
+                            <div class="text-uppercase small text-body-secondary">{{ __('Projects') }}</div>
+                            <div class="display-6 mb-0">{{ $projectCount }}</div>
                         </div>
                     </div>
                 </div>
@@ -87,7 +83,7 @@ render(function (\Illuminate\View\View $view, Organization $organization) {
                             </div>
 
                             @if($projects->isEmpty())
-                                <p class="small text-body-secondary mb-0">{{ __('No shared projects are attached to this organization yet.') }}</p>
+                                <p class="small text-body-secondary mb-0">{{ __('This team does not have any shared projects yet.') }}</p>
                             @else
                                 <div class="row row-cols-1 row-cols-md-2 g-3">
                                     @foreach($projects as $project)
@@ -100,9 +96,9 @@ render(function (\Illuminate\View\View $view, Organization $organization) {
                                                             <span class="badge bg-body-tertiary text-body">{{ $project->open_issues_count }} {{ __('open') }}</span>
                                                         </div>
                                                         <div class="fw-semibold mt-2">{{ $project->name }}</div>
-                                                        @if($project->teams->isNotEmpty())
+                                                        @if($project->organization)
                                                             <div class="small text-body-secondary mt-2">
-                                                                {{ __('Teams') }}: {{ $project->teams->pluck('name')->implode(', ') }}
+                                                                {{ __('Organization') }}: {{ $project->organization->name }}
                                                             </div>
                                                         @endif
                                                     </div>
@@ -115,9 +111,9 @@ render(function (\Illuminate\View\View $view, Organization $organization) {
                                                             <span class="badge bg-body-tertiary text-body">{{ $project->open_issues_count }} {{ __('open') }}</span>
                                                         </div>
                                                         <div class="fw-semibold mt-2">{{ $project->name }}</div>
-                                                        @if($project->teams->isNotEmpty())
+                                                        @if($project->organization)
                                                             <div class="small text-body-secondary mt-2">
-                                                                {{ __('Teams') }}: {{ $project->teams->pluck('name')->implode(', ') }}
+                                                                {{ __('Organization') }}: {{ $project->organization->name }}
                                                             </div>
                                                         @endif
                                                     </div>
@@ -132,7 +128,7 @@ render(function (\Illuminate\View\View $view, Organization $organization) {
 
                     <div class="card shadow-sm">
                         <div class="card-body">
-                            <h3 class="h6 mb-3">{{ __('Due soon across the organization') }}</h3>
+                            <h3 class="h6 mb-3">{{ __('Due soon') }}</h3>
 
                             @if($dueSoon->isEmpty())
                                 <p class="small text-body-secondary mb-0">{{ __('Nothing due in the next two weeks.') }}</p>
@@ -196,25 +192,20 @@ render(function (\Illuminate\View\View $view, Organization $organization) {
                 <section class="col-lg-4 d-flex flex-column gap-4">
                     <div class="card shadow-sm">
                         <div class="card-body">
-                            <h3 class="h6 mb-3">{{ __('Teams in this organization') }}</h3>
+                            <h3 class="h6 mb-3">{{ __('Team members') }}</h3>
 
-                            @if($teams->isEmpty())
-                                <p class="small text-body-secondary mb-0">{{ __('No teams are attached to the visible projects in this organization.') }}</p>
+                            @if($members->isEmpty())
+                                <p class="small text-body-secondary mb-0">{{ __('No members yet.') }}</p>
                             @else
                                 <div class="list-group list-group-flush">
-                                    @foreach($teams as $team)
-                                        @can('view', $team)
-                                            <a href="{{ route('teams.dashboard', ['team' => $team]) }}"
-                                               class="list-group-item list-group-item-action px-0 d-flex align-items-center justify-content-between">
-                                                <span class="fw-medium">{{ $team->name }}</span>
-                                                <span class="badge bg-body-tertiary text-body">{{ $team->scoped_projects_count }}</span>
-                                            </a>
-                                        @else
-                                            <div class="list-group-item px-0 d-flex align-items-center justify-content-between">
-                                                <span class="fw-medium">{{ $team->name }}</span>
-                                                <span class="badge bg-body-tertiary text-body">{{ $team->scoped_projects_count }}</span>
+                                    @foreach($members as $member)
+                                        <div class="list-group-item px-0 d-flex align-items-center gap-3">
+                                            <x-avatar :src="$member->profile_photo_url" :name="$member->name" preset="sm" />
+                                            <div>
+                                                <div class="fw-medium">{{ $member->name }}</div>
+                                                <div class="small text-body-secondary">{{ $member->email }}</div>
                                             </div>
-                                        @endcan
+                                        </div>
                                     @endforeach
                                 </div>
                             @endif
@@ -224,12 +215,12 @@ render(function (\Illuminate\View\View $view, Organization $organization) {
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h3 class="h6 mb-0">{{ __('Organization goals') }}</h3>
+                                <h3 class="h6 mb-0">{{ __('Team goals') }}</h3>
                                 <a class="small text-decoration-underline" href="{{ route('goals.index') }}">{{ __('Browse goals') }}</a>
                             </div>
 
                             @if($goals->isEmpty())
-                                <p class="small text-body-secondary mb-0">{{ __('No organization goals yet.') }}</p>
+                                <p class="small text-body-secondary mb-0">{{ __('No team goals yet.') }}</p>
                             @else
                                 <div class="list-group list-group-flush">
                                     @foreach($goals as $goal)

@@ -278,10 +278,22 @@ render(function (View $view, Project $project) {
             {{ ucfirst($project->stage->value ?? 'planning') }}
           </span>
                     @if ($project->organization?->name)
-                        <span>Org: {{ $project->organization->name }}</span>
+                        <span>
+                            Org:
+                            <a class="link-primary text-decoration-none" href="{{ route('organizations.show', ['organization' => $project->organization]) }}">
+                                {{ $project->organization->name }}
+                            </a>
+                        </span>
                     @endif
                     @if ($project->teams->isNotEmpty())
-                        <span>Teams: {{ $project->teams->pluck('name')->implode(', ') }}</span>
+                        <span>
+                            Teams:
+                            @foreach($project->teams as $team)
+                                <a class="link-primary text-decoration-none" href="{{ route('teams.dashboard', ['team' => $team]) }}">
+                                    {{ $team->name }}
+                                </a>@if (! $loop->last), @endif
+                            @endforeach
+                        </span>
                     @endif
                 </div>
             </div>

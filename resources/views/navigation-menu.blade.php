@@ -193,6 +193,9 @@
 
                                 @if ($currentTeam)
                                     <li>
+                                        <x-dropdown-link href="{{ route('teams.dashboard', ['team' => $currentTeam]) }}">{{ __('Team Dashboard') }}</x-dropdown-link>
+                                    </li>
+                                    <li>
                                         <x-dropdown-link href="{{ route('teams.show', $currentTeam->id) }}">{{ __('Team Settings') }}</x-dropdown-link>
                                     </li>
                                 @else

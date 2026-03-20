@@ -14,7 +14,7 @@
         </button>
 
         @if ($isEditing && $organization?->exists && filled($organization->slug))
-            <a href="{{ route('organizations.show', ['organization' => $organization->slug]) }}" class="btn btn-outline-secondary">
+            <a href="{{ route('organizations.show', ['organization' => $organization]) }}" class="btn btn-outline-secondary">
                 Cancel
             </a>
         @else

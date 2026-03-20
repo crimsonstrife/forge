@@ -20,6 +20,18 @@
             </div>
 
             <div class="col-sm-6">
+                <x-label for="organization_id" value="Organization"/>
+                <select wire:model.defer="organization_id" id="organization_id" class="form-select">
+                    <option value="">(No organization)</option>
+                    @foreach($organizationOptions as $organization)
+                        <option value="{{ $organization['id'] }}">{{ $organization['name'] }}</option>
+                    @endforeach
+                </select>
+                <div class="form-text">{{ __('Projects can belong to an organization and one or more teams at the same time.') }}</div>
+                <x-input-error for="organization_id" class="mt-1"/>
+            </div>
+
+            <div class="col-sm-6">
                 <x-label for="lead_id" value="Project Lead"/>
                 <select wire:model.defer="lead_id" id="lead_id" class="form-select">
                     <option value="">(Select)</option>
@@ -47,6 +59,7 @@
                         <option value="{{ $t['id'] }}">{{ $t['name'] }}</option>
                     @endforeach
                 </select>
+                <div class="form-text">{{ __('Use teams for collaboration boundaries, and use the organization for shared reporting and rollups.') }}</div>
                 <x-input-error for="attach_team_ids" class="mt-1"/>
             </div>
 

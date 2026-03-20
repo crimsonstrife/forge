@@ -6,6 +6,8 @@ use App\Traits\IsPermissible;
 use Database\Factories\TeamFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 use Laravel\Jetstream\Events\TeamCreated;
 use Laravel\Jetstream\Events\TeamDeleted;
@@ -16,10 +18,12 @@ class Team extends JetstreamTeam
 {
     /** @use HasFactory<TeamFactory> */
     use HasFactory;
+
     use HasUuids;
     use IsPermissible;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     /**
@@ -52,8 +56,20 @@ class Team extends JetstreamTeam
     {
         return [
             'personal_team' => 'boolean',
-            'id' => 'string'
+            'id' => 'string',
         ];
+    }
+
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'project_team', 'team_id', 'project_id')
+            ->withPivot(['role'])
+            ->withTimestamps();
+    }
+
+    public function goals(): MorphMany
+    {
+        return $this->morphMany(Goal::class, 'owner');
     }
 
     public static function boot(): void

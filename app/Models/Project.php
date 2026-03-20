@@ -17,19 +17,21 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\Contracts\Activity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Project extends BaseModel
 {
-    use HasFactory;
-    use HasUuids;
-    use LogsActivity;
-    use IsPermissible;
     use HasExternalId;
+    use HasFactory;
     use HasRecordShares;
+    use HasUuids;
+    use IsPermissible;
+    use LogsActivity;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     public const KEY_MAX_LENGTH = 8;
@@ -115,7 +117,7 @@ class Project extends BaseModel
             ],
             'attachments' => [
                 'max_mb' => 50,
-                'allowed_mime' => ['image/*','application/pdf'],
+                'allowed_mime' => ['image/*', 'application/pdf'],
             ],
             'comments' => [
                 'mentions_enabled' => true,
@@ -129,6 +131,7 @@ class Project extends BaseModel
     public function setting(string $key, mixed $default = null): mixed
     {
         $merged = array_replace_recursive($this->defaultSettings(), $this->settings ?? []);
+
         return Arr::get($merged, $key, $default);
     }
 
@@ -137,12 +140,14 @@ class Project extends BaseModel
         $settings = $this->settings ?? [];
         Arr::set($settings, $key, $value);
         $this->settings = $settings;
+
         return $this;
     }
 
     public function updateSettings(array $values): static
     {
         $this->settings = array_replace_recursive($this->settings ?? [], $values);
+
         return $this;
     }
 
@@ -150,22 +155,22 @@ class Project extends BaseModel
     {
         return LogOptions::defaults()
             ->useLogName('forge.project')
-            ->logOnly(['name','key','description','lead_id'])
+            ->logOnly(['name', 'key', 'description', 'lead_id'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
 
-    public function tapActivity(\Spatie\Activitylog\Contracts\Activity $activity): void
+    public function tapActivity(Activity $activity): void
     {
         $ctx = ActivityContext::base();
         $activity->team_id = $ctx['team_id'];                 // persisted column
         $activity->properties = $activity->properties->merge([ // JSON props
             'actor_id' => $ctx['user_id'],
-            'ip'       => $ctx['ip'],
-            'ua'       => $ctx['user_agent'],
+            'ip' => $ctx['ip'],
+            'ua' => $ctx['user_agent'],
         ]);
         $activity->event = $activity->event ?: 'updated'; // create/update/delete auto-populate
-        $activity->description = 'project.' . $activity->event;
+        $activity->description = 'project.'.$activity->event;
     }
 
     public function organization(): BelongsTo
@@ -175,14 +180,14 @@ class Project extends BaseModel
 
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(\App\Models\Team::class, 'project_team', 'project_id', 'team_id')
+        return $this->belongsToMany(Team::class, 'project_team', 'project_id', 'team_id')
             ->withPivot(['role'])
             ->withTimestamps();
     }
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(\App\Models\User::class, 'project_user', 'project_id', 'user_id')
+        return $this->belongsToMany(User::class, 'project_user', 'project_id', 'user_id')
             ->withPivot(['role'])
             ->withTimestamps();
     }
@@ -205,21 +210,21 @@ class Project extends BaseModel
     public function issueTypes(): BelongsToMany
     {
         return $this->belongsToMany(IssueType::class, 'project_issue_types')
-            ->withPivot(['order','is_default'])
+            ->withPivot(['order', 'is_default'])
             ->orderBy('project_issue_types.order');
     }
 
     public function issueStatuses(): BelongsToMany
     {
         return $this->belongsToMany(IssueStatus::class, 'project_issue_statuses')
-            ->withPivot(['order','is_initial','is_default_done'])
+            ->withPivot(['order', 'is_initial', 'is_default_done'])
             ->orderBy('project_issue_statuses.order');
     }
 
     public function issuePriorities(): BelongsToMany
     {
         return $this->belongsToMany(IssuePriority::class, 'project_issue_priorities')
-            ->withPivot(['order','is_default'])
+            ->withPivot(['order', 'is_default'])
             ->orderBy('project_issue_priorities.order');
     }
 
@@ -241,20 +246,23 @@ class Project extends BaseModel
     /** IDs / selections (with global fallback) */
     public function allowedTypeIds(): array
     {
-        $ids = $this->issueTypes()->pluck('issue_types.id')->map(fn ($id) => (int)$id)->all();
-        return $ids ?: IssueType::query()->pluck('id')->map(fn ($id) => (int)$id)->all();
+        $ids = $this->issueTypes()->pluck('issue_types.id')->map(fn ($id) => (int) $id)->all();
+
+        return $ids ?: IssueType::query()->pluck('id')->map(fn ($id) => (int) $id)->all();
     }
 
     public function allowedStatusIds(): array
     {
-        $ids = $this->issueStatuses()->pluck('issue_statuses.id')->map(fn ($id) => (int)$id)->all();
-        return $ids ?: IssueStatus::query()->pluck('id')->map(fn ($id) => (int)$id)->all();
+        $ids = $this->issueStatuses()->pluck('issue_statuses.id')->map(fn ($id) => (int) $id)->all();
+
+        return $ids ?: IssueStatus::query()->pluck('id')->map(fn ($id) => (int) $id)->all();
     }
 
     public function allowedPriorityIds(): array
     {
-        $ids = $this->issuePriorities()->pluck('issue_priorities.id')->map(fn ($id) => (int)$id)->all();
-        return $ids ?: IssuePriority::query()->pluck('id')->map(fn ($id) => (int)$id)->all();
+        $ids = $this->issuePriorities()->pluck('issue_priorities.id')->map(fn ($id) => (int) $id)->all();
+
+        return $ids ?: IssuePriority::query()->pluck('id')->map(fn ($id) => (int) $id)->all();
     }
 
     public function defaultTypeId(): ?int
@@ -279,7 +287,6 @@ class Project extends BaseModel
         return $this->hasMany(ImportExportRecord::class);
     }
 
-
     public function initialStatusId(): ?int
     {
         $id = $this->issueStatuses()->wherePivot('is_initial', true)->value('issue_statuses.id');
@@ -289,7 +296,8 @@ class Project extends BaseModel
 
         // global fallback, but only if it's included in project’s allowed set
         $fallback = IssueStatus::query()->where('is_done', false)->orderBy('order')->value('id');
-        return in_array((int)$fallback, $this->allowedStatusIds(), true) ? (int)$fallback : null;
+
+        return in_array((int) $fallback, $this->allowedStatusIds(), true) ? (int) $fallback : null;
     }
 
     public function canTransition(string $fromStatusId, string $toStatusId, ?string $issueTypeId = null): bool
@@ -313,7 +321,7 @@ class Project extends BaseModel
             return false;
         }
 
-        if ($user->hasPermissionTo('is-super-admin')) {
+        if ($user->hasPermissionTo('is-super-admin') || $user->can('is-admin')) {
             return true;
         }
 
@@ -330,13 +338,17 @@ class Project extends BaseModel
         return $this->teams()->where(function ($t) use ($user) {
             // if teams table has owner column:
             $t->where('teams.user_id', $user->id) // owner
-            ->orWhereHas('users', fn ($u) => $u->whereKey($user->id)); // members via team_user
+                ->orWhereHas('users', fn ($u) => $u->whereKey($user->id)); // members via team_user
         })->exists();
     }
 
     /** Scope: projects visible to a user (lead, direct member, or member of any attached team) */
     public function scopeVisibleTo(Builder $q, User $user): Builder
     {
+        if ($user->hasPermissionTo('is-super-admin') || $user->can('is-admin')) {
+            return $q;
+        }
+
         return $q->where(function ($w) use ($user) {
             // Lead always sees
             $w->where('lead_id', $user->id)
@@ -347,7 +359,7 @@ class Project extends BaseModel
                 // Any attached team where the user is owner OR a member
                 ->orWhereHas('teams', function ($t) use ($user) {
                     $t->where('teams.user_id', $user->id) // team owner
-                    ->orWhereHas('users', fn ($u) => $u->whereKey($user->id)); // team_user membership
+                        ->orWhereHas('users', fn ($u) => $u->whereKey($user->id)); // team_user membership
                 });
         });
     }
@@ -355,6 +367,7 @@ class Project extends BaseModel
     public function getStageLabelAttribute(): string
     {
         $s = $this->stage;
+
         return $s instanceof ProjectStage ? $s->label() : ucfirst((string) ($s ?? ''));
     }
 

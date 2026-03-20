@@ -49,7 +49,7 @@ class JetstreamServiceProvider extends ServiceProvider
             'projects:read',
         ]);
 
-        \Laravel\Jetstream\Jetstream::permissions([
+        Jetstream::permissions([
             'projects:read',
             'issues:read',
             'issues:write',
@@ -58,12 +58,16 @@ class JetstreamServiceProvider extends ServiceProvider
             'time:write',
         ]);
 
-        \Laravel\Jetstream\Jetstream::role('admin', 'Administrator', [
+        Jetstream::role('admin', 'Administrator', [
             'create', 'read', 'update', 'delete',
         ])->description('Administrator users can perform any action.');
 
-        \Laravel\Jetstream\Jetstream::role('editor', 'Editor', [
+        Jetstream::role('editor', 'Editor', [
             'read', 'create', 'update',
         ])->description('Editor users have the ability to read, create, and update.');
+
+        Jetstream::role('collaborator', 'Collaborator', [
+            'read', 'create', 'update',
+        ])->description('Collaborators can work with shared records without managing the team itself.');
     }
 }
