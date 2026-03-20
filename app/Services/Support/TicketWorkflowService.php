@@ -12,7 +12,9 @@ use Carbon\CarbonInterface;
 
 final class TicketWorkflowService
 {
-    public function __construct(private ConvertTicketToIssue $converter) {}
+    public function __construct(private ConvertTicketToIssue $converter)
+    {
+    }
 
     public function initialize(Ticket $ticket): ?Issue
     {
