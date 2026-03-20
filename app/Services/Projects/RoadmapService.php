@@ -15,7 +15,8 @@ final class RoadmapService
         private readonly RoadmapBurnChartBuilder $burnChartBuilder,
         private readonly RoadmapDependencyAnalyzer $dependencyAnalyzer,
         private readonly RoadmapWindowResolver $windowResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @return array{

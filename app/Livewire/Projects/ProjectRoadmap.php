@@ -51,7 +51,7 @@ final class ProjectRoadmap extends Component
     public function authorize($ability, mixed $arguments = []): void
     {
         if (Gate::denies($ability, $arguments)) {
-            throw new AuthorizationException;
+            throw new AuthorizationException();
         }
     }
 }

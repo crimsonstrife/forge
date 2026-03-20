@@ -11,7 +11,9 @@ use Illuminate\Support\Collection;
 
 final class RoadmapBurnChartBuilder
 {
-    public function __construct(private readonly RoadmapWindowResolver $windowResolver) {}
+    public function __construct(private readonly RoadmapWindowResolver $windowResolver)
+    {
+    }
 
     /**
      * @param  Collection<int, Issue>  $issues
