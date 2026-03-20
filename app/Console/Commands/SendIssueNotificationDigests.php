@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\IssueNotificationPreference;
-use App\Notifications\IssueAssigned;
 use App\Notifications\IssueActivityNotification;
+use App\Notifications\IssueAssigned;
 use App\Notifications\IssueDailyDigest;
 use App\Notifications\MentionNotification;
 use Illuminate\Console\Command;
@@ -44,10 +44,6 @@ class SendIssueNotificationDigests extends Command
                         ->limit(25)
                         ->get();
 
-                    $preference->forceFill([
-                        'daily_digest_last_sent_at' => $until,
-                    ])->save();
-
                     if ($notifications->isEmpty()) {
                         continue;
                     }
@@ -68,6 +64,10 @@ class SendIssueNotificationDigests extends Command
                         fromLabel: $since->format('M j, g:i A'),
                         toLabel: $until->format('M j, g:i A'),
                     ));
+
+                    $preference->forceFill([
+                        'daily_digest_last_sent_at' => $notifications->max('created_at') ?? $until,
+                    ])->save();
 
                     $sent++;
                 }

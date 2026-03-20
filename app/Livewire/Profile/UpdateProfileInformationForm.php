@@ -2,50 +2,27 @@
 
 namespace App\Livewire\Profile;
 
+use App\Livewire\Concerns\InteractsWithIssueNotificationPreferences;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 use Laravel\Jetstream\Http\Livewire\UpdateProfileInformationForm as JetstreamUpdateProfileInformationForm;
 
 class UpdateProfileInformationForm extends JetstreamUpdateProfileInformationForm
 {
-    public bool $notify_on_assignment = true;
-
-    public bool $notify_on_comment = true;
-
-    public bool $notify_on_status_change = true;
-
-    public bool $notify_on_link_change = true;
-
-    public bool $notify_on_mention = true;
-
-    public bool $daily_digest_enabled = false;
+    use InteractsWithIssueNotificationPreferences;
 
     public function mount(): void
     {
         parent::mount();
 
-        $preferences = Auth::user()->issueNotificationPreference()->firstOrCreate([]);
-
-        $this->notify_on_assignment = (bool) $preferences->notify_on_assignment;
-        $this->notify_on_comment = (bool) $preferences->notify_on_comment;
-        $this->notify_on_status_change = (bool) $preferences->notify_on_status_change;
-        $this->notify_on_link_change = (bool) $preferences->notify_on_link_change;
-        $this->notify_on_mention = (bool) $preferences->notify_on_mention;
-        $this->daily_digest_enabled = (bool) $preferences->daily_digest_enabled;
+        $this->loadIssueNotificationPreferences(Auth::user());
     }
 
     public function updateProfileInformation(UpdatesUserProfileInformation $updater)
     {
         $response = parent::updateProfileInformation($updater);
 
-        Auth::user()->issueNotificationPreference()->updateOrCreate([], [
-            'notify_on_assignment' => $this->notify_on_assignment,
-            'notify_on_comment' => $this->notify_on_comment,
-            'notify_on_status_change' => $this->notify_on_status_change,
-            'notify_on_link_change' => $this->notify_on_link_change,
-            'notify_on_mention' => $this->notify_on_mention,
-            'daily_digest_enabled' => $this->daily_digest_enabled,
-        ]);
+        $this->saveIssueNotificationPreferences(Auth::user());
 
         return $response;
     }

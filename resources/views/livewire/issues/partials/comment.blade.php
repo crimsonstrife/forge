@@ -15,7 +15,7 @@
                 <span class="text-body-secondary fw-normal">· {{ $c->created_at->diffForHumans() }}</span>
             </div>
 
-            <div class="small issue-content">{!! $c->body !!}</div>
+            <div class="small issue-content">{!! $c->rendered_body !!}</div>
 
             <button type="button"
                     class="btn btn-sm btn-link p-0"

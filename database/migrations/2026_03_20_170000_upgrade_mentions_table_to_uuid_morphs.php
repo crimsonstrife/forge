@@ -51,24 +51,6 @@ return new class () extends Migration {
 
     public function down(): void
     {
-        if (! Schema::hasTable('mentions') || ! Schema::hasColumn('mentions', 'model_id')) {
-            return;
-        }
-
-        $modelIdType = Schema::getColumnType('mentions', 'model_id');
-
-        if (! in_array($modelIdType, ['char', 'varchar', 'string', 'uuid'], true)) {
-            return;
-        }
-
-        Schema::create('mentions_integer_downgrade', static function (Blueprint $table): void {
-            $table->increments('id');
-            $table->morphs('model');
-            $table->morphs('recipient');
-            $table->timestamps();
-        });
-
-        Schema::drop('mentions');
-        Schema::rename('mentions_integer_downgrade', 'mentions');
+        throw new RuntimeException('The mentions UUID upgrade migration is not reversible without data loss.');
     }
 };

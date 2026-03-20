@@ -53,6 +53,8 @@ final class FollowersPanel extends Component
         if ($id !== (string) $this->issue->getKey()) {
             return;
         }
+
+        $this->issue->refresh();
     }
 
     public function render(IssueCollaborationService $collaboration): View

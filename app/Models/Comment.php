@@ -6,12 +6,15 @@ use App\Support\ActivityContext;
 use App\Traits\HasExternalId;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
+use Mews\Purifier\Purifier;
+use Spatie\Activitylog\Contracts\Activity;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
@@ -20,14 +23,15 @@ use Xetaio\Mentions\Models\Traits\HasMentionsTrait;
 
 class Comment extends BaseModel implements HasMedia
 {
-    use HasUuids;
+    use HasExternalId;
     use HasMentionsTrait;
-    use LogsActivity;
+    use HasUuids;
     use InteractsWithMedia;
     use IsPermissible;
-    use HasExternalId;
+    use LogsActivity;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [
@@ -38,7 +42,7 @@ class Comment extends BaseModel implements HasMedia
     ];
 
     protected $casts = [
-        'id' => 'string'
+        'id' => 'string',
     ];
 
     public static function boot(): void
@@ -71,6 +75,13 @@ class Comment extends BaseModel implements HasMedia
     public function replies(): HasMany
     {
         return $this->children();
+    }
+
+    protected function renderedBody(): Attribute
+    {
+        return Attribute::make(
+            get: static fn (mixed $value, array $attributes): string => app(Purifier::class)->clean((string) ($attributes['body'] ?? '')),
+        );
     }
 
     /**
@@ -108,21 +119,21 @@ class Comment extends BaseModel implements HasMedia
             ->dontSubmitEmptyLogs();
     }
 
-    public function tapActivity(\Spatie\Activitylog\Contracts\Activity $activity): void
+    public function tapActivity(Activity $activity): void
     {
         $ctx = ActivityContext::base();
         $activity->team_id = $ctx['team_id'];
         $activity->properties = $activity->properties->merge([
-            'actor_id'   => $ctx['user_id'],
-            'ip'         => $ctx['ip'],
-            'ua'         => $ctx['user_agent'],
+            'actor_id' => $ctx['user_id'],
+            'ip' => $ctx['ip'],
+            'ua' => $ctx['user_agent'],
             'comment_id' => $this->id,
             'context_media_id' => $this->context_media_id,
             'commentable' => [
                 'type' => $this->commentable_type,
-                'id'   => $this->commentable_id,
+                'id' => $this->commentable_id,
             ],
         ]);
-        $activity->description = 'comment.' . ($activity->event ?? 'updated');
+        $activity->description = 'comment.'.($activity->event ?? 'updated');
     }
 }

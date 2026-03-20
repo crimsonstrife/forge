@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Settings;
 
+use App\Livewire\Concerns\InteractsWithIssueNotificationPreferences;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -10,37 +11,22 @@ use Livewire\Component;
 
 class Profile extends Component
 {
+    use InteractsWithIssueNotificationPreferences;
+
     public string $name = '';
 
     public string $email = '';
-
-    public bool $notify_on_assignment = true;
-
-    public bool $notify_on_comment = true;
-
-    public bool $notify_on_status_change = true;
-
-    public bool $notify_on_link_change = true;
-
-    public bool $notify_on_mention = true;
-
-    public bool $daily_digest_enabled = false;
 
     /**
      * Mount the component.
      */
     public function mount(): void
     {
-        $this->name = Auth::user()->name;
-        $this->email = Auth::user()->email;
+        $user = Auth::user();
 
-        $preferences = Auth::user()->issueNotificationPreference()->firstOrCreate([]);
-        $this->notify_on_assignment = (bool) $preferences->notify_on_assignment;
-        $this->notify_on_comment = (bool) $preferences->notify_on_comment;
-        $this->notify_on_status_change = (bool) $preferences->notify_on_status_change;
-        $this->notify_on_link_change = (bool) $preferences->notify_on_link_change;
-        $this->notify_on_mention = (bool) $preferences->notify_on_mention;
-        $this->daily_digest_enabled = (bool) $preferences->daily_digest_enabled;
+        $this->name = $user->name;
+        $this->email = $user->email;
+        $this->loadIssueNotificationPreferences($user);
     }
 
     /**
@@ -71,14 +57,7 @@ class Profile extends Component
 
         $user->save();
 
-        $user->issueNotificationPreference()->updateOrCreate([], [
-            'notify_on_assignment' => $this->notify_on_assignment,
-            'notify_on_comment' => $this->notify_on_comment,
-            'notify_on_status_change' => $this->notify_on_status_change,
-            'notify_on_link_change' => $this->notify_on_link_change,
-            'notify_on_mention' => $this->notify_on_mention,
-            'daily_digest_enabled' => $this->daily_digest_enabled,
-        ]);
+        $this->saveIssueNotificationPreferences($user);
 
         $this->dispatch('profile-updated', name: $user->name);
     }
