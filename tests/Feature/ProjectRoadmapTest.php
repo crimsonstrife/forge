@@ -14,6 +14,7 @@ use App\Models\Milestone;
 use App\Models\Project;
 use App\Models\Team;
 use App\Models\User;
+use App\Services\Projects\RoadmapBurnChartBuilder;
 use Database\Seeders\IssueLinkTypeSeeder;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -56,6 +57,91 @@ class ProjectRoadmapTest extends TestCase
             ->assertSee($epic->summary)
             ->assertSee('Standalone work')
             ->assertSee('Scope readiness');
+    }
+
+    public function test_historical_burn_chart_stops_at_the_completed_milestone_window(): void
+    {
+        $user = User::factory()->create();
+        $project = Project::factory()->create([
+            'key' => 'HIST',
+            'lead_id' => $user->id,
+        ]);
+
+        $done = IssueStatus::query()->create([
+            'name' => 'Done',
+            'key' => 'DONE',
+            'color' => '#16a34a',
+            'order' => 1,
+            'is_done' => true,
+        ]);
+
+        $taskType = IssueType::query()->firstOrCreate(
+            ['key' => 'TASK'],
+            [
+                'name' => 'Task',
+                'icon' => 'check_box',
+                'is_default' => true,
+                'is_hierarchical' => false,
+                'tier' => 'task',
+            ]
+        );
+
+        $priority = IssuePriority::query()->firstOrCreate(
+            ['key' => 'MEDIUM'],
+            [
+                'name' => 'Medium',
+                'order' => 1,
+                'weight' => 1,
+                'color' => '#64748b',
+                'icon' => 'flag',
+            ]
+        );
+
+        $milestone = $project->milestones()->create([
+            'type' => MilestoneType::Release,
+            'state' => MilestoneState::Completed,
+            'name' => 'Historic Release',
+            'starts_at' => now()->subDays(40),
+            'due_at' => now()->subDays(32),
+            'released_at' => now()->subDays(30),
+        ]);
+
+        $issue = Issue::query()->create([
+            'project_id' => $project->id,
+            'issue_type_id' => $taskType->id,
+            'issue_status_id' => $done->id,
+            'issue_priority_id' => $priority->id,
+            'reporter_id' => $user->id,
+            'summary' => 'Wrap legacy release',
+            'milestone_id' => $milestone->id,
+        ]);
+
+        DB::table('issues')
+            ->where('id', $issue->id)
+            ->update([
+                'created_at' => now()->subDays(39),
+                'updated_at' => now()->subDays(31),
+            ]);
+
+        $burnChart = app(RoadmapBurnChartBuilder::class)->build(
+            milestone: $milestone->fresh(),
+            issues: Issue::query()
+                ->whereKey($issue->id)
+                ->with('status:id,name,color,is_done')
+                ->get([
+                    'id',
+                    'key',
+                    'milestone_id',
+                    'issue_status_id',
+                    'created_at',
+                    'updated_at',
+                ]),
+        );
+
+        $labels = $burnChart['labels'];
+
+        $this->assertFalse($burnChart['empty']);
+        $this->assertSame($milestone->released_at->format('M j'), last($labels));
     }
 
     /**

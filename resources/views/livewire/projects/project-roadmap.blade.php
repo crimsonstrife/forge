@@ -500,13 +500,6 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
-        document.addEventListener('livewire:navigated', renderProjectRoadmapCharts);
-        document.addEventListener('DOMContentLoaded', renderProjectRoadmapCharts);
-        window.addEventListener('load', renderProjectRoadmapCharts);
-
-        let projectRoadmapTimelineChart;
-        let projectRoadmapBurnChart;
-
         function readRoadmapPayload(id) {
             const node = document.getElementById(id);
             if (!node) return null;
@@ -532,9 +525,9 @@
             const payload = readRoadmapPayload('project-roadmap-timeline-payload');
 
             if (!el || !payload || !payload.series || payload.series.length === 0) {
-                if (projectRoadmapTimelineChart) {
-                    projectRoadmapTimelineChart.destroy();
-                    projectRoadmapTimelineChart = null;
+                if (window.projectRoadmapTimelineChart) {
+                    window.projectRoadmapTimelineChart.destroy();
+                    window.projectRoadmapTimelineChart = null;
                 }
 
                 return;
@@ -591,12 +584,12 @@
                 }
             };
 
-            if (projectRoadmapTimelineChart) {
-                projectRoadmapTimelineChart.destroy();
+            if (window.projectRoadmapTimelineChart) {
+                window.projectRoadmapTimelineChart.destroy();
             }
 
-            projectRoadmapTimelineChart = new ApexCharts(el, options);
-            projectRoadmapTimelineChart.render();
+            window.projectRoadmapTimelineChart = new ApexCharts(el, options);
+            window.projectRoadmapTimelineChart.render();
         }
 
         function renderRoadmapBurnChart() {
@@ -604,9 +597,9 @@
             const payload = readRoadmapPayload('project-roadmap-burn-payload');
 
             if (!el || !payload || !payload.series || payload.series.length === 0) {
-                if (projectRoadmapBurnChart) {
-                    projectRoadmapBurnChart.destroy();
-                    projectRoadmapBurnChart = null;
+                if (window.projectRoadmapBurnChart) {
+                    window.projectRoadmapBurnChart.destroy();
+                    window.projectRoadmapBurnChart = null;
                 }
 
                 return;
@@ -640,14 +633,21 @@
                 }
             };
 
-            if (projectRoadmapBurnChart) {
-                projectRoadmapBurnChart.destroy();
+            if (window.projectRoadmapBurnChart) {
+                window.projectRoadmapBurnChart.destroy();
             }
 
-            projectRoadmapBurnChart = new ApexCharts(el, options);
-            projectRoadmapBurnChart.render();
+            window.projectRoadmapBurnChart = new ApexCharts(el, options);
+            window.projectRoadmapBurnChart.render();
         }
 
-        Livewire.hook('morph.updated', renderProjectRoadmapCharts);
+        if (!window.__projectRoadmapChartsInitialized) {
+            document.addEventListener('livewire:navigated', renderProjectRoadmapCharts);
+            document.addEventListener('DOMContentLoaded', renderProjectRoadmapCharts);
+            window.addEventListener('load', renderProjectRoadmapCharts);
+            Livewire.hook('morph.updated', renderProjectRoadmapCharts);
+
+            window.__projectRoadmapChartsInitialized = true;
+        }
     </script>
 @endpush
