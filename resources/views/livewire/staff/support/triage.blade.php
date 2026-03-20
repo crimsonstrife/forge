@@ -47,23 +47,41 @@
                     <th>Product</th>
                     <th>Status</th>
                     <th>Priority</th>
+                    <th>SLA</th>
                     <th>Assignee</th>
                     <th>Opened</th>
                 </tr>
                 </thead>
                 <tbody>
                 @forelse($rows as $t)
+                    @php
+                        $activeWindows = collect($t->slaWindows())->filter(fn (array $window) => $window['open']);
+                    @endphp
                     <tr>
                         <td class="fw-semibold"><a href="{{ route('support.staff.show', ['key' => $t->key]) }}">{{ $t->key }}</a></td>
                         <td>{{ Str::limit($t->subject, 80) }}</td>
                         <td>{{ $t->product->name ?? '—' }}</td>
                         <td>{{ $t->status->name ?? '—' }}</td>
                         <td>{{ $t->priority->name ?? '—' }}</td>
+                        <td class="small">
+                            @if($activeWindows->isEmpty())
+                                <span class="text-body-secondary">No active timer</span>
+                            @else
+                                @foreach($activeWindows as $window)
+                                    <div class="text-nowrap">
+                                        <span class="badge {{ $window['breached'] ? 'text-bg-danger' : 'text-bg-warning' }}">{{ $window['label'] }}</span>
+                                        <span class="{{ $window['breached'] ? 'text-danger' : 'text-body-secondary' }}">
+                                            {{ $window['breached'] ? 'Overdue' : 'Due' }} {{ $window['due_at']?->diffForHumans() }}
+                                        </span>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </td>
                         <td>{{ $t->assignee->name ?? '—' }}</td>
                         <td class="text-nowrap">{{ $t->created_at->format('M j, Y g:ia') }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="text-body-secondary">No tickets found.</td></tr>
+                    <tr><td colspan="8" class="text-body-secondary">No tickets found.</td></tr>
                 @endforelse
                 </tbody>
             </table>

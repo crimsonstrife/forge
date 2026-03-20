@@ -6,12 +6,14 @@ use App\Services\Support\TicketKeyService;
 use App\Support\ActivityContext;
 use App\Traits\HasRecordShares;
 use App\Traits\IsPermissible;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\Contracts\Activity;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -22,13 +24,23 @@ use Spatie\Activitylog\Traits\LogsActivity;
  */
 class Ticket extends BaseModel
 {
-    use SoftDeletes;
-    use HasUlids;
-    use LogsActivity;
-    use IsPermissible;
     use HasRecordShares;
+    use HasUlids;
+    use IsPermissible;
+    use LogsActivity;
+    use SoftDeletes;
 
     protected $guarded = [];
+
+    protected $casts = [
+        'first_response_due_at' => 'immutable_datetime',
+        'first_responded_at' => 'immutable_datetime',
+        'next_response_due_at' => 'immutable_datetime',
+        'last_customer_reply_at' => 'immutable_datetime',
+        'last_staff_reply_at' => 'immutable_datetime',
+        'resolve_due_at' => 'immutable_datetime',
+        'resolved_at' => 'immutable_datetime',
+    ];
 
     public static function boot(): void
     {
@@ -112,21 +124,73 @@ class Ticket extends BaseModel
     {
         return LogOptions::defaults()
             ->useLogName('forge.support.ticket')
-            ->logOnly(['subject','key','body','submitter_email'])
+            ->logOnly(['subject', 'key', 'body', 'submitter_email'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
 
-    public function tapActivity(\Spatie\Activitylog\Contracts\Activity $activity): void
+    public function tapActivity(Activity $activity): void
     {
         $ctx = ActivityContext::base();
         $activity->team_id = $ctx['team_id'];                 // persisted column
         $activity->properties = $activity->properties->merge([ // JSON props
             'actor_id' => $ctx['user_id'],
-            'ip'       => $ctx['ip'],
-            'ua'       => $ctx['user_agent'],
+            'ip' => $ctx['ip'],
+            'ua' => $ctx['user_agent'],
         ]);
         $activity->event = $activity->event ?: 'updated'; // create/update/delete auto-populate
-        $activity->description = 'ticket.' . $activity->event;
+        $activity->description = 'ticket.'.$activity->event;
+    }
+
+    /** @return array<int, array{key:string,label:string,due_at:CarbonInterface|null,completed_at:CarbonInterface|null,open:bool,breached:bool}> */
+    public function slaWindows(): array
+    {
+        $resolved = $this->isResolved();
+
+        return [
+            [
+                'key' => 'first_response',
+                'label' => 'First response',
+                'due_at' => $this->first_response_due_at,
+                'completed_at' => $this->first_responded_at,
+                'open' => $this->first_response_due_at !== null && $this->first_responded_at === null,
+                'breached' => $this->first_response_due_at !== null
+                    && $this->first_responded_at === null
+                    && $this->first_response_due_at->isPast(),
+            ],
+            [
+                'key' => 'next_response',
+                'label' => 'Next response',
+                'due_at' => $this->next_response_due_at,
+                'completed_at' => $this->last_staff_reply_at,
+                'open' => $this->next_response_due_at !== null && ! $resolved,
+                'breached' => $this->next_response_due_at !== null
+                    && ! $resolved
+                    && $this->next_response_due_at->isPast(),
+            ],
+            [
+                'key' => 'resolve',
+                'label' => 'Resolve',
+                'due_at' => $this->resolve_due_at,
+                'completed_at' => $this->resolved_at,
+                'open' => $this->resolve_due_at !== null && ! $resolved,
+                'breached' => $this->resolve_due_at !== null
+                    && ! $resolved
+                    && $this->resolve_due_at->isPast(),
+            ],
+        ];
+    }
+
+    public function isResolved(): bool
+    {
+        if ($this->resolved_at !== null) {
+            return true;
+        }
+
+        if ($this->relationLoaded('status') && $this->status !== null) {
+            return (bool) $this->status->is_done;
+        }
+
+        return (bool) $this->status()->value('is_done');
     }
 }

@@ -4,8 +4,8 @@ namespace App\Livewire\Support;
 
 use App\Models\SupportIdentity;
 use App\Models\Ticket;
-use App\Models\TicketComment;
 use App\Services\Support\TextRedactor;
+use App\Services\Support\TicketWorkflowService;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -22,23 +22,26 @@ final class ShowTicket extends Component
         $this->ticket = Ticket::query()
             ->where('key', $key)
             ->where('email_hash', $identity->email_hash)
-            ->with(['status:id,name','product:id,name'])
+            ->with(['status:id,name,is_done', 'product:id,name'])
             ->firstOrFail();
     }
 
-    public function postReply(TextRedactor $redactor): void
+    public function postReply(TextRedactor $redactor, TicketWorkflowService $workflow): void
     {
         $this->validate();
 
         $this->ticket->comments()->create([
-            'body'          => $this->reply,
+            'body' => $this->reply,
             'redacted_body' => $redactor->redact($this->reply),
-            'is_internal'   => false,
+            'is_internal' => false,
         ]);
+
+        $workflow->recordCustomerReply($this->ticket);
 
         // TODO: notify staff
 
         $this->reset('reply');
+        $this->ticket->refresh();
     }
 
     public function render(): View
@@ -47,9 +50,8 @@ final class ShowTicket extends Component
             ->where('is_internal', false)
             ->with('user:id,name,email,profile_photo_path')
             ->latest()
-            ->get(['id','redacted_body','created_at','user_id']);
+            ->get(['id', 'redacted_body', 'created_at', 'user_id']);
 
         return view('livewire.support.show-ticket', compact('comments'));
     }
-
 }

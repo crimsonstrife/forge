@@ -7,13 +7,13 @@ use App\Models\IssueStatus;
 use App\Models\IssueType;
 use App\Models\Project;
 use App\Models\ServiceProduct;
+use App\Models\ServiceProductIngestKey;
 use App\Models\ServiceProductPriorityMap;
 use App\Models\ServiceProductStatusMap;
 use App\Models\ServiceProductTypeMap;
 use App\Models\TicketPriority;
 use App\Models\TicketStatus;
 use App\Models\TicketType;
-use App\Models\ServiceProductIngestKey;
 use App\Services\Support\IngestKeyManager;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -39,6 +39,21 @@ final class Edit extends Component
 
     #[Validate('nullable|string|max:2000')]
     public ?string $description = null;
+
+    #[Validate('nullable|integer|min:1|max:43200')]
+    public ?int $firstResponseTargetMinutes = null;
+
+    #[Validate('nullable|integer|min:1|max:43200')]
+    public ?int $nextResponseTargetMinutes = null;
+
+    #[Validate('nullable|integer|min:1|max:43200')]
+    public ?int $resolveTargetMinutes = null;
+
+    #[Validate('nullable|integer|exists:ticket_types,id')]
+    public ?int $autoCreateIssueForTicketTypeId = null;
+
+    #[Validate('nullable|uuid|exists:projects,id')]
+    public ?string $autoCreateIssueProjectId = null;
 
     public ?string $defaultProjectId = null;
 
@@ -70,6 +85,11 @@ final class Edit extends Component
         $this->key = $this->product->key;
         $this->name = $this->product->name;
         $this->description = $this->product->description;
+        $this->firstResponseTargetMinutes = $this->product->first_response_target_minutes;
+        $this->nextResponseTargetMinutes = $this->product->next_response_target_minutes;
+        $this->resolveTargetMinutes = $this->product->resolve_target_minutes;
+        $this->autoCreateIssueForTicketTypeId = $this->product->auto_create_issue_for_ticket_type_id;
+        $this->autoCreateIssueProjectId = $this->product->auto_create_issue_project_id;
         $this->defaultProjectId = $this->product->default_project_id;
         $this->projectIds = $this->product->projects()->pluck('projects.id')->map(fn ($id) => (string) $id)->all();
 
@@ -96,6 +116,11 @@ final class Edit extends Component
             'name' => $this->name,
             'description' => $this->description,
             'default_project_id' => $this->defaultProjectId,
+            'first_response_target_minutes' => $this->firstResponseTargetMinutes,
+            'next_response_target_minutes' => $this->nextResponseTargetMinutes,
+            'resolve_target_minutes' => $this->resolveTargetMinutes,
+            'auto_create_issue_for_ticket_type_id' => $this->autoCreateIssueForTicketTypeId,
+            'auto_create_issue_project_id' => $this->autoCreateIssueProjectId,
         ]);
 
         $this->product->projects()->sync($this->projectIds);
@@ -175,13 +200,13 @@ final class Edit extends Component
     public function render(): View
     {
         return view('livewire.staff.support.products.edit', [
-            'allProjects'      => Project::query()->orderBy('name')->get(['id', 'name', 'key']),
-            'ticketTypes'      => TicketType::query()->orderBy('name')->get(['id', 'name']),
-            'ticketStatuses'   => TicketStatus::query()->orderBy('name')->get(['id', 'name']),
+            'allProjects' => Project::query()->orderBy('name')->get(['id', 'name', 'key']),
+            'ticketTypes' => TicketType::query()->orderBy('name')->get(['id', 'name']),
+            'ticketStatuses' => TicketStatus::query()->orderBy('name')->get(['id', 'name']),
             'ticketPriorities' => TicketPriority::query()->orderBy('weight')->get(['id', 'name']),
-            'issueTypes'       => IssueType::query()->orderBy('name')->get(['id', 'name']),
-            'issueStatuses'    => IssueStatus::query()->orderBy('order')->get(['id', 'name']),
-            'issuePriorities'  => IssuePriority::query()->orderBy('weight')->get(['id', 'name']),
+            'issueTypes' => IssueType::query()->orderBy('name')->get(['id', 'name']),
+            'issueStatuses' => IssueStatus::query()->orderBy('order')->get(['id', 'name']),
+            'issuePriorities' => IssuePriority::query()->orderBy('weight')->get(['id', 'name']),
         ]);
     }
 }

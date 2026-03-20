@@ -1,4 +1,18 @@
 <div class="vstack gap-3">
+    @php
+        $slaWindows = collect($ticket->slaWindows())->filter(fn (array $window) => $window['due_at'] !== null);
+        $formatSlaTime = static function ($dueAt, $completedAt, bool $breached): string {
+            if ($completedAt !== null) {
+                return 'Met ' . $completedAt->diffForHumans();
+            }
+
+            if ($dueAt === null) {
+                return 'No timer set';
+            }
+
+            return ($breached ? 'Breached ' : 'Due ') . $dueAt->diffForHumans();
+        };
+    @endphp
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start">
@@ -47,6 +61,26 @@
                 </div>
                 <div class="col-md-4">
                     <form wire:submit.prevent="saveMeta" class="vstack gap-2">
+                        @if($slaWindows->isNotEmpty())
+                            <div class="border rounded p-3 bg-body-tertiary">
+                                <div class="small text-uppercase text-body-secondary fw-semibold mb-2">SLA targets</div>
+                                <div class="vstack gap-2">
+                                    @foreach($slaWindows as $window)
+                                        <div class="border rounded p-2 {{ $window['breached'] ? 'border-danger bg-danger-subtle' : '' }}">
+                                            <div class="d-flex justify-content-between align-items-center gap-2">
+                                                <span class="fw-semibold small">{{ $window['label'] }}</span>
+                                                <span class="badge {{ $window['breached'] ? 'text-bg-danger' : ($window['open'] ? 'text-bg-warning' : 'text-bg-success') }}">
+                                                    {{ $window['breached'] ? 'Breached' : ($window['open'] ? 'Open' : 'Met') }}
+                                                </span>
+                                            </div>
+                                            <div class="small text-body-secondary mt-1">
+                                                {{ $formatSlaTime($window['due_at'], $window['completed_at'], $window['breached']) }}
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
 
                         {{-- NEW: Project --}}
                         <div>
@@ -79,6 +113,12 @@
                             <select class="form-select" wire:model="typeId">
                                 @foreach($types as $t)<option value="{{ $t->id }}">{{ $t->name }}</option>@endforeach
                             </select>
+                            @if($ticket->product?->auto_create_issue_for_ticket_type_id)
+                                <div class="form-text">
+                                    Auto-creates a linked issue when set to
+                                    {{ $types->firstWhere('id', $ticket->product->auto_create_issue_for_ticket_type_id)?->name ?? 'the configured type' }}.
+                                </div>
+                            @endif
                         </div>
                         <div>
                             <label class="form-label">Assignee</label>
