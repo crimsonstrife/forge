@@ -30,13 +30,16 @@ final class SharedDashboardService
      */
     public function forTeam(User $viewer, Team $team): array
     {
+        $projectQuery = $this->teamProjectQuery($viewer, $team);
+        $projectIds = $this->projectIds($projectQuery);
         $members = $team->allUsers()
             ->sortBy('name')
             ->values();
 
         return array_merge(
             $this->build(
-                projectQuery: $this->teamProjectQuery($viewer, $team),
+                projectQuery: $projectQuery,
+                projectIds: $projectIds,
                 goalOwnerType: Team::class,
                 goalOwnerId: (string) $team->getKey(),
             ),
@@ -59,7 +62,7 @@ final class SharedDashboardService
     public function forOrganization(User $viewer, Organization $organization): array
     {
         $projectQuery = $this->organizationProjectQuery($viewer, $organization);
-        $projectIds = (clone $projectQuery)->pluck('projects.id')->values()->all();
+        $projectIds = $this->projectIds($projectQuery);
 
         $teams = empty($projectIds)
             ? Team::query()->whereRaw('1 = 0')->get()
@@ -74,6 +77,7 @@ final class SharedDashboardService
         return array_merge(
             $this->build(
                 projectQuery: $projectQuery,
+                projectIds: $projectIds,
                 goalOwnerType: Organization::class,
                 goalOwnerId: (string) $organization->getKey(),
             ),
@@ -121,10 +125,8 @@ final class SharedDashboardService
      *     recentActivity:Collection<int, array<string, mixed>>
      * }
      */
-    private function build(Builder $projectQuery, string $goalOwnerType, string $goalOwnerId): array
+    private function build(Builder $projectQuery, array $projectIds, string $goalOwnerType, string $goalOwnerId): array
     {
-        $projectIds = (clone $projectQuery)->pluck('projects.id')->values()->all();
-
         $projects = empty($projectIds)
             ? Project::query()->whereRaw('1 = 0')->get()
             : (clone $projectQuery)
@@ -183,6 +185,17 @@ final class SharedDashboardService
             'goals' => $goals,
             'recentActivity' => $this->recentActivity($projectIds),
         ];
+    }
+
+    /** @return array<int, string> */
+    private function projectIds(Builder $projectQuery): array
+    {
+        return (clone $projectQuery)
+            ->pluck('projects.id')
+            ->map(fn ($id) => (string) $id)
+            ->unique()
+            ->values()
+            ->all();
     }
 
     /**
