@@ -25,7 +25,7 @@ render(function (View $view, Project $project) {
 
     // Lightweight eager-loads for the header/sidebar
     $project->loadMissing([
-        'organization:id,name',
+        'organization:id,name,slug',
         'teams:id,name',
         'users:id,name',
     ]);
@@ -289,9 +289,14 @@ render(function (View $view, Project $project) {
                         <span>
                             Teams:
                             @foreach($project->teams as $team)
-                                <a class="link-primary text-decoration-none" href="{{ route('teams.dashboard', ['team' => $team]) }}">
-                                    {{ $team->name }}
-                                </a>@if (! $loop->last), @endif
+                                @can('view', $team)
+                                    <a class="link-primary text-decoration-none" href="{{ route('teams.dashboard', ['team' => $team]) }}">
+                                        {{ $team->name }}
+                                    </a>
+                                @else
+                                    <span>{{ $team->name }}</span>
+                                @endcan
+                                @if (! $loop->last), @endif
                             @endforeach
                         </span>
                     @endif

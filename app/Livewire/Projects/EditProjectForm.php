@@ -3,6 +3,7 @@
 namespace App\Livewire\Projects;
 
 use App\Enums\ProjectStage;
+use App\Livewire\Projects\Concerns\DeterminesOrganizationScopeAccess;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Team;
@@ -15,6 +16,7 @@ use Livewire\Component;
 final class EditProjectForm extends Component
 {
     use AuthorizesRequests;
+    use DeterminesOrganizationScopeAccess;
 
     public Project $project;
 
@@ -186,12 +188,6 @@ final class EditProjectForm extends Component
             })
             ->orderBy('name')
             ->get(['id', 'name', 'user_id']);
-    }
-
-    private function canManageAllOrganizations(): bool
-    {
-        return auth()->user()?->hasPermissionTo('is-super-admin')
-            || auth()->user()?->can('is-admin');
     }
 
     private function refreshAssignableUsers(): void

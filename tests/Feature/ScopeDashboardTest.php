@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Laravel\Jetstream\Jetstream;
+use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
 class ScopeDashboardTest extends TestCase
@@ -38,11 +39,12 @@ class ScopeDashboardTest extends TestCase
             'lead_id' => $owner->id,
         ]);
 
-        $hiddenProject = Project::factory()->create([
-            'name' => 'Private Audit',
-            'organization_id' => $hiddenOrganization->id,
-            'lead_id' => User::factory(),
-        ]);
+        $hiddenProject = Project::factory()
+            ->for(User::factory(), 'lead')
+            ->create([
+                'name' => 'Private Audit',
+                'organization_id' => $hiddenOrganization->id,
+            ]);
 
         $this->attachTeamToProject($team, $visibleProject);
         $this->attachUserToProject($visibleProject, $owner);
@@ -85,11 +87,12 @@ class ScopeDashboardTest extends TestCase
             'lead_id' => $owner->id,
         ]);
 
-        $otherProject = Project::factory()->create([
-            'name' => 'Other Team Work',
-            'organization_id' => $organization->id,
-            'lead_id' => User::factory(),
-        ]);
+        $otherProject = Project::factory()
+            ->for(User::factory(), 'lead')
+            ->create([
+                'name' => 'Other Team Work',
+                'organization_id' => $organization->id,
+            ]);
 
         $this->attachTeamToProject($team, $sharedProject);
         $this->attachTeamToProject($otherTeam, $otherProject);
@@ -144,6 +147,44 @@ class ScopeDashboardTest extends TestCase
         $this->assertFalse($component->isEditing);
         $this->assertNull($component->organization);
         $this->assertSame('', $component->name);
+    }
+
+    public function test_project_page_only_links_teams_the_viewer_can_open(): void
+    {
+        $this->ensurePermissionsExist();
+
+        $lead = User::factory()->create();
+        $viewer = User::factory()->create();
+        $viewerTeam = Team::factory()->create([
+            'user_id' => $viewer->id,
+            'personal_team' => true,
+        ]);
+        $restrictedTeam = Team::factory()->create([
+            'user_id' => $lead->id,
+            'personal_team' => false,
+            'name' => 'Restricted Team',
+        ]);
+
+        $viewer->forceFill(['current_team_id' => $viewerTeam->id])->save();
+        app(PermissionRegistrar::class)->setPermissionsTeamId($viewerTeam->id);
+        $viewer->givePermissionTo('projects.view');
+
+        $project = Project::factory()
+            ->for($lead, 'lead')
+            ->create([
+                'name' => 'Shared Platform',
+            ]);
+
+        $this->attachTeamToProject($restrictedTeam, $project);
+        $this->attachUserToProject($project, $viewer);
+
+        $teamDashboardUrl = route('teams.dashboard', ['team' => $restrictedTeam]);
+
+        $this->actingAs($viewer)
+            ->get(route('projects.show', ['project' => $project]))
+            ->assertOk()
+            ->assertSee('Restricted Team')
+            ->assertDontSee('href="'.$teamDashboardUrl.'"', false);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Livewire\Projects;
 
 use App\Enums\ProjectStage;
+use App\Livewire\Projects\Concerns\DeterminesOrganizationScopeAccess;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Team;
@@ -20,6 +21,7 @@ use Throwable;
 final class CreateProjectForm extends Component
 {
     use AuthorizesRequests;
+    use DeterminesOrganizationScopeAccess;
 
     #[Validate('required|string|max:120')]
     public string $name = '';
@@ -181,12 +183,6 @@ final class CreateProjectForm extends Component
         return $user?->allTeams()
             ->sortBy('name')
             ->values() ?? collect();
-    }
-
-    private function canManageAllOrganizations(): bool
-    {
-        return auth()->user()?->hasPermissionTo('is-super-admin')
-            || auth()->user()?->can('is-admin');
     }
 
     private function refreshAssignableUsers(): void
