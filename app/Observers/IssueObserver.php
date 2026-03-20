@@ -8,16 +8,15 @@ use App\Jobs\ComputeIssueMetricsJob;
 use App\Jobs\RecalculateIssueRollups;
 use App\Models\Goal;
 use App\Models\Issue;
+use App\Models\IssueStatus;
 use App\Models\IssueStatusEvent;
 use App\Models\Project;
-use App\Models\User;
-use App\Notifications\IssueAssigned;
 use App\Services\GoalProgressService;
+use App\Services\Issues\IssueCollaborationService;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
 use Laravel\Pennant\Feature;
 use RuntimeException;
 use Throwable;
@@ -84,6 +83,8 @@ class IssueObserver
             ->where('next_issue_number', '<', $issue->number)
             ->update(['next_issue_number' => $issue->number]);
 
+        app(IssueCollaborationService::class)->ensureCoreFollowers($issue);
+
         if ($issue->parent_id) {
             $this->dispatchRollup((string) $issue->parent_id);
         }
@@ -142,6 +143,11 @@ class IssueObserver
         }
 
         if ($issue->wasChanged('issue_status_id')) {
+            $fromStatus = $issue->getOriginal('issue_status_id')
+                ? IssueStatus::query()->find((int) $issue->getOriginal('issue_status_id'))
+                : null;
+            $toStatus = IssueStatus::query()->find((int) $issue->issue_status_id);
+
             IssueStatusEvent::query()->updateOrCreate(
                 [
                     'issue_id'      => (string) $issue->getKey(),
@@ -154,6 +160,13 @@ class IssueObserver
                         : null,
                     'changed_by_id'  => Auth::id(),
                 ],
+            );
+
+            app(IssueCollaborationService::class)->notifyStatusChanged(
+                issue: $issue,
+                fromStatus: $fromStatus,
+                toStatus: $toStatus,
+                actor: Auth::user(),
             );
 
             dispatch(new ComputeIssueMetricsJob($issue->getKey()));

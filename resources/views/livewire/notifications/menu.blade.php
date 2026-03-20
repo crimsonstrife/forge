@@ -22,7 +22,7 @@
         @forelse($latest as $n)
             @php
                 $data = $n->data ?? [];
-                $title = $n->type ? class_basename($n->type) : __('Notification');
+                $title = $data['title'] ?? ($n->type ? str(class_basename($n->type))->headline()->toString() : __('Notification'));
                 $url = $data['url'] ?? null;
                 $isUnread = is_null($n->read_at);
             @endphp

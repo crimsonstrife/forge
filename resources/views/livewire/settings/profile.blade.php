@@ -27,6 +27,38 @@
                 @endif
             </div>
 
+            <div class="rounded-xl border border-zinc-200/70 p-4">
+                <div class="font-medium">{{ __('Issue collaboration notifications') }}</div>
+                <div class="mt-1 text-sm text-zinc-600">{{ __('Choose which issue events should notify you immediately and whether Forge should send a daily digest.') }}</div>
+
+                <div class="mt-4 space-y-3 text-sm">
+                    <label class="flex items-start gap-3">
+                        <input type="checkbox" wire:model="notify_on_assignment" class="mt-1 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500">
+                        <span>{{ __('Notify me when I am assigned to an issue') }}</span>
+                    </label>
+                    <label class="flex items-start gap-3">
+                        <input type="checkbox" wire:model="notify_on_comment" class="mt-1 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500">
+                        <span>{{ __('Notify me about new comments on followed issues') }}</span>
+                    </label>
+                    <label class="flex items-start gap-3">
+                        <input type="checkbox" wire:model="notify_on_status_change" class="mt-1 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500">
+                        <span>{{ __('Notify me when followed issues change status') }}</span>
+                    </label>
+                    <label class="flex items-start gap-3">
+                        <input type="checkbox" wire:model="notify_on_link_change" class="mt-1 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500">
+                        <span>{{ __('Notify me when links or code references change on followed issues') }}</span>
+                    </label>
+                    <label class="flex items-start gap-3">
+                        <input type="checkbox" wire:model="notify_on_mention" class="mt-1 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500">
+                        <span>{{ __('Notify me when someone mentions me in an issue comment') }}</span>
+                    </label>
+                    <label class="flex items-start gap-3">
+                        <input type="checkbox" wire:model="daily_digest_enabled" class="mt-1 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500">
+                        <span>{{ __('Send a daily digest with issue activity I have not seen yet') }}</span>
+                    </label>
+                </div>
+            </div>
+
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">
                     <flux:button variant="primary" type="submit" class="w-full">{{ __('Save') }}</flux:button>

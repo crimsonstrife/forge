@@ -5,6 +5,7 @@ namespace App\Livewire\Issues;
 use App\Models\Issue;
 use App\Models\IssueLink;
 use App\Models\IssueLinkType;
+use App\Services\Issues\IssueCollaborationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Gate;
@@ -147,6 +148,16 @@ final class ManageLinks extends Component
             ])
             ->log('issue.link_added');
 
+        app(IssueCollaborationService::class)->notifyLinkChanged(
+            issue: $this->issue,
+            summary: __(':actor linked :other as :type.', [
+                'actor' => auth()->user()?->name ?? __('Someone'),
+                'other' => $link->to?->key ?? __('another issue'),
+                'type' => $type->outwardLabel(),
+            ]),
+            actor: auth()->user(),
+        );
+
         $this->reset('q', 'results');
         $this->dispatch('issue-links-updated');
         $this->dispatch('notify', title: 'Linked', body: 'Issue link added.');
@@ -175,6 +186,15 @@ final class ManageLinks extends Component
                 'other_issue_id' => $other?->getKey(),
             ])
             ->log('issue.link_removed');
+
+        app(IssueCollaborationService::class)->notifyLinkChanged(
+            issue: $this->issue,
+            summary: __(':actor removed the link to :other.', [
+                'actor' => auth()->user()?->name ?? __('Someone'),
+                'other' => $other?->key ?? __('another issue'),
+            ]),
+            actor: auth()->user(),
+        );
 
         $this->dispatch('issue-links-updated');
         $this->dispatch('notify', title: 'Unlinked', body: 'Issue link removed.');

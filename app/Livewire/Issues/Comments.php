@@ -5,9 +5,11 @@ namespace App\Livewire\Issues;
 use App\Models\Comment;
 use App\Models\Issue;
 use App\Models\User;
+use App\Services\Issues\IssueCommentService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -22,7 +24,7 @@ final class Comments extends Component
 
     public Issue $issue;
 
-    #[Validate(['body' => 'required|string|min:2|max:2000'])]
+    #[Validate(['body' => 'required|string|min:2|max:20000'])]
     public string $body = '';
 
     /** @var array<string,string> Per-comment reply bodies keyed by parent comment id */
@@ -30,6 +32,11 @@ final class Comments extends Component
 
     /** The comment id currently showing the inline reply box */
     public ?string $replyFor = null;
+
+    public int $composerNonce = 0;
+
+    /** @var array<string,int> */
+    public array $replyEditorNonces = [];
 
     public function mount(Issue $issue): void
     {
@@ -48,12 +55,16 @@ final class Comments extends Component
         /** @var User $user */
         $user = auth()->user();
 
-        $this->issue->comments()->create([
-            'user_id' => $user->getKey(),
-            'body'    => $this->body,
-        ]);
+        try {
+            app(IssueCommentService::class)->create($this->issue, $user, $this->body);
+        } catch (ValidationException $e) {
+            $this->setErrorBag($e->validator->errors());
+            return;
+        }
 
         $this->reset('body');
+        $this->composerNonce++;
+        $this->dispatch('issue-followers-updated', id: $this->issue->getKey());
         $this->dispatch('notify', title: 'Comment added');
     }
 
@@ -64,6 +75,7 @@ final class Comments extends Component
     {
         $this->replyFor = $commentId;
         $this->replyBodies[$commentId] = $this->replyBodies[$commentId] ?? '';
+        $this->replyEditorNonces[$commentId] = $this->replyEditorNonces[$commentId] ?? 0;
     }
 
     /**
@@ -82,22 +94,30 @@ final class Comments extends Component
         $this->authorize('update', $this->issue);
 
         $this->validate([
-            "replyBodies.$parentId" => 'required|string|min:2|max:2000',
+            "replyBodies.$parentId" => 'required|string|min:2|max:20000',
         ]);
 
         /** @var User $user */
         $user = auth()->user();
 
-        $this->issue->comments()->create([
-            'user_id'   => $user->getKey(),
-            'body'      => $this->replyBodies[$parentId],
-            'parent_id' => $parentId,
-        ]);
+        try {
+            app(IssueCommentService::class)->create(
+                issue: $this->issue,
+                author: $user,
+                body: $this->replyBodies[$parentId],
+                parentId: $parentId,
+            );
+        } catch (ValidationException $e) {
+            $this->addError("replyBodies.$parentId", __('Comment cannot be empty.'));
+            return;
+        }
 
         // Clear only this reply box
         $this->replyBodies[$parentId] = '';
+        $this->replyEditorNonces[$parentId] = ($this->replyEditorNonces[$parentId] ?? 0) + 1;
         $this->replyFor = null;
 
+        $this->dispatch('issue-followers-updated', id: $this->issue->getKey());
         $this->dispatch('notify', title: 'Reply posted');
     }
 
