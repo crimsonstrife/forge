@@ -233,7 +233,8 @@ class IssueVcsController extends Controller
                 // re-encrypt it now to clean up legacy data:
                 try {
                     $link->forceFill(['token' => Crypt::encryptString($raw)])->save();
-                } catch (\Throwable $ignored) {}
+                } catch (\Throwable $ignored) {
+                }
             } else {
                 // Likely a hash or corrupted value
                 abort(403, 'Stored repository token is invalid. Please re-link the repository.');

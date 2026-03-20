@@ -13,7 +13,7 @@ class CreateMentionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('mentions', function(Blueprint $table) {
+        Schema::create('mentions', function (Blueprint $table) {
             $table->increments('id');
             $table->uuidMorphs('model');
             $table->uuidMorphs('recipient');
