@@ -3,6 +3,7 @@
 use App\Console\Commands\CheckForAppUpdate;
 use App\Console\Commands\RecalcIssueRollups;
 use App\Console\Commands\ReverbHealthCheck;
+use App\Console\Commands\SendIssueNotificationDigests;
 use App\Console\Commands\SyncRepositoryIssues;
 use App\Jobs\BuildProjectDailyReportsJob;
 use App\Jobs\BuildSprintDailyReportsJob;
@@ -21,6 +22,9 @@ Artisan::command('inspire', function () {
 
 Schedule::command(CheckForAppUpdate::class)
     ->dailyAt('09:00');
+
+Schedule::command(SendIssueNotificationDigests::class)
+    ->dailyAt('08:00');
 
 Schedule::command(SyncRepositoryIssues::class, ['--all'])
     ->everyFifteenMinutes();

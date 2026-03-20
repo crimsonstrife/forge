@@ -738,6 +738,8 @@ render(function (View $view, Project $project, Issue $issue) {
 
                     <!-- Sidebar: attachments and code links -->
                     <aside class="col-lg-4 d-flex flex-column gap-3">
+                        <livewire:issues.followers-panel :issue="$issue"/>
+
                         <!-- Code Links -->
                         @php $defaultPrTitle = "[$issue->key] $issue->summary"; @endphp
                         @if($projectRepo)

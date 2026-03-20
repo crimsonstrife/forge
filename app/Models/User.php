@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
@@ -127,6 +128,17 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     {
         /** @phpstan-ignore-next-line */
         return $this->morphMany(DatabaseNotification::class, 'notifiable');
+    }
+
+    public function followedIssues(): BelongsToMany
+    {
+        return $this->belongsToMany(Issue::class, 'issue_followers')
+            ->withTimestamps();
+    }
+
+    public function issueNotificationPreference(): HasOne
+    {
+        return $this->hasOne(IssueNotificationPreference::class);
     }
 
     public function broadcastChannelName(): string

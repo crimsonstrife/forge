@@ -196,6 +196,18 @@ class Issue extends BaseModel implements HasMedia
         return $this->morphMany(Comment::class, 'commentable')->orderBy('created_at');
     }
 
+    public function followerRecords(): HasMany
+    {
+        return $this->hasMany(IssueFollower::class);
+    }
+
+    public function followerUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'issue_followers')
+            ->withTimestamps()
+            ->orderBy('users.name');
+    }
+
     public function attachments(): MorphMany
     {
         return $this->morphMany(Media::class, 'model');

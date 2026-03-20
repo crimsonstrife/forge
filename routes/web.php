@@ -16,7 +16,6 @@ use App\Http\Controllers\ProjectMilestoneController;
 use App\Http\Controllers\TransitionStatusController;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
-use App\Livewire\Settings\Profile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -35,9 +34,8 @@ Route::get('/', static function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', 'settings/profile');
-
-    Route::get('settings/profile', Profile::class)->name('settings.profile');
+    Route::redirect('settings', 'user/profile');
+    Route::redirect('settings/profile', 'user/profile')->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 

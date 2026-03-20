@@ -11,6 +11,7 @@ use App\Actions\Jetstream\RemoveTeamMember;
 use App\Actions\Jetstream\UpdateTeamName;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Jetstream\Jetstream;
+use Livewire\Livewire;
 
 class JetstreamServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,7 @@ class JetstreamServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configurePermissions();
+        Livewire::component('profile.update-profile-information-form', \App\Livewire\Profile\UpdateProfileInformationForm::class);
 
         Jetstream::createTeamsUsing(CreateTeam::class);
         Jetstream::updateTeamNamesUsing(UpdateTeamName::class);

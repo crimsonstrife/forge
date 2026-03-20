@@ -11,6 +11,7 @@ use App\Models\Issue;
 use App\Models\IssueVcsLink;
 use App\Models\ProjectRepository;
 use App\Models\Repository;
+use App\Services\Issues\IssueCollaborationService;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,11 @@ use Illuminate\Support\Str;
 
 class IssueVcsController extends Controller
 {
-    public function __construct(private RepositoryProviderInterface $provider) {}
+    public function __construct(
+        private RepositoryProviderInterface $provider,
+        private IssueCollaborationService $collaboration,
+    ) {
+    }
 
     /** GET /api/issues/{key}/vcs/branches */
     public function searchBranches(SearchVcsRequest $request, Issue $issue): JsonResponse
@@ -68,6 +73,17 @@ class IssueVcsController extends Controller
             'linked_by_user_id' => auth()->id(),
         ]);
 
+        if ($link->wasRecentlyCreated) {
+            $this->collaboration->notifyLinkChanged(
+                issue: $issue,
+                summary: __(':actor linked branch :name.', [
+                    'actor' => auth()->user()?->name ?? __('Someone'),
+                    'name' => $link->name,
+                ]),
+                actor: auth()->user(),
+            );
+        }
+
         return response()->json($link->toArray(), 201);
     }
 
@@ -100,6 +116,17 @@ class IssueVcsController extends Controller
             'linked_by_user_id' => auth()->id(),
         ]);
 
+        if ($link->wasRecentlyCreated) {
+            $this->collaboration->notifyLinkChanged(
+                issue: $issue,
+                summary: __(':actor linked pull request #:number.', [
+                    'actor' => auth()->user()?->name ?? __('Someone'),
+                    'number' => $link->number,
+                ]),
+                actor: auth()->user(),
+            );
+        }
+
         return response()->json($link->toArray(), 201);
     }
 
@@ -124,6 +151,15 @@ class IssueVcsController extends Controller
             'linked_by_user_id' => auth()->id(),
             'payload' => $created,
         ]);
+
+        $this->collaboration->notifyLinkChanged(
+            issue: $issue,
+            summary: __(':actor created branch :name.', [
+                'actor' => auth()->user()?->name ?? __('Someone'),
+                'name' => $link->name,
+            ]),
+            actor: auth()->user(),
+        );
 
         return response()->json($link->toArray(), 201);
     }
@@ -155,6 +191,15 @@ class IssueVcsController extends Controller
             'linked_by_user_id' => auth()->id(),
             'payload' => $created,
         ]);
+
+        $this->collaboration->notifyLinkChanged(
+            issue: $issue,
+            summary: __(':actor created pull request #:number.', [
+                'actor' => auth()->user()?->name ?? __('Someone'),
+                'number' => $link->number ?? __('new'),
+            ]),
+            actor: auth()->user(),
+        );
 
         return response()->json($link->toArray(), 201);
     }

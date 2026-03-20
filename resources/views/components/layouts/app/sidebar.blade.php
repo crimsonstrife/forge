@@ -44,7 +44,7 @@
                 </div>
 
                 <flux:menu.separator />
-                <flux:menu.item :href="route('settings.profile')" icon="cog">{{ __('Settings') }}</flux:menu.item>
+                <flux:menu.item :href="route('profile.show')" icon="cog">{{ __('Settings') }}</flux:menu.item>
                 <flux:menu.separator />
 
                 <form method="POST" action="{{ route('logout') }}" class="w-full">
@@ -81,7 +81,7 @@
                 </div>
 
                 <flux:menu.separator />
-                <flux:menu.item :href="route('settings.profile')" icon="cog">{{ __('Settings') }}</flux:menu.item>
+                <flux:menu.item :href="route('profile.show')" icon="cog">{{ __('Settings') }}</flux:menu.item>
                 <flux:menu.separator />
 
                 <form method="POST" action="{{ route('logout') }}" class="w-full">

@@ -16,10 +16,12 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Xetaio\Mentions\Models\Traits\HasMentionsTrait;
 
 class Comment extends BaseModel implements HasMedia
 {
     use HasUuids;
+    use HasMentionsTrait;
     use LogsActivity;
     use InteractsWithMedia;
     use IsPermissible;
