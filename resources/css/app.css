@@ -118,3 +118,97 @@ main {
     text-transform: uppercase;
     color: var(--bs-secondary-color);
 }
+
+.forge-site-navbar__inner {
+    align-items: center;
+    gap: 1rem;
+}
+
+.forge-site-navbar__brand {
+    margin-right: 0;
+    padding-block: 0;
+}
+
+.forge-site-navbar__actions {
+    flex-wrap: wrap;
+}
+
+.forge-site-navbar #recordCreate::after {
+    content: none !important;
+}
+
+@media (min-width: 768px) {
+    .forge-site-navbar__inner {
+        align-items: flex-start;
+        row-gap: 0.75rem;
+    }
+
+    .forge-site-navbar__collapse {
+        display: flex !important;
+        flex: 1 1 0%;
+        min-width: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.9rem;
+    }
+
+    .forge-site-navbar__utility-row {
+        order: 1;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.75rem 1rem;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .forge-site-navbar__links-row {
+        order: 2;
+        padding-top: 0.9rem;
+        border-top: 1px solid var(--bs-border-color);
+        width: 100%;
+    }
+
+    .forge-site-navbar__links {
+        flex-wrap: wrap;
+        gap: 0.35rem 0.5rem;
+    }
+
+    .forge-site-navbar__links .nav-link {
+        padding-inline: 0.85rem;
+    }
+
+    .forge-site-navbar__search {
+        flex: 0 1 18rem;
+        margin-left: auto;
+    }
+
+    .forge-site-navbar__search .form-control {
+        width: 100%;
+        min-width: 15rem;
+    }
+
+    .forge-site-navbar__actions {
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .forge-site-navbar__collapse {
+        width: 100%;
+        padding-top: 0.75rem;
+    }
+
+    .forge-site-navbar__utility-row {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        padding-top: 0.75rem;
+    }
+
+    .forge-site-navbar__actions {
+        justify-content: flex-start;
+    }
+}
