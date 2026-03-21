@@ -16,11 +16,14 @@ class ServiceProduct extends BaseModel
 
     protected $guarded = [];
 
-    protected $casts = [
-        'first_response_target_minutes' => 'integer',
-        'next_response_target_minutes' => 'integer',
-        'resolve_target_minutes' => 'integer',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'first_response_target_minutes' => 'integer',
+            'next_response_target_minutes' => 'integer',
+            'resolve_target_minutes' => 'integer',
+        ];
+    }
 
     public static function boot(): void
     {
