@@ -121,19 +121,21 @@ class BuildProjectDailyReportsJob implements ShouldQueue
 
         });
 
-        $latestEventTimes = DB::table('issue_status_events')
-            ->selectRaw('issue_id, MAX(changed_at) as changed_at')
+        $rankedStatusEvents = DB::table('issue_status_events')
             ->where('changed_at', '<=', $end)
-            ->groupBy('issue_id');
+            ->selectRaw(
+                'issue_id, to_status_id, ROW_NUMBER() OVER (
+                    PARTITION BY issue_id
+                    ORDER BY changed_at DESC, created_at DESC, id DESC
+                ) as status_rank'
+            );
 
-        $latestStatuses = DB::table('issue_status_events as issue_status_events')
-            ->joinSub($latestEventTimes, 'latest_events', static function ($join): void {
-                $join->on('latest_events.issue_id', '=', 'issue_status_events.issue_id')
-                    ->on('latest_events.changed_at', '=', 'issue_status_events.changed_at');
-            })
+        $latestStatuses = DB::query()
+            ->fromSub($rankedStatusEvents, 'ranked_status_events')
+            ->where('status_rank', 1)
             ->select([
-                'issue_status_events.issue_id',
-                'issue_status_events.to_status_id',
+                'ranked_status_events.issue_id',
+                'ranked_status_events.to_status_id',
             ]);
 
         $counts = DB::table('issues as issues')

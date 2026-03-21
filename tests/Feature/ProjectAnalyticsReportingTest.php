@@ -10,7 +10,6 @@ use App\Models\IssueMetric;
 use App\Models\IssuePriority;
 use App\Models\IssueStatus;
 use App\Models\IssueType;
-use App\Models\Permission;
 use App\Models\Project;
 use App\Models\Sprint;
 use App\Models\Team;
@@ -21,7 +20,7 @@ use Database\Seeders\ReportPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
@@ -131,6 +130,55 @@ class ProjectAnalyticsReportingTest extends TestCase
         $this->assertSame(1, $this->cfdCount($project->id, '2026-03-04', $todo->id));
         $this->assertSame(1, $this->cfdCount($project->id, '2026-03-04', $inProgress->id));
         $this->assertSame(1, $this->cfdCount($project->id, '2026-03-04', $done->id));
+    }
+
+    public function test_project_daily_reports_pick_exactly_one_latest_status_when_event_timestamps_tie(): void
+    {
+        $this->seed(IssueEnumsSeeder::class);
+
+        $reporter = User::factory()->create();
+        $project = Project::factory()->for($reporter, 'lead')->create([
+            'name' => 'Tie Breakers',
+            'key' => 'TIES',
+        ]);
+        [$todo, $inProgress, $done] = $this->attachWorkflow($project);
+
+        $issue = $this->createIssue(
+            project: $project,
+            reporter: $reporter,
+            status: $todo,
+            createdAt: Carbon::parse('2026-03-01 09:00:00'),
+            summary: 'Conflicting status history'
+        );
+
+        DB::table('issue_status_events')->insert([
+            [
+                'id' => (string) \Illuminate\Support\Str::uuid(),
+                'issue_id' => $issue->id,
+                'from_status_id' => $todo->id,
+                'to_status_id' => $inProgress->id,
+                'changed_by_id' => $reporter->id,
+                'changed_at' => '2026-03-02 12:00:00',
+                'created_at' => '2026-03-02 12:00:00',
+                'updated_at' => '2026-03-02 12:00:00',
+            ],
+            [
+                'id' => (string) \Illuminate\Support\Str::uuid(),
+                'issue_id' => $issue->id,
+                'from_status_id' => $inProgress->id,
+                'to_status_id' => $done->id,
+                'changed_by_id' => $reporter->id,
+                'changed_at' => '2026-03-02 12:00:00',
+                'created_at' => '2026-03-02 12:00:01',
+                'updated_at' => '2026-03-02 12:00:01',
+            ],
+        ]);
+
+        (new ComputeIssueMetricsJob($issue->id))->handle();
+        (new BuildProjectDailyReportsJob($project->id, Carbon::parse('2026-03-02 00:00:00')))->handle();
+
+        $this->assertSame(0, $this->cfdCount($project->id, '2026-03-02', $inProgress->id));
+        $this->assertSame(1, $this->cfdCount($project->id, '2026-03-02', $done->id));
     }
 
     public function test_sprint_daily_reports_use_sprint_date_fields_and_remaining_work(): void
@@ -252,9 +300,10 @@ class ProjectAnalyticsReportingTest extends TestCase
         /** @var IssueStatus $done */
         $done = IssueStatus::query()->where('key', 'DONE')->sole();
 
+        $pivotHasId = Schema::hasColumn('project_issue_statuses', 'id');
+
         foreach ([$todo, $inProgress, $done] as $index => $status) {
-            DB::table('project_issue_statuses')->insert([
-                'id' => (string) Str::uuid(),
+            $payload = [
                 'project_id' => $project->id,
                 'issue_status_id' => $status->id,
                 'order' => ($index + 1) * 10,
@@ -262,7 +311,13 @@ class ProjectAnalyticsReportingTest extends TestCase
                 'is_default_done' => $status->id === $done->id,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
+            ];
+
+            if ($pivotHasId) {
+                $payload['id'] = (string) \Illuminate\Support\Str::uuid();
+            }
+
+            DB::table('project_issue_statuses')->insert($payload);
         }
 
         return [$todo, $inProgress, $done];

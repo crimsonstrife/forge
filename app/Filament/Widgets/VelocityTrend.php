@@ -50,6 +50,21 @@ class VelocityTrend extends ChartWidget
             $defaultTarget = is_numeric($project?->setting('sprints.velocity_target'))
                 ? (int) $project->setting('sprints.velocity_target')
                 : null;
+            $sprintIds = $sprints->pluck('id')->all();
+            $deliveredBySprint = DB::table('issues as issues')
+                ->join('sprints as sprints', 'sprints.id', '=', 'issues.sprint_id')
+                ->leftJoin('issue_metrics as metrics', 'metrics.issue_id', '=', 'issues.id')
+                ->where('issues.project_id', $this->projectId)
+                ->whereIn('issues.sprint_id', $sprintIds)
+                ->whereNotNull('metrics.first_done_at')
+                ->whereRaw('DATE(metrics.first_done_at) BETWEEN sprints.start_date AND sprints.end_date')
+                ->groupBy('issues.sprint_id')
+                ->get([
+                    'issues.sprint_id',
+                    DB::raw('COUNT(*) as issue_count'),
+                    DB::raw('COALESCE(SUM(COALESCE(issues.story_points, 0)), 0) as point_count'),
+                ])
+                ->keyBy('sprint_id');
 
             $labels = [];
             $completedPoints = [];
@@ -57,16 +72,7 @@ class VelocityTrend extends ChartWidget
             $capacity = [];
 
             foreach ($sprints as $sprint) {
-                $start = $sprint->start_date->copy()->startOfDay();
-                $end = $sprint->end_date->copy()->endOfDay();
-
-                $delivered = DB::table('issues as issues')
-                    ->leftJoin('issue_metrics as metrics', 'metrics.issue_id', '=', 'issues.id')
-                    ->where('issues.project_id', $this->projectId)
-                    ->where('issues.sprint_id', $sprint->id)
-                    ->whereBetween('metrics.first_done_at', [$start, $end])
-                    ->selectRaw('COUNT(*) as issue_count, COALESCE(SUM(COALESCE(issues.story_points, 0)), 0) as point_count')
-                    ->first();
+                $delivered = $deliveredBySprint->get($sprint->id);
 
                 $labels[] = $sprint->name;
                 $completedPoints[] = (int) ($delivered->point_count ?? 0);

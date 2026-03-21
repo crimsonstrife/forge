@@ -36,49 +36,60 @@ class ProjectHealthStats extends BaseWidget
             : $asOf->copy()->subDays(29)->startOfDay();
         $rangeEnd = $asOf->copy();
 
-        $issues = DB::table('issues as issues')
+        $summary = DB::table('report_project_daily_summaries')
+            ->where('project_id', $this->projectId)
+            ->whereDate('report_date', '<=', $asOf->toDateString())
+            ->orderByDesc('report_date')
+            ->first(['open_count', 'wip_count', 'done_count']);
+
+        if ($summary !== null) {
+            $open = (int) $summary->open_count;
+            $wip = (int) $summary->wip_count;
+            $done = (int) $summary->done_count;
+        } else {
+            $counts = DB::table('issues as issues')
+                ->leftJoin('issue_metrics as metrics', 'metrics.issue_id', '=', 'issues.id')
+                ->leftJoin('issue_statuses as statuses', 'statuses.id', '=', 'issues.issue_status_id')
+                ->where('issues.project_id', $this->projectId)
+                ->where('issues.created_at', '<=', $asOf)
+                ->selectRaw(
+                    'SUM(CASE
+                        WHEN metrics.first_done_at IS NOT NULL AND metrics.first_done_at <= ? THEN 1
+                        WHEN statuses.is_done = 1 AND issues.updated_at <= ? THEN 1
+                        ELSE 0
+                    END) as done_count,
+                    SUM(CASE
+                        WHEN (metrics.first_done_at IS NULL OR metrics.first_done_at > ?)
+                         AND metrics.first_started_at IS NOT NULL
+                         AND metrics.first_started_at <= ? THEN 1
+                        ELSE 0
+                    END) as wip_count,
+                    SUM(CASE
+                        WHEN (metrics.first_done_at IS NULL OR metrics.first_done_at > ?)
+                         AND (metrics.first_started_at IS NULL OR metrics.first_started_at > ?)
+                         AND NOT (statuses.is_done = 1 AND issues.updated_at <= ?) THEN 1
+                        ELSE 0
+                    END) as open_count',
+                    [$asOf, $asOf, $asOf, $asOf, $asOf, $asOf, $asOf]
+                )
+                ->first();
+
+            $open = (int) ($counts?->open_count ?? 0);
+            $wip = (int) ($counts?->wip_count ?? 0);
+            $done = (int) ($counts?->done_count ?? 0);
+        }
+
+        $overdue = DB::table('issues as issues')
             ->leftJoin('issue_metrics as metrics', 'metrics.issue_id', '=', 'issues.id')
-            ->leftJoin('issue_statuses as statuses', 'statuses.id', '=', 'issues.issue_status_id')
             ->where('issues.project_id', $this->projectId)
             ->where('issues.created_at', '<=', $asOf)
-            ->get([
-                'issues.due_at',
-                'issues.updated_at as issue_updated_at',
-                'metrics.first_started_at',
-                'metrics.first_done_at',
-                'statuses.is_done as current_status_is_done',
-            ]);
-
-        $open = 0;
-        $wip = 0;
-        $done = 0;
-        $overdue = 0;
-
-        foreach ($issues as $issue) {
-            $firstStartedAt = filled($issue->first_started_at)
-                ? Carbon::parse($issue->first_started_at)
-                : null;
-            $firstDoneAt = filled($issue->first_done_at)
-                ? Carbon::parse($issue->first_done_at)
-                : null;
-            $isDoneByDate = $firstDoneAt?->lte($asOf)
-                || ((bool) ($issue->current_status_is_done ?? false) && Carbon::parse($issue->issue_updated_at)->lte($asOf));
-
-            if ($isDoneByDate) {
-                $done++;
-                continue;
-            }
-
-            if ($firstStartedAt?->lte($asOf)) {
-                $wip++;
-            } else {
-                $open++;
-            }
-
-            if ($issue->due_at && Carbon::parse($issue->due_at)->lt($asOf)) {
-                $overdue++;
-            }
-        }
+            ->whereNotNull('issues.due_at')
+            ->where('issues.due_at', '<', $asOf)
+            ->where(function ($query) use ($asOf): void {
+                $query->whereNull('metrics.first_done_at')
+                    ->orWhere('metrics.first_done_at', '>', $asOf);
+            })
+            ->count();
 
         $doneInRange = DB::table('issue_metrics')
             ->where('project_id', $this->projectId)

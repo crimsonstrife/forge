@@ -57,7 +57,7 @@ class OverdueWorkTable extends BaseWidget
             Tables\Columns\TextColumn::make('title')
                 ->label('Title')
                 ->limit(60)
-                ->searchable(),
+                ->searchable(['issues.summary']),
             Tables\Columns\TextColumn::make('status_name')
                 ->label('Status'),
             Tables\Columns\TextColumn::make('assignee_name')
