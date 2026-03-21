@@ -3,12 +3,15 @@
 namespace App\Filament\Pages\Reports;
 
 use App\Filament\Widgets\AssigneeWorkloadTable;
+use App\Filament\Widgets\BurnupTrend;
 use App\Filament\Widgets\CumulativeFlowChart;
 use App\Filament\Widgets\CycleTimeHistogram;
 use App\Filament\Widgets\LeadTimeStats;
+use App\Filament\Widgets\OverdueWorkTable;
 use App\Filament\Widgets\ProjectHealthStats;
 use App\Filament\Widgets\SprintBurndown;
 use App\Filament\Widgets\ThroughputTrend;
+use App\Filament\Widgets\VelocityTrend;
 use App\Filament\Widgets\WipAgingTable;
 use App\Models\Project;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +21,7 @@ use Filament\Forms\Components\Select;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Spatie\Permission\PermissionRegistrar;
 
 final class ProjectAnalytics extends Page
 {
@@ -33,7 +37,20 @@ final class ProjectAnalytics extends Page
     public static function canAccess(): bool
     {
         $u = auth()->user();
-        return $u?->can('view.reports') ?? false;
+        if ($u === null) {
+            return false;
+        }
+
+        /** @var PermissionRegistrar $registrar */
+        $registrar = app(PermissionRegistrar::class);
+        $previousTeamId = $registrar->getPermissionsTeamId();
+        $registrar->setPermissionsTeamId($u->current_team_id ? (string) $u->current_team_id : null);
+
+        try {
+            return $u->can('view.reports');
+        } finally {
+            $registrar->setPermissionsTeamId($previousTeamId);
+        }
     }
 
     public function mount(): void
@@ -101,7 +118,17 @@ final class ProjectAnalytics extends Page
 
     protected function getFooterWidgets(): array
     {
-        return [CumulativeFlowChart::class, ThroughputTrend::class, AssigneeWorkloadTable::class, SprintBurndown::class, CycleTimeHistogram::class, WipAgingTable::class];
+        return [
+            CumulativeFlowChart::class,
+            ThroughputTrend::class,
+            BurnupTrend::class,
+            VelocityTrend::class,
+            AssigneeWorkloadTable::class,
+            SprintBurndown::class,
+            CycleTimeHistogram::class,
+            WipAgingTable::class,
+            OverdueWorkTable::class,
+        ];
     }
 
     public function getHeaderWidgetsColumns(): int|array
@@ -113,13 +140,16 @@ final class ProjectAnalytics extends Page
     {
         return [
             ProjectHealthStats::class    => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
-                LeadTimeStats::class      => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
+            LeadTimeStats::class         => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
             CumulativeFlowChart::class   => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
             ThroughputTrend::class       => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
-            AssigneeWorkloadTable::class => ['projectId' => $this->projectId],
+            BurnupTrend::class           => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
+            VelocityTrend::class         => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
+            AssigneeWorkloadTable::class => ['projectId' => $this->projectId, 'dateTo' => $this->dateTo],
             SprintBurndown::class        => ['projectId' => $this->projectId],
             CycleTimeHistogram::class    => ['projectId' => $this->projectId, 'dateFrom' => $this->dateFrom, 'dateTo' => $this->dateTo],
-            WipAgingTable::class => ['projectId' => $this->projectId],
+            WipAgingTable::class         => ['projectId' => $this->projectId, 'dateTo' => $this->dateTo],
+            OverdueWorkTable::class      => ['projectId' => $this->projectId, 'dateTo' => $this->dateTo],
         ] + parent::getWidgetData();
     }
 

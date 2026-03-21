@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class ProjectHealthStats extends BaseWidget
@@ -16,50 +17,95 @@ class ProjectHealthStats extends BaseWidget
 
     protected function getStats(): array
     {
-        // Latest daily summary for Open/WIP/Done/Throughput
-        $row = DB::table('report_project_daily_summaries')
+        if (blank($this->projectId)) {
+            return [
+                Stat::make('Open', '0'),
+                Stat::make('WIP', '0'),
+                Stat::make('Done', '0'),
+                Stat::make('Done in Range', '0'),
+                Stat::make('Overdue', '0'),
+                Stat::make('Median Cycle', '0m'),
+            ];
+        }
+
+        $asOf = $this->dateTo
+            ? Carbon::parse($this->dateTo)->endOfDay()
+            : now();
+        $rangeStart = $this->dateFrom
+            ? Carbon::parse($this->dateFrom)->startOfDay()
+            : $asOf->copy()->subDays(29)->startOfDay();
+        $rangeEnd = $asOf->copy();
+
+        $issues = DB::table('issues as issues')
+            ->leftJoin('issue_metrics as metrics', 'metrics.issue_id', '=', 'issues.id')
+            ->leftJoin('issue_statuses as statuses', 'statuses.id', '=', 'issues.issue_status_id')
+            ->where('issues.project_id', $this->projectId)
+            ->where('issues.created_at', '<=', $asOf)
+            ->get([
+                'issues.due_at',
+                'issues.updated_at as issue_updated_at',
+                'metrics.first_started_at',
+                'metrics.first_done_at',
+                'statuses.is_done as current_status_is_done',
+            ]);
+
+        $open = 0;
+        $wip = 0;
+        $done = 0;
+        $overdue = 0;
+
+        foreach ($issues as $issue) {
+            $firstStartedAt = filled($issue->first_started_at)
+                ? Carbon::parse($issue->first_started_at)
+                : null;
+            $firstDoneAt = filled($issue->first_done_at)
+                ? Carbon::parse($issue->first_done_at)
+                : null;
+            $isDoneByDate = $firstDoneAt?->lte($asOf)
+                || ((bool) ($issue->current_status_is_done ?? false) && Carbon::parse($issue->issue_updated_at)->lte($asOf));
+
+            if ($isDoneByDate) {
+                $done++;
+                continue;
+            }
+
+            if ($firstStartedAt?->lte($asOf)) {
+                $wip++;
+            } else {
+                $open++;
+            }
+
+            if ($issue->due_at && Carbon::parse($issue->due_at)->lt($asOf)) {
+                $overdue++;
+            }
+        }
+
+        $doneInRange = DB::table('issue_metrics')
             ->where('project_id', $this->projectId)
-            ->orderByDesc('report_date')
-            ->first();
+            ->whereBetween('first_done_at', [$rangeStart, $rangeEnd])
+            ->count();
 
-        $open   = (int) ($row?->open_count ?? 0);
-        $wip    = (int) ($row?->wip_count ?? 0);
-        $done   = (int) ($row?->done_count ?? 0);
-        $tp24h  = (int) ($row?->throughput_count ?? 0);
-
-        // True cycle-time median over selected range using issue_metrics
         $mq = DB::table('issue_metrics')
             ->where('project_id', $this->projectId)
-            ->whereNotNull('first_done_at');
+            ->whereBetween('first_done_at', [$rangeStart, $rangeEnd])
+            ->orderBy('cycle_time_min');
 
-        if ($this->dateFrom) {
-            $mq->whereDate('first_done_at', '>=', $this->dateFrom);
-        }
-        if ($this->dateTo) {
-            $mq->whereDate('first_done_at', '<=', $this->dateTo);
-        }
-
-        // True median: average two middle values if even, or take the middle if odd
         $count = $mq->count();
-        if ($count === 0) {
-            $median = 0;
-        } elseif ($count % 2 === 1) {
-            // Odd: take the middle value
-            $medianRow = $mq->orderBy('cycle_time_min')
-                ->skip(floor($count / 2))
-                ->take(1)
-                ->first(['cycle_time_min']);
-            $median = (int) ($medianRow?->cycle_time_min ?? 0);
-        } else {
-            // Even: average the two middle values
-            $middleRows = $mq->orderBy('cycle_time_min')
-                ->skip($count / 2 - 1)
-                ->take(2)
-                ->get(['cycle_time_min']);
-            if ($middleRows->count() === 2) {
-                $median = (int) round(($middleRows[0]->cycle_time_min + $middleRows[1]->cycle_time_min) / 2);
+        $median = 0;
+
+        if ($count > 0) {
+            if ($count % 2 === 1) {
+                $medianRow = $mq->skip((int) floor($count / 2))
+                    ->take(1)
+                    ->first(['cycle_time_min']);
+                $median = (int) ($medianRow?->cycle_time_min ?? 0);
             } else {
-                $median = (int) ($middleRows[0]->cycle_time_min ?? 0);
+                $middleRows = $mq->skip((int) ($count / 2) - 1)
+                    ->take(2)
+                    ->get(['cycle_time_min']);
+                $median = $middleRows->count() === 2
+                    ? (int) round(((int) $middleRows[0]->cycle_time_min + (int) $middleRows[1]->cycle_time_min) / 2)
+                    : (int) ($middleRows[0]->cycle_time_min ?? 0);
             }
         }
 
@@ -67,8 +113,26 @@ class ProjectHealthStats extends BaseWidget
             Stat::make('Open', (string) $open),
             Stat::make('WIP', (string) $wip),
             Stat::make('Done', (string) $done),
-            Stat::make('Throughput (24h)', (string) $tp24h),
-            Stat::make('Median Cycle (m)', (string) $median),
+            Stat::make('Done in Range', (string) $doneInRange),
+            Stat::make('Overdue', (string) $overdue),
+            Stat::make('Median Cycle', $this->formatMinutes($median)),
         ];
+    }
+
+    private function formatMinutes(int $minutes): string
+    {
+        $days = intdiv($minutes, 1440);
+        $hours = intdiv($minutes % 1440, 60);
+        $mins = $minutes % 60;
+
+        if ($days > 0) {
+            return $mins > 0 ? "{$days}d {$hours}h {$mins}m" : "{$days}d {$hours}h";
+        }
+
+        if ($hours > 0) {
+            return $mins > 0 ? "{$hours}h {$mins}m" : "{$hours}h";
+        }
+
+        return "{$mins}m";
     }
 }

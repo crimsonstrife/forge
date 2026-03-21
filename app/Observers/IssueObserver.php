@@ -83,6 +83,18 @@ class IssueObserver
             ->where('next_issue_number', '<', $issue->number)
             ->update(['next_issue_number' => $issue->number]);
 
+        IssueStatusEvent::query()->updateOrCreate(
+            [
+                'issue_id' => (string) $issue->getKey(),
+                'to_status_id' => (int) $issue->issue_status_id,
+                'changed_at' => $issue->created_at ?? now(),
+            ],
+            [
+                'from_status_id' => null,
+                'changed_by_id' => Auth::id() ?: $issue->reporter_id,
+            ],
+        );
+
         app(IssueCollaborationService::class)->ensureCoreFollowers($issue);
 
         if ($issue->parent_id) {
@@ -96,6 +108,8 @@ class IssueObserver
                 actorId: auth()->id() ? (string) auth()->id() : null,
             ));
         }
+
+        ComputeIssueMetricsJob::dispatch((string) $issue->getKey())->afterCommit();
     }
 
     public function deleted(Issue $issue): void
@@ -169,7 +183,7 @@ class IssueObserver
                 actor: Auth::user(),
             );
 
-            dispatch(new ComputeIssueMetricsJob($issue->getKey()));
+            ComputeIssueMetricsJob::dispatch((string) $issue->getKey())->afterCommit();
         }
     }
 
