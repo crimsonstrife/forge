@@ -21,6 +21,21 @@
                 <textarea rows="2" class="form-control" wire:model.defer="description"></textarea>
                 @error('description') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
+            <div class="col-md-4">
+                <label class="form-label">First Response SLA (minutes)</label>
+                <input type="number" min="1" max="43200" class="form-control" wire:model.defer="firstResponseTargetMinutes" placeholder="60">
+                @error('firstResponseTargetMinutes') <div class="text-danger small">{{ $message }}</div> @enderror
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Next Response SLA (minutes)</label>
+                <input type="number" min="1" max="43200" class="form-control" wire:model.defer="nextResponseTargetMinutes" placeholder="240">
+                @error('nextResponseTargetMinutes') <div class="text-danger small">{{ $message }}</div> @enderror
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Resolve SLA (minutes)</label>
+                <input type="number" min="1" max="43200" class="form-control" wire:model.defer="resolveTargetMinutes" placeholder="1440">
+                @error('resolveTargetMinutes') <div class="text-danger small">{{ $message }}</div> @enderror
+            </div>
             <div class="col-md-6">
                 <label class="form-label">Default Project</label>
                 <select class="form-select" wire:model="defaultProjectId">
@@ -41,6 +56,28 @@
                 </select>
                 @error('projectIds') <div class="text-danger small">{{ $message }}</div> @enderror
                 <div class="form-text">Context only. Default Project is used for routing.</div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Auto-create Issue When Type Is</label>
+                <select class="form-select" wire:model="autoCreateIssueForTicketTypeId">
+                    <option value="">— Disabled —</option>
+                    @foreach($ticketTypes as $type)
+                        <option value="{{ $type->id }}">{{ $type->name }}</option>
+                    @endforeach
+                </select>
+                @error('autoCreateIssueForTicketTypeId') <div class="text-danger small">{{ $message }}</div> @enderror
+                <div class="form-text">Simple automation: create and link an issue as soon as a matching ticket is submitted.</div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Automation Project Override</label>
+                <select class="form-select" wire:model="autoCreateIssueProjectId">
+                    <option value="">— Use ticket/default project —</option>
+                    @foreach($projects as $p)
+                        <option value="{{ $p->id }}">{{ $p->name }} @if($p->key) ({{ $p->key }}) @endif</option>
+                    @endforeach
+                </select>
+                @error('autoCreateIssueProjectId') <div class="text-danger small">{{ $message }}</div> @enderror
+                <div class="form-text">Use this if bug intake should always land in a specific delivery project.</div>
             </div>
         </div>
 

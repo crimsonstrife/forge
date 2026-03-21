@@ -8,7 +8,7 @@ name('support.new');
 
 <x-guest-layout>
     <div class="container mx-auto py-4">
-        <h1 class="h4 mb-3">Submit a ticket</h1>
+        <h1 class="h4 mb-3">Submit a support ticket</h1>
         <div class="alert alert-warning small">
             {{ app(\App\Settings\SupportSettings::class)->public_warning_text }}
         </div>

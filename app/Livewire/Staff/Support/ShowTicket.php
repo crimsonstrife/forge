@@ -9,6 +9,7 @@ use App\Models\TicketStatus;
 use App\Models\TicketType;
 use App\Models\User;
 use App\Services\Support\ConvertTicketToIssue;
+use App\Services\Support\TicketWorkflowService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Validate;
@@ -27,8 +28,11 @@ final class ShowTicket extends Component
     public string $publicReply = '';
 
     public ?int $statusId = null;
+
     public ?int $priorityId = null;
+
     public ?int $typeId = null;
+
     public ?string $assigneeId = null;
 
     /** Project to use when converting to an Issue (and to store on the ticket) */
@@ -37,33 +41,43 @@ final class ShowTicket extends Component
     public function mount(string $key): void
     {
         $this->ticket = Ticket::query()
-            ->with(['status:id,name', 'priority:id,name', 'type:id,name', 'assignee:id,name', 'product.defaultProject:id,name'])
+            ->with([
+                'status:id,name,is_done',
+                'priority:id,name',
+                'type:id,name',
+                'assignee:id,name',
+                'product.defaultProject:id,name',
+                'product.autoCreateIssueProject:id,name,key',
+            ])
             ->where('key', $key)
             ->firstOrFail();
 
         $this->authorize('view', $this->ticket);
 
-        $this->statusId   = $this->ticket->status_id;
+        $this->statusId = $this->ticket->status_id;
         $this->priorityId = $this->ticket->priority_id;
-        $this->typeId     = $this->ticket->type_id;
+        $this->typeId = $this->ticket->type_id;
         $this->assigneeId = $this->ticket->assigned_to_user_id;
 
         // Prefer the ticket's project; else fall back to the ServiceProduct's default project (if any)
-        $this->projectId  = $this->ticket->project_id ?? $this->ticket->product?->default_project_id;
+        $this->projectId = $this->ticket->project_id ?? $this->ticket->product?->default_project_id;
     }
 
-    public function saveMeta(): void
+    public function saveMeta(TicketWorkflowService $workflow): void
     {
         $this->authorize('manage', $this->ticket);
 
         $this->ticket->update([
-            'status_id'             => $this->statusId,
-            'priority_id'           => $this->priorityId,
-            'type_id'               => $this->typeId,
-            'assigned_to_user_id'   => $this->assigneeId,
-            'project_id'            => $this->projectId,
+            'status_id' => $this->statusId,
+            'priority_id' => $this->priorityId,
+            'type_id' => $this->typeId,
+            'assigned_to_user_id' => $this->assigneeId,
+            'project_id' => $this->projectId,
         ]);
 
+        $this->ticket->refresh()->load(['status:id,name,is_done', 'product.defaultProject:id,name', 'project']);
+        $workflow->syncResolutionState($this->ticket);
+        $workflow->maybeAutoCreateIssue($this->ticket);
         $this->ticket->refresh();
         $this->dispatch('saved');
     }
@@ -74,31 +88,34 @@ final class ShowTicket extends Component
         $this->validateOnly('internalNote');
 
         $this->ticket->comments()->create([
-            'user_id'       => auth()->id(),
-            'body'          => $this->internalNote,
+            'user_id' => auth()->id(),
+            'body' => $this->internalNote,
             'redacted_body' => $this->internalNote,
-            'is_internal'   => true,
+            'is_internal' => true,
         ]);
 
         $this->reset('internalNote');
         $this->dispatch('note-added');
     }
 
-    public function addPublicReply(): void
+    public function addPublicReply(TicketWorkflowService $workflow): void
     {
         $this->authorize('manage', $this->ticket);
         $this->validateOnly('publicReply');
 
         $this->ticket->comments()->create([
-            'user_id'       => auth()->id(),
-            'body'          => $this->publicReply,
+            'user_id' => auth()->id(),
+            'body' => $this->publicReply,
             'redacted_body' => $this->publicReply,
-            'is_internal'   => false,
+            'is_internal' => false,
         ]);
+
+        $workflow->recordStaffReply($this->ticket);
 
         // TODO: notify customer
 
         $this->reset('publicReply');
+        $this->ticket->refresh();
         $this->dispatch('reply-added');
     }
 
@@ -116,6 +133,7 @@ final class ShowTicket extends Component
         if ($project === null) {
             // Guard-rail: require a project before converting
             $this->addError('projectId', 'Please select a project before converting to an Issue.');
+
             return;
         }
 
@@ -130,27 +148,27 @@ final class ShowTicket extends Component
             ->where('is_internal', true)
             ->with('user:id,name,email,profile_photo_path')
             ->latest()
-            ->get(['id','body','created_at','user_id']); // reference $ticket for submitter data
+            ->get(['id', 'body', 'created_at', 'user_id']); // reference $ticket for submitter data
 
         $public = $this->ticket->comments()
             ->where('is_internal', false)
             ->with('user:id,name,email,profile_photo_path')
             ->latest()
-            ->get(['id','body','created_at','user_id']);
+            ->get(['id', 'body', 'created_at', 'user_id']);
 
         $relatedIssues = $this->ticket->issues()
-            ->select(['id','key','summary','project_id'])
+            ->select(['id', 'key', 'summary', 'project_id'])
             ->with('project:id,name,key')
             ->get();
 
         return view('livewire.staff.support.show-ticket', [
-            'statuses'   => TicketStatus::query()->orderBy('name')->get(['id','name']),
-            'priorities' => TicketPriority::query()->orderBy('weight')->get(['id','name']),
-            'types'      => TicketType::query()->orderBy('name')->get(['id','name']),
-            'assignees'  => User::query()->orderBy('name')->get(['id','name']),
-            'projects'   => Project::query()->orderBy('name')->get(['id','name','key']),
+            'statuses' => TicketStatus::query()->orderBy('name')->get(['id', 'name', 'is_done']),
+            'priorities' => TicketPriority::query()->orderBy('weight')->get(['id', 'name']),
+            'types' => TicketType::query()->orderBy('name')->get(['id', 'name']),
+            'assignees' => User::query()->orderBy('name')->get(['id', 'name']),
+            'projects' => Project::query()->orderBy('name')->get(['id', 'name', 'key']),
             'internal' => $internal,
-            'public'   => $public,
+            'public' => $public,
             'relatedIssues' => $relatedIssues,
         ]);
     }
