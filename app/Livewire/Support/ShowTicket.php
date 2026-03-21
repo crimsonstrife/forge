@@ -22,7 +22,7 @@ final class ShowTicket extends Component
         $this->ticket = Ticket::query()
             ->where('key', $key)
             ->where('email_hash', $identity->email_hash)
-            ->with(['status:id,name,is_done', 'product:id,name'])
+            ->with(['status:id,name,is_done', 'product:id,name,next_response_target_minutes'])
             ->firstOrFail();
     }
 
