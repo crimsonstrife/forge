@@ -4,15 +4,22 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::table('service_products', static function (Blueprint $table): void {
             $table->unsignedInteger('first_response_target_minutes')->nullable();
             $table->unsignedInteger('next_response_target_minutes')->nullable();
             $table->unsignedInteger('resolve_target_minutes')->nullable();
-            $table->foreignId('auto_create_issue_for_ticket_type_id')->nullable()->index();
-            $table->foreignUuid('auto_create_issue_project_id')->nullable()->index();
+            $table->foreignId('auto_create_issue_for_ticket_type_id')
+                ->nullable()
+                ->constrained('ticket_types')
+                ->nullOnDelete();
+            $table->foreignUuid('auto_create_issue_project_id')
+                ->nullable()
+                ->constrained('projects')
+                ->nullOnDelete();
         });
 
         Schema::table('tickets', static function (Blueprint $table): void {
@@ -41,6 +48,8 @@ return new class () extends Migration {
         });
 
         Schema::table('service_products', static function (Blueprint $table): void {
+            $table->dropForeign(['auto_create_issue_for_ticket_type_id']);
+            $table->dropForeign(['auto_create_issue_project_id']);
             $table->dropColumn([
                 'first_response_target_minutes',
                 'next_response_target_minutes',

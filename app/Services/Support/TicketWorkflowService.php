@@ -12,18 +12,22 @@ use Carbon\CarbonInterface;
 
 final class TicketWorkflowService
 {
-    public function __construct(private ConvertTicketToIssue $converter)
-    {
-    }
+    public function __construct(private ConvertTicketToIssue $converter) {}
 
     public function initialize(Ticket $ticket): ?Issue
     {
-        $product = $ticket->product()->first();
+        /** @var ServiceProduct|null $product */
+        $product = $ticket->product ?? $ticket->product()->first();
         $updates = [];
+        $projectWasUpdated = false;
 
         if ($product instanceof ServiceProduct) {
+            $product->loadMissing(['defaultProject', 'autoCreateIssueProject']);
+            $ticket->setRelation('product', $product);
+
             if ($ticket->project_id === null && $product->default_project_id !== null) {
                 $updates['project_id'] = $product->default_project_id;
+                $projectWasUpdated = true;
             }
 
             if ($ticket->first_response_due_at === null && $product->first_response_target_minutes !== null) {
@@ -50,8 +54,11 @@ final class TicketWorkflowService
             $ticket->saveQuietly();
         }
 
-        $ticket->unsetRelation('product');
-        $ticket->loadMissing(['product.defaultProject', 'project']);
+        if ($projectWasUpdated) {
+            $ticket->unsetRelation('project');
+        }
+
+        $ticket->loadMissing('project');
 
         return $this->maybeAutoCreateIssue($ticket);
     }
@@ -135,15 +142,14 @@ final class TicketWorkflowService
 
     public function maybeAutoCreateIssue(Ticket $ticket): ?Issue
     {
-        if ($ticket->issues()->exists()) {
-            return null;
-        }
-
         /** @var ServiceProduct|null $product */
         $product = $ticket->product ?? $ticket->product()->first();
         if ($product === null) {
             return null;
         }
+
+        $product->loadMissing(['defaultProject', 'autoCreateIssueProject']);
+        $ticket->setRelation('product', $product);
 
         if ((int) ($product->auto_create_issue_for_ticket_type_id ?? 0) !== (int) $ticket->type_id) {
             return null;
@@ -163,7 +169,9 @@ final class TicketWorkflowService
             $ticket->saveQuietly();
         }
 
-        return $this->converter->convert($ticket, $project, moveTicketToWaitingOnSupport: false);
+        $ticket->setRelation('project', $project);
+
+        return $this->converter->convertIfUnlinked($ticket, $project, moveTicketToWaitingOnSupport: false);
     }
 
     private function dueAt(CarbonInterface $from, int $minutes): CarbonImmutable

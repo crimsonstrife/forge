@@ -55,9 +55,11 @@ final class NewTicket extends Component
             ])
             ->all();
 
-        $this->types = TicketType::query()
+        $types = TicketType::query()
             ->orderBy('name')
-            ->get(['id', 'name'])
+            ->get(['id', 'name']);
+
+        $this->types = $types
             ->map(fn (TicketType $type) => [
                 'id' => (int) $type->getKey(),
                 'name' => $type->name,
@@ -65,8 +67,8 @@ final class NewTicket extends Component
             ])
             ->all();
 
-        $this->typeId = TicketType::query()->where('name', 'Bug')->value('id')
-            ?? TicketType::query()->orderBy('name')->value('id');
+        $defaultType = $types->firstWhere('name', 'Bug') ?? $types->first();
+        $this->typeId = $defaultType ? (int) $defaultType->getKey() : null;
     }
 
     public function submit(TextRedactor $redactor, TicketWorkflowService $workflow): void

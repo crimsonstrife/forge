@@ -84,6 +84,7 @@ class SupportWorkflowTest extends TestCase
 
         $ticket = Ticket::query()->with('issues')->sole();
         $issue = Issue::query()->sole();
+        $workflow = app(TicketWorkflowService::class);
 
         $this->assertSame((string) $product->getKey(), (string) $ticket->service_product_id);
         $this->assertSame($bugType->getKey(), $ticket->type_id);
@@ -97,6 +98,9 @@ class SupportWorkflowTest extends TestCase
             'ticket_id' => $ticket->getKey(),
             'issue_id' => $issue->getKey(),
         ]);
+
+        $this->assertNull($workflow->maybeAutoCreateIssue($ticket->fresh(['product.defaultProject', 'project'])));
+        $this->assertDatabaseCount('issues', 1);
     }
 
     public function test_ticket_workflow_tracks_first_response_next_response_and_resolution_clocks(): void

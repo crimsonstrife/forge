@@ -1,18 +1,4 @@
 <div class="vstack gap-3">
-    @php
-        $slaWindows = collect($ticket->slaWindows())->filter(fn (array $window) => $window['due_at'] !== null);
-        $formatSlaTime = static function ($dueAt, $completedAt, bool $breached): string {
-            if ($completedAt !== null) {
-                return 'Met ' . $completedAt->diffForHumans();
-            }
-
-            if ($dueAt === null) {
-                return 'No timer set';
-            }
-
-            return ($breached ? 'Breached ' : 'Due ') . $dueAt->diffForHumans();
-        };
-    @endphp
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start">
@@ -61,26 +47,10 @@
                 </div>
                 <div class="col-md-4">
                     <form wire:submit.prevent="saveMeta" class="vstack gap-2">
-                        @if($slaWindows->isNotEmpty())
-                            <div class="border rounded p-3 bg-body-tertiary">
-                                <div class="small text-uppercase text-body-secondary fw-semibold mb-2">SLA targets</div>
-                                <div class="vstack gap-2">
-                                    @foreach($slaWindows as $window)
-                                        <div class="border rounded p-2 {{ $window['breached'] ? 'border-danger bg-danger-subtle' : '' }}">
-                                            <div class="d-flex justify-content-between align-items-center gap-2">
-                                                <span class="fw-semibold small">{{ $window['label'] }}</span>
-                                                <span class="badge {{ $window['breached'] ? 'text-bg-danger' : ($window['open'] ? 'text-bg-warning' : 'text-bg-success') }}">
-                                                    {{ $window['breached'] ? 'Breached' : ($window['open'] ? 'Open' : 'Met') }}
-                                                </span>
-                                            </div>
-                                            <div class="small text-body-secondary mt-1">
-                                                {{ $formatSlaTime($window['due_at'], $window['completed_at'], $window['breached']) }}
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
+                        @include('livewire.staff.support.partials.sla-windows', [
+                            'windows' => $ticket->slaWindows(),
+                            'mode' => 'detail',
+                        ])
 
                         {{-- NEW: Project --}}
                         <div>
