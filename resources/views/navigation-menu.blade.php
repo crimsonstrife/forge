@@ -1,5 +1,5 @@
 @php
-    use App\Models\{Project, Organization, Issue, Goal};
+    use App\Models\{Project, Organization, Issue, Goal, Ticket};
     /** @var \App\Models\User|null $user */
     $user = auth()->user();
     $allowReg = app(\App\Settings\AuthSettings::class)->allowRegistration ?? true;
@@ -108,22 +108,53 @@
                         </ul>
                     </li>
 
-                    <!-- Support/Service Desk -->
-                    <li class="nav-item">
-                        <x-nav-link href="{{ $user ? route('support.staff.index') : url('/support/staff') }}" :active="request()->routeIs('support.staff.index')" data-tour="support-nav">
+                    <!-- Support -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('support.*') ? 'active' : '' }}"
+                           href="#"
+                           id="supportDropdownAuth"
+                           role="button"
+                           data-bs-toggle="dropdown"
+                           aria-expanded="false"
+                           data-tour="support-nav">
                             {{ __('Support') }}
-                        </x-nav-link>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="supportDropdownAuth">
+                            <li>
+                                <x-dropdown-link href="{{ Route::has('support.index') ? route('support.index') : url('/support') }}">
+                                    {{ __('Support Portal') }}
+                                </x-dropdown-link>
+                            </li>
+                            <li>
+                                <x-dropdown-link href="{{ Route::has('support.my') ? route('support.my') : url('/support/my') }}">
+                                    {{ __('My Tickets') }}
+                                </x-dropdown-link>
+                            </li>
+                            <li>
+                                <x-dropdown-link href="{{ Route::has('support.new') ? route('support.new') : url('/support/new') }}">
+                                    {{ __('Submit Ticket') }}
+                                </x-dropdown-link>
+                            </li>
+                            @can('viewAny', Ticket::class)
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <x-dropdown-link href="{{ Route::has('support.staff.index') ? route('support.staff.index') : url('/support/staff') }}">
+                                        {{ __('Support Triage') }}
+                                    </x-dropdown-link>
+                                </li>
+                            @endcan
+                        </ul>
                     </li>
                 @elseguest
-                    <!-- Support/Service Desk -->
+                    <!-- Support -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="supportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('support.*') ? 'active' : '' }}" href="#" id="supportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             {{ __('Support') }}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="supportDropdown">
                             <li>
                                 <x-dropdown-link href="{{ Route::has('support.index') ? route('support.index') : url('/support') }}">
-                                    {{ __('Support Center') }}
+                                    {{ __('Support Portal') }}
                                 </x-dropdown-link>
                             </li>
                             <li><hr class="dropdown-divider"></li>
@@ -238,6 +269,15 @@
                             @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
                                 <li><x-dropdown-link href="{{ route('api-tokens.index') }}">{{ __('API Tokens') }}</x-dropdown-link></li>
                             @endif
+
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="px-3 py-2 text-muted small">{{ __('Support') }}</li>
+                            <li><x-dropdown-link href="{{ route('support.index') }}">{{ __('Support Portal') }}</x-dropdown-link></li>
+                            <li><x-dropdown-link href="{{ route('support.my') }}">{{ __('My Tickets') }}</x-dropdown-link></li>
+                            <li><x-dropdown-link href="{{ route('support.new') }}">{{ __('Submit Ticket') }}</x-dropdown-link></li>
+                            @can('viewAny', Ticket::class)
+                                <li><x-dropdown-link href="{{ route('support.staff.index') }}">{{ __('Support Triage') }}</x-dropdown-link></li>
+                            @endcan
 
                             @if ($canUseOnboarding)
                                 <li><hr class="dropdown-divider"></li>
