@@ -43,16 +43,40 @@ final class ComputeIssueMetricsJob implements ShouldQueue
             ->orderBy('changed_at')
             ->get(['to_status_id','changed_at']);
 
-        $firstStartedAt = $events->first()?->changed_at ? Carbon::parse($events->first()->changed_at) : null;
+        $doneStatusIds = DB::table('issue_statuses')
+            ->where('is_done', true)
+            ->pluck('id')
+            ->map(static fn ($id): int => (int) $id)
+            ->all();
 
-        // Get all status IDs that are considered "done"
-        $doneStatusIds = DB::table('issue_statuses')->where('is_done', true)->pluck('id')->all();
-
-        // Find the first event where the issue entered a "done" status
         $firstDoneEvent = $events->firstWhere(fn ($e) => in_array((int) $e->to_status_id, $doneStatusIds, true));
         $firstDoneAt = $firstDoneEvent ? Carbon::parse($firstDoneEvent->changed_at) : null;
+
+        $initialStatusIds = DB::table('project_issue_statuses')
+            ->where('project_id', $issue->project_id)
+            ->where('is_initial', true)
+            ->pluck('issue_status_id')
+            ->map(static fn ($id): int => (int) $id)
+            ->all();
+
+        if ($initialStatusIds === []) {
+            $firstStatusId = (int) ($events->first()?->to_status_id ?? 0);
+
+            if ($firstStatusId !== 0) {
+                $initialStatusIds = [$firstStatusId];
+            }
+        }
+
+        $firstStartedEvent = $events->first(
+            static fn ($event) => ! in_array((int) $event->to_status_id, $initialStatusIds, true)
+        );
+
+        $firstStartedAt = $firstStartedEvent
+            ? Carbon::parse($firstStartedEvent->changed_at)
+            : $firstDoneAt;
+
         $now = now();
-        $isDone = (bool)DB::table('issue_statuses')->where('id', $issue->issue_status_id)->value('is_done');
+        $isDone = (bool) DB::table('issue_statuses')->where('id', $issue->issue_status_id)->value('is_done');
 
         $leadMin  = $firstDoneAt ? (int) $issue->created_at->diffInMinutes($firstDoneAt) : 0;
         $cycleMin = match (true) {

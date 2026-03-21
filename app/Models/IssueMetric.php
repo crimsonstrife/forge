@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 
 /**
  * @property string $issue_id
@@ -20,8 +18,6 @@ use Illuminate\Support\Str;
  */
 class IssueMetric extends Model
 {
-    use HasUuids;
-
     protected $table = 'issue_metrics';
     protected $primaryKey = 'issue_id';
     public $incrementing = false;
@@ -42,13 +38,4 @@ class IssueMetric extends Model
         'lead_time_min','cycle_time_min','age_min',
         'current_status_id','is_done',
     ];
-
-    public static function boot(): void
-    {
-        parent::boot();
-
-        static::creating(static function ($model) {
-            $model->issue_id = Str::uuid();
-        });
-    }
 }

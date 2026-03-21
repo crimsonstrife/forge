@@ -17,6 +17,17 @@ class SprintBurndown extends ChartWidget
     public ?string $projectId = null;
     public ?string $sprintId = null;
 
+    public function mount(): void
+    {
+        $this->hydrateDefaultSprint();
+    }
+
+    public function updatedProjectId(): void
+    {
+        $this->sprintId = null;
+        $this->hydrateDefaultSprint();
+    }
+
     public static function canView(): bool
     {
         return true;
@@ -35,7 +46,8 @@ class SprintBurndown extends ChartWidget
                 ->options(
                     fn (): array => Sprint::query()
                     ->where('project_id', $this->projectId)
-                    ->orderByDesc('starts_at')
+                    ->orderByDesc('start_date')
+                    ->orderByDesc('end_date')
                     ->pluck('name', 'id')
                     ->all()
                 )
@@ -45,6 +57,8 @@ class SprintBurndown extends ChartWidget
 
     protected function getData(): array
     {
+        $this->hydrateDefaultSprint();
+
         if (blank($this->projectId) || blank($this->sprintId)) {
             return ['labels' => [], 'datasets' => []];
         }
@@ -54,16 +68,16 @@ class SprintBurndown extends ChartWidget
         return Cache::remember($cacheKey, 300, function (): array {
             /** @var Sprint|null $sprint */
             $sprint = Sprint::query()
-                ->select(['id', 'starts_at', 'ends_at'])
+                ->select(['id', 'start_date', 'end_date'])
                 ->whereKey($this->sprintId)
                 ->first();
 
-            if ($sprint === null) {
+            if ($sprint === null || $sprint->start_date === null || $sprint->end_date === null) {
                 return ['labels' => [], 'datasets' => []];
             }
 
-            $start = Carbon::parse($sprint->starts_at)->startOfDay();
-            $end   = Carbon::parse($sprint->ends_at)->startOfDay();
+            $start = Carbon::parse($sprint->start_date)->startOfDay();
+            $end   = Carbon::parse($sprint->end_date)->startOfDay();
 
             $rows = DB::table('report_sprint_daily_summaries')
                 ->where('project_id', $this->projectId)
@@ -112,5 +126,18 @@ class SprintBurndown extends ChartWidget
                 ],
             ];
         });
+    }
+
+    private function hydrateDefaultSprint(): void
+    {
+        if (blank($this->projectId) || filled($this->sprintId)) {
+            return;
+        }
+
+        $this->sprintId = Sprint::query()
+            ->where('project_id', $this->projectId)
+            ->orderByDesc('start_date')
+            ->orderByDesc('end_date')
+            ->value('id');
     }
 }
