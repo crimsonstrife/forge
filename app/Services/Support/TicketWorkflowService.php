@@ -12,14 +12,16 @@ use Carbon\CarbonInterface;
 
 final class TicketWorkflowService
 {
-    public function __construct(private ConvertTicketToIssue $converter)
-    {
-    }
+    public function __construct(private ConvertTicketToIssue $converter) {}
 
     public function initialize(Ticket $ticket): ?Issue
     {
         /** @var ServiceProduct|null $product */
-        $product = $ticket->product ?? $ticket->product()->first();
+        $product = $this->resolveWorkflowProduct($ticket, [
+            'default_project_id',
+            'first_response_target_minutes',
+            'resolve_target_minutes',
+        ]);
         $updates = [];
         $projectWasUpdated = false;
 
@@ -84,7 +86,7 @@ final class TicketWorkflowService
     public function recordCustomerReply(Ticket $ticket): void
     {
         /** @var ServiceProduct|null $product */
-        $product = $ticket->product ?? $ticket->product()->first();
+        $product = $this->resolveWorkflowProduct($ticket, ['next_response_target_minutes']);
         $now = CarbonImmutable::now();
         $updates = [
             'last_customer_reply_at' => $now,
@@ -106,7 +108,7 @@ final class TicketWorkflowService
         /** @var TicketStatus|null $status */
         $status = $ticket->status ?? $ticket->status()->first();
         /** @var ServiceProduct|null $product */
-        $product = $ticket->product ?? $ticket->product()->first();
+        $product = $this->resolveWorkflowProduct($ticket, ['resolve_target_minutes']);
         $now = CarbonImmutable::now();
 
         if ($status === null) {
@@ -145,7 +147,11 @@ final class TicketWorkflowService
     public function maybeAutoCreateIssue(Ticket $ticket): ?Issue
     {
         /** @var ServiceProduct|null $product */
-        $product = $ticket->product ?? $ticket->product()->first();
+        $product = $this->resolveWorkflowProduct($ticket, [
+            'default_project_id',
+            'auto_create_issue_for_ticket_type_id',
+            'auto_create_issue_project_id',
+        ]);
         if ($product === null) {
             return null;
         }
@@ -179,5 +185,48 @@ final class TicketWorkflowService
     private function dueAt(CarbonInterface $from, int $minutes): CarbonImmutable
     {
         return CarbonImmutable::instance($from)->addMinutes($minutes);
+    }
+
+    /**
+     * Refresh a partially eager-loaded product before reading workflow configuration.
+     *
+     * @param  array<int, string>  $requiredAttributes
+     */
+    private function resolveWorkflowProduct(Ticket $ticket, array $requiredAttributes): ?ServiceProduct
+    {
+        /** @var ServiceProduct|null $product */
+        $product = $ticket->relationLoaded('product')
+            ? $ticket->getRelation('product')
+            : null;
+
+        if ($product instanceof ServiceProduct && $this->productHasAttributes($product, $requiredAttributes)) {
+            return $product;
+        }
+
+        $product = $ticket->product()->first();
+
+        if (! $product instanceof ServiceProduct) {
+            return null;
+        }
+
+        $ticket->setRelation('product', $product);
+
+        return $product;
+    }
+
+    /**
+     * @param  array<int, string>  $requiredAttributes
+     */
+    private function productHasAttributes(ServiceProduct $product, array $requiredAttributes): bool
+    {
+        $attributes = $product->getAttributes();
+
+        foreach ($requiredAttributes as $attribute) {
+            if (! array_key_exists($attribute, $attributes)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

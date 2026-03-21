@@ -176,6 +176,55 @@ class SupportWorkflowTest extends TestCase
         $this->assertTrue($ticket->isResolved());
     }
 
+    public function test_customer_reply_uses_full_product_sla_settings_when_product_relation_is_partially_loaded(): void
+    {
+        $start = CarbonImmutable::parse('2026-03-20 09:00:00');
+        CarbonImmutable::setTestNow($start);
+
+        $organization = Organization::factory()->create();
+        $project = Project::factory()->create([
+            'organization_id' => $organization->getKey(),
+            'lead_id' => User::factory()->create()->getKey(),
+        ]);
+        $product = ServiceProduct::query()->create([
+            'organization_id' => $organization->getKey(),
+            'key' => 'PORTAL',
+            'name' => 'Portal',
+            'default_project_id' => $project->getKey(),
+            'next_response_target_minutes' => 180,
+        ]);
+
+        $ticket = Ticket::query()->create([
+            'organization_id' => $organization->getKey(),
+            'service_product_id' => $product->getKey(),
+            'project_id' => $project->getKey(),
+            'submitter_name' => 'Morgan Customer',
+            'submitter_email' => 'morgan@example.com',
+            'email_hash' => hash('sha256', 'morgan@example.com'),
+            'subject' => 'Need help with triage',
+            'body' => 'Please investigate the queue delay on the support board.',
+            'status_id' => TicketStatus::query()->where('name', 'New')->value('id'),
+            'priority_id' => TicketPriority::query()->where('name', 'Medium')->value('id'),
+            'type_id' => TicketType::query()->where('name', 'Question')->value('id'),
+            'first_responded_at' => $start->addMinutes(20),
+            'access_token' => (string) str()->ulid(),
+            'via' => 'public',
+        ]);
+
+        $ticket = Ticket::query()
+            ->with('product:id,name')
+            ->findOrFail($ticket->getKey());
+
+        $this->assertArrayNotHasKey('next_response_target_minutes', $ticket->product->getAttributes());
+
+        CarbonImmutable::setTestNow($start->addHours(2));
+        app(TicketWorkflowService::class)->recordCustomerReply($ticket);
+        $ticket->refresh();
+
+        $this->assertSame($start->addHours(2)->toDateTimeString(), $ticket->last_customer_reply_at?->toDateTimeString());
+        $this->assertSame($start->addHours(5)->toDateTimeString(), $ticket->next_response_due_at?->toDateTimeString());
+    }
+
     public function test_staff_triage_shows_breached_sla_badges(): void
     {
         $start = CarbonImmutable::parse('2026-03-20 08:00:00');
