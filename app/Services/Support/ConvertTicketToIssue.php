@@ -11,7 +11,9 @@ use RuntimeException;
 
 final class ConvertTicketToIssue
 {
-    public function __construct(private DatabaseManager $db) {}
+    public function __construct(private DatabaseManager $db)
+    {
+    }
 
     public function convert(Ticket $ticket, ?Project $project = null, bool $moveTicketToWaitingOnSupport = true): Issue
     {

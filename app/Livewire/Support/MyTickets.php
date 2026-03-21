@@ -25,7 +25,7 @@ final class MyTickets extends Component
             ->select(['id', 'key', 'subject', 'status_id', 'created_at'])
             ->with('status:id,name')
             ->get()
-            ?? new Collection;
+            ?? new Collection();
 
         return view('livewire.support.my-tickets', compact('tickets'));
     }
