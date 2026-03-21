@@ -32,15 +32,18 @@ class Ticket extends BaseModel
 
     protected $guarded = [];
 
-    protected $casts = [
-        'first_response_due_at' => 'immutable_datetime',
-        'first_responded_at' => 'immutable_datetime',
-        'next_response_due_at' => 'immutable_datetime',
-        'last_customer_reply_at' => 'immutable_datetime',
-        'last_staff_reply_at' => 'immutable_datetime',
-        'resolve_due_at' => 'immutable_datetime',
-        'resolved_at' => 'immutable_datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'first_response_due_at' => 'immutable_datetime',
+            'first_responded_at' => 'immutable_datetime',
+            'next_response_due_at' => 'immutable_datetime',
+            'last_customer_reply_at' => 'immutable_datetime',
+            'last_staff_reply_at' => 'immutable_datetime',
+            'resolve_due_at' => 'immutable_datetime',
+            'resolved_at' => 'immutable_datetime',
+        ] + parent::casts();
+    }
 
     public static function boot(): void
     {
