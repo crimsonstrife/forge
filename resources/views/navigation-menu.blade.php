@@ -189,6 +189,23 @@
                 <!-- Right: actions -->
                 <div class="d-flex align-items-center gap-2 forge-site-navbar__actions">
                     @auth
+                        <!-- Codex cross-app link (shown when Codex integration is configured) -->
+                        @if(config('codex.enabled') && config('codex.url'))
+                            @php
+                                $forgeProject    = request()->route('project');
+                                $codexSlug       = $forgeProject?->codex_workspace_slug;
+                                $codexBase       = rtrim(config('codex.url'), '/');
+                            @endphp
+                            <a href="{{ $codexBase }}{{ $codexSlug ? '/workspaces/' . $codexSlug : '' }}"
+                               class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
+                               target="_blank"
+                               rel="noopener"
+                               title="{{ $codexSlug ? __('Open linked Codex workspace') : __('Open Codex') }}">
+                                <i class="fas fa-book" style="font-size:0.8rem;"></i>
+                                {{ __('Docs') }}
+                            </a>
+                        @endif
+
                         <!-- Create -->
                         <div class="dropdown">
                             <wa-button id="recordCreate" class="dropdown-toggle" variant="brand" data-bs-toggle="dropdown" aria-expanded="false" data-tour="create-menu">

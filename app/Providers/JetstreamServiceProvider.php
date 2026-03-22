@@ -30,6 +30,7 @@ class JetstreamServiceProvider extends ServiceProvider
     {
         $this->configurePermissions();
         Livewire::component('profile.update-profile-information-form', \App\Livewire\Profile\UpdateProfileInformationForm::class);
+        Livewire::component('api.api-token-manager', \App\Livewire\ApiTokenManager::class);
 
         Jetstream::createTeamsUsing(CreateTeam::class);
         Jetstream::updateTeamNamesUsing(UpdateTeamName::class);

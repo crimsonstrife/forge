@@ -280,6 +280,11 @@ class Issue extends BaseModel implements HasMedia
         return $this->belongsTo(Milestone::class);
     }
 
+    public function codexLinks(): HasMany
+    {
+        return $this->hasMany(IssueCodexLink::class);
+    }
+
     /**
      * Quick helper: does this issue come from (at least one) support ticket?
      */

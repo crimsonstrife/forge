@@ -22,6 +22,7 @@ use DB;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Passport\Passport;
 use Spatie\Permission\PermissionRegistrar;
 
 class AuthServiceProvider extends ServiceProvider
@@ -52,6 +53,27 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->register();
         $this->registerPolicies();
+
+        Passport::setClientUuids(true);
+        Passport::tokensExpireIn(now()->addDays(15));
+        Passport::refreshTokensExpireIn(now()->addDays(30));
+        Passport::tokensCan([
+            // SSO / cross-app scopes
+            'profile'           => 'Read user profile (name, email, avatar)',
+            'codex:read'        => 'Read Codex workspaces and pages on your behalf',
+            // Forge API token scopes (used by Jetstream PATs)
+            'projects:read'     => 'Read projects',
+            'issues:read'       => 'Read issues',
+            'issues:write'      => 'Create and update issues',
+            'comments:write'    => 'Post comments',
+            'attachments:write' => 'Upload attachments',
+            'time:write'        => 'Log time entries',
+            // Jetstream role permissions (also surfaced as API token checkboxes)
+            'read'              => 'Read access',
+            'create'            => 'Create access',
+            'update'            => 'Update access',
+            'delete'            => 'Delete access',
+        ]);
 
         Gate::define(
             'viewApiDocs',

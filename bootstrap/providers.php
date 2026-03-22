@@ -2,6 +2,7 @@
 
 return [
     App\Providers\AppHealthServiceProvider::class,
+    Laravel\Passport\PassportServiceProvider::class,
     App\Providers\AppServiceProvider::class,
     App\Providers\AuthServiceProvider::class,
     App\Providers\CookiesServiceProvider::class,
