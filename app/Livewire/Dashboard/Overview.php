@@ -147,8 +147,7 @@ final class Overview extends Component
 
         abort_unless($user !== null, 403);
 
-        $dashboard = $service->build($user);
-        $signals = $dashboard['signals'];
+        $signals = $service->signals($user);
         $workspaces = $this->workspaceDefinitions($signals);
         $widgetCatalog = $this->widgetCatalog($signals);
         $defaultWorkspace = $this->defaultWorkspaceFromSignals($signals, $workspaces);
@@ -167,6 +166,15 @@ final class Overview extends Component
         if ($visibleWidgetIds === [] && $orderedWidgetIds !== []) {
             $visibleWidgetIds = [reset($orderedWidgetIds)];
         }
+
+        $dashboard = $service->build(
+            $user,
+            array_values(array_unique(array_merge(
+                $visibleWidgetIds,
+                $this->workspaceStatsDependencies($this->activeWorkspace)
+            ))),
+            $signals,
+        );
 
         return view('livewire.dashboard.overview', [
             'activeWorkspaceDefinition' => $workspaces[$this->activeWorkspace],
@@ -457,6 +465,22 @@ final class Overview extends Component
                 ['label' => 'Due soon', 'value' => count(data_get($widgetData, 'due_soon.items', []))],
                 ['label' => 'Projects', 'value' => count(data_get($widgetData, 'project_portfolio.items', []))],
             ],
+        };
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function workspaceStatsDependencies(string $workspace): array
+    {
+        return match ($workspace) {
+            'my_sprint' => ['my_sprint'],
+            'team_delivery' => ['team_delivery'],
+            'support_queue' => ['support_queue'],
+            'release_health' => ['release_health'],
+            'exec_summary' => ['exec_summary'],
+            'solo_today' => ['solo_today'],
+            default => ['my_open_issues', 'due_soon', 'project_portfolio'],
         };
     }
 

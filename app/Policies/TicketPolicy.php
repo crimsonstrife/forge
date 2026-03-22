@@ -14,9 +14,7 @@ final class TicketPolicy
             'tickets.view',
             'tickets.manage',
             'is-admin',
-            'is_admin',
             'is-super-admin',
-            'is_superadmin',
         ]);
     }
 
@@ -32,9 +30,7 @@ final class TicketPolicy
             'tickets.manage',
             'tickets.update',
             'is-admin',
-            'is_admin',
             'is-super-admin',
-            'is_superadmin',
         ]);
     }
 
@@ -45,9 +41,7 @@ final class TicketPolicy
             'tickets.manage',
             'issues.create',
             'is-admin',
-            'is_admin',
             'is-super-admin',
-            'is_superadmin',
         ]);
     }
 }

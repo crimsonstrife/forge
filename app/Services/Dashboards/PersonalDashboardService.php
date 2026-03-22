@@ -26,52 +26,160 @@ final class PersonalDashboardService
      *     widgets: array<string, mixed>
      * }
      */
-    public function build(User $user): array
+    public function build(User $user, array $widgetIds = [], ?array $signals = null): array
     {
-        $signals = $this->signals($user);
+        $signals ??= $this->signals($user);
 
-        $myOpenIssues = $this->myOpenIssues($user, $signals['visible_project_ids']);
-        $dueSoon = $this->dueSoon($user, $signals['visible_project_ids']);
-        $projectPortfolio = $this->projectPortfolio($user);
-        $recentActivity = $this->activityGroups($signals['visible_project_ids']);
-        $mySprint = $this->mySprint($user, $signals['visible_project_ids']);
-        $teamDelivery = $this->teamDelivery($signals['visible_project_ids'], $signals['team_context']);
-        $supportQueue = $signals['can_view_support']
-            ? $this->supportQueue($user)
-            : null;
-        $releaseHealth = $this->releaseHealth($signals['visible_project_ids']);
+        $requestedWidgets = $widgetIds === []
+            ? $this->allWidgetIds()
+            : array_values(array_unique($widgetIds));
+
+        $widgets = [];
+        $myOpenIssues = null;
+        $dueSoon = null;
+        $projectPortfolio = null;
+        $recentActivity = null;
+        $mySprint = null;
+        $teamDelivery = null;
+        $supportQueue = null;
+        $releaseHealth = null;
+
+        if ($this->wants($requestedWidgets, 'my_open_issues', 'solo_today')) {
+            $myOpenIssues = $this->myOpenIssues($user, $signals['visible_project_ids']);
+        }
+
+        if ($this->wants($requestedWidgets, 'due_soon', 'solo_today')) {
+            $dueSoon = $this->dueSoon($user, $signals['visible_project_ids']);
+        }
+
+        if ($this->wants($requestedWidgets, 'project_portfolio')) {
+            $projectPortfolio = $this->projectPortfolio($user);
+        }
+
+        if ($this->wants($requestedWidgets, 'recent_activity')) {
+            $recentActivity = $this->activityGroups($signals['visible_project_ids']);
+        }
+
+        if ($this->wants($requestedWidgets, 'my_sprint')) {
+            $mySprint = $this->mySprint($user, $signals['visible_project_ids']);
+        }
+
+        if ($this->wants($requestedWidgets, 'team_delivery', 'exec_summary')) {
+            $teamDelivery = $this->teamDelivery($signals['visible_project_ids'], $signals['team_context']);
+        }
+
+        if ($this->wants($requestedWidgets, 'support_queue', 'exec_summary')) {
+            $supportQueue = $signals['can_view_support']
+                ? $this->supportQueue($user)
+                : null;
+        }
+
+        if ($this->wants($requestedWidgets, 'release_health', 'exec_summary')) {
+            $releaseHealth = $this->releaseHealth($signals['visible_project_ids']);
+        }
+
+        if ($this->wants($requestedWidgets, 'my_open_issues')) {
+            $widgets['my_open_issues'] = [
+                'items' => $myOpenIssues ?? [],
+                'status_summary' => $this->statusSummary($user, $signals['visible_project_ids']),
+            ];
+        }
+
+        if ($this->wants($requestedWidgets, 'due_soon')) {
+            $widgets['due_soon'] = [
+                'items' => $dueSoon ?? [],
+            ];
+        }
+
+        if ($this->wants($requestedWidgets, 'project_portfolio')) {
+            $widgets['project_portfolio'] = [
+                'items' => $projectPortfolio ?? [],
+            ];
+        }
+
+        if ($this->wants($requestedWidgets, 'recent_activity')) {
+            $widgets['recent_activity'] = [
+                'groups' => $recentActivity ?? [],
+            ];
+        }
+
+        if ($this->wants($requestedWidgets, 'my_sprint')) {
+            $widgets['my_sprint'] = $mySprint ?? [
+                'summary' => [
+                    'active_sprint_count' => 0,
+                    'assigned_issue_count' => 0,
+                    'due_this_week_count' => 0,
+                ],
+                'sprints' => [],
+                'issues' => [],
+            ];
+        }
+
+        if ($this->wants($requestedWidgets, 'team_delivery')) {
+            $widgets['team_delivery'] = $teamDelivery ?? [
+                'summary' => [
+                    'project_count' => 0,
+                    'open_issue_count' => 0,
+                    'due_soon_count' => 0,
+                    'overdue_count' => 0,
+                    'active_sprint_count' => 0,
+                    'scope_label' => null,
+                ],
+                'projects' => [],
+            ];
+        }
+
+        if ($this->wants($requestedWidgets, 'support_queue')) {
+            $widgets['support_queue'] = $supportQueue;
+        }
+
+        if ($this->wants($requestedWidgets, 'release_health')) {
+            $widgets['release_health'] = $releaseHealth ?? [
+                'summary' => [
+                    'release_count' => 0,
+                    'at_risk_count' => 0,
+                    'upcoming_label' => null,
+                ],
+                'releases' => [],
+            ];
+        }
+
+        if ($this->wants($requestedWidgets, 'exec_summary')) {
+            $widgets['exec_summary'] = $this->execSummary(
+                $signals,
+                $teamDelivery ?? [
+                    'summary' => [
+                        'project_count' => 0,
+                        'open_issue_count' => 0,
+                        'due_soon_count' => 0,
+                        'overdue_count' => 0,
+                        'active_sprint_count' => 0,
+                        'scope_label' => null,
+                    ],
+                    'projects' => [],
+                ],
+                $releaseHealth ?? [
+                    'summary' => [
+                        'release_count' => 0,
+                        'at_risk_count' => 0,
+                        'upcoming_label' => null,
+                    ],
+                    'releases' => [],
+                ],
+                $supportQueue
+            );
+        }
+
+        if ($this->wants($requestedWidgets, 'solo_today')) {
+            $widgets['solo_today'] = [
+                'open_issue_count' => count($myOpenIssues ?? []),
+                'due_soon_count' => count($dueSoon ?? []),
+            ];
+        }
 
         return [
             'signals' => $signals,
-            'widgets' => [
-                'my_open_issues' => [
-                    'items' => $myOpenIssues,
-                    'status_summary' => $this->statusSummary($user, $signals['visible_project_ids']),
-                ],
-                'due_soon' => [
-                    'items' => $dueSoon,
-                ],
-                'project_portfolio' => [
-                    'items' => $projectPortfolio,
-                ],
-                'recent_activity' => [
-                    'groups' => $recentActivity,
-                ],
-                'my_sprint' => $mySprint,
-                'team_delivery' => $teamDelivery,
-                'support_queue' => $supportQueue,
-                'release_health' => $releaseHealth,
-                'exec_summary' => $this->execSummary(
-                    $signals,
-                    $teamDelivery,
-                    $releaseHealth,
-                    $supportQueue
-                ),
-                'solo_today' => [
-                    'open_issue_count' => count($myOpenIssues),
-                    'due_soon_count' => count($dueSoon),
-                ],
-            ],
+            'widgets' => $widgets,
         ];
     }
 
@@ -967,6 +1075,25 @@ final class PersonalDashboardService
     }
 
     /**
+     * @return array<int, string>
+     */
+    private function allWidgetIds(): array
+    {
+        return [
+            'my_open_issues',
+            'due_soon',
+            'project_portfolio',
+            'recent_activity',
+            'my_sprint',
+            'team_delivery',
+            'support_queue',
+            'release_health',
+            'exec_summary',
+            'solo_today',
+        ];
+    }
+
+    /**
      * @param  array<int, string>  $visibleProjectIds
      */
     private function hasActiveSprint(User $user, array $visibleProjectIds): bool
@@ -996,6 +1123,11 @@ final class PersonalDashboardService
             ->releases()
             ->whereIn('project_id', $visibleProjectIds)
             ->exists();
+    }
+
+    private function wants(array $requestedWidgets, string ...$widgetIds): bool
+    {
+        return array_intersect($requestedWidgets, $widgetIds) !== [];
     }
 
     private function collectChangedId(
