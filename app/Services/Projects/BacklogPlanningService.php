@@ -61,13 +61,11 @@ final class BacklogPlanningService
                 ];
             }
 
-            if ($issueUpdates !== []) {
-                Issue::upsert(
-                    $issueUpdates,
-                    ['id', 'project_id'],
-                    ['sprint_id', 'planning_order']
-                );
-            }
+            $this->bulkUpdateIssues(
+                projectId: $project->id,
+                issueUpdates: $issueUpdates,
+                columns: ['sprint_id', 'planning_order'],
+            );
 
             foreach ($this->uniqueLaneIds($lanesToNormalize) as $laneSprintId) {
                 $this->normalizeLane($project->id, $laneSprintId);
@@ -123,13 +121,11 @@ final class BacklogPlanningService
                 $rank++;
             }
 
-            if ($issueUpdates !== []) {
-                Issue::upsert(
-                    $issueUpdates,
-                    ['id', 'project_id'],
-                    ['planning_order']
-                );
-            }
+            $this->bulkUpdateIssues(
+                projectId: $project->id,
+                issueUpdates: $issueUpdates,
+                columns: ['planning_order'],
+            );
         });
     }
 
@@ -187,6 +183,43 @@ final class BacklogPlanningService
                 ->where('project_id', $projectId)
                 ->update(['planning_order' => $index + 1]);
         }
+    }
+
+    /**
+     * @param  array<int, array{id:string, project_id:string, sprint_id:?string, planning_order:int}>  $issueUpdates
+     * @param  array<int, string>  $columns
+     */
+    private function bulkUpdateIssues(string $projectId, array $issueUpdates, array $columns): void
+    {
+        if ($issueUpdates === [] || $columns === []) {
+            return;
+        }
+
+        $bindings = [];
+        $setClauses = [];
+
+        foreach ($columns as $column) {
+            $whenClauses = [];
+
+            foreach ($issueUpdates as $issueUpdate) {
+                $whenClauses[] = 'WHEN ? THEN ?';
+                $bindings[] = $issueUpdate['id'];
+                $bindings[] = $issueUpdate[$column];
+            }
+
+            $setClauses[] = "{$column} = CASE id ".implode(' ', $whenClauses)." ELSE {$column} END";
+        }
+
+        $ids = array_map(static fn (array $issueUpdate): string => $issueUpdate['id'], $issueUpdates);
+        $placeholders = implode(', ', array_fill(0, count($ids), '?'));
+
+        $bindings[] = $projectId;
+        array_push($bindings, ...$ids);
+
+        DB::update(
+            'UPDATE issues SET '.implode(', ', $setClauses).' WHERE project_id = ? AND id IN ('.$placeholders.')',
+            $bindings,
+        );
     }
 
     /**

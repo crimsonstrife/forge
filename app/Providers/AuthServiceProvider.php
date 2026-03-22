@@ -65,6 +65,30 @@ class AuthServiceProvider extends ServiceProvider
             $user && $user->hasPermissionTo('is-super-admin')
         );
 
+        Gate::define(
+            'support.view',
+            static fn (User $user): bool => $user->canAny([
+                'tickets.view',
+                'tickets.manage',
+            ])
+        );
+
+        Gate::define(
+            'support.manage',
+            static fn (User $user): bool => $user->canAny([
+                'tickets.manage',
+                'tickets.update',
+            ])
+        );
+
+        Gate::define(
+            'support.convert_to_issue',
+            static fn (User $user): bool => $user->canAny([
+                'tickets.manage',
+                'issues.create',
+            ])
+        );
+
         Gate::before(static function (User $user, string $ability) {
             /** @var PermissionRegistrar $reg */
             $reg = app(PermissionRegistrar::class);

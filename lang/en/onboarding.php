@@ -10,8 +10,8 @@ return [
                     'body' => 'Start here for assigned work, due dates, and recent activity across Forge.',
                 ],
                 'issues' => [
-                    'title' => 'Issues keep work moving',
-                    'body' => 'Issues are the core units of work in Forge, and this panel keeps your assigned items close at hand.',
+                    'title' => 'Role-based workspaces',
+                    'body' => 'Switch between workspace presets like my sprint, team delivery, support queue, release health, exec summary, and solo mode without leaving the dashboard route.',
                 ],
                 'projects' => [
                     'title' => 'Projects',
