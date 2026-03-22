@@ -11,7 +11,7 @@
                 @if($heroStats !== [])
                     <div class="d-flex flex-wrap gap-2 justify-content-xl-end">
                         @foreach($heroStats as $stat)
-                            <div class="rounded-3 border bg-white px-3 py-2" style="min-width: 9rem;">
+                            <div class="rounded-3 border  px-3 py-2" style="min-width: 9rem;">
                                 <div class="small text-body-secondary">{{ $stat['label'] }}</div>
                                 <div class="fw-semibold mt-1">{{ $stat['value'] }}</div>
                             </div>
@@ -72,7 +72,7 @@
                         <div class="row g-3">
                             @foreach($customizerWidgets as $widget)
                                 <div class="col-md-6 col-xl-4">
-                                    <div class="border rounded-3 bg-white h-100 p-3">
+                                    <div class="border rounded-3  h-100 p-3">
                                         <div class="d-flex align-items-start justify-content-between gap-3">
                                             <div>
                                                 <div class="fw-semibold">{{ $widget['label'] }}</div>

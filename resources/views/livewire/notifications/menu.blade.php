@@ -27,7 +27,7 @@
                 $isUnread = is_null($n->read_at);
             @endphp
 
-            <a @class(['dropdown-item d-flex flex-column gap-1', 'bg-light' => $isUnread]) href="{{ $url ?? '#' }}">
+            <a @class(['dropdown-item d-flex flex-column gap-1', 'bg-secondary' => $isUnread]) href="{{ $url ?? '#' }}">
                 <div class="d-flex justify-content-between">
                     <span class="fw-semibold">{{ __($title) }}</span>
                     <small class="text-muted">{{ $n->created_at->diffForHumans() }}</small>

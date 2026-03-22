@@ -62,7 +62,7 @@
                                                                     {{ $change['label'] }}
                                                                 </div>
                                                                 <div class="d-inline-flex align-items-center gap-2 flex-wrap">
-                                                                    <span class="badge bg-white text-body border">{{ $change['from'] ?? '—' }}</span>
+                                                                    <span class="badge  text-body border">{{ $change['from'] ?? '—' }}</span>
                                                                     <span>→</span>
                                                                     <span class="badge border"
                                                                           @if($change['to_color']) style="background-color: {{ $change['to_color'] }}15;" @endif>

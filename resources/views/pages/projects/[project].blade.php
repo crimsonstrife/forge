@@ -468,7 +468,7 @@ render(function (View $view, Project $project) {
                                                                                             <div
                                                                                                 class="d-inline-flex align-items-center gap-2">
                                                                                             <span
-                                                                                                class="badge bg-white text-body border">{{ $c['from'] ?? '—' }}</span>
+                                                                                                class="badge  text-body border">{{ $c['from'] ?? '—' }}</span>
                                                                                                 <span>→</span>
                                                                                                 <span class="badge border"
                                                                                                       @if($c['to_color']) style="background-color: {{ $c['to_color'] }}20" @endif>
