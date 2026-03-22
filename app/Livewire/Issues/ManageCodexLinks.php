@@ -60,6 +60,7 @@ final class ManageCodexLinks extends Component
         try {
             $response = Http::withToken($token)
                 ->timeout(10)
+                ->withoutVerifying()
                 ->get("{$baseUrl}/api/v1/pages/search", array_filter([
                     'q'            => $q,
                     'workspace_id' => $workspaceId,

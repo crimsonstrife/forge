@@ -52,6 +52,7 @@ final class ConnectCodexWorkspace extends Component
         try {
             $response = Http::withToken($token)
                 ->timeout(10)
+                ->withoutVerifying()
                 ->get("{$baseUrl}/api/v1/workspaces", [
                     'search' => $this->search,
                 ]);

@@ -118,7 +118,14 @@ class AuthServiceProvider extends ServiceProvider
 
             // Temporarily clear team to check global roles/permissions
             $reg->setPermissionsTeamId(null);
-            $isSuper = $user->hasPermissionTo('is-super-admin');
+            try {
+                // Always check the 'web' guard — this permission only exists there,
+                // and API-authenticated requests (Passport 'api' guard) would otherwise
+                // throw PermissionDoesNotExist.
+                $isSuper = $user->hasPermissionTo('is-super-admin', 'web');
+            } catch (\Spatie\Permission\Exceptions\PermissionDoesNotExist $e) {
+                $isSuper = false;
+            }
             $reg->setPermissionsTeamId($prev);
 
             // Super admin allow (fast path)
