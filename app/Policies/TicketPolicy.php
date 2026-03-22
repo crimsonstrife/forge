@@ -9,7 +9,15 @@ final class TicketPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->can('support.view') || $user->can('is_admin') || $user->can('is_superadmin');
+        return $user->canAny([
+            'support.view',
+            'tickets.view',
+            'tickets.manage',
+            'is-admin',
+            'is_admin',
+            'is-super-admin',
+            'is_superadmin',
+        ]);
     }
 
     public function view(User $user, Ticket $ticket): bool
@@ -19,11 +27,27 @@ final class TicketPolicy
 
     public function manage(User $user, Ticket $ticket): bool
     {
-        return $user->can('support.manage') || $user->can('is_admin') || $user->can('is_superadmin');
+        return $user->canAny([
+            'support.manage',
+            'tickets.manage',
+            'tickets.update',
+            'is-admin',
+            'is_admin',
+            'is-super-admin',
+            'is_superadmin',
+        ]);
     }
 
     public function convertToIssue(User $user, Ticket $ticket): bool
     {
-        return $user->can('support.convert_to_issue') || $user->can('is_admin') || $user->can('is_superadmin');
+        return $user->canAny([
+            'support.convert_to_issue',
+            'tickets.manage',
+            'issues.create',
+            'is-admin',
+            'is_admin',
+            'is-super-admin',
+            'is_superadmin',
+        ]);
     }
 }

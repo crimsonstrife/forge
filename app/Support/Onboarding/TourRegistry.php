@@ -78,7 +78,7 @@ final class TourRegistry
             ],
             'issues' => [
                 'route' => 'dashboard',
-                'selector' => '[data-tour="issues-overview"]',
+                'selector' => '[data-tour="dashboard-workspaces"]',
                 'placement' => 'right',
             ],
             'projects' => [

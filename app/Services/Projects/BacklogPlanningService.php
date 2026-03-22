@@ -61,12 +61,14 @@ final class BacklogPlanningService
                 ];
             }
 
-            if ($issueUpdates !== []) {
-                Issue::upsert(
-                    $issueUpdates,
-                    ['id', 'project_id'],
-                    ['sprint_id', 'planning_order']
-                );
+            foreach ($issueUpdates as $issueUpdate) {
+                Issue::query()
+                    ->whereKey($issueUpdate['id'])
+                    ->where('project_id', $project->id)
+                    ->update([
+                        'sprint_id' => $issueUpdate['sprint_id'],
+                        'planning_order' => $issueUpdate['planning_order'],
+                    ]);
             }
 
             foreach ($this->uniqueLaneIds($lanesToNormalize) as $laneSprintId) {
@@ -123,12 +125,13 @@ final class BacklogPlanningService
                 $rank++;
             }
 
-            if ($issueUpdates !== []) {
-                Issue::upsert(
-                    $issueUpdates,
-                    ['id', 'project_id'],
-                    ['planning_order']
-                );
+            foreach ($issueUpdates as $issueUpdate) {
+                Issue::query()
+                    ->whereKey($issueUpdate['id'])
+                    ->where('project_id', $project->id)
+                    ->update([
+                        'planning_order' => $issueUpdate['planning_order'],
+                    ]);
             }
         });
     }

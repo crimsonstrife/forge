@@ -141,6 +141,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->hasOne(IssueNotificationPreference::class);
     }
 
+    public function dashboardPreference(): HasOne
+    {
+        return $this->hasOne(DashboardPreference::class);
+    }
+
     public function broadcastChannelName(): string
     {
         return 'App.Models.User.'.$this->getKey();
