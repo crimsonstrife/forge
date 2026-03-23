@@ -51,6 +51,8 @@ class Project extends BaseModel
         'count_private_in_progress',
         'embed_domains',
         'public_slug',
+        'codex_workspace_id',
+        'codex_workspace_slug',
     ];
 
     protected $casts = [

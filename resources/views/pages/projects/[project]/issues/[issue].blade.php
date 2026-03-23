@@ -465,6 +465,18 @@ render(function (View $view, Project $project, Issue $issue) {
                                 <livewire:issues.manage-links :issue="$issue"/>
                             </div>
                         </div>
+
+                        @if(config('codex.enabled'))
+                        <div class="card shadow-sm">
+                            <div class="card-header d-flex align-items-center gap-2">
+                                <i class="fas fa-book text-primary" style="font-size:0.9rem;"></i>
+                                <h3 class="h6 mb-0">{{ __('Codex Pages') }}</h3>
+                            </div>
+                            <div class="card-body">
+                                <livewire:issues.manage-codex-links :issue="$issue"/>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
 

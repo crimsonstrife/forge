@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/user', static function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
+})->middleware('auth:api,sanctum');
 
 Route::post('/webhooks/github', [GitHubWebhookController::class, 'handle'])
     ->name('webhooks.github');
@@ -23,7 +23,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         ->middleware('throttle:60,1');
 });
 
-Route::prefix('v1')->middleware(['auth:sanctum', 'throttle:api'])->group(function (): void {
+Route::prefix('v1')->middleware(['auth:api,sanctum', 'throttle:api'])->group(function (): void {
     Route::get('me', V1\MeController::class)->name('api.v1.me');
 
     Route::get('projects', [V1\ProjectController::class, 'index'])->name('api.v1.projects.index');
