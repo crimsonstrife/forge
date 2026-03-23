@@ -34,14 +34,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Codex API Token
+    | Codex App Token
     |--------------------------------------------------------------------------
     |
-    | A Sanctum Personal Access Token generated in Codex for machine-to-machine
-    | API calls (workspace listing, page search). Generate this token in Codex's
-    | profile → API Tokens section and set it here.
+    | A system-level app token for machine-to-machine API calls (workspace
+    | listing, page search). Not tied to any user account.
+    |
+    | Generate one on the Codex side with:
+    |   php artisan app-token:create "Forge"
+    |
+    | Then set the printed value as CODEX_APP_TOKEN here.
     |
     */
-    'token' => env('CODEX_TOKEN', ''),
+    'app_token' => env('CODEX_APP_TOKEN', ''),
 
 ];

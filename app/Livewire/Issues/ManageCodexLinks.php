@@ -43,11 +43,11 @@ final class ManageCodexLinks extends Component
             return;
         }
 
-        $token   = config('codex.token');
+        $token   = config('codex.app_token');
         $baseUrl = rtrim(config('codex.url'), '/');
 
         if (! config('codex.enabled') || empty($baseUrl) || empty($token)) {
-            $this->error = 'Codex integration is not configured.';
+            $this->error = 'Codex integration is not configured. Set CODEX_ENABLED, CODEX_URL, and CODEX_APP_TOKEN.';
             return;
         }
 
@@ -60,6 +60,7 @@ final class ManageCodexLinks extends Component
         try {
             $response = Http::withToken($token)
                 ->timeout(10)
+                ->withoutVerifying()
                 ->get("{$baseUrl}/api/v1/pages/search", array_filter([
                     'q'            => $q,
                     'workspace_id' => $workspaceId,

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1;
+use App\Http\Controllers\Api\V1\SystemProjectController;
 use App\Http\Controllers\Webhooks\GitHubWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,30 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         ->middleware('throttle:60,1');
 });
 
+/*
+|--------------------------------------------------------------------------
+| System API — machine-to-machine (OAuth2 client credentials)
+|--------------------------------------------------------------------------
+|
+| These routes are called by trusted external applications (e.g. Codex)
+| using a client credentials token. No user context is available.
+|
+| Generate a client with:
+|   php artisan passport:client --client --name="Codex M2M"
+|
+| Then set FORGE_M2M_CLIENT_ID / FORGE_M2M_CLIENT_SECRET in the Codex .env.
+|
+*/
+Route::prefix('v1/system')->name('api.v1.system.')->middleware(['client:projects:read', 'throttle:api'])->group(function (): void {
+    Route::get('projects', [SystemProjectController::class, 'index'])->name('projects.index');
+    Route::get('projects/{project}', [SystemProjectController::class, 'show'])->name('projects.show');
+});
+
+/*
+|--------------------------------------------------------------------------
+| User API — authenticated user (Passport PAT or Sanctum)
+|--------------------------------------------------------------------------
+*/
 Route::prefix('v1')->middleware(['auth:api,sanctum', 'throttle:api'])->group(function (): void {
     Route::get('me', V1\MeController::class)->name('api.v1.me');
 

@@ -40,11 +40,11 @@ final class ConnectCodexWorkspace extends Component
         $this->error   = null;
         $this->workspaces = [];
 
-        $token   = config('codex.token');
+        $token   = config('codex.app_token');
         $baseUrl = rtrim(config('codex.url'), '/');
 
         if (! config('codex.enabled') || empty($baseUrl) || empty($token)) {
-            $this->error   = 'Codex integration is not configured. Set CODEX_ENABLED, CODEX_URL, and CODEX_TOKEN.';
+            $this->error   = 'Codex integration is not configured. Set CODEX_ENABLED, CODEX_URL, and CODEX_APP_TOKEN.';
             $this->loading = false;
             return;
         }
@@ -52,6 +52,7 @@ final class ConnectCodexWorkspace extends Component
         try {
             $response = Http::withToken($token)
                 ->timeout(10)
+                ->withoutVerifying()
                 ->get("{$baseUrl}/api/v1/workspaces", [
                     'search' => $this->search,
                 ]);
