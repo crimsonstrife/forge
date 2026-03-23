@@ -54,7 +54,10 @@ final class ConnectCodexWorkspace extends Component
                 ->timeout(10)
                 ->withoutVerifying()
                 ->get("{$baseUrl}/api/v1/workspaces", [
-                    'search' => $this->search,
+                    'search'            => $this->search,
+                    // Let Codex scope results to workspaces this user can access.
+                    // Codex resolves the Forge user ID to the matching Codex account.
+                    'for_forge_user_id' => auth()->id(),
                 ]);
 
             if ($response->successful()) {
