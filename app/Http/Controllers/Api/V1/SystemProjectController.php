@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Project listing for machine-to-machine (client credentials) callers.
@@ -23,16 +24,9 @@ final class SystemProjectController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
     {
-        $forUserId = $request->string('for_user')->toString();
+        $user = $this->resolveScopedUser($request);
 
         // Require a user identity — never return all projects blindly.
-        if ($forUserId === '') {
-            return ProjectResource::collection(Project::query()->whereRaw('0=1')->paginate(0));
-        }
-
-        $user = User::find($forUserId);
-
-        // Unknown user → return nothing.
         if (! $user) {
             return ProjectResource::collection(Project::query()->whereRaw('0=1')->paginate(0));
         }
@@ -40,20 +34,36 @@ final class SystemProjectController extends Controller
         $q = (string) $request->string('q');
 
         $projects = Project::query()
+            ->visibleTo($user)
             ->when($q !== '', fn ($qrb) => $qrb->where('name', 'like', "%{$q}%"))
-            // Only projects this specific user is a direct member of or belongs to via a team.
-            ->where(function ($query) use ($user) {
-                $query->whereHas('users', fn ($u) => $u->whereKey($user->getKey()))
-                      ->orWhereHas('teams', fn ($t) => $t->whereHas('users', fn ($u) => $u->whereKey($user->getKey())));
-            })
             ->latest('id')
             ->paginate(50);
 
         return ProjectResource::collection($projects);
     }
 
-    public function show(Project $project): ProjectResource
+    public function show(Request $request, Project $project): ProjectResource
     {
+        $user = $this->resolveScopedUser($request);
+
+        abort_if(! $user, Response::HTTP_NOT_FOUND);
+        abort_unless(Project::query()->visibleTo($user)->whereKey($project->getKey())->exists(), Response::HTTP_NOT_FOUND);
+
         return ProjectResource::make($project);
+    }
+
+    private function resolveScopedUser(Request $request): ?User
+    {
+        $forUserId = $request->string('for_forge_user_id')->toString();
+
+        if ($forUserId === '') {
+            $forUserId = $request->string('for_user')->toString();
+        }
+
+        if ($forUserId === '') {
+            return null;
+        }
+
+        return User::find($forUserId);
     }
 }

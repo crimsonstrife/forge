@@ -28,8 +28,9 @@ return [
     | Crucible App Token
     |--------------------------------------------------------------------------
     |
-    | A Sanctum token issued by Crucible with access to list and inspect
-    | repositories for linking.
+    | An application-level token issued by Crucible for Forge machine-to-
+    | machine calls. Forge uses it to list repositories and inspect branch /
+    | pull request data while Crucible scopes the results to a Forge user.
     |
     */
     'app_token' => env('CRUCIBLE_APP_TOKEN', ''),

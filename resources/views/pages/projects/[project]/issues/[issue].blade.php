@@ -234,7 +234,8 @@ render(function (View $view, Project $project, Issue $issue) {
     $projectRepo = $projectRepoLink?->repository;    // App\Models\Repository|null
     $defaultBranch = $projectRepo?->default_branch ?: 'main';
     $projectRepoUrl = $projectRepo?->externalUrl();
-    $projectRepoSupportsIssueSync = $projectRepo?->supportsIssueSync() ?? false;
+    $projectRepoSupportsVcsLinks = $projectRepo?->supportsVcsLinks() ?? false;
+    $projectRepoSupportsVcsCreation = $projectRepo?->supportsVcsCreation() ?? false;
 
     return $view->with(compact(
         'attachments',
@@ -249,7 +250,8 @@ render(function (View $view, Project $project, Issue $issue) {
         'activityGroups',
         'projectRepo',
         'projectRepoUrl',
-        'projectRepoSupportsIssueSync',
+        'projectRepoSupportsVcsLinks',
+        'projectRepoSupportsVcsCreation',
         'defaultBranch',
         'allowedToStatuses',
     ));
@@ -758,7 +760,7 @@ render(function (View $view, Project $project, Issue $issue) {
 
                         <!-- Code Links -->
                         @php $defaultPrTitle = "[$issue->key] $issue->summary"; @endphp
-                        @if($projectRepo && $projectRepoSupportsIssueSync)
+                        @if($projectRepo && $projectRepoSupportsVcsLinks)
                             <div
                                 x-data="window.issueVcs({ repoId: '{{ $projectRepo->id }}', issueKey: '{{ $issue->key }}', defaultBranch: '{{ $defaultBranch }}', prTitleInitial: @js($defaultPrTitle),})"
                                 x-init="init()" class="card shadow-sm">
@@ -846,12 +848,17 @@ render(function (View $view, Project $project, Issue $issue) {
                                                                x-text="b.default ? 'default' : ''"></small>
                                                     </div>
                                                     <div class="d-flex gap-2">
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary"
-                                                                @click="prHead = b.name">Use as head
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary"
-                                                                @click="prBase = b.name">Use as base
-                                                        </button>
+                                                        <template x-if="b.url">
+                                                            <a class="btn btn-sm btn-outline-secondary" :href="b.url" target="_blank" rel="noreferrer">Open</a>
+                                                        </template>
+                                                        @if($projectRepoSupportsVcsCreation)
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                                    @click="prHead = b.name">Use as head
+                                                            </button>
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                                    @click="prBase = b.name">Use as base
+                                                            </button>
+                                                        @endif
                                                         <button type="button" class="btn btn-sm btn-outline-primary"
                                                                 @click="linkBranch(b)">Link
                                                         </button>
@@ -861,25 +868,27 @@ render(function (View $view, Project $project, Issue $issue) {
                                         </div>
                                     </div>
 
-                                    <!-- Create branch -->
-                                    <div class="row g-2 align-items-end">
-                                        <div class="col-12">
-                                            <label class="form-label">Create new branch</label>
-                                            <input type="text" class="form-control"
-                                                   placeholder="feature/{{ $issue->project->key }}-{{ $issue->number }}-{{ \Illuminate\Support\Str::slug($issue->summary) }}"
-                                                   x-model="newBranchName">
-                                            <small class="text-body-secondary">
-                                                Base: <span x-text="baseRef || defaultBranch"></span>
-                                            </small>
+                                    @if($projectRepoSupportsVcsCreation)
+                                        <!-- Create branch -->
+                                        <div class="row g-2 align-items-end">
+                                            <div class="col-12">
+                                                <label class="form-label">Create new branch</label>
+                                                <input type="text" class="form-control"
+                                                       placeholder="feature/{{ $issue->project->key }}-{{ $issue->number }}-{{ \Illuminate\Support\Str::slug($issue->summary) }}"
+                                                       x-model="newBranchName">
+                                                <small class="text-body-secondary">
+                                                    Base: <span x-text="baseRef || defaultBranch"></span>
+                                                </small>
+                                            </div>
+                                            <div class="col-12 d-flex gap-2">
+                                                <input type="text" class="form-control" placeholder="{{ $defaultBranch }}"
+                                                       x-model="baseRef">
+                                                <button class="btn btn-outline-primary" @click="createBranch()"
+                                                        :disabled="!canCreateBranch">Create
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="col-12 d-flex gap-2">
-                                            <input type="text" class="form-control" placeholder="{{ $defaultBranch }}"
-                                                   x-model="baseRef">
-                                            <button class="btn btn-outline-primary" @click="createBranch()"
-                                                    :disabled="!canCreateBranch">Create
-                                            </button>
-                                        </div>
-                                    </div>
+                                    @endif
 
                                     <hr class="my-2"/>
 
@@ -891,40 +900,54 @@ render(function (View $view, Project $project, Issue $issue) {
                                                x-model.debounce.300ms="prQuery" @input="searchPulls()">
                                         <div class="list-group mt-2" x-show="prResults.length">
                                             <template x-for="pr in prResults" :key="pr.number">
-                                                <button type="button" class="list-group-item list-group-item-action"
-                                                        @click="linkPr(pr)">
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <span>#<span x-text="pr.number"></span> — <span
-                                                                x-text="pr.title"></span></span>
-                                                        <small class="text-body-secondary" x-text="pr.state"></small>
+                                                <div class="list-group-item d-flex justify-content-between align-items-start gap-3">
+                                                    <div class="text-truncate">
+                                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                                            <span>#<span x-text="pr.number"></span> — <span x-text="pr.title"></span></span>
+                                                            <small class="text-body-secondary" x-text="pr.state"></small>
+                                                        </div>
+                                                        <small class="text-body-secondary">
+                                                            head: <span x-text="pr.head"></span> → base: <span x-text="pr.base"></span>
+                                                        </small>
                                                     </div>
-                                                    <small class="text-body-secondary">
-                                                        head: <span x-text="pr.head"></span> → base: <span
-                                                            x-text="pr.base"></span>
-                                                    </small>
-                                                </button>
+                                                    <div class="d-flex gap-2">
+                                                        <template x-if="pr.url">
+                                                            <a class="btn btn-sm btn-outline-secondary" :href="pr.url" target="_blank" rel="noreferrer">Open</a>
+                                                        </template>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" @click="linkPr(pr)">Link</button>
+                                                    </div>
+                                                </div>
                                             </template>
                                         </div>
                                     </div>
 
-                                    <!-- Create PR -->
-                                    <div class="row g-2 align-items-end">
-                                        <div class="col-12">
-                                            <label class="form-label">PR title</label>
-                                            <input type="text" class="form-control" x-model="prTitle"
-                                                   placeholder="[{{ $issue->key }}] {{ $issue->summary }}">
-                                            <small class="text-body-secondary">Base: {{ $defaultBranch }}</small>
+                                    @if($projectRepoSupportsVcsCreation)
+                                        <!-- Create PR -->
+                                        <div class="row g-2 align-items-end">
+                                            <div class="col-12">
+                                                <label class="form-label">PR title</label>
+                                                <input type="text" class="form-control" x-model="prTitle"
+                                                       placeholder="[{{ $issue->key }}] {{ $issue->summary }}">
+                                                <small class="text-body-secondary">Base: {{ $defaultBranch }}</small>
+                                            </div>
+                                            <div class="col-12 d-flex gap-2">
+                                                <input type="text" class="form-control" placeholder="feature/…"
+                                                       x-model="prHead">
+                                                <input type="text" class="form-control" :placeholder="defaultBranch"
+                                                       x-model="prBase">
+                                                <button class="btn btn-primary" @click="createPr()"
+                                                        :disabled="!canCreatePr">Open PR
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="col-12 d-flex gap-2">
-                                            <input type="text" class="form-control" placeholder="feature/…"
-                                                   x-model="prHead">
-                                            <input type="text" class="form-control" :placeholder="defaultBranch"
-                                                   x-model="prBase">
-                                            <button class="btn btn-primary" @click="createPr()"
-                                                    :disabled="!canCreatePr">Open PR
-                                            </button>
+                                    @else
+                                        <div class="alert alert-light border small mb-0">
+                                            Create branches and pull requests in {{ ucfirst($projectRepo->provider) }}, then link them back to this issue here.
+                                            @if($projectRepoUrl)
+                                                <a href="{{ $projectRepoUrl }}" target="_blank" rel="noreferrer" class="link-primary ms-1">Open repository</a>
+                                            @endif
                                         </div>
-                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         @elseif($projectRepo)

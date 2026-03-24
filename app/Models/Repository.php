@@ -65,6 +65,16 @@ class Repository extends BaseModel
         return strtolower((string) $this->provider) === 'github';
     }
 
+    public function supportsVcsLinks(): bool
+    {
+        return in_array(strtolower((string) $this->provider), ['github', 'crucible'], true);
+    }
+
+    public function supportsVcsCreation(): bool
+    {
+        return strtolower((string) $this->provider) === 'github';
+    }
+
     public function displayPath(): string
     {
         if (strtolower((string) $this->provider) === 'crucible') {

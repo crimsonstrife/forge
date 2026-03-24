@@ -14,6 +14,7 @@ final class ProjectResource extends JsonResource
             'id'   => (string) $this->id,
             'key'  => $this->key,
             'name' => $this->name,
+            'url' => route('projects.show', ['project' => $this->resource]),
         ];
     }
 }

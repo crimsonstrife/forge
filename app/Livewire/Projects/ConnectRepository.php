@@ -149,7 +149,7 @@ final class ConnectRepository extends Component
         }
 
         try {
-            $this->crucibleRepositories = $service->searchRepositories($this->crucibleSearch, 20);
+            $this->crucibleRepositories = $service->searchRepositories($this->crucibleSearch, 20, (string) auth()->id());
         } catch (\Throwable $e) {
             $this->crucibleError = 'Could not load Crucible repositories: ' . $e->getMessage();
         }
@@ -167,7 +167,7 @@ final class ConnectRepository extends Component
             );
 
             if (! $selected) {
-                $selected = app(CrucibleService::class)->getRepository($organizationSlug, $repositorySlug);
+                $selected = app(CrucibleService::class)->getRepository($organizationSlug, $repositorySlug, (string) auth()->id());
             }
         } catch (\Throwable $e) {
             $this->crucibleError = 'Could not load that Crucible repository: ' . $e->getMessage();
@@ -214,7 +214,7 @@ final class ConnectRepository extends Component
         }
 
         try {
-            $remote = $service->getRepository(trim($this->owner), trim($this->name));
+            $remote = $service->getRepository(trim($this->owner), trim($this->name), (string) auth()->id());
         } catch (\Throwable $e) {
             throw ValidationException::withMessages([
                 'provider' => 'Could not verify the Crucible repository: ' . $e->getMessage(),
