@@ -473,7 +473,7 @@ render(function (View $view, Project $project, Issue $issue) {
                         </div>
 
                         @if(config('codex.enabled'))
-                        <div class="card shadow-sm">
+                        <div class="card shadow-sm" data-tour="issue-codex-pages">
                             <div class="card-header d-flex align-items-center gap-2">
                                 <i class="fas fa-book text-primary" style="font-size:0.9rem;"></i>
                                 <h3 class="h6 mb-0">{{ __('Codex Pages') }}</h3>
@@ -756,14 +756,16 @@ render(function (View $view, Project $project, Issue $issue) {
 
                     <!-- Sidebar: attachments and code links -->
                     <aside class="col-lg-4 d-flex flex-column gap-3">
-                        <livewire:issues.followers-panel :issue="$issue"/>
+                        <div data-tour="issue-followers">
+                            <livewire:issues.followers-panel :issue="$issue"/>
+                        </div>
 
                         <!-- Code Links -->
                         @php $defaultPrTitle = "[$issue->key] $issue->summary"; @endphp
                         @if($projectRepo && $projectRepoSupportsVcsLinks)
                             <div
                                 x-data="window.issueVcs({ repoId: '{{ $projectRepo->id }}', issueKey: '{{ $issue->key }}', defaultBranch: '{{ $defaultBranch }}', prTitleInitial: @js($defaultPrTitle),})"
-                                x-init="init()" class="card shadow-sm">
+                                x-init="init()" class="card shadow-sm" data-tour="issue-code-links">
                                 <div class="card-body d-flex align-items-center justify-content-between">
                                     <h4 class="h6 mb-0">Code Links</h4>
                                     <div class="small text-body-secondary">Repo: {{ $projectRepo->displayPath() }}</div>

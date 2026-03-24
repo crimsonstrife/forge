@@ -7,27 +7,39 @@ return [
             'steps' => [
                 'dashboard' => [
                     'title' => 'Your dashboard',
-                    'body' => 'Start here for assigned work, due dates, and recent activity across Forge.',
+                    'body' => 'Start here for your active workspace, key stats, and recent activity across Forge.',
                 ],
-                'issues' => [
-                    'title' => 'Role-based workspaces',
+                'workspaces' => [
+                    'title' => 'Workspace presets',
                     'body' => 'Switch between workspace presets like my sprint, team delivery, support queue, release health, exec summary, and solo mode without leaving the dashboard route.',
+                ],
+                'dashboard_layout' => [
+                    'title' => 'Layout controls',
+                    'body' => 'Each workspace keeps its own widget visibility, order, and landing-page setting, so the dashboard can adapt to the way you work.',
+                ],
+                'issues_nav' => [
+                    'title' => 'Issues',
+                    'body' => 'Issues now has its own top-level destination in the main navigation, so it is always one click away.',
+                ],
+                'issue_explorer' => [
+                    'title' => 'Issue Explorer',
+                    'body' => 'Use Issue Explorer to query work across projects, layer structured filters, and save reusable views for yourself or your team.',
                 ],
                 'projects' => [
                     'title' => 'Projects',
-                    'body' => 'Projects organize delivery, planning, and issue workflows for each initiative.',
+                    'body' => 'Projects organize delivery, planning, backlog, roadmap, and issue workflows for each initiative.',
                 ],
                 'goals' => [
                     'title' => 'Goals',
-                    'body' => 'Goals keep longer-term outcomes visible across projects and issues.',
+                    'body' => 'Goals keep longer-term outcomes visible across projects and issues, especially when the work spans teams.',
                 ],
                 'support' => [
-                    'title' => 'Service desk',
-                    'body' => 'Support tickets help staff triage inbound requests and connect them back to internal work.',
+                    'title' => 'Support menu',
+                    'body' => 'Open the support portal, submit a ticket, access customer tickets, or jump into triage from this menu depending on your role.',
                 ],
                 'search' => [
                     'title' => 'Search',
-                    'body' => 'Search is the fastest way to jump to projects, issues, organizations, and goals.',
+                    'body' => 'Search is the fastest way to jump to projects, issues, organizations, goals, and people once you know what you need.',
                 ],
                 'create' => [
                     'title' => 'Create from anywhere',
@@ -35,11 +47,11 @@ return [
                 ],
                 'teams' => [
                     'title' => 'Teams',
-                    'body' => 'Switch teams, manage membership, and open team settings from here.',
+                    'body' => 'Open the team dashboard, switch teams, manage membership, and reach team settings from here.',
                 ],
                 'account' => [
                     'title' => 'Account and help',
-                    'body' => 'Manage your profile, API tokens, and relaunch this tour or the Getting Started guide later.',
+                    'body' => 'Manage your profile, API tokens, and relaunch onboarding or the Getting Started guide later.',
                 ],
             ],
         ],
@@ -48,11 +60,11 @@ return [
             'steps' => [
                 'header' => [
                     'title' => 'Project overview',
-                    'body' => 'This header gives you the project identity and the most common project-level actions.',
+                    'body' => 'This header gives you the project identity, organization and team context, and the most common project-level actions.',
                 ],
                 'tabs' => [
                     'title' => 'Project views',
-                    'body' => 'Move between overview, board, scrum, calendar, timeline, code, and transition screens from the project tabs.',
+                    'body' => 'Move between overview, backlog, board, scrum, calendar, timeline, roadmap, code, and transition screens from the project tabs.',
                 ],
                 'status_summary' => [
                     'title' => 'Status summary',
@@ -68,15 +80,15 @@ return [
                 ],
                 'sidebar' => [
                     'title' => 'Project details and admin tools',
-                    'body' => 'The sidebar is where you review core project metadata, quick-create work, and milestone or admin links.',
+                    'body' => 'The sidebar is where you review core project metadata, quick-create work, and reach milestone or admin links.',
                 ],
                 'backlog_controls' => [
                     'title' => 'Backlog planning controls',
-                    'body' => 'Use the backlog surface to filter work, select issues in bulk, create a sprint, and move planned work into it.',
+                    'body' => 'Use the backlog surface to filter work, focus on a sprint, select issues in bulk, create a sprint, and move planned work into it.',
                 ],
                 'backlog_queue' => [
                     'title' => 'Prioritized backlog',
-                    'body' => 'This queue is where you groom the work that is not in a sprint yet. Rank it, size it, and move the right issues into the next sprint.',
+                    'body' => 'This queue is where you groom work that is not in a sprint yet. Rank it, size it, and move the right issues into the next sprint.',
                 ],
                 'backlog_sprints' => [
                     'title' => 'Sprint plan and capacity',
@@ -89,15 +101,19 @@ return [
             'steps' => [
                 'actions' => [
                     'title' => 'Issue actions',
-                    'body' => 'These actions let you move between project views, change status, start timers, and jump into editing.',
+                    'body' => 'These actions let you jump between backlog, board, sprint, calendar, timeline, and milestones, then change status, start timers, or edit the issue.',
                 ],
                 'header' => [
                     'title' => 'Issue summary',
-                    'body' => 'The issue header keeps the core record details together: status, type, priority, ownership, estimates, and tags.',
+                    'body' => 'The issue header keeps the core record details together: status, type, priority, ownership, milestones, estimates, and progress.',
                 ],
                 'related_work' => [
                     'title' => 'Related work',
                     'body' => 'Use linked work to connect this issue to other issues or records when the work spans more than one item.',
+                ],
+                'codex_pages' => [
+                    'title' => 'Codex Pages',
+                    'body' => 'Link supporting docs and reference pages from Codex so delivery context stays attached to the issue.',
                 ],
                 'details_tabs' => [
                     'title' => 'Issue details',
@@ -110,6 +126,14 @@ return [
                 'comments' => [
                     'title' => 'Comments',
                     'body' => 'Comments are the main collaboration thread for the issue and are the best place for updates or decisions.',
+                ],
+                'followers' => [
+                    'title' => 'Followers',
+                    'body' => 'Followers keep the right people subscribed to issue activity and let collaborators opt in without becoming the assignee.',
+                ],
+                'code_links' => [
+                    'title' => 'Code links',
+                    'body' => 'When the project is linked to a repository, branches and pull requests connected to the issue keep implementation traceable.',
                 ],
             ],
         ],

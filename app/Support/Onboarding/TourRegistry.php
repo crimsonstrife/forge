@@ -74,12 +74,27 @@ final class TourRegistry
             'dashboard' => [
                 'route' => 'dashboard',
                 'selector' => '[data-tour="dashboard-overview"]',
-                'placement' => 'bottom',
+                'placement' => 'top',
             ],
-            'issues' => [
+            'workspaces' => [
                 'route' => 'dashboard',
                 'selector' => '[data-tour="dashboard-workspaces"]',
                 'placement' => 'right',
+            ],
+            'dashboard_layout' => [
+                'route' => 'dashboard',
+                'selector' => '[data-tour="dashboard-layout-controls"]',
+                'placement' => 'top',
+            ],
+            'issues_nav' => [
+                'route' => 'dashboard',
+                'selector' => '[data-tour="issues-nav"]',
+                'placement' => 'bottom',
+            ],
+            'issue_explorer' => [
+                'route' => 'issues.explorer',
+                'selector' => '[data-tour="issues-explorer-query"]',
+                'placement' => 'left',
             ],
             'projects' => [
                 'route' => 'projects.index',
@@ -92,8 +107,8 @@ final class TourRegistry
                 'placement' => 'bottom',
             ],
             'support' => [
-                'route' => 'support.staff.index',
-                'selector' => '[data-tour="support-page"]',
+                'route' => 'search',
+                'selector' => '[data-tour="support-nav"]',
                 'placement' => 'bottom',
             ],
             'search' => [
@@ -234,6 +249,7 @@ final class TourRegistry
         $sandbox = app(SandboxProjectProvisioner::class)->sandboxFor($user);
         $project = $sandbox['project'];
         $issue = $sandbox['issue'];
+        $projectRepo = $project->repositoryLink?->repository;
 
         $steps = [];
         $blueprint = [
@@ -255,25 +271,53 @@ final class TourRegistry
                 'selector' => '[data-tour="issue-related-works"]',
                 'placement' => 'bottom',
             ],
-            'details_tabs' => [
-                'route' => 'issues.show',
-                'routeParameters' => ['project' => $project, 'issue' => $issue],
-                'selector' => '[data-tour="issue-details-tabs"]',
-                'placement' => 'left',
-            ],
-            'attachments' => [
-                'route' => 'issues.show',
-                'routeParameters' => ['project' => $project, 'issue' => $issue],
-                'selector' => '[data-tour="issue-attachments"]',
-                'placement' => 'left',
-            ],
-            'comments' => [
-                'route' => 'issues.show',
-                'routeParameters' => ['project' => $project, 'issue' => $issue],
-                'selector' => '[data-tour="issue-comments"]',
-                'placement' => 'left',
-            ],
         ];
+
+        if (config('codex.enabled')) {
+            $blueprint['codex_pages'] = [
+                'route' => 'issues.show',
+                'routeParameters' => ['project' => $project, 'issue' => $issue],
+                'selector' => '[data-tour="issue-codex-pages"]',
+                'placement' => 'bottom',
+            ];
+        }
+
+        $blueprint['details_tabs'] = [
+            'route' => 'issues.show',
+            'routeParameters' => ['project' => $project, 'issue' => $issue],
+            'selector' => '[data-tour="issue-details-tabs"]',
+            'placement' => 'left',
+        ];
+
+        $blueprint['attachments'] = [
+            'route' => 'issues.show',
+            'routeParameters' => ['project' => $project, 'issue' => $issue],
+            'selector' => '[data-tour="issue-attachments"]',
+            'placement' => 'left',
+        ];
+
+        $blueprint['comments'] = [
+            'route' => 'issues.show',
+            'routeParameters' => ['project' => $project, 'issue' => $issue],
+            'selector' => '[data-tour="issue-comments"]',
+            'placement' => 'left',
+        ];
+
+        $blueprint['followers'] = [
+            'route' => 'issues.show',
+            'routeParameters' => ['project' => $project, 'issue' => $issue],
+            'selector' => '[data-tour="issue-followers"]',
+            'placement' => 'left',
+        ];
+
+        if ($projectRepo?->supportsVcsLinks()) {
+            $blueprint['code_links'] = [
+                'route' => 'issues.show',
+                'routeParameters' => ['project' => $project, 'issue' => $issue],
+                'selector' => '[data-tour="issue-code-links"]',
+                'placement' => 'left',
+            ];
+        }
 
         foreach ($blueprint as $key => $definition) {
             $steps[] = self::resolveStep(

@@ -37,7 +37,7 @@
                 </div>
             </div>
 
-            <div class="mt-4 d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+            <div class="mt-4 d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3" data-tour="dashboard-layout-controls">
                 <p class="small text-body-secondary mb-0">
                     {{ __('Each workspace keeps its own widget visibility and order, so one dashboard route can behave like multiple landing pages.') }}
                 </p>

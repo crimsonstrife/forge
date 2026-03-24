@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Issue;
 use App\Models\Project;
-use App\Models\Sprint;
 use App\Models\User;
 use App\Models\UserTourState;
 use App\Support\Onboarding\TourRegistry;
@@ -50,11 +49,17 @@ class OnboardingTest extends TestCase
             'email_verified_at' => now(),
         ]);
 
-        $this->actingAs($user)
+        $response = $this->actingAs($user)
             ->postJson(route('onboarding.tours.start', ['tour' => TourRegistry::MAIN_APP]))
             ->assertOk()
             ->assertJsonPath('state.status', UserTourState::STATUS_ACTIVE)
             ->assertJsonPath('state.lastStep', 0);
+
+        $selectors = collect($response->json('tour.steps'))->pluck('selector');
+
+        $this->assertTrue($selectors->contains('[data-tour="dashboard-layout-controls"]'));
+        $this->assertTrue($selectors->contains('[data-tour="issues-nav"]'));
+        $this->assertTrue($selectors->contains('[data-tour="issues-explorer-query"]'));
 
         $this->actingAs($user)
             ->patchJson(route('onboarding.tours.update', ['tour' => TourRegistry::MAIN_APP]), [
@@ -137,7 +142,7 @@ class OnboardingTest extends TestCase
         $project = Project::query()->sole();
         $issue = Issue::query()->findOrFail(data_get($project->settings, 'onboarding.primary_issue_id'));
 
-        $this->actingAs($user)
+        $response = $this->actingAs($user)
             ->postJson(route('onboarding.tours.start', ['tour' => TourRegistry::ISSUE_DETAIL]))
             ->assertOk()
             ->assertJsonPath('tour.name', TourRegistry::ISSUE_DETAIL)
@@ -146,7 +151,10 @@ class OnboardingTest extends TestCase
                 route('issues.show', ['project' => $project, 'issue' => $issue])
             );
 
+        $selectors = collect($response->json('tour.steps'))->pluck('selector');
+
         $this->assertDatabaseCount('projects', 1);
         $this->assertSame(4, Issue::query()->count());
+        $this->assertTrue($selectors->contains('[data-tour="issue-followers"]'));
     }
 }

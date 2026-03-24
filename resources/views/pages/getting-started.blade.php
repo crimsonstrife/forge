@@ -12,7 +12,7 @@ middleware(['auth', 'verified']);
             <div>
                 <h1 class="h3 mb-1">{{ __('Getting Started') }}</h1>
                 <p class="text-body-secondary mb-0">
-                    {{ __('Learn the main Forge surfaces, then launch the guided tour whenever you want.') }}
+                    {{ __('Learn the main Forge surfaces, then relaunch guided tours for dashboard, project, and issue workflows whenever you want.') }}
                 </p>
             </div>
 
@@ -39,7 +39,7 @@ middleware(['auth', 'verified']);
                             </div>
 
                             <p class="text-body-secondary mb-0">
-                                {{ __('Forge combines day-to-day execution with planning and intake. Projects hold delivery work, issues track the details, goals keep outcomes visible, and the service desk helps staff turn incoming requests into actionable work.') }}
+                                {{ __('Forge combines day-to-day execution with planning and intake. Dashboard workspaces give each role its own landing page, Issue Explorer helps you query work across projects, goals keep outcomes visible, and the service desk turns inbound requests into actionable work.') }}
                             </p>
 
                             <div class="d-flex flex-wrap gap-2">
@@ -73,7 +73,7 @@ middleware(['auth', 'verified']);
                         <p class="text-uppercase small text-body-secondary fw-semibold mb-2">{{ __('Hands-on walkthroughs') }}</p>
                         <h2 class="h4 mb-1">{{ __('Launch tours against a private sample project when you need more context') }}</h2>
                         <p class="text-body-secondary mb-0">
-                            {{ __('Project and issue walkthroughs create a private Forge Sandbox the first time you launch them, so new users can explore deeper screens like backlog planning without needing a real project on day one.') }}
+                            {{ __('Project and issue walkthroughs create a private Forge Sandbox the first time you launch them, so new users can explore backlog planning, issue actions, collaboration panels, and supporting detail screens without needing a real project on day one.') }}
                         </p>
                     </div>
 

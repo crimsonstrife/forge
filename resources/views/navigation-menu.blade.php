@@ -59,7 +59,7 @@
                         </li>
 
                         <li class="nav-item">
-                            <x-nav-link href="{{ Route::has('issues.explorer') ? route('issues.explorer') : url('/issues') }}" :active="request()->routeIs('issues.explorer')">
+                            <x-nav-link href="{{ Route::has('issues.explorer') ? route('issues.explorer') : url('/issues') }}" :active="request()->routeIs('issues.explorer')" data-tour="issues-nav">
                                 {{ __('Issues') }}
                             </x-nav-link>
                         </li>

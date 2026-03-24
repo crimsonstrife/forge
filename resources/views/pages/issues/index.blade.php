@@ -283,7 +283,7 @@ render(function (View $view, Request $request, IssueExplorerService $explorer) {
                 </div>
 
                 <div class="col-12 col-xl-9">
-                    <div class="card shadow-sm mb-3">
+                    <div class="card shadow-sm mb-3" data-tour="issues-explorer-query">
                         <div class="card-body">
                             <form method="GET" action="{{ url('/issues') }}" class="vstack gap-3">
                                 @if($activeView)

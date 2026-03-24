@@ -24,7 +24,7 @@
 
                         <div class="modal-body pt-3">
                             <p class="text-body-secondary mb-3">
-                                {{ __('Take a guided tour through the dashboard, projects, issues, goals, support, search, and your account tools.') }}
+                                {{ __('Take a guided tour through dashboard workspaces, the Issue Explorer, projects, goals, support, search, and your account tools.') }}
                             </p>
 
                             <div class="rounded-3 bg-body-tertiary p-3 small text-body-secondary">
