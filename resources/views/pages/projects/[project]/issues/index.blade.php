@@ -256,6 +256,8 @@ render(function (View $view, Project $project, Request $request) {
                    class="link-primary small">{{ __('Back to project') }}</a>
             </div>
             <div class="d-flex gap-2">
+                <a href="{{ route('projects.backlog', ['project' => $project]) }}"
+                   class="btn btn-outline-secondary btn-sm">Backlog</a>
                 <a href="{{ route('projects.timeline', ['project' => $project]) }}"
                    class="btn btn-outline-secondary btn-sm">Timeline</a>
                 <a href="{{ route('projects.calendar', ['project' => $project]) }}"
@@ -264,6 +266,8 @@ render(function (View $view, Project $project, Request $request) {
                    class="btn btn-outline-secondary btn-sm">Kanban</a>
                 <a href="{{ route('projects.scrum', ['project' => $project]) }}"
                    class="btn btn-outline-secondary btn-sm">Sprint</a>
+                <a href="{{ url('/issues?'.http_build_query(['project' => $project->id])) }}"
+                   class="btn btn-outline-secondary btn-sm">Explorer</a>
                 @can('issues.create')
                     <a href="{{ route('issues.create', ['project' => $project]) }}" class="btn btn-primary btn-sm">New
                         issue</a>

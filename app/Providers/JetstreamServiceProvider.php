@@ -11,6 +11,7 @@ use App\Actions\Jetstream\RemoveTeamMember;
 use App\Actions\Jetstream\UpdateTeamName;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Jetstream\Jetstream;
+use Livewire\Livewire;
 
 class JetstreamServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,8 @@ class JetstreamServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configurePermissions();
+        Livewire::component('profile.update-profile-information-form', \App\Livewire\Profile\UpdateProfileInformationForm::class);
+        Livewire::component('api.api-token-manager', \App\Livewire\ApiTokenManager::class);
 
         Jetstream::createTeamsUsing(CreateTeam::class);
         Jetstream::updateTeamNamesUsing(UpdateTeamName::class);
@@ -49,7 +52,7 @@ class JetstreamServiceProvider extends ServiceProvider
             'projects:read',
         ]);
 
-        \Laravel\Jetstream\Jetstream::permissions([
+        Jetstream::permissions([
             'projects:read',
             'issues:read',
             'issues:write',
@@ -58,12 +61,16 @@ class JetstreamServiceProvider extends ServiceProvider
             'time:write',
         ]);
 
-        \Laravel\Jetstream\Jetstream::role('admin', 'Administrator', [
+        Jetstream::role('admin', 'Administrator', [
             'create', 'read', 'update', 'delete',
         ])->description('Administrator users can perform any action.');
 
-        \Laravel\Jetstream\Jetstream::role('editor', 'Editor', [
+        Jetstream::role('editor', 'Editor', [
             'read', 'create', 'update',
         ])->description('Editor users have the ability to read, create, and update.');
+
+        Jetstream::role('collaborator', 'Collaborator', [
+            'read', 'create', 'update',
+        ])->description('Collaborators can work with shared records without managing the team itself.');
     }
 }

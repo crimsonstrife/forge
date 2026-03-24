@@ -1,20 +1,30 @@
 <div>
-    {{-- Action buttons (rendered when a link already exists) --}}
     <div class="d-flex flex-wrap gap-2">
-        <button class="btn btn-primary btn-sm" wire:click="syncNow(false)" wire:loading.attr="disabled">
-            <span wire:loading.remove>Sync issues now</span>
-            <span wire:loading>Syncing…</span>
-        </button>
-        <button class="btn btn-outline-secondary btn-sm" wire:click="openEditor">
-            Edit connection
-        </button>
-        <button class="btn btn-outline-secondary btn-sm" wire:click="syncNow(true)">
-            Queue sync
+        @if($supportsIssueSync)
+            <button class="btn btn-primary btn-sm" wire:click="syncNow(false)" wire:loading.attr="disabled">
+                <span wire:loading.remove>Sync issues now</span>
+                <span wire:loading>Syncing…</span>
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" wire:click="openEditor">
+                Edit connection
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" wire:click="syncNow(true)">
+                Queue sync
+            </button>
+        @endif
+
+        <button class="btn btn-outline-danger btn-sm" wire:click="disconnect" wire:confirm="Disconnect this repository from the project?">
+            Disconnect
         </button>
     </div>
 
-    {{-- Modal --}}
-    @if($showEditor)
+    @if(!$supportsIssueSync)
+        <div class="alert alert-light border mt-3 small mb-0">
+            This project is linked to a Crucible repository. Browse code, branches, and pull requests in Crucible; Forge does not run issue import or sync for this provider.
+        </div>
+    @endif
+
+    @if($supportsIssueSync && $showEditor)
         <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,.35)">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -87,7 +97,6 @@
             </div>
         </div>
 
-        {{-- Prevent body scroll while modal shown --}}
         <script>document.body.classList.add('modal-open');</script>
     @else
         <script>document.body.classList.remove('modal-open');</script>

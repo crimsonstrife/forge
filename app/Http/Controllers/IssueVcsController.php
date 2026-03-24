@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\RepositoryProviderInterface;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Vcs\CreateBranchRequest;
 use App\Http\Requests\Vcs\CreatePrRequest;
 use App\Http\Requests\Vcs\SearchVcsRequest;
@@ -11,23 +10,24 @@ use App\Models\Issue;
 use App\Models\IssueVcsLink;
 use App\Models\ProjectRepository;
 use App\Models\Repository;
-use Illuminate\Contracts\Encryption\DecryptException;
+use App\Services\Issues\IssueCollaborationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Str;
 
 class IssueVcsController extends Controller
 {
-    public function __construct(private RepositoryProviderInterface $provider) {}
+    public function __construct(
+        private IssueCollaborationService $collaboration,
+    ) {
+    }
 
     /** GET /api/issues/{key}/vcs/branches */
     public function searchBranches(SearchVcsRequest $request, Issue $issue): JsonResponse
     {
         $this->authorize('view', $issue->project);
 
-        [$repo, $token] = $this->resolveRepoAndToken($issue, $request->validated('repository_id'));
-        $items = $this->provider->searchBranches($repo, $token, (string) $request->validated('q', ''), 20);
+        [$repo, $provider, $token] = $this->resolveRepoProviderAndCredential($issue, $request->validated('repository_id'));
+        $items = $provider->searchBranches($repo, $token, (string) $request->validated('q', ''), 20);
 
         return response()->json($items);
     }
@@ -37,8 +37,8 @@ class IssueVcsController extends Controller
     {
         $this->authorize('view', $issue->project);
 
-        [$repo, $token] = $this->resolveRepoAndToken($issue, $request->validated('repository_id'));
-        $items = $this->provider->searchPullRequests($repo, $token, (string) $request->validated('q', ''), 20);
+        [$repo, $provider, $token] = $this->resolveRepoProviderAndCredential($issue, $request->validated('repository_id'));
+        $items = $provider->searchPullRequests($repo, $token, (string) $request->validated('q', ''), 20);
 
         return response()->json($items);
     }
@@ -55,7 +55,7 @@ class IssueVcsController extends Controller
             'payload' => ['nullable','array'],
         ]);
 
-        [$repo] = $this->resolveRepoAndToken($issue, $data['repository_id']); // validates access
+        [$repo] = $this->resolveRepoProviderAndCredential($issue, $data['repository_id']); // validates access
 
         $link = IssueVcsLink::query()->firstOrCreate([
             'issue_id' => $issue->id,
@@ -67,6 +67,17 @@ class IssueVcsController extends Controller
             'payload' => $data['payload'] ?? null,
             'linked_by_user_id' => auth()->id(),
         ]);
+
+        if ($link->wasRecentlyCreated) {
+            $this->collaboration->notifyLinkChanged(
+                issue: $issue,
+                summary: __(':actor linked branch :name.', [
+                    'actor' => auth()->user()?->name ?? __('Someone'),
+                    'name' => $link->name,
+                ]),
+                actor: auth()->user(),
+            );
+        }
 
         return response()->json($link->toArray(), 201);
     }
@@ -85,7 +96,7 @@ class IssueVcsController extends Controller
             'payload' => ['nullable','array'],
         ]);
 
-        [$repo] = $this->resolveRepoAndToken($issue, $data['repository_id']);
+        [$repo] = $this->resolveRepoProviderAndCredential($issue, $data['repository_id']);
 
         $link = IssueVcsLink::query()->firstOrCreate([
             'issue_id' => $issue->id,
@@ -100,6 +111,17 @@ class IssueVcsController extends Controller
             'linked_by_user_id' => auth()->id(),
         ]);
 
+        if ($link->wasRecentlyCreated) {
+            $this->collaboration->notifyLinkChanged(
+                issue: $issue,
+                summary: __(':actor linked pull request #:number.', [
+                    'actor' => auth()->user()?->name ?? __('Someone'),
+                    'number' => $link->number,
+                ]),
+                actor: auth()->user(),
+            );
+        }
+
         return response()->json($link->toArray(), 201);
     }
 
@@ -108,12 +130,12 @@ class IssueVcsController extends Controller
     {
         $this->authorize('update', $issue->project);
 
-        [$repo, $token] = $this->resolveRepoAndToken($issue, $request->validated('repository_id'));
+        [$repo, $provider, $token] = $this->resolveRepoProviderAndCredential($issue, $request->validated('repository_id'));
 
         $from = $request->validated('from_ref') ?: null;
         $name = $request->validated('name');
 
-        $created = $this->provider->createBranch($repo, $token, $name, $from);
+        $created = $provider->createBranch($repo, $token, $name, $from);
 
         $link = IssueVcsLink::query()->create([
             'issue_id' => $issue->id,
@@ -125,6 +147,15 @@ class IssueVcsController extends Controller
             'payload' => $created,
         ]);
 
+        $this->collaboration->notifyLinkChanged(
+            issue: $issue,
+            summary: __(':actor created branch :name.', [
+                'actor' => auth()->user()?->name ?? __('Someone'),
+                'name' => $link->name,
+            ]),
+            actor: auth()->user(),
+        );
+
         return response()->json($link->toArray(), 201);
     }
 
@@ -133,9 +164,9 @@ class IssueVcsController extends Controller
     {
         $this->authorize('update', $issue->project);
 
-        [$repo, $token] = $this->resolveRepoAndToken($issue, $request->validated('repository_id'));
+        [$repo, $provider, $token] = $this->resolveRepoProviderAndCredential($issue, $request->validated('repository_id'));
 
-        $created = $this->provider->createPullRequest(
+        $created = $provider->createPullRequest(
             $repo,
             $token,
             $request->validated('title'),
@@ -156,11 +187,20 @@ class IssueVcsController extends Controller
             'payload' => $created,
         ]);
 
+        $this->collaboration->notifyLinkChanged(
+            issue: $issue,
+            summary: __(':actor created pull request #:number.', [
+                'actor' => auth()->user()?->name ?? __('Someone'),
+                'number' => $link->number ?? __('new'),
+            ]),
+            actor: auth()->user(),
+        );
+
         return response()->json($link->toArray(), 201);
     }
 
-    /** @return array{0:Repository,1:string} */
-    private function resolveRepoAndToken(Issue $issue, string $repositoryId): array
+    /** @return array{0:Repository,1:RepositoryProviderInterface,2:string} */
+    private function resolveRepoProviderAndCredential(Issue $issue, string $repositoryId): array
     {
         $link = ProjectRepository::query()
             ->where('project_id', $issue->project_id)
@@ -168,34 +208,23 @@ class IssueVcsController extends Controller
             ->first();
 
         abort_unless($link, 403, 'Repository not linked to this project.');
-        abort_unless(!empty($link->token), 403, 'Missing token for repository.');
 
         /** @var Repository $repo */
         $repo = $link->repository;
+        $provider = $this->providerFor($repo);
 
-        $raw = (string) $link->token;
-        $token = null;
-
-        try {
-            // If it was encrypted with Laravel, this will work:
-            $token = Crypt::decryptString($raw);
-        } catch (DecryptException $e) {
-            // Fallback: treat as plaintext
-            // If the value looks like a GitHub token (ghp_/gpt_/github_pat_), accept it.
-            if (Str::startsWith($raw, ['ghp_', 'gho_', 'ghu_', 'ghs_', 'ghr_', 'github_pat_'])) {
-                $token = $raw;
-
-                // re-encrypt it now to clean up legacy data:
-                try {
-                    $link->forceFill(['token' => Crypt::encryptString($raw)])->save();
-                } catch (\Throwable $ignored) {}
-            } else {
-                // Likely a hash or corrupted value
-                abort(403, 'Stored repository token is invalid. Please re-link the repository.');
-            }
+        if (strtolower((string) $repo->provider) === 'crucible') {
+            return [$repo, $provider, (string) auth()->id()];
         }
 
-        return [$repo, $token];
+        $token = trim((string) ($link->effectiveToken((string) $repo->provider) ?? $link->token));
+        abort_unless($token !== '', 403, 'Missing token for repository.');
+
+        if (strtolower((string) $repo->provider) === 'github' && ! $link->isLikelyGithubToken($token)) {
+            abort(403, 'Stored repository token is invalid. Please re-link the repository.');
+        }
+
+        return [$repo, $provider, $token];
     }
 
     /** GET /issues/{key}/vcs/default-branch */
@@ -203,9 +232,16 @@ class IssueVcsController extends Controller
     {
         $this->authorize('view', $issue->project);
 
-        [$repo, $token] = $this->resolveRepoAndToken($issue, $request->validated('repository_id'));
-        $name = $this->provider->getDefaultBranch($repo, $token);
+        [$repo, $provider, $token] = $this->resolveRepoProviderAndCredential($issue, $request->validated('repository_id'));
+        $name = $provider->getDefaultBranch($repo, $token);
 
         return response()->json(['default' => $name]);
+    }
+
+    private function providerFor(Repository $repository): RepositoryProviderInterface
+    {
+        $factory = app('repo-provider-factory');
+
+        return $factory((string) $repository->provider);
     }
 }

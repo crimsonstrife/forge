@@ -2,11 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Models\Issue;
 use App\Models\Sprint;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Eloquent\Builder as EBuilder;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -32,7 +30,7 @@ final class BuildSprintDailyReportsJob implements ShouldQueue
     {
         /** @var Sprint|null $sprint */
         $sprint = Sprint::query()
-            ->select(['id', 'project_id', 'starts_at', 'ends_at'])
+            ->select(['id', 'project_id', 'start_date', 'end_date'])
             ->whereKey($this->sprintId)
             ->first();
 
@@ -41,18 +39,25 @@ final class BuildSprintDailyReportsJob implements ShouldQueue
         }
 
         $day = $this->forDate->copy()->startOfDay();
+        $sprintStart = $sprint->start_date?->copy()->startOfDay();
+        $sprintEnd = $sprint->end_date?->copy()->endOfDay();
 
-        // Remaining = items in sprint that are NOT done as of this day
-        $q = Issue::query()
-            ->join('issue_statuses', 'issue_statuses.id', '=', 'issues.issue_status_id')
+        if ($sprintStart === null || $sprintEnd === null || $day->lt($sprintStart) || $day->gt($sprintEnd)) {
+            return;
+        }
+
+        $q = DB::table('issues as issues')
+            ->leftJoin('issue_metrics as metrics', 'metrics.issue_id', '=', 'issues.id')
             ->where('issues.project_id', $this->projectId)
             ->where('issues.sprint_id', $this->sprintId)
             ->where('issues.created_at', '<=', $day->endOfDay());
 
-        // Treat "remaining" as statuses where is_done = false on that day
         $remaining = (clone $q)
-            ->where('issue_statuses.is_done', false)
-            ->selectRaw('COALESCE(SUM(CASE WHEN issues.story_points IS NULL THEN 0 ELSE issues.story_points END), 0) as points, COUNT(*) as count')
+            ->where(function ($query) use ($day): void {
+                $query->whereNull('metrics.first_done_at')
+                    ->orWhere('metrics.first_done_at', '>', $day->endOfDay());
+            })
+            ->selectRaw('COALESCE(SUM(COALESCE(issues.story_points, 0)), 0) as points, COUNT(*) as count')
             ->first();
 
         $remainingPoints = (int) ($remaining->points ?? 0);

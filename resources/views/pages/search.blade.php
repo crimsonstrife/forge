@@ -1,12 +1,18 @@
 <?php
 
-use App\Models\{Project, Issue, Organization, Goal};
+use App\Models\Goal;
+use App\Models\Issue;
+use App\Models\Organization;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use function Laravel\Folio\{name, middleware, render};
+
+use function Laravel\Folio\middleware;
+use function Laravel\Folio\name;
+use function Laravel\Folio\render;
 
 name('search');
-middleware(['auth','verified']);
+middleware(['auth', 'verified']);
 /** Provide page data */
 render(function (View $view, Request $request) {
     $q = trim((string) $request->query('q', ''));
@@ -23,7 +29,7 @@ render(function (View $view, Request $request) {
         ]);
     }
 
-    $like = '%' . str_replace(['%', '_'], ['\%', '\_'], $q) . '%';
+    $like = '%'.str_replace(['%', '_'], ['\%', '\_'], $q).'%';
 
     $projects = Project::query()
         ->select(['id', 'name', 'key', 'description'])
@@ -47,6 +53,7 @@ render(function (View $view, Request $request) {
         ->get();
 
     $organizations = Organization::query()
+        ->visibleTo($user)
         ->select(['id', 'name', 'slug'])
         ->where(fn ($sub) => $sub
             ->where('name', 'like', $like))
@@ -77,7 +84,7 @@ render(function (View $view, Request $request) {
     <div class="py-4">
         <div class="container d-flex flex-column gap-3">
             <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
-                <form method="GET" action="{{ route('search') }}" class="mb-3">
+                <form method="GET" action="{{ route('search') }}" class="mb-3" data-tour="search-page">
                     <div class="input-group">
                         <input type="search" class="form-control" name="q" value="{{ $q }}" placeholder="{{ __('Search projects, issues, people…') }}">
                         <button class="btn btn-primary" type="submit">{{ __('Search') }}</button>
@@ -122,7 +129,7 @@ render(function (View $view, Request $request) {
                             <h2 class="h6 mb-2">{{ __('Organizations') }}</h2>
                             <div class="list-group">
                                 @forelse ($organizations as $o)
-                                    <a class="list-group-item list-group-item-action" href="{{ route('organizations.show', $o) }}">
+                                    <a class="list-group-item list-group-item-action" href="{{ route('organizations.show', ['organization' => $o]) }}">
                                         {{ $o->name }}
                                     </a>
                                 @empty

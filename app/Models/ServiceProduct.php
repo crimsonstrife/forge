@@ -16,6 +16,15 @@ class ServiceProduct extends BaseModel
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'first_response_target_minutes' => 'integer',
+            'next_response_target_minutes' => 'integer',
+            'resolve_target_minutes' => 'integer',
+        ];
+    }
+
     public static function boot(): void
     {
         parent::boot();
@@ -35,6 +44,12 @@ class ServiceProduct extends BaseModel
     public function defaultProject(): BelongsTo
     {
         return $this->belongsTo(Project::class, 'default_project_id');
+    }
+
+    /** @return BelongsTo<Project,ServiceProduct> */
+    public function autoCreateIssueProject(): BelongsTo
+    {
+        return $this->belongsTo(Project::class, 'auto_create_issue_project_id');
     }
 
     /** @return BelongsToMany<Project> */
@@ -74,9 +89,6 @@ class ServiceProduct extends BaseModel
 
     /**
      * Resolve mapped Issue Type ID for a given Ticket Type, honoring project allowed sets.
-     * @param int $ticketTypeId
-     * @param Project|null $project
-     * @return int|null
      */
     public function resolveIssueTypeId(int $ticketTypeId, ?Project $project = null): ?int
     {
@@ -94,9 +106,6 @@ class ServiceProduct extends BaseModel
 
     /**
      * Resolve mapped Issue Priority ID for a given Ticket Priority, honoring project allowed sets.
-     * @param int $ticketPriorityId
-     * @param Project|null $project
-     * @return int|null
      */
     public function resolveIssuePriorityId(int $ticketPriorityId, ?Project $project = null): ?int
     {
@@ -115,9 +124,6 @@ class ServiceProduct extends BaseModel
     /**
      * Resolve mapped Issue Status ID for a given Ticket Status, honoring project allowed sets.
      * Falls back to project initial status if not mapped.
-     * @param int $ticketStatusId
-     * @param Project|null $project
-     * @return int|null
      */
     public function resolveIssueStatusId(int $ticketStatusId, ?Project $project = null): ?int
     {

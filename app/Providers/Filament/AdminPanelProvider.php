@@ -9,6 +9,7 @@ use App\Filament\Widgets\AssigneeWorkloadTable;
 use App\Filament\Widgets\CumulativeFlowChart;
 use App\Filament\Widgets\ProjectHealthStats;
 use App\Filament\Widgets\ThroughputTrend;
+use App\Http\Middleware\SetPermissionsTeamContext;
 use App\Listeners\SwitchTeam;
 use Filament\Events\TenantSet;
 use Filament\Http\Middleware\Authenticate;
@@ -68,6 +69,7 @@ class AdminPanelProvider extends PanelProvider
                 ShareErrorsFromSession::class,
                 VerifyCsrfToken::class,
                 SubstituteBindings::class,
+                SetPermissionsTeamContext::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])

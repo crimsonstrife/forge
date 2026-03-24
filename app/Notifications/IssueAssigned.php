@@ -3,9 +3,6 @@
 namespace App\Notifications;
 
 use App\Models\Issue;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -17,31 +14,30 @@ use Illuminate\Notifications\Notification;
  *   url: string
  * }
  */
-class IssueAssigned extends Notification implements ShouldQueue
+class IssueAssigned extends Notification
 {
-    use Queueable;
-
     public function __construct(
         public Issue $issue,
         public string $url,
     ) {
-        // Make sure the queued notification only runs after DB commit
-        $this->afterCommit = true;
     }
 
     public function via(object $notifiable): array
     {
-        return ['database', 'mail', 'broadcast'];
+        return ['database', 'mail'];
     }
 
     /**
-     * @return array{issue_id:string, project_id: ?string, summary: ?string, url:string}
+     * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
     {
         return [
+            'event' => 'assignment',
             'issue_id'   => (string) $this->issue->getKey(),
+            'issue_key'  => (string) $this->issue->key,
             'project_id' => $this->issue->project_id,
+            'title'      => __('Assigned to :issue', ['issue' => $this->issue->key]),
             'summary'    => $this->issue->summary,
             'url'        => $this->url,
         ];
@@ -53,10 +49,5 @@ class IssueAssigned extends Notification implements ShouldQueue
             ->subject(__('New assignment: :summary', ['summary' => $this->issue->summary ?? __('Issue')]))
             ->line(__('You were assigned to an issue.'))
             ->action(__('View Issue'), $this->url);
-    }
-
-    public function toBroadcast(object $notifiable): BroadcastMessage
-    {
-        return new BroadcastMessage($this->toArray($notifiable));
     }
 }

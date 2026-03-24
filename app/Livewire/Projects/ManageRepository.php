@@ -9,7 +9,6 @@ use App\Models\Project;
 use App\Models\ProjectRepository;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 final class ManageRepository extends Component
@@ -20,6 +19,7 @@ final class ManageRepository extends Component
     public ProjectRepository $link;
 
     public bool $showEditor = false;
+    public bool $supportsIssueSync = true;
 
     // Form fields
     public ?string $token = null;
@@ -30,24 +30,27 @@ final class ManageRepository extends Component
 
     public function mount(Project $project, ProjectRepository $link): void
     {
-        $this->authorize('connect', [ProjectRepository::class, $project]);
+        $this->authorize('update', $project);
 
         $this->project = $project->withoutRelations();
         $this->link = $link->loadMissing(['repository', 'repository.statusMappings']);
+        $this->supportsIssueSync = $this->link->repository->supportsIssueSync();
 
-        // Prefill mapping from DB
-        foreach ($this->link->repository->statusMappings as $m) {
-            $this->statusMapping[strtolower($m->external_state)] = (string) $m->issue_status_id;
-        }
+        if ($this->supportsIssueSync) {
+            // Prefill mapping from DB
+            foreach ($this->link->repository->statusMappings as $m) {
+                $this->statusMapping[strtolower($m->external_state)] = (string) $m->issue_status_id;
+            }
 
-        // Suggest sensible defaults if not set
-        if (!isset($this->statusMapping['open'], $this->statusMapping['closed'])) {
-            $statuses = IssueStatus::query()
-                ->orderBy('order')
-                ->get(['id', 'is_done']);
+            // Suggest sensible defaults if not set
+            if (! isset($this->statusMapping['open'], $this->statusMapping['closed'])) {
+                $statuses = IssueStatus::query()
+                    ->orderBy('order')
+                    ->get(['id', 'is_done']);
 
-            $this->statusMapping['open']   = $this->statusMapping['open']   ?? (string) optional($statuses->firstWhere('is_done', false))->id;
-            $this->statusMapping['closed'] = $this->statusMapping['closed'] ?? (string) optional($statuses->firstWhere('is_done', true))->id;
+                $this->statusMapping['open'] = $this->statusMapping['open'] ?? (string) optional($statuses->firstWhere('is_done', false))->id;
+                $this->statusMapping['closed'] = $this->statusMapping['closed'] ?? (string) optional($statuses->firstWhere('is_done', true))->id;
+            }
         }
     }
 
@@ -62,10 +65,19 @@ final class ManageRepository extends Component
         $this->showEditor = false;
     }
 
-    #[Validate('nullable|string|min:20')] // rough guard; PATs/OAuth tokens are long
     public function save(): void
     {
-        $this->authorize('connect', [ProjectRepository::class, $this->project]);
+        $this->authorize('update', $this->project);
+
+        if (! $this->supportsIssueSync) {
+            $this->closeEditor();
+
+            return;
+        }
+
+        $this->validate([
+            'token' => 'nullable|string|min:20',
+        ]);
 
         // Update token only if provided (blank means keep current)
         if ($this->token !== null && $this->token !== '') {
@@ -99,7 +111,13 @@ final class ManageRepository extends Component
 
     public function syncNow(bool $queue = false): void
     {
-        $this->authorize('connect', [ProjectRepository::class, $this->project]);
+        $this->authorize('update', $this->project);
+
+        if (! $this->supportsIssueSync) {
+            $this->dispatch('notify', body: 'This repository link is managed in Crucible and does not use Forge issue import.');
+
+            return;
+        }
 
         if ($queue) {
             InitialImportRepositoryIssues::dispatch($this->link->id);
@@ -111,6 +129,16 @@ final class ManageRepository extends Component
 
         $this->link->refresh();
         $this->dispatch('repo-link-refreshed');
+    }
+
+    public function disconnect(): void
+    {
+        $this->authorize('update', $this->project);
+
+        $this->link->delete();
+
+        $this->dispatch('notify', body: 'Repository disconnected.');
+        $this->redirectRoute('projects.code', ['project' => $this->project]);
     }
 
     public function render(): View

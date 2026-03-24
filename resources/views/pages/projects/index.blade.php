@@ -13,6 +13,7 @@ render(function (View $view) {
 
     $projects = Project::query()
         ->visibleTo($u)
+        ->with(['organization:id,name,slug', 'teams:id,name'])
         ->latest()
         ->paginate(12)
         ->withQueryString();
@@ -23,7 +24,7 @@ render(function (View $view) {
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2" data-tour="projects-page">
             <h2 class="h4 mb-0">{{ __('Projects') }}</h2>
             @can('create', App\Models\Project::class)
                 <a href="{{ route('projects.create') }}" class="btn btn-primary btn-sm">
@@ -46,6 +47,14 @@ render(function (View $view) {
                                 </div>
                                 <div class="fw-semibold mt-2">{{ $project->name }}</div>
                                 <div class="small text-body-secondary mt-1">{{ $project->description }}</div>
+                                <div class="small text-body-secondary mt-2 d-flex flex-column gap-1">
+                                    @if($project->organization)
+                                        <span>{{ __('Org') }}: {{ $project->organization->name }}</span>
+                                    @endif
+                                    @if($project->teams->isNotEmpty())
+                                        <span>{{ __('Teams') }}: {{ $project->teams->pluck('name')->implode(', ') }}</span>
+                                    @endif
+                                </div>
                             </div>
                         </a>
                     </div>
@@ -60,4 +69,3 @@ render(function (View $view) {
         </div>
     </div>
 </x-app-layout>
-

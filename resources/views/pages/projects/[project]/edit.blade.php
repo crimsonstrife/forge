@@ -21,6 +21,12 @@ render(function (View $view, Project $project) {
         <div class="row g-4">
             <div class="container mx-auto px-3">
                     <livewire:projects.edit-project-form :project="$project" />
+
+                    @if(config('codex.enabled'))
+                        <div class="mt-4">
+                            <livewire:projects.connect-codex-workspace :project="$project" />
+                        </div>
+                    @endif
             </div>
         </div>
     </div>

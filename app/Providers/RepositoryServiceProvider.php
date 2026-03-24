@@ -19,9 +19,9 @@ final class RepositoryServiceProvider extends ServiceProvider
             return function (string $provider) use ($app) {
                 return match (strtolower($provider)) {
                     'github' => $app->make(GitHubRepositoryProvider::class),
+                    'crucible' => $app->make(CrucibleRepositoryProvider::class),
                     // 'gitlab' => $app->make(\App\Providers\GitLabRepositoryProvider::class),
                     // 'gitea'  => $app->make(\App\Providers\GiteaRepositoryProvider::class),
-                    // 'crucible' => $app->make(\App\Providers\CrucibleRepositoryProvider::class),
                     default => throw new \RuntimeException("Unknown repository provider: {$provider}"),
                 };
             };

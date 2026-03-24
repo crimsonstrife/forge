@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Traits\HasPermissionSets;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
@@ -19,25 +20,28 @@ use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Jetstream\HasTeams;
-use Laravel\Sanctum\HasApiTokens;
+use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     use HasApiTokens;
-    use HasPermissionSets;
-    use HasPermissions;
     /** @use HasFactory<UserFactory> */
     use HasFactory;
+    use HasPermissions;
+
+    use HasPermissionSets;
+
     use HasProfilePhoto;
+    use HasRoles;
     use HasTeams;
+    use HasUuids;
     use Notifiable;
     use TwoFactorAuthenticatable;
-    use HasUuids;
-    use HasRoles;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     /**
@@ -82,7 +86,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'id' => 'string'
+            'id' => 'string',
         ];
     }
 
@@ -107,6 +111,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->hasMany(SocialAccount::class);
     }
 
+    public function tourStates(): HasMany
+    {
+        return $this->hasMany(UserTourState::class);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->hasAnyPermission(
@@ -115,17 +124,30 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         );
     }
 
-    /**
-     * @return MorphMany
-     */
     public function notifications(): MorphMany
     {
         /** @phpstan-ignore-next-line */
         return $this->morphMany(DatabaseNotification::class, 'notifiable');
     }
 
+    public function followedIssues(): BelongsToMany
+    {
+        return $this->belongsToMany(Issue::class, 'issue_followers')
+            ->withTimestamps();
+    }
+
+    public function issueNotificationPreference(): HasOne
+    {
+        return $this->hasOne(IssueNotificationPreference::class);
+    }
+
+    public function dashboardPreference(): HasOne
+    {
+        return $this->hasOne(DashboardPreference::class);
+    }
+
     public function broadcastChannelName(): string
     {
-        return 'App.Models.User.' . $this->getKey();
+        return 'App.Models.User.'.$this->getKey();
     }
 }

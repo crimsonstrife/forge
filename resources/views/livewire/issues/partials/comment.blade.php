@@ -6,7 +6,7 @@
     $children = $c->getRelation('children_eager') ?? collect();
 @endphp
 
-<li class="list-group-item" wire:key="comment-{{ $c->id }}">
+<li class="list-group-item" wire:key="comment-{{ $c->id }}" id="comment-{{ $c->id }}">
     <div class="d-flex gap-2">
         <x-avatar :src="$c->user->profile_photo_url" :name="$c->user->name" preset="sm" />
         <div class="flex-grow-1">
@@ -15,7 +15,7 @@
                 <span class="text-body-secondary fw-normal">· {{ $c->created_at->diffForHumans() }}</span>
             </div>
 
-            <div class="small">{{ $c->body }}</div>
+            <div class="small issue-content">{!! $c->rendered_body !!}</div>
 
             <button type="button"
                     class="btn btn-sm btn-link p-0"
@@ -25,13 +25,18 @@
 
             {{-- Inline reply box --}}
             @if ($replyFor === $c->id)
-                <form wire:submit.prevent="postReply(@js($c->id))"
-                      class="d-flex gap-2 mt-2 {{ $indentClass }}">
-                    <wa-textarea class="form-control"
-                                 wire:model.defer="replyBodies[@js($c->id)]"
-                                 rows="2"
-                                 placeholder="{{ __('Write a reply...') }}"></wa-textarea>
-                    <div class="d-flex flex-column gap-2">
+                <form wire:submit.prevent="postReply(@js($c->id))" class="d-grid gap-2 mt-2 {{ $indentClass }}">
+                    <x-editor.tiny
+                        :id="'issue-reply-'.$c->id.'-'.($replyEditorNonces[$c->id] ?? 0)"
+                        :name="'reply-'.$c->id"
+                        :wireModel="'replyBodies.'.$c->id"
+                        :value="$replyBodies[$c->id] ?? ''"
+                        :height="150"
+                        toolbar="undo redo | bold italic link | bullist numlist | mentionUser mentionIssue"
+                        plugins="link lists"
+                    />
+                    @error("replyBodies.$c->id") <div class="form-text text-danger">{{ $message }}</div> @enderror
+                    <div class="d-flex justify-content-end gap-2">
                         <button class="btn btn-primary btn-sm">{{ __('Reply') }}</button>
                         <button type="button" class="btn btn-outline-secondary btn-sm" wire:click="cancelReply">
                             {{ __('Cancel') }}

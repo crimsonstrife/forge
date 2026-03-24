@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Settings;
 
+use App\Livewire\Concerns\InteractsWithIssueNotificationPreferences;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -10,6 +11,8 @@ use Livewire\Component;
 
 class Profile extends Component
 {
+    use InteractsWithIssueNotificationPreferences;
+
     public string $name = '';
 
     public string $email = '';
@@ -19,8 +22,11 @@ class Profile extends Component
      */
     public function mount(): void
     {
-        $this->name = Auth::user()->name;
-        $this->email = Auth::user()->email;
+        $user = Auth::user();
+
+        $this->name = $user->name;
+        $this->email = $user->email;
+        $this->loadIssueNotificationPreferences($user);
     }
 
     /**
@@ -50,6 +56,8 @@ class Profile extends Component
         }
 
         $user->save();
+
+        $this->saveIssueNotificationPreferences($user);
 
         $this->dispatch('profile-updated', name: $user->name);
     }

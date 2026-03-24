@@ -20,6 +20,18 @@
             </div>
 
             <div class="col-sm-6">
+                <x-label for="organization_id" value="Organization"/>
+                <select id="organization_id" class="form-select" wire:model.defer="organization_id">
+                    <option value="">— {{ __('None') }} —</option>
+                    @foreach($organizationOptions as $organization)
+                        <option value="{{ $organization['id'] }}">{{ $organization['name'] }}</option>
+                    @endforeach
+                </select>
+                <div class="form-text">{{ __('Organizations and teams can both scope the same project.') }}</div>
+                <x-input-error for="organization_id" class="mt-1"/>
+            </div>
+
+            <div class="col-sm-6">
                 <x-label for="stage" value="Stage"/>
                 <select id="stage" class="form-select" wire:model.defer="stage">
                     @foreach($stages as $s)
@@ -33,11 +45,22 @@
                 <x-label for="lead_id" value="Project lead (optional)"/>
                 <select id="lead_id" class="form-select" wire:model.defer="lead_id">
                     <option value="">— {{ __('None') }} —</option>
-                    @foreach($users as $u)
-                        <option value="{{ $u->id }}">{{ $u->name }}</option>
+                    @foreach($leadOptions as $user)
+                        <option value="{{ $user['id'] }}">{{ $user['name'] }}</option>
                     @endforeach
                 </select>
                 <x-input-error for="lead_id" class="mt-1"/>
+            </div>
+
+            <div class="col-12">
+                <x-label for="teams" value="Teams included in this project"/>
+                <select id="teams" multiple class="form-select" wire:model.defer="attach_team_ids">
+                    @foreach($teamOptions as $team)
+                        <option value="{{ $team['id'] }}">{{ $team['name'] }}</option>
+                    @endforeach
+                </select>
+                <div class="form-text">{{ __('Selected teams will see this project as shared team work.') }}</div>
+                <x-input-error for="attach_team_ids" class="mt-1"/>
             </div>
 
             <div class="col-sm-4">

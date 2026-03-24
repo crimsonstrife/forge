@@ -33,7 +33,7 @@
                     @endif
                 </p>
 
-                <div class="p-2 bg-white d-inline-block rounded border">
+                <div class="p-2  d-inline-block rounded border">
                     {!! $this->user->twoFactorQrCodeSvg() !!}
                 </div>
 
@@ -59,7 +59,7 @@
                     {{ __('Store these recovery codes in a secure password manager. They can be used to recover access to your account if your two factor device is lost.') }}
                 </p>
 
-                <div class="bg-light rounded p-3 font-monospace small" style="max-width: 36rem">
+                <div class=" rounded p-3 font-monospace small" style="max-width: 36rem">
                     @foreach (json_decode(decrypt($this->user->two_factor_recovery_codes), true, 512, JSON_THROW_ON_ERROR) as $code)
                         <div>{{ $code }}</div>
                     @endforeach

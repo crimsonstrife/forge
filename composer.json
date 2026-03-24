@@ -27,6 +27,7 @@
         "laravel/framework": "^v12.30.1",
         "laravel/horizon": "^5.33.0",
         "laravel/jetstream": "^5.3",
+        "laravel/passport": "^12.0",
         "laravel/pennant": "^1.18",
         "laravel/pulse": "*",
         "laravel/reverb": "^1.0",

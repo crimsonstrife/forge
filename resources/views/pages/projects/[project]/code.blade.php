@@ -60,9 +60,9 @@ render(function (View $view, Project $project) {
                             <div class="card-body small">
                                 <div class="fw-semibold mb-1">{{ __('Tips') }}</div>
                                 <ul class="mb-0 ps-3">
-                                    <li>{{ __('Connect a repository to import issues (open & closed).') }}</li>
-                                    <li>{{ __('Assignees/reporters sync only if users linked their GitHub account.') }}</li>
-                                    <li>{{ __('Projects with existing issues cannot connect to avoid conflicts.') }}</li>
+                                    <li>{{ __('Connect GitHub to import open and closed issues into this project.') }}</li>
+                                    <li>{{ __('Link a Crucible repository when you want code navigation without issue import.') }}</li>
+                                    <li>{{ __('GitHub assignees/reporters only sync when users linked their GitHub account.') }}</li>
                                 </ul>
                             </div>
                         </div>

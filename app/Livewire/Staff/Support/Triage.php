@@ -45,14 +45,17 @@ final class Triage extends Component
     {
         $this->resetPage();
     }
+
     public function updatingStatusId(): void
     {
         $this->resetPage();
     }
+
     public function updatingPriorityId(): void
     {
         $this->resetPage();
     }
+
     public function updatingTypeId(): void
     {
         $this->resetPage();
@@ -61,12 +64,12 @@ final class Triage extends Component
     public function getRowsProperty(): LengthAwarePaginator
     {
         return Ticket::query()
-            ->with(['status:id,name', 'priority:id,name', 'type:id,name', 'assignee:id,name', 'product:id,name'])
+            ->with(['status:id,name,is_done', 'priority:id,name', 'type:id,name', 'assignee:id,name', 'product:id,name'])
             ->when($this->search !== '', function ($q): void {
                 $q->where(function ($w): void {
-                    $w->where('key', 'like', '%' . $this->search . '%')
-                        ->orWhere('subject', 'like', '%' . $this->search . '%')
-                        ->orWhere('submitter_email', 'like', '%' . $this->search . '%');
+                    $w->where('key', 'like', '%'.$this->search.'%')
+                        ->orWhere('subject', 'like', '%'.$this->search.'%')
+                        ->orWhere('submitter_email', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->statusId, fn ($q) => $q->where('status_id', $this->statusId))
@@ -79,10 +82,10 @@ final class Triage extends Component
     public function render(): View
     {
         return view('livewire.staff.support.triage', [
-            'statuses'  => TicketStatus::query()->orderBy('name')->get(['id','name']),
-            'priorities' => TicketPriority::query()->orderBy('weight')->get(['id','name']),
-            'types'     => TicketType::query()->orderBy('name')->get(['id','name']),
-            'rows'      => $this->rows,
+            'statuses' => TicketStatus::query()->orderBy('name')->get(['id', 'name']),
+            'priorities' => TicketPriority::query()->orderBy('weight')->get(['id', 'name']),
+            'types' => TicketType::query()->orderBy('name')->get(['id', 'name']),
+            'rows' => $this->rows,
         ]);
     }
 }

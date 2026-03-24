@@ -5,10 +5,12 @@
     /** @var Project $project */
     $tabs = [
         ['label' => 'Overview',   'route' => 'projects.show'],
+        ['label' => 'Backlog',    'route' => 'projects.backlog'],
         ['label' => 'Board',      'route' => 'projects.board'],
         ['label' => 'Scrum',      'route' => 'projects.scrum'],
         ['label' => 'Calendar',   'route' => 'projects.calendar'],
         ['label' => 'Timeline',   'route' => 'projects.timeline'],
+        ['label' => 'Roadmap',    'route' => 'projects.roadmap'],
         ['label' => 'Code',       'route' => 'projects.code'],
         ['label' => 'Transitions','route' => 'projects.transitions'],
     ];

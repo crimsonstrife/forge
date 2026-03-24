@@ -5,6 +5,7 @@ namespace App\Services\Support;
 use App\Models\Issue;
 use App\Models\Project;
 use App\Models\Ticket;
+use App\Models\TicketStatus;
 use Illuminate\Database\DatabaseManager;
 use RuntimeException;
 
@@ -14,7 +15,30 @@ final class ConvertTicketToIssue
     {
     }
 
-    public function convert(Ticket $ticket, ?Project $project = null): Issue
+    public function convert(Ticket $ticket, ?Project $project = null, bool $moveTicketToWaitingOnSupport = true): Issue
+    {
+        return $this->db->transaction(
+            fn (): Issue => $this->persistConversion($ticket, $project, $moveTicketToWaitingOnSupport)
+        );
+    }
+
+    public function convertIfUnlinked(Ticket $ticket, ?Project $project = null, bool $moveTicketToWaitingOnSupport = true): ?Issue
+    {
+        return $this->db->transaction(function () use ($ticket, $project, $moveTicketToWaitingOnSupport): ?Issue {
+            $lockedTicket = Ticket::query()
+                ->with(['product.defaultProject', 'project'])
+                ->lockForUpdate()
+                ->findOrFail($ticket->getKey());
+
+            if ($lockedTicket->issues()->exists()) {
+                return null;
+            }
+
+            return $this->persistConversion($lockedTicket, $project, $moveTicketToWaitingOnSupport);
+        });
+    }
+
+    private function persistConversion(Ticket $ticket, ?Project $project, bool $moveTicketToWaitingOnSupport): Issue
     {
         $project = $project ?? $ticket->project ?? $ticket->product?->defaultProject;
         if ($project === null) {
@@ -28,23 +52,26 @@ final class ConvertTicketToIssue
         $priorityId = $product?->resolveIssuePriorityId((int) $ticket->priority_id, $project) ?? $project->defaultPriorityId();
         $statusId = $product?->resolveIssueStatusId((int) $ticket->status_id, $project) ?? $project->initialStatusId();
 
-        return $this->db->transaction(function () use ($ticket, $project, $typeId, $priorityId, $statusId): Issue {
-            $issue = Issue::query()->create([
-                'project_id'  => $project->getKey(),
-                'summary'     => $ticket->subject,
-                'description' => $ticket->body,
-                'reporter_id' => auth()->id(),
-                'issue_status_id'   => $statusId,
-                'issue_priority_id' => $priorityId,
-                'issue_type_id'     => $typeId,
+        $issue = Issue::query()->create([
+            'project_id' => $project->getKey(),
+            'summary' => $ticket->subject,
+            'description' => $ticket->body,
+            'reporter_id' => auth()->id(),
+            'issue_status_id' => $statusId,
+            'issue_priority_id' => $priorityId,
+            'issue_type_id' => $typeId,
+        ]);
+
+        $ticket->issues()->syncWithoutDetaching([$issue->getKey()]);
+
+        if ($moveTicketToWaitingOnSupport) {
+            $ticket->update([
+                'status_id' => (int) TicketStatus::query()
+                    ->where('name', 'Waiting on Support')
+                    ->value('id'),
             ]);
+        }
 
-            $ticket->issues()->syncWithoutDetaching([$issue->getKey()]);
-
-            // Optional: move ticket status using your chosen rule
-            $ticket->update(['status_id' => (int) \App\Models\TicketStatus::query()->where('name', 'Waiting on Support')->value('id')]);
-
-            return $issue;
-        });
+        return $issue;
     }
 }

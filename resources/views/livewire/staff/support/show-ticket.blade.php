@@ -47,6 +47,10 @@
                 </div>
                 <div class="col-md-4">
                     <form wire:submit.prevent="saveMeta" class="vstack gap-2">
+                        @include('livewire.staff.support.partials.sla-windows', [
+                            'windows' => $ticket->slaWindows(),
+                            'mode' => 'detail',
+                        ])
 
                         {{-- NEW: Project --}}
                         <div>
@@ -79,6 +83,12 @@
                             <select class="form-select" wire:model="typeId">
                                 @foreach($types as $t)<option value="{{ $t->id }}">{{ $t->name }}</option>@endforeach
                             </select>
+                            @if($ticket->product?->auto_create_issue_for_ticket_type_id)
+                                <div class="form-text">
+                                    Auto-creates a linked issue when set to
+                                    {{ $types->firstWhere('id', $ticket->product->auto_create_issue_for_ticket_type_id)?->name ?? 'the configured type' }}.
+                                </div>
+                            @endif
                         </div>
                         <div>
                             <label class="form-label">Assignee</label>

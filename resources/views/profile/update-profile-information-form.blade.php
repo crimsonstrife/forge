@@ -84,6 +84,42 @@
                 @endif
             </div>
 
+            <div class="col-12">
+                <div class="border rounded p-3">
+                    <div class="fw-semibold">{{ __('Issue Collaboration Notifications') }}</div>
+                    <div class="text-body-secondary small mt-1">
+                        {{ __('Choose which issue events should notify you immediately and whether Forge should send a daily digest.') }}
+                    </div>
+
+                    <div class="mt-3 d-grid gap-2">
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" wire:model="notify_on_assignment">
+                            <span class="form-check-label">{{ __('Notify me when I am assigned to an issue') }}</span>
+                        </label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" wire:model="notify_on_comment">
+                            <span class="form-check-label">{{ __('Notify me about new comments on followed issues') }}</span>
+                        </label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" wire:model="notify_on_status_change">
+                            <span class="form-check-label">{{ __('Notify me when followed issues change status') }}</span>
+                        </label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" wire:model="notify_on_link_change">
+                            <span class="form-check-label">{{ __('Notify me when links or code references change on followed issues') }}</span>
+                        </label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" wire:model="notify_on_mention">
+                            <span class="form-check-label">{{ __('Notify me when someone mentions me in an issue comment') }}</span>
+                        </label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" wire:model="daily_digest_enabled">
+                            <span class="form-check-label">{{ __('Send a daily digest with issue activity I have not seen yet') }}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
             <div class="col-12 d-flex align-items-center gap-2">
                 <x-action-message class="text-success small" on="saved">
                     {{ __('Saved.') }}

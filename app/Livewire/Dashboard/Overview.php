@@ -2,316 +2,534 @@
 
 namespace App\Livewire\Dashboard;
 
-use App\Models\Activity;
-use App\Models\Issue;
-use App\Models\IssuePriority;
-use App\Models\IssueStatus;
-use App\Models\IssueType;
-use App\Models\Project;
-use App\Models\User;
+use App\Models\DashboardPreference;
+use App\Services\Dashboards\PersonalDashboardService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Livewire\Component;
 
 final class Overview extends Component
 {
     use AuthorizesRequests;
 
-    /** @var Collection<int,Issue> */
-    public Collection $myIssues;
+    public string $activeWorkspace = 'overview';
 
-    /** @var array<string,int> */
-    public array $statusSummary = [];
+    public string $landingWorkspace = 'overview';
 
-    /** @var Collection<int,Issue> */
-    public Collection $upcomingDue;
+    public bool $showCustomizer = false;
 
-    /** @var Collection<int,Project> */
-    public Collection $myProjects;
+    /** @var array<string, array<int, string>> */
+    public array $hiddenWidgets = [];
 
-    /** @var Collection<string, array<int, array<string, mixed>>> */
-    public Collection $activityGroups;
+    /** @var array<string, array<int, string>> */
+    public array $widgetOrder = [];
 
-    public function mount(): void
+    public function mount(PersonalDashboardService $service): void
     {
         $user = auth()->user();
-        $teamId = $user->currentTeam?->id;
 
-        // Subquery of projects visible to the user (lead, direct member, or via team)
-        $visibleProjectsSub = Project::query()
-            ->visibleTo($user)
-            ->select('id');
+        abort_unless($user !== null, 403);
 
-        // Materialized set for activity hydration
-        $visibleProjectIds = Project::query()
-            ->visibleTo($user)
-            ->pluck('id');
+        $signals = $service->signals($user);
+        $workspaces = $this->workspaceDefinitions($signals);
+        $defaultWorkspace = $this->defaultWorkspaceFromSignals($signals, $workspaces);
 
-        // My issues (only from visible projects)
-        $this->myIssues = Issue::query()
-            ->select(['id', 'summary', 'key', 'project_id', 'issue_status_id', 'issue_type_id', 'assignee_id', 'updated_at', 'due_at'])
-            ->with([
-                'project:id,key,name',
-                'status:id,name,color,is_done',
-                'type:id,key,name',
-            ])
-            ->where('assignee_id', $user->id)
-            ->whereIn('project_id', $visibleProjectsSub)
-            ->whereHas('status', fn ($q) => $q->where('is_done', false))
-            ->latest('updated_at')
-            ->limit(10)
-            ->get();
+        $preference = DashboardPreference::query()->firstOrCreate(
+            ['user_id' => $user->getKey()],
+            [
+                'landing_workspace' => $defaultWorkspace,
+                'active_workspace' => $defaultWorkspace,
+                'hidden_widgets' => [],
+                'widget_order' => [],
+            ]
+        );
 
-        // Status summary (only from visible projects)
-        $this->statusSummary = Issue::query()
-            ->where('assignee_id', $user->id)
-            ->whereIn('project_id', $visibleProjectsSub)
-            ->selectRaw('issue_status_id, COUNT(*) as total')
-            ->groupBy('issue_status_id')
-            ->pluck('total', 'issue_status_id')
-            ->toArray();
+        $this->landingWorkspace = $this->validWorkspaceOrFallback(
+            (string) $preference->landing_workspace,
+            $workspaces,
+            $defaultWorkspace
+        );
+        $this->activeWorkspace = $this->validWorkspaceOrFallback(
+            (string) ($preference->active_workspace ?: $this->landingWorkspace),
+            $workspaces,
+            $this->landingWorkspace
+        );
+        $this->hiddenWidgets = is_array($preference->hidden_widgets) ? $preference->hidden_widgets : [];
+        $this->widgetOrder = is_array($preference->widget_order) ? $preference->widget_order : [];
 
-        // Due soon (only from visible projects)
-        $this->upcomingDue = Issue::query()
-            ->select(['id', 'summary', 'key', 'project_id', 'due_at', 'issue_status_id'])
-            ->with(['project:id,key,name', 'status:id,name,color,is_done'])
-            ->where('assignee_id', $user->id)
-            ->whereIn('project_id', $visibleProjectsSub)
-            ->whereNotNull('due_at')
-            ->whereBetween('due_at', [now(), now()->addDays(14)])
-            ->orderBy('due_at')
-            ->limit(10)
-            ->get();
+        if (
+            $this->landingWorkspace !== $preference->landing_workspace
+            || $this->activeWorkspace !== $preference->active_workspace
+        ) {
+            $this->persistPreferences();
+        }
+    }
 
-        // My projects (already visibility-scoped)
-        $this->myProjects = Project::query()
-            ->visibleTo($user)
-            ->select(['projects.id', 'projects.name', 'projects.key'])
-            ->withCount([
-                'issues as open_issues_count' => fn ($q) => $q->whereHas(
-                    'status',
-                    fn ($s) => $s->where('is_done', false)
-                ),
-            ])
-            ->latest('projects.updated_at')
-            ->limit(8)
-            ->get();
+    public function activateWorkspace(string $workspace): void
+    {
+        [, $workspaces] = $this->preferenceContext();
 
-        /** @var Collection<int, Activity> $rawActivity */
-        $rawActivity = Activity::query()
-            ->when($teamId, fn ($q) => $q->where('team_id', $teamId))
-            ->latest()
-            ->limit(50)
-            ->get([
-                'id',
-                'description',
-                'event',
-                'created_at',
-                'properties',
-                'causer_id',
-                'causer_type',
-                'subject_type',
-                'subject_id',
-                'log_name',
-                'team_id',
-            ]);
-
-        // Collect IDs to avoid N+1s
-        $issueIds   = $rawActivity->where('subject_type', Issue::class)->pluck('subject_id')->filter()->unique();
-        $projectIds = $rawActivity->where('subject_type', Project::class)->pluck('subject_id')->filter()->unique();
-        $causerIds  = $rawActivity->where('causer_type', User::class)->pluck('causer_id')->filter()->unique();
-
-        // Scan changed fields to preload related labels
-        $statusIds = $assigneeIds = $priorityIds = $typeIds = $parentIds = [];
-
-        foreach ($rawActivity as $a) {
-            /** @var array<string,mixed> $props */
-            $props = (array)($a->properties ?? []);
-            $new   = (array)($props['attributes'] ?? $props['new'] ?? []);
-            $old   = (array)($props['old'] ?? $props['attributes_before'] ?? []);
-
-            foreach (['issue_status_id', 'assignee_id', 'issue_priority_id', 'issue_type_id', 'parent_id'] as $k) {
-                if (isset($new[$k])) {
-                    ${Str::of($k)->before('_id')->append('Ids')}[] = $new[$k];
-                }
-                if (isset($old[$k])) {
-                    ${Str::of($k)->before('_id')->append('Ids')}[] = $old[$k];
-                }
-            }
-
-            // Also harvest project_id from properties (so we can link)
-            if (!empty($props['project_id'])) {
-                $projectIds->push($props['project_id']);
-            }
+        if (! isset($workspaces[$workspace])) {
+            return;
         }
 
-        // Only hydrate projects the user can access
-        $projectsById = Project::query()
-            ->whereIn('id', array_filter($projectIds->all()))
-            ->whereIn('id', $visibleProjectIds)
-            ->get(['id', 'key', 'name'])
-            ->keyBy('id');
+        $this->activeWorkspace = $workspace;
+        $this->persistPreferences();
+    }
 
-        // Only hydrate issues whose projects the user can access
-        $issuesById = Issue::query()
-            ->whereIn('id', array_filter($issueIds->all()))
-            ->whereIn('project_id', $visibleProjectIds)
-            ->with(['project:id,key,name'])
-            ->get(['id', 'key', 'summary', 'project_id'])
-            ->keyBy('id');
+    public function makeWorkspaceDefault(?string $workspace = null): void
+    {
+        [, $workspaces] = $this->preferenceContext();
+        $workspace = $workspace ?: $this->activeWorkspace;
 
-        $usersById = User::query()
-            ->whereIn('id', array_filter($causerIds->all()))
-            ->get(['id', 'name', 'profile_photo_path'])
-            ->keyBy('id');
+        if (! isset($workspaces[$workspace])) {
+            return;
+        }
 
-        $statusMap   = IssueStatus::query()->whereIn('id', array_filter($statusIds))->get(['id', 'name', 'color'])->keyBy('id');
-        $assigneeMap = User::query()->whereIn('id', array_filter($assigneeIds))->get(['id', 'name', 'profile_photo_path'])->keyBy('id');
-        $priorityMap = IssuePriority::query()->whereIn('id', array_filter($priorityIds))->get(['id', 'name'])->keyBy('id');
-        $typeMap     = IssueType::query()->whereIn('id', array_filter($typeIds))->get(['id', 'name'])->keyBy('id');
-        $parentMap   = Issue::query()->whereIn('id', array_filter($parentIds))->get(['id', 'key', 'summary'])->keyBy('id');
+        $this->landingWorkspace = $workspace;
+        $this->persistPreferences();
 
-        $labelMap = [
-            'summary'           => 'Summary',
-            'description'       => 'Description',
-            'issue_status_id'   => 'Status',
-            'assignee_id'       => 'Assignee',
-            'issue_priority_id' => 'Priority',
-            'issue_type_id'     => 'Type',
-            'parent_id'         => 'Parent',
-        ];
+        $this->dispatch('notify', title: 'Landing page updated', body: $workspaces[$workspace]['label'].' opens first now.');
+    }
 
-        $enriched = $rawActivity->map(function (Activity $a) use (
-            $usersById,
-            $issuesById,
-            $projectsById,
-            $labelMap,
-            $statusMap,
-            $assigneeMap,
-            $priorityMap,
-            $typeMap,
-            $parentMap
-        ) {
-            /** @var array<string,mixed> $props */
-            $props = (array)($a->properties ?? []);
-            $new   = (array)($props['attributes'] ?? $props['new'] ?? []);
-            $old   = (array)($props['old'] ?? $props['attributes_before'] ?? []);
+    public function toggleWidget(string $widget): void
+    {
+        [, $workspaces, $catalog] = $this->preferenceContext();
+        $workspace = $this->activeWorkspace;
 
-            $actor = $a->causer_type === User::class ? $usersById->get($a->causer_id) : null;
-            $actorName   = $actor?->name ?? 'System';
-            $actorAvatar = $actor?->profile_photo_url ?? $actor?->profile_photo_path ?? null;
+        if (! isset($workspaces[$workspace], $catalog[$widget])) {
+            return;
+        }
 
-            $targetType  = $a->subject_type === Issue::class ? 'issue'
-                : ($a->subject_type === Project::class ? 'project' : ($a->log_name ?: 'record'));
-            $targetLabel = 'record';
-            $targetUrl   = null;
+        $availableWidgetIds = array_keys($catalog);
+        $ordered = $this->orderedWidgetIds($workspace, $workspaces[$workspace]['default_widgets'], $availableWidgetIds);
+        $hidden = $this->hiddenWidgetIds($workspace, $availableWidgetIds);
 
-            if ($a->subject_type === Issue::class) {
-                $issue = $issuesById->get($a->subject_id);
-                if ($issue) {
-                    $targetLabel = "{$issue->key}: {$issue->summary}";
-                    $project = $issue->getRelation('project') ?: ($projectsById->get($issue->project_id));
-                    if ($project) {
-                        $targetUrl = route('issues.show', ['project' => $project, 'issue' => $issue]);
-                    }
-                }
-            } elseif ($a->subject_type === Project::class) {
-                $project = $projectsById->get($a->subject_id);
-                if ($project) {
-                    $targetLabel = "{$project->key} — {$project->name}";
-                    $targetUrl   = route('projects.show', ['project' => $project]);
-                }
-            } elseif (isset($props['issue_key'], $props['issue_summary'])) {
-                $targetLabel = "{$props['issue_key']}: {$props['issue_summary']}";
-                if (!empty($props['project_id']) && ($p = $projectsById->get($props['project_id']))) {
-                    $targetUrl = route('issues.index', ['project' => $p, 'search' => $props['issue_key']]);
-                }
+        if (in_array($widget, $hidden, true)) {
+            $hidden = array_values(array_filter($hidden, static fn (string $id): bool => $id !== $widget));
+        } else {
+            $visibleCount = count(array_values(array_diff($ordered, $hidden)));
+
+            if ($visibleCount <= 1) {
+                $this->dispatch('notify', title: 'Keep one widget', body: 'Each workspace needs at least one visible widget.');
+
+                return;
             }
 
-            $verb = $a->event ?: (Str::contains((string)$a->description, '.') ? Str::after((string)$a->description, '.') : (string)$a->description);
-            $verb = Str::of($verb)->replace(['issue.', 'project.'], '')->headline();
+            $hidden[] = $widget;
+        }
 
-            $changes = [];
-            $keys = array_unique(array_merge(array_keys($new), array_keys($old)));
-            foreach ($keys as $k) {
-                $label = $labelMap[$k] ?? Str::of($k)->headline()->toString();
-                $from  = $old[$k] ?? null;
-                $to    = $new[$k] ?? null;
+        $this->hiddenWidgets[$workspace] = array_values(array_unique($hidden));
+        $this->persistPreferences();
+    }
 
-                if ($k === 'issue_status_id') {
-                    $from = $from ? ($statusMap->get($from)?->name ?? $from) : null;
-                    $to   = $to ? ($statusMap->get($to)?->name ?? $to) : null;
-                } elseif ($k === 'assignee_id') {
-                    $from = $from ? ($assigneeMap->get($from)?->name ?? $from) : null;
-                    $to   = $to ? ($assigneeMap->get($to)?->name ?? $to) : null;
-                } elseif ($k === 'issue_priority_id') {
-                    $from = $from ? ($priorityMap->get($from)?->name ?? $from) : null;
-                    $to   = $to ? ($priorityMap->get($to)?->name ?? $to) : null;
-                } elseif ($k === 'issue_type_id') {
-                    $from = $from ? ($typeMap->get($from)?->name ?? $from) : null;
-                    $to   = $to ? ($typeMap->get($to)?->name ?? $to) : null;
-                } elseif ($k === 'parent_id') {
-                    $from = $from ? (($p = $parentMap->get($from)) ? "{$p->key}: {$p->summary}" : $from) : null;
-                    $to   = $to ? (($p = $parentMap->get($to)) ? "{$p->key}: {$p->summary}" : $to) : null;
-                }
+    public function moveWidgetUp(string $widget): void
+    {
+        $this->moveWidget($widget, -1);
+    }
 
-                if (($from ?? '') === ($to ?? '')) {
-                    continue;
-                }
+    public function moveWidgetDown(string $widget): void
+    {
+        $this->moveWidget($widget, 1);
+    }
 
-                $changes[] = [
-                    'label'    => $label,
-                    'from'     => $from,
-                    'to'       => $to,
-                    'key'      => $k,
-                    'to_color' => $k === 'issue_status_id' && isset($new['issue_status_id'])
-                        ? ($statusMap->get($new['issue_status_id'])->color ?? null)
-                        : null,
-                ];
-            }
+    public function resetWorkspaceLayout(): void
+    {
+        unset($this->hiddenWidgets[$this->activeWorkspace], $this->widgetOrder[$this->activeWorkspace]);
+        $this->persistPreferences();
 
-            return [
-                'id'           => $a->id,
-                'actor_name'   => $actorName,
-                'actor_avatar' => $actorAvatar,
-                'verb'         => (string)$verb,
-                'target_type'  => $targetType,
-                'target_label' => $targetLabel,
-                'target_url'   => $targetUrl,
-                'changes'      => $changes,
-                'created_at'   => $a->created_at,
-                'ago'          => $a->created_at?->diffForHumans(),
-            ];
-        });
+        $this->dispatch('notify', title: 'Workspace reset', body: 'The default widget layout has been restored.');
+    }
 
-        $this->activityGroups = $enriched->groupBy(function (array $i) {
-            $dt = $i['created_at'];
-            if ($dt?->isToday()) {
-                return 'Today';
-            }
-            if ($dt?->isYesterday()) {
-                return 'Yesterday';
-            }
-            return $dt?->toFormattedDateString() ?? 'Recent';
-        });
+    public function render(PersonalDashboardService $service): View
+    {
+        $user = auth()->user();
+
+        abort_unless($user !== null, 403);
+
+        $signals = $service->signals($user);
+        $workspaces = $this->workspaceDefinitions($signals);
+        $widgetCatalog = $this->widgetCatalog($signals);
+        $defaultWorkspace = $this->defaultWorkspaceFromSignals($signals, $workspaces);
+
+        $this->landingWorkspace = $this->validWorkspaceOrFallback($this->landingWorkspace, $workspaces, $defaultWorkspace);
+        $this->activeWorkspace = $this->validWorkspaceOrFallback($this->activeWorkspace, $workspaces, $this->landingWorkspace);
+
+        $orderedWidgetIds = $this->orderedWidgetIds(
+            $this->activeWorkspace,
+            $workspaces[$this->activeWorkspace]['default_widgets'],
+            array_keys($widgetCatalog)
+        );
+        $hiddenWidgetIds = $this->hiddenWidgetIds($this->activeWorkspace, array_keys($widgetCatalog));
+        $visibleWidgetIds = array_values(array_diff($orderedWidgetIds, $hiddenWidgetIds));
+
+        if ($visibleWidgetIds === [] && $orderedWidgetIds !== []) {
+            $visibleWidgetIds = [reset($orderedWidgetIds)];
+        }
+
+        $dashboard = $service->build(
+            $user,
+            array_values(array_unique(array_merge(
+                $visibleWidgetIds,
+                $this->workspaceStatsDependencies($this->activeWorkspace)
+            ))),
+            $signals,
+        );
+
+        return view('livewire.dashboard.overview', [
+            'activeWorkspaceDefinition' => $workspaces[$this->activeWorkspace],
+            'workspaces' => $workspaces,
+            'heroStats' => $this->workspaceStats($this->activeWorkspace, $dashboard['widgets']),
+            'visibleWidgets' => array_map(
+                fn (string $widgetId): array => ['id' => $widgetId] + $widgetCatalog[$widgetId],
+                $visibleWidgetIds
+            ),
+            'customizerWidgets' => array_map(function (string $widgetId) use ($widgetCatalog, $hiddenWidgetIds): array {
+                return [
+                    'id' => $widgetId,
+                    'enabled' => ! in_array($widgetId, $hiddenWidgetIds, true),
+                ] + $widgetCatalog[$widgetId];
+            }, $orderedWidgetIds),
+            'widgetData' => $dashboard['widgets'],
+        ]);
     }
 
     /**
-     * @param Collection<int,mixed>|array<int,mixed> $ids
-     * @return array<int,int>
+     * @param  array<string, mixed>  $signals
+     * @return array<string, array<string, mixed>>
      */
-    private function idsList(Collection|array $ids): array
+    private function workspaceDefinitions(array $signals): array
     {
-        $arr = $ids instanceof Collection ? $ids->all() : $ids;
-        $arr = \Illuminate\Support\Arr::flatten($arr);
-        $arr = array_map('intval', $arr);
-        return array_values(array_unique(array_filter($arr)));
+        $teamName = data_get($signals, 'team_context.name');
+
+        return collect([
+            'overview' => [
+                'label' => 'Overview',
+                'description' => 'The default cross-project dashboard for assigned work, deadlines, and activity.',
+                'default_widgets' => ['my_open_issues', 'due_soon', 'project_portfolio', 'recent_activity'],
+            ],
+            'my_sprint' => [
+                'label' => 'My Sprint',
+                'description' => 'Stay inside sprint commitments, due dates, and the issues that need movement this week.',
+                'default_widgets' => ['my_sprint', 'my_open_issues', 'due_soon', 'recent_activity'],
+                'available' => $signals['has_active_sprint'] || $signals['project_count'] > 0,
+            ],
+            'team_delivery' => [
+                'label' => 'Team Delivery',
+                'description' => $teamName
+                    ? "Track delivery across {$teamName}, from open work to sprint pressure and overdue items."
+                    : 'Track delivery across the projects you can see, with risk and flow surfaced up front.',
+                'default_widgets' => ['team_delivery', 'project_portfolio', 'release_health', 'recent_activity'],
+                'available' => $signals['project_count'] > 0,
+            ],
+            'support_queue' => [
+                'label' => 'Support Queue',
+                'description' => 'Keep open tickets, SLA pressure, and assignment gaps visible without leaving the dashboard.',
+                'default_widgets' => ['support_queue', 'my_open_issues', 'recent_activity'],
+                'available' => $signals['can_view_support'],
+            ],
+            'release_health' => [
+                'label' => 'Release Health',
+                'description' => 'Watch upcoming release windows, open scope, and which milestones need attention.',
+                'default_widgets' => ['release_health', 'team_delivery', 'recent_activity'],
+                'available' => $signals['has_releases'],
+            ],
+            'exec_summary' => [
+                'label' => 'Exec Summary',
+                'description' => 'A higher-level scan of project load, delivery risk, releases, and support demand.',
+                'default_widgets' => ['exec_summary', 'release_health', 'support_queue', 'recent_activity'],
+                'available' => $signals['project_count'] > 0 || $signals['can_view_support'],
+            ],
+            'solo_today' => [
+                'label' => 'Solo Mode Today',
+                'description' => 'A tighter execution view for focus sessions, next work, and just enough surrounding context.',
+                'default_widgets' => ['solo_today', 'my_open_issues', 'due_soon'],
+            ],
+        ])
+            ->filter(fn (array $workspace): bool => $workspace['available'] ?? true)
+            ->map(fn (array $workspace): array => [
+                'label' => $workspace['label'],
+                'description' => $workspace['description'],
+                'default_widgets' => $workspace['default_widgets'],
+            ])
+            ->all();
     }
 
-    public function render(): View
+    /**
+     * @param  array<string, mixed>  $signals
+     * @return array<string, array<string, string>>
+     */
+    private function widgetCatalog(array $signals): array
     {
-        return view('livewire.dashboard.overview');
+        return collect([
+            'my_open_issues' => [
+                'label' => 'My open issues',
+                'description' => 'Assigned work across visible projects.',
+                'span' => 'col-xl-6',
+                'view' => 'my_open_issues',
+            ],
+            'due_soon' => [
+                'label' => 'Due soon',
+                'description' => 'Items due in the next 14 days.',
+                'span' => 'col-xl-6',
+                'view' => 'due_soon',
+            ],
+            'project_portfolio' => [
+                'label' => 'Projects',
+                'description' => 'Your visible projects and current load.',
+                'span' => 'col-xl-6',
+                'view' => 'project_portfolio',
+                'available' => $signals['project_count'] > 0,
+            ],
+            'recent_activity' => [
+                'label' => 'Recent activity',
+                'description' => 'Changes across visible work.',
+                'span' => 'col-12',
+                'view' => 'recent_activity',
+            ],
+            'my_sprint' => [
+                'label' => 'Sprint focus',
+                'description' => 'Active sprint summary and assigned sprint issues.',
+                'span' => 'col-12',
+                'view' => 'my_sprint',
+                'available' => $signals['project_count'] > 0,
+            ],
+            'team_delivery' => [
+                'label' => 'Delivery view',
+                'description' => 'Project-level delivery and risk metrics.',
+                'span' => 'col-12',
+                'view' => 'team_delivery',
+                'available' => $signals['project_count'] > 0,
+            ],
+            'support_queue' => [
+                'label' => 'Support queue',
+                'description' => 'Open tickets, SLAs, and routing.',
+                'span' => 'col-12',
+                'view' => 'support_queue',
+                'available' => $signals['can_view_support'],
+            ],
+            'release_health' => [
+                'label' => 'Release health',
+                'description' => 'Release readiness and milestone risk.',
+                'span' => 'col-12',
+                'view' => 'release_health',
+                'available' => $signals['has_releases'],
+            ],
+            'exec_summary' => [
+                'label' => 'Executive summary',
+                'description' => 'High-level health and current risks.',
+                'span' => 'col-12',
+                'view' => 'exec_summary',
+                'available' => $signals['project_count'] > 0 || $signals['can_view_support'],
+            ],
+            'solo_today' => [
+                'label' => 'Solo mode today',
+                'description' => 'Focus timer, next work, and on-deck issues.',
+                'span' => 'col-12',
+                'view' => 'solo_today',
+            ],
+        ])
+            ->filter(fn (array $widget): bool => $widget['available'] ?? true)
+            ->map(fn (array $widget): array => [
+                'label' => $widget['label'],
+                'description' => $widget['description'],
+                'span' => $widget['span'],
+                'view' => $widget['view'],
+            ])
+            ->all();
+    }
+
+    /**
+     * @param  array<string, array<string, mixed>>  $workspaces
+     */
+    private function defaultWorkspaceFromSignals(array $signals, array $workspaces): string
+    {
+        $preferred = match (true) {
+            $signals['can_view_support'] => 'support_queue',
+            $signals['is_admin'] => 'exec_summary',
+            data_get($signals, 'team_context.is_owner') && ! data_get($signals, 'team_context.is_personal') => 'team_delivery',
+            $signals['has_active_sprint'] => 'my_sprint',
+            $signals['project_count'] === 0 => 'solo_today',
+            default => 'overview',
+        };
+
+        return $this->validWorkspaceOrFallback($preferred, $workspaces, 'overview');
+    }
+
+    /**
+     * @param  array<string, array<string, mixed>>  $workspaces
+     */
+    private function validWorkspaceOrFallback(string $workspace, array $workspaces, string $fallback): string
+    {
+        if (isset($workspaces[$workspace])) {
+            return $workspace;
+        }
+
+        if (isset($workspaces[$fallback])) {
+            return $fallback;
+        }
+
+        return array_key_first($workspaces) ?? 'overview';
+    }
+
+    /**
+     * @return array{0: array<string, mixed>, 1: array<string, array<string, mixed>>, 2: array<string, array<string, string>>}
+     */
+    private function preferenceContext(): array
+    {
+        $user = auth()->user();
+
+        abort_unless($user !== null, 403);
+
+        $signals = app(PersonalDashboardService::class)->signals($user);
+        $workspaces = $this->workspaceDefinitions($signals);
+        $catalog = $this->widgetCatalog($signals);
+
+        return [$signals, $workspaces, $catalog];
+    }
+
+    /**
+     * @param  array<int, string>  $defaultWidgets
+     * @param  array<int, string>  $availableWidgetIds
+     * @return array<int, string>
+     */
+    private function orderedWidgetIds(string $workspace, array $defaultWidgets, array $availableWidgetIds): array
+    {
+        $savedOrder = $this->filterWidgetIds($this->widgetOrder[$workspace] ?? [], $availableWidgetIds);
+        $defaults = $this->filterWidgetIds($defaultWidgets, $availableWidgetIds);
+
+        return array_values(array_unique(array_merge($savedOrder, $defaults, $availableWidgetIds)));
+    }
+
+    /**
+     * @param  array<int, string>  $availableWidgetIds
+     * @return array<int, string>
+     */
+    private function hiddenWidgetIds(string $workspace, array $availableWidgetIds): array
+    {
+        return $this->filterWidgetIds($this->hiddenWidgets[$workspace] ?? [], $availableWidgetIds);
+    }
+
+    /**
+     * @param  array<int, string>  $widgetIds
+     * @param  array<int, string>  $availableWidgetIds
+     * @return array<int, string>
+     */
+    private function filterWidgetIds(array $widgetIds, array $availableWidgetIds): array
+    {
+        return array_values(array_unique(array_filter(
+            $widgetIds,
+            static fn (string $widgetId): bool => in_array($widgetId, $availableWidgetIds, true)
+        )));
+    }
+
+    /**
+     * @param  array<string, mixed>  $widgetData
+     * @return array<int, array<string, int|string|null>>
+     */
+    private function workspaceStats(string $workspace, array $widgetData): array
+    {
+        return match ($workspace) {
+            'my_sprint' => [
+                ['label' => 'Active sprints', 'value' => data_get($widgetData, 'my_sprint.summary.active_sprint_count', 0)],
+                ['label' => 'Assigned', 'value' => data_get($widgetData, 'my_sprint.summary.assigned_issue_count', 0)],
+                ['label' => 'Due this week', 'value' => data_get($widgetData, 'my_sprint.summary.due_this_week_count', 0)],
+            ],
+            'team_delivery' => [
+                ['label' => 'Projects', 'value' => data_get($widgetData, 'team_delivery.summary.project_count', 0)],
+                ['label' => 'Open issues', 'value' => data_get($widgetData, 'team_delivery.summary.open_issue_count', 0)],
+                ['label' => 'Overdue', 'value' => data_get($widgetData, 'team_delivery.summary.overdue_count', 0)],
+                ['label' => 'Active sprints', 'value' => data_get($widgetData, 'team_delivery.summary.active_sprint_count', 0)],
+            ],
+            'support_queue' => [
+                ['label' => 'Open tickets', 'value' => data_get($widgetData, 'support_queue.summary.open_count', 0)],
+                ['label' => 'Breached', 'value' => data_get($widgetData, 'support_queue.summary.breached_count', 0)],
+                ['label' => 'Unassigned', 'value' => data_get($widgetData, 'support_queue.summary.unassigned_count', 0)],
+                ['label' => 'Mine', 'value' => data_get($widgetData, 'support_queue.summary.mine_count', 0)],
+            ],
+            'release_health' => [
+                ['label' => 'Releases', 'value' => data_get($widgetData, 'release_health.summary.release_count', 0)],
+                ['label' => 'At risk', 'value' => data_get($widgetData, 'release_health.summary.at_risk_count', 0)],
+                ['label' => 'Next release', 'value' => data_get($widgetData, 'release_health.summary.upcoming_label', 'None')],
+            ],
+            'exec_summary' => collect(data_get($widgetData, 'exec_summary.stats', []))
+                ->take(4)
+                ->values()
+                ->all(),
+            'solo_today' => [
+                ['label' => 'Open issues', 'value' => data_get($widgetData, 'solo_today.open_issue_count', 0)],
+                ['label' => 'Due soon', 'value' => data_get($widgetData, 'solo_today.due_soon_count', 0)],
+            ],
+            default => [
+                ['label' => 'Open issues', 'value' => count(data_get($widgetData, 'my_open_issues.items', []))],
+                ['label' => 'Due soon', 'value' => count(data_get($widgetData, 'due_soon.items', []))],
+                ['label' => 'Projects', 'value' => count(data_get($widgetData, 'project_portfolio.items', []))],
+            ],
+        };
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function workspaceStatsDependencies(string $workspace): array
+    {
+        return match ($workspace) {
+            'my_sprint' => ['my_sprint'],
+            'team_delivery' => ['team_delivery'],
+            'support_queue' => ['support_queue'],
+            'release_health' => ['release_health'],
+            'exec_summary' => ['exec_summary'],
+            'solo_today' => ['solo_today'],
+            default => ['my_open_issues', 'due_soon', 'project_portfolio'],
+        };
+    }
+
+    private function moveWidget(string $widget, int $direction): void
+    {
+        [, $workspaces, $catalog] = $this->preferenceContext();
+        $workspace = $this->activeWorkspace;
+
+        if (! isset($workspaces[$workspace], $catalog[$widget])) {
+            return;
+        }
+
+        $ordered = $this->orderedWidgetIds($workspace, $workspaces[$workspace]['default_widgets'], array_keys($catalog));
+        $index = array_search($widget, $ordered, true);
+
+        if ($index === false) {
+            return;
+        }
+
+        $targetIndex = $index + $direction;
+
+        if (! isset($ordered[$targetIndex])) {
+            return;
+        }
+
+        $current = $ordered[$index];
+        $ordered[$index] = $ordered[$targetIndex];
+        $ordered[$targetIndex] = $current;
+
+        $this->widgetOrder[$workspace] = array_values($ordered);
+        $this->persistPreferences();
+    }
+
+    private function persistPreferences(): void
+    {
+        $userId = auth()->id();
+
+        if (! $userId) {
+            return;
+        }
+
+        DashboardPreference::query()->updateOrCreate(
+            ['user_id' => $userId],
+            [
+                'landing_workspace' => $this->landingWorkspace,
+                'active_workspace' => $this->activeWorkspace,
+                'hidden_widgets' => $this->hiddenWidgets,
+                'widget_order' => $this->widgetOrder,
+            ]
+        );
     }
 }

@@ -25,7 +25,7 @@ render(function (View $view, Project $project) {
 
     // Lightweight eager-loads for the header/sidebar
     $project->loadMissing([
-        'organization:id,name',
+        'organization:id,name,slug',
         'teams:id,name',
         'users:id,name',
     ]);
@@ -270,7 +270,7 @@ render(function (View $view, Project $project) {
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+        <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap" data-tour="project-overview-header">
             <div>
                 <h2 class="h4 mb-1">{{ $project->key }} — {{ $project->name }}</h2>
                 <div class="small text-body-secondary d-flex flex-wrap gap-3">
@@ -278,10 +278,27 @@ render(function (View $view, Project $project) {
             {{ ucfirst($project->stage->value ?? 'planning') }}
           </span>
                     @if ($project->organization?->name)
-                        <span>Org: {{ $project->organization->name }}</span>
+                        <span>
+                            Org:
+                            <a class="link-primary text-decoration-none" href="{{ route('organizations.show', ['organization' => $project->organization]) }}">
+                                {{ $project->organization->name }}
+                            </a>
+                        </span>
                     @endif
                     @if ($project->teams->isNotEmpty())
-                        <span>Teams: {{ $project->teams->pluck('name')->implode(', ') }}</span>
+                        <span>
+                            Teams:
+                            @foreach($project->teams as $team)
+                                @can('view', $team)
+                                    <a class="link-primary text-decoration-none" href="{{ route('teams.dashboard', ['team' => $team]) }}">
+                                        {{ $team->name }}
+                                    </a>
+                                @else
+                                    <span>{{ $team->name }}</span>
+                                @endcan
+                                @if (! $loop->last), @endif
+                            @endforeach
+                        </span>
                     @endif
                 </div>
             </div>
@@ -318,7 +335,7 @@ render(function (View $view, Project $project) {
                     {{-- Left: Overview --}}
                     <div class="col-lg-8 d-flex flex-column gap-4">
                         {{-- Status summary --}}
-                        <div class="card">
+                        <div class="card" data-tour="project-status-summary">
                             <div class="card-body">
                                 <h3 class="h6 mb-2">{{ __('Issues by status') }}</h3>
                                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2 mt-1">
@@ -344,7 +361,7 @@ render(function (View $view, Project $project) {
                         </div>
 
                         {{-- My work --}}
-                        <div class="card">
+                        <div class="card" data-tour="project-assigned-issues">
                             <div class="card-body">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <h3 class="h6 mb-0">{{ __('My assigned issues') }}</h3>
@@ -376,7 +393,7 @@ render(function (View $view, Project $project) {
                         </div>
 
                         {{-- Activity --}}
-                        <div class="card">
+                        <div class="card" data-tour="project-activity">
                             <div class="card-body">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <h3 class="h6 mb-0">{{ __('Recent activity') }}</h3>
@@ -451,7 +468,7 @@ render(function (View $view, Project $project) {
                                                                                             <div
                                                                                                 class="d-inline-flex align-items-center gap-2">
                                                                                             <span
-                                                                                                class="badge bg-white text-body border">{{ $c['from'] ?? '—' }}</span>
+                                                                                                class="badge  text-body border">{{ $c['from'] ?? '—' }}</span>
                                                                                                 <span>→</span>
                                                                                                 <span class="badge border"
                                                                                                       @if($c['to_color']) style="background-color: {{ $c['to_color'] }}20" @endif>
@@ -480,7 +497,7 @@ render(function (View $view, Project $project) {
                     </div>
 
                     {{-- Right: Sidebar --}}
-                    <aside class="col-lg-4 d-flex flex-column gap-4">
+                    <aside class="col-lg-4 d-flex flex-column gap-4" data-tour="project-sidebar">
                         <div class="card">
                             <div class="card-body">
                                 <h3 class="h6 mb-2">{{ __('Project info') }}</h3>

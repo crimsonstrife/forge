@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\Contracts\Activity;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
@@ -26,25 +27,28 @@ use Spatie\Tags\HasTags;
 
 class Issue extends BaseModel implements HasMedia
 {
-    use HasUuids;
-    use HasTags;
-    use LogsActivity;
-    use InteractsWithMedia;
-    use IsPermissible;
     use HasExternalId;
     use HasRecordShares;
+    use HasTags;
+    use HasUuids;
+    use InteractsWithMedia;
+    use IsPermissible;
+    use LogsActivity;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [
         'project_id',
+        'sprint_id',
         'parent_id',
         'issue_type_id',
         'issue_status_id',
         'issue_priority_id',
         'reporter_id',
         'assignee_id',
+        'planning_order',
         'story_points',
         'estimate_minutes',
         'description',
@@ -62,8 +66,10 @@ class Issue extends BaseModel implements HasMedia
         'number' => 'integer',
         'parent_id' => 'string',
         'project_id' => 'string',
+        'sprint_id' => 'string',
         'reporter_id' => 'string',
         'assignee_id' => 'string',
+        'planning_order' => 'int',
         'story_points' => 'int',
         'children_count' => 'int',
         'children_done_count' => 'int',
@@ -71,7 +77,7 @@ class Issue extends BaseModel implements HasMedia
         'children_points_done' => 'int',
         'progress_percent' => 'int',
         'starts_at' => 'immutable_datetime',
-        'due_at'    => 'immutable_datetime',
+        'due_at' => 'immutable_datetime',
         'closed_at' => 'immutable_datetime',
         'is_public' => 'bool',
         'is_next' => 'bool',
@@ -93,8 +99,8 @@ class Issue extends BaseModel implements HasMedia
                 $projectKey = $model->project()->value('key'); // lightweight single column query
 
                 $next = (int) (static::query()
-                        ->where('project_id', $model->project_id)
-                        ->max('number') ?? 0) + 1;
+                    ->where('project_id', $model->project_id)
+                    ->max('number') ?? 0) + 1;
 
                 $model->number = $model->number ?: $next;
                 $model->key = $model->key ?: "{$projectKey}-{$model->number}";
@@ -124,14 +130,14 @@ class Issue extends BaseModel implements HasMedia
             ->dontSubmitEmptyLogs();
     }
 
-    public function tapActivity(\Spatie\Activitylog\Contracts\Activity $activity): void
+    public function tapActivity(Activity $activity): void
     {
         $ctx = ActivityContext::base();
         $activity->team_id = $ctx['team_id'];
         $activity->properties = $activity->properties->merge([
             'actor_id' => $ctx['user_id'],
-            'ip'       => $ctx['ip'],
-            'ua'       => $ctx['user_agent'],
+            'ip' => $ctx['ip'],
+            'ua' => $ctx['user_agent'],
             'issue_id' => $this->getKey(),
             'project_id' => $this->project_id,
         ]);
@@ -141,7 +147,7 @@ class Issue extends BaseModel implements HasMedia
             $activity->event = 'status_changed';
             $activity->description = 'issue.status_changed';
         } else {
-            $activity->description = 'issue.' . ($activity->event ?? 'updated');
+            $activity->description = 'issue.'.($activity->event ?? 'updated');
         }
     }
 
@@ -188,6 +194,18 @@ class Issue extends BaseModel implements HasMedia
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable')->orderBy('created_at');
+    }
+
+    public function followerRecords(): HasMany
+    {
+        return $this->hasMany(IssueFollower::class);
+    }
+
+    public function followerUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'issue_followers')
+            ->withTimestamps()
+            ->orderBy('users.name');
     }
 
     public function attachments(): MorphMany
@@ -262,6 +280,11 @@ class Issue extends BaseModel implements HasMedia
         return $this->belongsTo(Milestone::class);
     }
 
+    public function codexLinks(): HasMany
+    {
+        return $this->hasMany(IssueCodexLink::class);
+    }
+
     /**
      * Quick helper: does this issue come from (at least one) support ticket?
      */
@@ -294,6 +317,16 @@ class Issue extends BaseModel implements HasMedia
     public function scopeSubTasks($q)
     {
         return $q->whereHas('type', fn ($t) => $t->where('key', 'SUBTASK'));
+    }
+
+    public function scopeOrderedForPlanning($q)
+    {
+        return $q
+            ->orderByRaw('CASE WHEN planning_order IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('planning_order')
+            ->orderByRaw('CASE WHEN number IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('number')
+            ->orderBy('created_at');
     }
 
     public function scopeWithMeta($q)
@@ -406,5 +439,4 @@ class Issue extends BaseModel implements HasMedia
 
         return $project?->isAccessibleBy($user) ?? false;
     }
-
 }

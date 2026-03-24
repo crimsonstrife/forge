@@ -6,31 +6,33 @@ use App\Domain\Issues\Events\IssueAssigneeChanged;
 use App\Models\Issue;
 use App\Models\User;
 use App\Notifications\IssueAssigned;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Services\Issues\IssueCollaborationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 /**
  * Sends IssueAssigned (DB + Mail + Broadcast) to the new assignee.
  */
-final class SendIssueAssignedNotification implements ShouldQueue
+final class SendIssueAssignedNotification
 {
-    use InteractsWithQueue;
-
-    /** Ensure the listener runs after the DB transaction commits. */
-    public bool $afterCommit = true;
-
     public function handle(IssueAssigneeChanged $event): void
     {
+        $collaboration = app(IssueCollaborationService::class);
+
         // Self-assignment: don't notify the actor about their own action
         if ($event->actorId !== null && (string) $event->actorId === (string) $event->newAssigneeId) {
             return;
         }
 
-        $issue = Issue::query()->select(['id','summary','project_id'])->find($event->issueId);
+        $issue = Issue::query()->select(['id','key','summary','project_id'])->find($event->issueId);
         $user  = User::query()->select(['id','name','email'])->find($event->newAssigneeId);
         if (! $issue || ! $user) {
+            return;
+        }
+
+        $collaboration->follow($issue, $user);
+
+        if (! $collaboration->preferences($user)->enabledFor('assignment')) {
             return;
         }
 

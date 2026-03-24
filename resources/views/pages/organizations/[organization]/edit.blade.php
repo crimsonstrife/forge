@@ -11,7 +11,7 @@ middleware(['auth','verified']);
         <div class="d-flex align-items-center justify-content-between">
             <h2 class="h4 mb-0">Edit Organization</h2>
             <a class="btn btn-sm btn-outline-secondary"
-               href="{{ route('organizations.show', ['organization' => $organization->slug]) }}">Back</a>
+               href="{{ route('organizations.show', ['organization' => $organization]) }}">Back</a>
         </div>
     </x-slot>
 

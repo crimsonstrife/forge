@@ -6,9 +6,9 @@ use App\Enums\SprintState;
 use App\Models\Issue;
 use App\Models\Project;
 use App\Models\Sprint;
+use App\Services\Projects\BacklogPlanningService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Throwable;
@@ -27,7 +27,9 @@ final class ScrumBoard extends Component
     public array $backlog = [];
 
     public bool $showCreateSprint = false;
+
     public bool $showEndSprint = false;
+
     public bool $showSprintsModal = false;
 
     public ?string $currentSprintId = null;
@@ -53,7 +55,7 @@ final class ScrumBoard extends Component
 
         // Pick the active sprint if one exists.
         $this->currentSprintId = $this->project->sprints()
-            ->where('state', 'Active')
+            ->where('state', SprintState::Active->value)
             ->orderByDesc('start_date')
             ->value('id');
 
@@ -66,7 +68,7 @@ final class ScrumBoard extends Component
         $backlogIssues = Issue::query()
             ->where('project_id', $this->project->id)
             ->whereNull('sprint_id')
-            ->latest()
+            ->orderedForPlanning()
             ->limit(100)
             ->with([
                 'type:id,name,tier',          // tier chip
@@ -74,8 +76,7 @@ final class ScrumBoard extends Component
             ])
             ->withCount([
                 'children as children_total',
-                'children as children_done' => fn (Builder $q) =>
-                $q->whereHas('status', fn (Builder $s) => $s->where('is_done', true)),
+                'children as children_done' => fn (Builder $q) => $q->whereHas('status', fn (Builder $s) => $s->where('is_done', true)),
             ])
             ->get(['id', 'key', 'summary', 'issue_status_id', 'issue_type_id']);
 
@@ -84,19 +85,19 @@ final class ScrumBoard extends Component
             $tier = $type?->tier?->value ?? 'other';
 
             $typeColor = $type?->badgeColor() ?? match ($tier) {
-                'epic'    => '#7e57c2',
-                'story'   => '#1e88e5',
-                'task'    => '#9e9e9e',
+                'epic' => '#7e57c2',
+                'story' => '#1e88e5',
+                'task' => '#9e9e9e',
                 'subtask' => '#78909C',
-                default   => '#607D8B',
+                default => '#607D8B',
             };
 
             $typeIcon = $type?->iconName() ?? match ($tier) {
-                'epic'    => 'all_inclusive',
-                'story'   => 'menu_book',
-                'task'    => 'check_box',
+                'epic' => 'all_inclusive',
+                'story' => 'menu_book',
+                'task' => 'check_box',
                 'subtask' => 'subdirectory_arrow_right',
-                default   => 'filter_none',
+                default => 'filter_none',
             };
 
             $progress = $i->children_total > 0
@@ -104,15 +105,15 @@ final class ScrumBoard extends Component
                 : null;
 
             return [
-                'id'              => (string) $i->id,
-                'key'             => $i->key,
-                'summary'         => $i->summary,
-                'tier'            => $tier,
-                'type_color'      => $typeColor,
-                'type_icon'       => $typeIcon,
-                'children_total'  => (int) $i->children_total,
-                'children_done'   => (int) $i->children_done,
-                'progress'        => $progress,
+                'id' => (string) $i->id,
+                'key' => $i->key,
+                'summary' => $i->summary,
+                'tier' => $tier,
+                'type_color' => $typeColor,
+                'type_icon' => $typeIcon,
+                'children_total' => (int) $i->children_total,
+                'children_done' => (int) $i->children_done,
+                'progress' => $progress,
             ];
         })->all();
 
@@ -144,8 +145,7 @@ final class ScrumBoard extends Component
                 ])
                 ->withCount([
                     'children as children_total',
-                    'children as children_done' => fn (Builder $q) =>
-                    $q->whereHas('status', fn (Builder $s) => $s->where('is_done', true)),
+                    'children as children_done' => fn (Builder $q) => $q->whereHas('status', fn (Builder $s) => $s->where('is_done', true)),
                 ])
                 ->get(['id', 'key', 'summary', 'issue_status_id', 'issue_type_id']);
         }
@@ -160,19 +160,19 @@ final class ScrumBoard extends Component
             $tier = $type?->tier?->value ?? 'other';
 
             $typeColor = $type?->badgeColor() ?? match ($tier) {
-                'epic'    => '#7e57c2',
-                'story'   => '#1e88e5',
-                'task'    => '#9e9e9e',
+                'epic' => '#7e57c2',
+                'story' => '#1e88e5',
+                'task' => '#9e9e9e',
                 'subtask' => '#78909C',
-                default   => '#607D8B',
+                default => '#607D8B',
             };
 
             $typeIcon = $type?->iconName() ?? match ($tier) {
-                'epic'    => 'all_inclusive',
-                'story'   => 'menu_book',
-                'task'    => 'check_box',
+                'epic' => 'all_inclusive',
+                'story' => 'menu_book',
+                'task' => 'check_box',
                 'subtask' => 'subdirectory_arrow_right',
-                default   => 'filter_none',
+                default => 'filter_none',
             };
 
             $progress = $i->children_total > 0
@@ -180,15 +180,15 @@ final class ScrumBoard extends Component
                 : null;
 
             $lists[$statusId][] = [
-                'id'              => (string) $i->id,
-                'key'             => $i->key,
-                'summary'         => $i->summary,
-                'tier'            => $tier,
-                'type_color'      => $typeColor,
-                'type_icon'       => $typeIcon,
-                'children_total'  => (int) $i->children_total,
-                'children_done'   => (int) $i->children_done,
-                'progress'        => $progress,
+                'id' => (string) $i->id,
+                'key' => $i->key,
+                'summary' => $i->summary,
+                'tier' => $tier,
+                'type_color' => $typeColor,
+                'type_icon' => $typeIcon,
+                'children_total' => (int) $i->children_total,
+                'children_done' => (int) $i->children_done,
+                'progress' => $progress,
             ];
         }
 
@@ -203,16 +203,21 @@ final class ScrumBoard extends Component
 
         if (! auth()->user()->can('issues.update')) {
             $this->dispatch('notify', type: 'error', message: 'No permission.');
+
             return;
         }
 
         if ($this->currentSprintId === null) {
             $this->dispatch('notify', type: 'error', message: 'No active sprint.');
+
             return;
         }
 
-        $issue->sprint_id = $this->currentSprintId;
-        $issue->save();
+        app(BacklogPlanningService::class)->moveIssues(
+            $this->project,
+            [(string) $issue->id],
+            $this->currentSprintId
+        );
 
         $this->loadData();
     }
@@ -225,11 +230,15 @@ final class ScrumBoard extends Component
 
         if (! auth()->user()->can('issues.update')) {
             $this->dispatch('notify', type: 'error', message: 'No permission.');
+
             return;
         }
 
-        $issue->sprint_id = null;
-        $issue->save();
+        app(BacklogPlanningService::class)->moveIssues(
+            $this->project,
+            [(string) $issue->id],
+            null
+        );
 
         $this->loadData();
     }
@@ -242,6 +251,7 @@ final class ScrumBoard extends Component
 
         if (! auth()->user()->can('issues.transition')) {
             $this->dispatch('notify', type: 'error', message: 'No permission.');
+
             return;
         }
 
@@ -255,17 +265,17 @@ final class ScrumBoard extends Component
     private function loadSprints(): void
     {
         $this->sprints = $this->project->sprints()
-            ->orderByRaw("FIELD(state, ?, ?, ?) ASC", [
+            ->orderByRaw('FIELD(state, ?, ?, ?) ASC', [
                 SprintState::Active, SprintState::Planned, SprintState::Closed,
             ])
             ->orderByDesc('start_date')
-            ->get(['id','name','state','start_date','end_date'])
+            ->get(['id', 'name', 'state', 'start_date', 'end_date'])
             ->map(fn ($s) => [
-                'id'         => (string) $s->id,
-                'name'       => $s->name,
-                'state'      => $s->state,
+                'id' => (string) $s->id,
+                'name' => $s->name,
+                'state' => $s->state,
                 'start_date' => $s->start_date?->toDateString(),
-                'end_date'   => $s->end_date?->toDateString(),
+                'end_date' => $s->end_date?->toDateString(),
             ])->all();
     }
 
@@ -273,7 +283,7 @@ final class ScrumBoard extends Component
     {
         $this->authorize('create', [Sprint::class, $this->project]);
         $this->resetValidation();
-        $this->newSprint = ['name' => '','goal' => '','start_date' => '','end_date' => '','start_now' => false];
+        $this->newSprint = ['name' => '', 'goal' => '', 'start_date' => '', 'end_date' => '', 'start_now' => false];
         $this->showCreateSprint = true;
     }
 
@@ -282,20 +292,20 @@ final class ScrumBoard extends Component
         $this->authorize('create', [Sprint::class, $this->project]);
 
         $data = $this->validate([
-            'newSprint.name'       => ['required','string','max:255'],
-            'newSprint.goal'       => ['nullable','string','max:2000'],
-            'newSprint.start_date' => ['nullable','date'],
-            'newSprint.end_date'   => ['nullable','date','after_or_equal:newSprint.start_date'],
-            'newSprint.start_now'  => ['boolean'],
+            'newSprint.name' => ['required', 'string', 'max:255'],
+            'newSprint.goal' => ['nullable', 'string', 'max:2000'],
+            'newSprint.start_date' => ['nullable', 'date'],
+            'newSprint.end_date' => ['nullable', 'date', 'after_or_equal:newSprint.start_date'],
+            'newSprint.start_now' => ['boolean'],
         ])['newSprint'];
 
         $sprint = new Sprint([
             'project_id' => $this->project->id,
-            'name'       => $data['name'],
-            'goal'       => $data['goal'] ?? null,
+            'name' => $data['name'],
+            'goal' => $data['goal'] ?? null,
             'start_date' => $data['start_date'] ?: null,
-            'end_date'   => $data['end_date'] ?: null,
-            'state'      => SprintState::Planned,
+            'end_date' => $data['end_date'] ?: null,
+            'state' => SprintState::Planned,
             'sort_order' => 0,
         ]);
 
@@ -315,6 +325,7 @@ final class ScrumBoard extends Component
     {
         if (! $this->currentSprintId) {
             $this->dispatch('notify', type: 'error', message: 'No active sprint.');
+
             return;
         }
         /** @var Sprint $sprint */
@@ -332,6 +343,7 @@ final class ScrumBoard extends Component
     {
         if (! $this->currentSprintId) {
             $this->dispatch('notify', type: 'error', message: 'No active sprint.');
+
             return;
         }
 
@@ -384,12 +396,12 @@ final class ScrumBoard extends Component
         DB::transaction(function () use ($sprint) {
             // Close any existing active sprint for this project
             Sprint::forProject($this->project->id)->active()->update([
-                'state'    => SprintState::Closed,
+                'state' => SprintState::Closed,
                 'end_date' => now()->toDateString(),
             ]);
 
             $sprint->update([
-                'state'      => SprintState::Active,
+                'state' => SprintState::Active,
                 'start_date' => $sprint->start_date ?: now()->toDateString(),
             ]);
 

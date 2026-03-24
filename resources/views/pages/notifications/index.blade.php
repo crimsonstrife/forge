@@ -49,7 +49,10 @@ render(function (View $view, Request $request) {
 
         <div class="list-group">
             @forelse($notifications as $n)
-                @php $data = $n->data ?? []; @endphp
+                @php
+                    $data = $n->data ?? [];
+                    $title = $data['title'] ?? str(class_basename($n->type))->headline()->toString();
+                @endphp
                 <a class="list-group-item list-group-item-action d-flex justify-content-between {{ $n->read_at ? '' : 'list-group-item-info' }}"
                    href="{{ $data['url'] ?? '#' }}"
                    @if(!$n->read_at) aria-unread="true" @endif>
@@ -62,7 +65,7 @@ render(function (View $view, Request $request) {
                             </span>
                         @endif
                         <div>
-                            <div class="fw-semibold">{{ class_basename($n->type) }}</div>
+                            <div class="fw-semibold">{{ $title }}</div>
                             @if(isset($data['summary']))
                                 <div class="small text-muted">{{ $data['summary'] }}</div>
                             @endif

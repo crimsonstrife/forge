@@ -3,23 +3,25 @@
 use App\Http\Controllers\Admin\ExportsController;
 use App\Http\Controllers\HealthCheckResultsController;
 use App\Http\Controllers\IssueActionItemController;
+use App\Http\Controllers\IssueAttachmentController;
 use App\Http\Controllers\IssueController;
+use App\Http\Controllers\IssueSavedViewController;
 use App\Http\Controllers\IssueVcsController;
 use App\Http\Controllers\Notifications\MarkAllReadController;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\IssueAttachmentController;
+use App\Http\Controllers\Onboarding\StartTourController;
+use App\Http\Controllers\Onboarding\UpdateTourStateController;
 use App\Http\Controllers\ProjectCalendarController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectMilestoneController;
 use App\Http\Controllers\TransitionStatusController;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
-use App\Livewire\Settings\Profile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 Route::get('/', static function () {
-    if (!auth()->check()) {
+    if (! auth()->check()) {
         return view('welcome'); // Send non-logged-in users to the welcome page
     }
 
@@ -32,9 +34,8 @@ Route::get('/', static function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', 'settings/profile');
-
-    Route::get('settings/profile', Profile::class)->name('settings.profile');
+    Route::redirect('settings', 'user/profile');
+    Route::redirect('settings/profile', 'user/profile')->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 
@@ -43,11 +44,11 @@ Route::middleware(['auth'])->group(function () {
         ->name('admin.exports.download');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
 
 Route::get('/reports/{project}/throughput.csv', static function (string $project): StreamedResponse {
     $from = request('from');
-    $to   = request('to');
+    $to = request('to');
 
     $q = DB::table('report_project_daily_summaries')
         ->where('project_id', $project)
@@ -70,13 +71,18 @@ Route::get('/reports/{project}/throughput.csv', static function (string $project
         }
         fclose($out);
     }, 'throughput.csv', ['Content-Type' => 'text/csv']);
-})->middleware(['auth','verified','can:view.reports'])->name('reports.throughput.csv');
+})->middleware(['auth', 'verified', 'can:view.reports'])->name('reports.throughput.csv');
 
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+    Route::prefix('/onboarding')->name('onboarding.')->group(function () {
+        Route::post('/tours/{tour}/start', StartTourController::class)->name('tours.start');
+        Route::patch('/tours/{tour}', UpdateTourStateController::class)->name('tours.update');
+    });
+
     Route::get('/dashboard', static function () {
         return view('dashboard');
     })->name('dashboard');
@@ -102,6 +108,10 @@ Route::middleware([
         ->name('projects.destroy');
     Route::delete('/projects/{project}/issues/{issue}', IssueController::class)
         ->name('issues.destroy');
+    Route::post('/issues/views', [IssueSavedViewController::class, 'store'])
+        ->name('issues.views.store');
+    Route::delete('/issues/views/{savedIssueView}', [IssueSavedViewController::class, 'destroy'])
+        ->name('issues.views.destroy');
     Route::get('/projects/{project}/milestones', [ProjectMilestoneController::class, 'index'])
         ->name('projects.milestones.index');
 
