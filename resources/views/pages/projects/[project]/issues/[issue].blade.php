@@ -233,6 +233,8 @@ render(function (View $view, Project $project, Issue $issue) {
     $projectRepoLink = $project->repositoryLink;        // App\Models\ProjectRepository|null
     $projectRepo = $projectRepoLink?->repository;    // App\Models\Repository|null
     $defaultBranch = $projectRepo?->default_branch ?: 'main';
+    $projectRepoUrl = $projectRepo?->externalUrl();
+    $projectRepoSupportsIssueSync = $projectRepo?->supportsIssueSync() ?? false;
 
     return $view->with(compact(
         'attachments',
@@ -246,6 +248,8 @@ render(function (View $view, Project $project, Issue $issue) {
         'childrenProgressPct',
         'activityGroups',
         'projectRepo',
+        'projectRepoUrl',
+        'projectRepoSupportsIssueSync',
         'defaultBranch',
         'allowedToStatuses',
     ));
@@ -754,14 +758,13 @@ render(function (View $view, Project $project, Issue $issue) {
 
                         <!-- Code Links -->
                         @php $defaultPrTitle = "[$issue->key] $issue->summary"; @endphp
-                        @if($projectRepo)
+                        @if($projectRepo && $projectRepoSupportsIssueSync)
                             <div
                                 x-data="window.issueVcs({ repoId: '{{ $projectRepo->id }}', issueKey: '{{ $issue->key }}', defaultBranch: '{{ $defaultBranch }}', prTitleInitial: @js($defaultPrTitle),})"
                                 x-init="init()" class="card shadow-sm">
                                 <div class="card-body d-flex align-items-center justify-content-between">
                                     <h4 class="h6 mb-0">Code Links</h4>
-                                    <div class="small text-body-secondary">Repo: {{ $projectRepo->owner }}
-                                        /{{ $projectRepo->name }}</div>
+                                    <div class="small text-body-secondary">Repo: {{ $projectRepo->displayPath() }}</div>
                                 </div>
 
                                 <div class="card-body d-flex flex-column gap-3">
@@ -922,6 +925,31 @@ render(function (View $view, Project $project, Issue $issue) {
                                             </button>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        @elseif($projectRepo)
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between gap-3">
+                                        <div>
+                                            <h4 class="h6 mb-1">Repository</h4>
+                                            <div class="small text-body-secondary">{{ $projectRepo->displayPath() }}</div>
+                                            @if($projectRepo->slugPath() !== $projectRepo->displayPath())
+                                                <div class="small text-body-secondary">Path: {{ $projectRepo->slugPath() }}</div>
+                                            @endif
+                                        </div>
+                                        <span class="badge text-bg-secondary">{{ ucfirst($projectRepo->provider) }}</span>
+                                    </div>
+
+                                    <p class="small text-body-secondary mt-3 mb-3">
+                                        This project is linked to a Crucible repository. Branch and pull request workflows stay in Crucible for this provider.
+                                    </p>
+
+                                    @if($projectRepoUrl)
+                                        <a href="{{ $projectRepoUrl }}" target="_blank" rel="noreferrer" class="btn btn-primary btn-sm">
+                                            Open in Crucible
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
                         @endif

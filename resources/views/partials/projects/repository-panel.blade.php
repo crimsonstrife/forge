@@ -1,7 +1,6 @@
 @php
     /** @var \App\Models\Project $project */
     $link = $project->repositoryLink; // HasOne ProjectRepository
-    $issuesCount = $project->issues()->count();
 @endphp
 
 <div class="card shadow-sm mb-4">
@@ -18,28 +17,43 @@
     <div class="card-body">
         @if($link)
             @php
-                $repo = $link->repository()->first();
+                $repo = $link->repository;
+                $repoUrl = $repo?->externalUrl();
+                $supportsIssueSync = $repo?->supportsIssueSync() ?? false;
             @endphp
 
             <div class="row g-3 align-items-center">
                 <div class="col-md-8">
-                    {{-- existing provider/repo markup --}}
                     <div class="mb-1">
-                        <strong>Provider:</strong> {{ strtoupper($repo->provider) }}
+                        <strong>Provider:</strong> {{ ucfirst($repo->provider) }}
                     </div>
                     <div class="mb-1">
                         <strong>Repository:</strong>
-                        {{ $repo->owner }}/{{ $repo->name }}
+                        {{ $repo->displayPath() }}
                         @if($repo->host)
                             <span class="text-muted">({{ $repo->host }})</span>
                         @endif
                     </div>
-                    @if($repo->provider === 'github')
+                    @if($repo->provider === 'crucible' && $repo->slugPath() !== $repo->displayPath())
                         <div class="mb-2">
-                            <a class="link-primary" target="_blank"
-                               href="https://{{ $repo->host ?? 'github.com' }}/{{ $repo->owner }}/{{ $repo->name }}">
-                                View on GitHub
+                            <span class="text-muted small">Repo path: {{ $repo->slugPath() }}</span>
+                        </div>
+                    @endif
+                    @if($repoUrl)
+                        <div class="mb-2">
+                            <a class="link-primary" target="_blank" rel="noopener noreferrer" href="{{ $repoUrl }}">
+                                {{ $repo->provider === 'crucible' ? 'Open in Crucible' : 'View on GitHub' }}
                             </a>
+                        </div>
+                    @endif
+                    @if($repo?->default_branch)
+                        <div class="mb-2 text-muted small">
+                            Default branch: <code>{{ $repo->default_branch }}</code>
+                        </div>
+                    @endif
+                    @if($repo->provider === 'crucible')
+                        <div class="alert alert-light border small mb-3">
+                            This project is linked to a Crucible repository. Forge uses the reverse Crucible → Forge project link as the source of truth for this connection.
                         </div>
                     @endif
 
@@ -48,22 +62,22 @@
 
                 <div class="col-md-4">
                     <div class="border rounded p-3 bg-body-tertiary">
-                        <livewire:projects.repository-sync-status :link="$link" />
+                        @if($supportsIssueSync)
+                            <livewire:projects.repository-sync-status :link="$link" />
+                        @else
+                            <div class="small text-muted">Link status</div>
+                            <div class="fw-semibold">VERIFIED</div>
+                            <div class="small mt-1 text-muted">
+                                Managed through Crucible. Issue import and sync are not used for this provider.
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
 
         @else
-            @can('connect', [\App\Models\ProjectRepository::class, $project])
-                @if($issuesCount > 0)
-                    <div class="alert alert-warning mb-0">
-                        <strong>Repository connection disabled:</strong>
-                        this project already has issues. To keep the initial import one-way and avoid conflicts,
-                        connect a repository only on projects without issues.
-                    </div>
-                @else
-                    <livewire:projects.connect-repository :project="$project" />
-                @endif
+            @can('update', $project)
+                <livewire:projects.connect-repository :project="$project" />
             @else
                 <div class="alert alert-secondary mb-0">
                     You don’t have permission to connect a repository for this project.

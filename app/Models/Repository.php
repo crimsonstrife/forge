@@ -7,6 +7,7 @@ use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class Repository extends BaseModel
@@ -57,5 +58,36 @@ class Repository extends BaseModel
     public function statusMappings(): HasMany
     {
         return $this->hasMany(IssueStatusMapping::class);
+    }
+
+    public function supportsIssueSync(): bool
+    {
+        return strtolower((string) $this->provider) === 'github';
+    }
+
+    public function displayPath(): string
+    {
+        if (strtolower((string) $this->provider) === 'crucible') {
+            $org = (string) Arr::get($this->meta, 'organization_name', $this->owner);
+            $repo = (string) Arr::get($this->meta, 'repository_name', $this->name);
+
+            return trim($org . '/' . $repo, '/');
+        }
+
+        return trim($this->owner . '/' . $this->name, '/');
+    }
+
+    public function slugPath(): string
+    {
+        return trim($this->owner . '/' . $this->name, '/');
+    }
+
+    public function externalUrl(): ?string
+    {
+        return match (strtolower((string) $this->provider)) {
+            'github' => 'https://' . ($this->host ?: 'github.com') . '/' . $this->slugPath(),
+            'crucible' => Arr::get($this->meta, 'web_url'),
+            default => null,
+        };
     }
 }
