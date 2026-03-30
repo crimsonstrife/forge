@@ -69,6 +69,7 @@ final class ManageCodexLinks extends Component
                 ->get($codex->baseUrl().'/api/v1/pages/search', array_filter([
                     'q' => $q,
                     'workspace_id' => $workspaceId,
+                    'for_forge_user_id' => auth()->id(),
                 ]));
 
             if ($response->successful()) {
