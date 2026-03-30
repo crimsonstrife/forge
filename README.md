@@ -1,4 +1,4 @@
-![Forge Logo](/public/logos/PNG/forge-03.png)
+![Forge Logo](public/logos/PNG/forge-03.png)
 
 [![DeepSource](https://app.deepsource.com/gh/crimsonstrife/forge.svg/?label=code+coverage&show_trend=true&token=SVWr1G8gJyQiCJ9ATcG0qdbl)](https://app.deepsource.com/gh/crimsonstrife/forge/)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue)](https://choosealicense.com/licenses/agpl-3.0/)
@@ -7,114 +7,103 @@
 ![Filament 4](https://img.shields.io/badge/Filament-4-0ea5e9)
 [![Laravel](https://github.com/crimsonstrife/forge/actions/workflows/laravel.yml/badge.svg?branch=prod)](https://github.com/crimsonstrife/forge/actions/workflows/laravel.yml)
 
-**Forge** is a Laravel-powered project & issue management app for small studios and indie teams. Track projects and issues, define workflows, connect support tickets, and manage admin data via Filament—all with a modern Livewire UI.
+**Forge** is a Laravel 12 app for projects, issues, goals, support, and internal operations. It combines day-to-day execution, planning views, support intake, machine APIs, and a Filament admin panel in one app.
 
-> **Note:** This project is **not** affiliated with Laravel Forge (server management).
+> **Note:** This project is **not** affiliated with Laravel Forge.
 
----
+## What Forge Includes
 
-## Features
-
-- **Projects & Issues**
-    - Issue types, statuses, priorities; parent/child relations.
-    - Comments, attachments (Spatie Media Library), tags, time entries, external links.
-    - Issue linking (blocks / relates to / duplicates, etc.).
-- **Goals**
-    - Link goals to projects and issues; visualize progress.
-- **Service Desk**
-    - Support tickets that map to issues (staff-only links & indicators).
-- **Admin (Filament)**
-    - Manage IssueType / IssueStatus / IssuePriority, ProjectType / ProjectStatus, and more.
-    - Centralized settings (Spatie Settings).
-    - Icon management (built-ins + custom SVG uploads).
-- **Permissions**
-    - Roles + advanced permission sets (admin vs superadmin), with mute/override behavior.
-    - Superadmins access Filament; admins access the Jetstream dashboard.
-- **Modern Stack**
-    - Folio file-based routing, Jetstream (Livewire), Pennant feature flags, Scout search, Reverb for realtime.
-
----
+- **Dashboard workspaces** with role-aware landing views, a personal "Today" surface, recent activity, and operational summaries.
+- **Projects and planning** with board, backlog, scrum, calendar, timeline, roadmap, transitions, milestone, and analytics/reporting views.
+- **Issue management** with Issue Explorer, saved views, comments, attachments, action items, issue links, time tracking, and collaboration panels.
+- **Goals, notes, organizations, and search** for work above the single-project level.
+- **Support desk workflows** including public ticket intake, staff triage, support access links, and ticket-to-issue conversion.
+- **Repository and docs integrations** including GitHub webhooks, Crucible repository/branch/PR linking, and Codex page linking.
+- **Admin and operations** through Filament, health/status pages, reporting exports, onboarding tours, and API docs tooling.
+- **APIs** for public project issue feeds, support ticket ingest, authenticated project/issue access, and system-to-system project reads.
 
 ## Tech Stack
 
-- **Runtime:** PHP 8.3, MySQL 8+ (or MariaDB 10.6+), Redis (recommended)
-- **Framework:** Laravel 12
-- **Frontend:** Jetstream v5 (Livewire v3 + Flux v2), Folio v1  
-  App UI uses **Bootstrap**; Filament panel uses **TailwindCSS v4**
-- **Admin:** Filament v4
-- **Other:** Pennant v1, Scout v10, Livewire Volt v1, Reverb v1
+- **Backend:** PHP 8.3, Laravel 12, Livewire 3, Volt, Jetstream 5, Folio, Filament 4
+- **Frontend:** Bootstrap 5, Tailwind CSS 4, Web Awesome components, TinyMCE 8
+- **Build tooling:** Vite 7, `laravel-vite-plugin`, `vite-plugin-static-copy`, esbuild
+- **Default local setup:** SQLite, database-backed cache/session/queue, Reverb broadcasting, log mailer
 
-> **Node requirement:** Vite 7 needs **Node ≥ 20.19.0** (npm 10+).
+> **Node requirement:** Vite 7 requires Node 20+. `npm ci` with the checked-in lockfile is the expected install path.
 
----
+## Local Development
 
-## Quick Start
+1. **Clone and install dependencies**
 
-1. **Clone & install**
+   ```bash
+   git clone https://github.com/crimsonstrife/forge.git
+   cd forge
+   cp .env.example .env
+   composer install
+   npm ci
+   ```
 
-    ```bash
-    git clone https://github.com/crimsonstrife/forge.git
-    cd forge
-    cp .env.example .env
-    composer install
-    npm install
-    php artisan key:generate
+2. **Create the local database and app key**
 
-    ```
+   ```bash
+   mkdir -p database
+   touch database/database.sqlite
+   php artisan key:generate
+   php artisan storage:link
+   ```
 
-2. **Configure .env**
+3. **Migrate and seed**
 
-    ```bash
-    APP_URL=http://forge.test          # or http://localhost:8000/your domain
-    DB_CONNECTION=mysql
-    DB_HOST=127.0.0.1
-    DB_PORT=3306
-    DB_DATABASE=your_database
-    DB_USERNAME=your_username
-    DB_PASSWORD=your_password
+   ```bash
+   php artisan migrate --seed
+   ```
 
-    CACHE_DRIVER=redis                  # or: file
-    SESSION_DRIVER=redis                # or: file
-    QUEUE_CONNECTION=database           # or: redis
+4. **Start the development stack**
 
-    ```
+   ```bash
+   composer dev
+   ```
 
-3. **Database & storage**
+   `composer dev` starts the Laravel server, queue listener, `pail`, and Vite together.
 
-    ```bash
-    php artisan migrate
-    php artisan storage:link
-    php artisan db:seed
+5. **Optional realtime server**
 
-    ```
+   ```bash
+   php artisan reverb:start
+   ```
 
-4. **Frontend**
+## Frontend Build Notes
 
-    ```bash
-    npm install        # if you did not run it already
-    npm run dev        # or: npm run build
+Use `npm run build` for production assets.
 
-    ```
+This project's build does more than a plain Vite compile:
 
-5. **Run**
-    ```bash
-    php artisan serve
-    # optional:
-    # php artisan reverb:start   # realtime
-    # php artisan queue:work     # queues
-    ```
+- Builds the Laravel Vite entrypoints for app, editor init, and TinyMCE plugin assets.
+- Copies Web Awesome and TinyMCE vendor assets into the public build output.
+- Minifies copied TinyMCE vendor JS/CSS after the Vite build.
+- Compiles stable TinyMCE plugin bundles into `public/plugins`.
 
-## Conventions
+If you are actively editing files in `resources/tiny-plugins`, run:
 
-- **Routing:** Folio file-based pages (resources/views/pages/...)
-- **Admin:** Filament v4 resources for reference data & settings
-- **ORM:** Eloquent with eager loading to avoid N+1
-- **Validation:** Form Request classes
-- **Authorization:** Policies & gates
-- **Jobs:** Long-running tasks queued (ShouldQueue)
+```bash
+npm run dev:plugins
+```
 
 ## Testing
 
 ```bash
-php artisan test
+composer test
 ```
+
+The test suite uses in-memory SQLite via `phpunit.xml`.
+
+## Configuration Notes
+
+- `.env.example` is SQLite-first. Redis is optional for local development.
+- Cache, session, and queue defaults use Laravel's database drivers locally.
+- Reverb, social OAuth, Codex, and Crucible integrations only need configuration if you plan to use them.
+- CI currently installs PHP and Node dependencies, runs `npm run build`, migrates against SQLite, and performs package discovery.
+
+## License
+
+GNU Affero General Public License v3.0

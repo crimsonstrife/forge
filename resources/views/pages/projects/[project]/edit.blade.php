@@ -1,5 +1,6 @@
 <?php
 use App\Models\Project;
+use App\Support\Codex\CodexConnection;
 use Illuminate\View\View;
 
 use function Laravel\Folio\{name, middleware, render};
@@ -9,7 +10,9 @@ middleware(['auth','verified']);
 
 render(function (View $view, Project $project) {
     $project->loadMissing(['repositoryLink.repository']);
-    return $view->with(compact('project'));
+    $codex = app(CodexConnection::class);
+
+    return $view->with(compact('project', 'codex'));
 });
 ?>
 <x-app-layout>
@@ -22,7 +25,7 @@ render(function (View $view, Project $project) {
             <div class="container mx-auto px-3">
                     <livewire:projects.edit-project-form :project="$project" />
 
-                    @if(config('codex.enabled'))
+                    @if($codex->enabled())
                         <div class="mt-4">
                             <livewire:projects.connect-codex-workspace :project="$project" />
                         </div>

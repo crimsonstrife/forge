@@ -1,5 +1,6 @@
 @php
     /** @var \App\Models\Project $project */
+    $codex = app(\App\Support\Codex\CodexConnection::class);
 @endphp
 
 <div>
@@ -26,7 +27,7 @@
                             {{ $project->codex_workspace_slug ?? $project->codex_workspace_id }}
                         </p>
                         <p class="mb-0 text-body-secondary small">
-                            <a href="{{ rtrim(config('codex.url'), '/') }}/workspaces/{{ $project->codex_workspace_slug }}"
+                            <a href="{{ $codex->baseUrl() }}/workspaces/{{ $project->codex_workspace_slug }}"
                                target="_blank" rel="noopener">
                                 Open workspace <i class="fas fa-external-link-alt ms-1" style="font-size:0.7rem;"></i>
                             </a>

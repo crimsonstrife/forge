@@ -2,7 +2,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build && npm run postbuild",
+        "build": "vite build",
         "postbuild": "node scripts/minify-tinymce.js && node scripts/build-editor-plugins.js",
         "dev": "vite",
         "dev:plugins": "node scripts/build-editor-plugins.js --watch"

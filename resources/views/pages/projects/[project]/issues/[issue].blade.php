@@ -7,6 +7,7 @@ use App\Models\IssueType;
 use App\Models\Project;
 use App\Models\Issue;
 use App\Models\User;
+use App\Support\Codex\CodexConnection;
 use App\Services\Issues\IssueStatusTransitionService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -236,6 +237,7 @@ render(function (View $view, Project $project, Issue $issue) {
     $projectRepoUrl = $projectRepo?->externalUrl();
     $projectRepoSupportsVcsLinks = $projectRepo?->supportsVcsLinks() ?? false;
     $projectRepoSupportsVcsCreation = $projectRepo?->supportsVcsCreation() ?? false;
+    $codex = app(CodexConnection::class);
 
     return $view->with(compact(
         'attachments',
@@ -254,6 +256,7 @@ render(function (View $view, Project $project, Issue $issue) {
         'projectRepoSupportsVcsCreation',
         'defaultBranch',
         'allowedToStatuses',
+        'codex',
     ));
 });
 ?>
@@ -472,7 +475,7 @@ render(function (View $view, Project $project, Issue $issue) {
                             </div>
                         </div>
 
-                        @if(config('codex.enabled'))
+                        @if($codex->enabled())
                         <div class="card shadow-sm" data-tour="issue-codex-pages">
                             <div class="card-header d-flex align-items-center gap-2">
                                 <i class="fas fa-book text-primary" style="font-size:0.9rem;"></i>
