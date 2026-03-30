@@ -74,6 +74,8 @@ final class ConnectCodexWorkspace extends Component
                     'project_id' => (string) $this->project->getKey(),
                     'forge_user_id' => (string) auth()->id(),
                     'has_search' => trim($this->search) !== '',
+                    'token_source' => $codex->tokenSource(),
+                    'token_fingerprint' => $codex->tokenFingerprint(),
                     'response_body' => Str::limit($response->body(), 1000),
                 ]);
                 $this->error = 'Failed to load workspaces from Codex (HTTP '.$response->status().').';
