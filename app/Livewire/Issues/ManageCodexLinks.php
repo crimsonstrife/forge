@@ -82,6 +82,8 @@ final class ManageCodexLinks extends Component
                     'project_id' => (string) $this->issue->project_id,
                     'workspace_id' => (string) ($workspaceId ?? ''),
                     'forge_user_id' => (string) auth()->id(),
+                    'token_source' => $codex->tokenSource(),
+                    'token_fingerprint' => $codex->tokenFingerprint(),
                     'response_body' => Str::limit($response->body(), 1000),
                 ]);
                 $this->error = 'Codex search failed (HTTP '.$response->status().').';

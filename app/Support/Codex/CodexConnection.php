@@ -31,6 +31,22 @@ final class CodexConnection
         return $settingsToken !== '' ? $settingsToken : (string) config('codex.app_token', '');
     }
 
+    public function tokenSource(): string
+    {
+        return trim((string) ($this->settings->token ?? '')) !== '' ? 'settings' : 'config';
+    }
+
+    public function tokenFingerprint(): ?string
+    {
+        $token = $this->token();
+
+        if ($token === '') {
+            return null;
+        }
+
+        return substr(hash('sha256', $token), 0, 12);
+    }
+
     public function configured(): bool
     {
         return $this->enabled() && $this->baseUrl() !== '' && $this->token() !== '';
