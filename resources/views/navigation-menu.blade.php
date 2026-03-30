@@ -4,6 +4,7 @@
     $user = auth()->user();
     $allowReg = app(\App\Settings\AuthSettings::class)->allowRegistration ?? true;
     $canUseOnboarding = $user?->hasVerifiedEmail() ?? false;
+    $codex = app(\App\Support\Codex\CodexConnection::class);
 @endphp
 <nav class="navbar navbar-expand-md bg-body border-bottom forge-site-navbar" x-data>
     <div class="container mx-auto py-3 forge-site-navbar__inner">
@@ -190,11 +191,11 @@
                 <div class="d-flex align-items-center gap-2 forge-site-navbar__actions">
                     @auth
                         <!-- Codex cross-app link (shown when Codex integration is configured) -->
-                        @if(config('codex.enabled') && config('codex.url'))
+                        @if($codex->enabled() && $codex->baseUrl() !== '')
                             @php
                                 $forgeProject    = request()->route('project');
                                 $codexSlug       = $forgeProject?->codex_workspace_slug;
-                                $codexBase       = rtrim(config('codex.url'), '/');
+                                $codexBase       = $codex->baseUrl();
                             @endphp
                             <a href="{{ $codexBase }}{{ $codexSlug ? '/workspaces/' . $codexSlug : '' }}"
                                class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"

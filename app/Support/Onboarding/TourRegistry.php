@@ -3,6 +3,7 @@
 namespace App\Support\Onboarding;
 
 use App\Models\User;
+use App\Support\Codex\CodexConnection;
 use Laravel\Jetstream\Jetstream;
 
 final class TourRegistry
@@ -273,7 +274,7 @@ final class TourRegistry
             ],
         ];
 
-        if (config('codex.enabled')) {
+        if (app(CodexConnection::class)->enabled()) {
             $blueprint['codex_pages'] = [
                 'route' => 'issues.show',
                 'routeParameters' => ['project' => $project, 'issue' => $issue],

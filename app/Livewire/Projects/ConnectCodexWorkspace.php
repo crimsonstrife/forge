@@ -3,9 +3,12 @@
 namespace App\Livewire\Projects;
 
 use App\Models\Project;
+use App\Support\Codex\CodexConnection;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 final class ConnectCodexWorkspace extends Component
@@ -37,24 +40,25 @@ final class ConnectCodexWorkspace extends Component
     public function loadWorkspaces(): void
     {
         $this->loading = true;
-        $this->error   = null;
+        $this->error = null;
         $this->workspaces = [];
 
-        $token   = config('codex.app_token');
-        $baseUrl = rtrim(config('codex.url'), '/');
+        $codex = app(CodexConnection::class);
 
-        if (! config('codex.enabled') || empty($baseUrl) || empty($token)) {
-            $this->error   = 'Codex integration is not configured. Set CODEX_ENABLED, CODEX_URL, and CODEX_APP_TOKEN.';
+        if (! $codex->configured()) {
+            $this->error = 'Codex integration is not configured. Configure Codex in settings or set CODEX_ENABLED, CODEX_URL, and CODEX_APP_TOKEN.';
             $this->loading = false;
+
             return;
         }
 
         try {
-            $response = Http::withToken($token)
+            $response = Http::withToken($codex->token())
+                ->acceptJson()
                 ->timeout(10)
                 ->withoutVerifying()
-                ->get("{$baseUrl}/api/v1/workspaces", [
-                    'search'            => $this->search,
+                ->get($codex->baseUrl().'/api/v1/workspaces', [
+                    'search' => $this->search,
                     // Let Codex scope results to workspaces this user can access.
                     // Codex resolves the Forge user ID to the matching Codex account.
                     'for_forge_user_id' => auth()->id(),
@@ -63,10 +67,20 @@ final class ConnectCodexWorkspace extends Component
             if ($response->successful()) {
                 $this->workspaces = $response->json('data') ?? [];
             } else {
-                $this->error = 'Failed to load workspaces from Codex (HTTP ' . $response->status() . ').';
+                Log::warning('Codex workspace lookup failed', [
+                    'status' => $response->status(),
+                    'base_url' => $codex->baseUrl(),
+                    'path' => '/api/v1/workspaces',
+                    'project_id' => (string) $this->project->getKey(),
+                    'forge_user_id' => (string) auth()->id(),
+                    'has_search' => trim($this->search) !== '',
+                    'response_body' => Str::limit($response->body(), 1000),
+                ]);
+                $this->error = 'Failed to load workspaces from Codex (HTTP '.$response->status().').';
             }
         } catch (\Throwable $e) {
-            $this->error = 'Could not connect to Codex: ' . $e->getMessage();
+            report($e);
+            $this->error = 'Could not connect to Codex: '.$e->getMessage();
         }
 
         $this->loading = false;
@@ -79,7 +93,7 @@ final class ConnectCodexWorkspace extends Component
     {
         $this->authorize('update', $this->project);
 
-        $this->project->codex_workspace_id   = $workspaceId;
+        $this->project->codex_workspace_id = $workspaceId;
         $this->project->codex_workspace_slug = $workspaceSlug;
         $this->project->save();
 
@@ -94,7 +108,7 @@ final class ConnectCodexWorkspace extends Component
     {
         $this->authorize('update', $this->project);
 
-        $this->project->codex_workspace_id   = null;
+        $this->project->codex_workspace_id = null;
         $this->project->codex_workspace_slug = null;
         $this->project->save();
 

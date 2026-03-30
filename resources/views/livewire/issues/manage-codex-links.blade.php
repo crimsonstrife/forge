@@ -1,6 +1,7 @@
 @php
     /** @var \App\Models\Issue $issue */
     /** @var \Illuminate\Support\Collection $links */
+    $codex = app(\App\Support\Codex\CodexConnection::class);
 @endphp
 
 <div class="d-flex flex-column gap-3" style="width: 100%;">
@@ -130,7 +131,7 @@
                 </div>
             @endforeach
         </div>
-    @elseif(!config('codex.enabled'))
+    @elseif(! $codex->enabled())
         <p class="text-body-secondary small mb-0">Codex integration is not enabled.</p>
     @endif
 </div>

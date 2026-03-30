@@ -4,9 +4,12 @@ namespace App\Livewire\Issues;
 
 use App\Models\Issue;
 use App\Models\IssueCodexLink;
+use App\Support\Codex\CodexConnection;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 final class ManageCodexLinks extends Component
@@ -40,40 +43,53 @@ final class ManageCodexLinks extends Component
         $q = trim($this->search);
         if ($q === '') {
             $this->results = [];
+
             return;
         }
 
-        $token   = config('codex.app_token');
-        $baseUrl = rtrim(config('codex.url'), '/');
+        $codex = app(CodexConnection::class);
 
-        if (! config('codex.enabled') || empty($baseUrl) || empty($token)) {
-            $this->error = 'Codex integration is not configured. Set CODEX_ENABLED, CODEX_URL, and CODEX_APP_TOKEN.';
+        if (! $codex->configured()) {
+            $this->error = 'Codex integration is not configured. Configure Codex in settings or set CODEX_ENABLED, CODEX_URL, and CODEX_APP_TOKEN.';
+
             return;
         }
 
         $this->searching = true;
-        $this->error     = null;
+        $this->error = null;
 
         // Filter by the linked workspace if this project is connected to one
         $workspaceId = $this->issue->project?->codex_workspace_id;
 
         try {
-            $response = Http::withToken($token)
+            $response = Http::withToken($codex->token())
+                ->acceptJson()
                 ->timeout(10)
                 ->withoutVerifying()
-                ->get("{$baseUrl}/api/v1/pages/search", array_filter([
-                    'q'            => $q,
+                ->get($codex->baseUrl().'/api/v1/pages/search', array_filter([
+                    'q' => $q,
                     'workspace_id' => $workspaceId,
                 ]));
 
             if ($response->successful()) {
                 $this->results = $response->json('data') ?? [];
             } else {
-                $this->error = 'Codex search failed (HTTP ' . $response->status() . ').';
+                Log::warning('Codex page search failed', [
+                    'status' => $response->status(),
+                    'base_url' => $codex->baseUrl(),
+                    'path' => '/api/v1/pages/search',
+                    'issue_id' => (string) $this->issue->getKey(),
+                    'project_id' => (string) $this->issue->project_id,
+                    'workspace_id' => (string) ($workspaceId ?? ''),
+                    'forge_user_id' => (string) auth()->id(),
+                    'response_body' => Str::limit($response->body(), 1000),
+                ]);
+                $this->error = 'Codex search failed (HTTP '.$response->status().').';
                 $this->results = [];
             }
         } catch (\Throwable $e) {
-            $this->error   = 'Could not reach Codex: ' . $e->getMessage();
+            report($e);
+            $this->error = 'Could not reach Codex: '.$e->getMessage();
             $this->results = [];
         }
 
@@ -100,17 +116,18 @@ final class ManageCodexLinks extends Component
 
         if ($exists) {
             $this->dispatch('notify', title: 'Already linked', body: 'This Codex page is already linked.');
+
             return;
         }
 
         IssueCodexLink::query()->create([
-            'issue_id'             => $this->issue->getKey(),
-            'codex_page_id'        => $pageId,
-            'codex_page_title'     => $pageTitle,
-            'codex_page_url'       => $pageUrl,
-            'codex_workspace_id'   => $workspaceId,
+            'issue_id' => $this->issue->getKey(),
+            'codex_page_id' => $pageId,
+            'codex_page_title' => $pageTitle,
+            'codex_page_url' => $pageUrl,
+            'codex_workspace_id' => $workspaceId,
             'codex_workspace_slug' => $workspaceSlug,
-            'added_by_id'          => auth()->id(),
+            'added_by_id' => auth()->id(),
         ]);
 
         $this->reset('search', 'results');
