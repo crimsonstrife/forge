@@ -1,7 +1,7 @@
 @php ob_start(); @endphp
-<flux:main>
+<div class="container py-4">
     {{ $slot }}
-</flux:main>
+</div>
 @php($content = new \Illuminate\Support\HtmlString(ob_get_clean()))
 
 @include('layouts.app', [

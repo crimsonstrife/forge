@@ -1,14 +1,3 @@
-@props([
-  'type' => 'button',
-  'variant' => 'neutral',     // WA variants: brand, neutral, danger, etc.
-  'appearance' => 'outlined', // solid | outlined | text
-])
-
-<wa-button
-    type="{{ $type }}"
-    variant="{{ $variant }}"
-    appearance="{{ $appearance }}"
-    {{ $attributes }}
->
+<button {{ $attributes->merge(['type' => 'button', 'class' => 'btn btn-outline-secondary']) }}>
     {{ $slot }}
-</wa-button>
+</button>

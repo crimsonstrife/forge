@@ -1,7 +1,7 @@
 @php /** @var \Illuminate\Notifications\DatabaseNotification[] $latest */ @endphp
 
 <div class="dropdown">
-    <button class="btn position-relative" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+    <button class="btn btn-sm btn-outline-secondary position-relative" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         <wa-icon family="solid" name="bell"></wa-icon>
         @if($unreadCount > 0)
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">

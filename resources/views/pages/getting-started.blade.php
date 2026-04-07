@@ -28,7 +28,7 @@ middleware(['auth', 'verified']);
     </x-slot>
 
     <div class="py-4">
-        <div class="container mx-auto py-4 d-flex flex-column gap-4">
+        <div class="container py-4 d-flex flex-column gap-4">
             <div class="row g-4">
                 <div class="col-lg-7">
                     <div class="card h-100">

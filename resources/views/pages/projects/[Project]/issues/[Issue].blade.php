@@ -335,7 +335,7 @@ render(function (View $view, Project $project, Issue $issue) {
     </x-slot>
 
     <div class="py-4">
-        <div class="container mx-auto py-4">
+        <div class="container py-4">
             <div class="d-grid gap-3">
 
                 {{-- Header card --}}

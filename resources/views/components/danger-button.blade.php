@@ -1,3 +1,3 @@
-<wa-button {{ $attributes->merge(['type' => 'button']) }} variant="danger">
+<button {{ $attributes->merge(['type' => 'button', 'class' => 'btn btn-danger']) }}>
     {{ $slot }}
-</wa-button>
+</button>

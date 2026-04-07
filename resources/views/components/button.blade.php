@@ -1,5 +1,17 @@
-@props(['variant' => 'brand', 'appearance' => null, 'type' => 'submit'])
+@props(['variant' => 'primary', 'appearance' => null, 'type' => 'submit'])
 
-<wa-button type="{{ $type }}" variant="{{ $variant }}" @if($appearance) appearance="{{ $appearance }}" @endif{{ $attributes->except(['class', 'variant', 'appearance', 'type']) }} class="{{ $attributes->get('class') }}">
+@php
+    $bootstrapVariant = match ($variant) {
+        'brand', 'primary' => 'primary',
+        'neutral', 'secondary' => 'secondary',
+        'danger' => 'danger',
+        default => $variant,
+    };
+
+    $isOutline = in_array($appearance, ['outline', 'outlined'], true) || $variant === 'neutral';
+    $classes = 'btn btn-' . ($isOutline ? 'outline-' : '') . $bootstrapVariant;
+@endphp
+
+<button type="{{ $type }}" {{ $attributes->except(['variant', 'appearance', 'type'])->merge(['class' => $classes]) }}>
     {{ $slot }}
-</wa-button>
+</button>

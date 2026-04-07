@@ -79,6 +79,6 @@
 
     <div class="card-footer d-flex justify-content-end gap-2">
         <a href="{{ route('projects.index') }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
-        <wa-button variant="brand" wire:click="save">{{ __('Create Project') }}</wa-button>
+        <button type="button" class="btn btn-primary" wire:click="save">{{ __('Create Project') }}</button>
     </div>
 </div>

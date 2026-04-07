@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-4">
-        <div class="container mx-auto py-4" data-tour="dashboard-overview">
+        <div class="container py-4" data-tour="dashboard-overview">
             <livewire:dashboard.overview />
         </div>
     </div>

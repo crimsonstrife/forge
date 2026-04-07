@@ -327,7 +327,7 @@ render(function (View $view, Project $project) {
     </x-slot>
 
     <div class="py-4">
-        <div class="container mx-auto py-4">
+        <div class="container py-4">
             <x-projects.page-card :project="$project">
                 <x-slot name="actions">
                 </x-slot>

@@ -3,7 +3,7 @@
     /** @var array<int, array{id:string,name:string,is_done:bool}> $statuses */
 @endphp
 
-<div class="container mx-auto py-4">
+<div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-lg-9 col-xl-8">
             <div class="card shadow-sm">

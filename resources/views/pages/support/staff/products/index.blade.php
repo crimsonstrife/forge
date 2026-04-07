@@ -8,7 +8,7 @@ middleware(['auth','verified']);
 ?>
 
 <x-app-layout>
-    <div class="container mx-auto py-4">
+    <div class="container py-4">
         <h1 class="h4 mb-3">Support Products</h1>
         @can('support.manage')
             @livewire('staff.support.products.index')

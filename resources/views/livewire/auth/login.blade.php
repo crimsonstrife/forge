@@ -1,11 +1,9 @@
-<div class="flex flex-col gap-6">
-    <!-- Session Status -->
+<div class="vstack gap-4">
     <x-auth-session-status class="text-center" :status="session('status')" />
 
     <x-validation-errors class="mb-3" />
 
-    <form wire:submit.prevent="login" class="flex flex-col gap-6">
-        <!-- Email Address -->
+    <form wire:submit.prevent="login" class="vstack gap-3">
         <x-input
             wire:model="email"
             :label="__('Email address')"
@@ -16,8 +14,7 @@
             placeholder="email@example.com"
         />
 
-        <!-- Password -->
-        <div class="relative">
+        <div>
             <x-input
                 wire:model="password"
                 :label="__('Password')"
@@ -27,28 +24,27 @@
                 :placeholder="__('Password')"
                 viewable
             />
+        </div>
+
+        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+            <x-checkbox wire:model="remember" :label="__('Remember me')" />
 
             @if (Route::has('password.request'))
-                <flux:link class="absolute end-0 top-0 text-sm" :href="route('password.request')" wire:navigate>
+                <a class="small text-body-secondary text-decoration-none" href="{{ route('password.request') }}">
                     {{ __('Forgot your password?') }}
-                </flux:link>
+                </a>
             @endif
         </div>
 
-        <!-- Remember Me -->
-        <x-checkbox wire:model="remember" :label="__('Remember me')" />
-
-        <div class="flex items-center justify-end">
-            <wa-button type="submit" variant="brand" aria-label="{{ __('Log in') }}">
-                <span>{{ __('Log in') }}</span>
-            </wa-button>
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">{{ __('Log in') }}</button>
         </div>
     </form>
 
     @if (Route::has('register'))
-        <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
+        <div class="text-center small text-body-secondary">
             <span>{{ __('Don\'t have an account?') }}</span>
-            <flux:link :href="route('register')" wire:navigate>{{ __('Sign up') }}</flux:link>
+            <a href="{{ route('register') }}" class="text-decoration-none">{{ __('Sign up') }}</a>
         </div>
     @endif
 </div>

@@ -41,7 +41,7 @@ render(function (\Illuminate\View\View $view, Organization $organization) {
     @endif
 
     <div class="py-4">
-        <div class="container mx-auto py-4 d-flex flex-column gap-4">
+        <div class="container py-4 d-flex flex-column gap-4">
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
                 <div class="col">
                     <div class="card h-100 shadow-sm">

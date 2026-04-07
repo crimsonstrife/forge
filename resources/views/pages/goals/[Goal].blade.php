@@ -53,7 +53,7 @@ render(function (View $view, Goal $goal) {
     </x-slot>
 
     <div class="py-4">
-        <div class="container mx-auto py-4">
+        <div class="container py-4">
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="mb-2 d-flex align-items-center">

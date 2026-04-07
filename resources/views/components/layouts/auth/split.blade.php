@@ -1,33 +1,28 @@
 @php ob_start(); @endphp
-<div class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
-    <div class="relative hidden h-full flex-col p-10 text-white lg:flex dark:border-e dark:border-neutral-800">
-        <div class="absolute inset-0 bg-neutral-900"></div>
-
-        <a href="{{ url('/') }}" class="relative z-20 flex items-center text-lg font-medium">
-                <span class="flex h-10 w-10 items-center justify-center rounded-md">
-                    <x-app-logo-icon class="me-2 h-7 fill-current text-white" />
-                </span>
-            {{ config('app.name', 'Laravel') }}
+<div class="min-vh-100 row g-0 bg-body">
+    <div class="col-lg-6 d-none d-lg-flex flex-column justify-content-between bg-dark text-white p-5">
+        <a href="{{ url('/') }}" class="d-flex align-items-center gap-2 text-white text-decoration-none fs-5 fw-medium">
+            <x-application-mark style="height: 2.5rem;" />
+            {{ config('app.name', 'Forge') }}
         </a>
 
         @php([$message, $author] = str(Illuminate\Foundation\Inspiring::quotes()->random())->explode('-'))
 
-        <div class="relative z-20 mt-auto">
-            <blockquote class="space-y-2">
-                <flux:heading size="lg">&ldquo;{{ trim($message) }}&rdquo;</flux:heading>
-                <footer><flux:heading>{{ trim($author) }}</flux:heading></footer>
+        <div>
+            <blockquote class="mb-0">
+                <p class="lead mb-2">&ldquo;{{ trim($message) }}&rdquo;</p>
+                <footer class="text-white-50">{{ trim($author) }}</footer>
             </blockquote>
         </div>
     </div>
 
-    <div class="w-full lg:p-8">
-        <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-            <a href="{{ url('/') }}" class="z-20 flex flex-col items-center gap-2 font-medium lg:hidden">
-                    <span class="flex h-9 w-9 items-center justify-center rounded-md">
-                        <x-app-logo-icon class="size-9 fill-current text-black dark:text-white" />
-                    </span>
-                <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
+    <div class="col-12 col-lg-6 d-flex align-items-center justify-content-center p-4">
+        <div class="w-100" style="max-width: 24rem;">
+            <a href="{{ url('/') }}" class="d-flex flex-column align-items-center gap-2 text-body text-decoration-none fw-medium mb-4 d-lg-none">
+                <x-application-mark style="height: 2.25rem;" />
+                <span class="visually-hidden">{{ config('app.name', 'Forge') }}</span>
             </a>
+
             {{ $slot }}
         </div>
     </div>
@@ -37,4 +32,7 @@
 @include('layouts.guest', [
     'slot' => $content,
     'header' => $header ?? null,
+    'showNavigation' => false,
+    'showFooter' => false,
+    'showCookieConsent' => false,
 ])

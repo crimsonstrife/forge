@@ -20,7 +20,7 @@ render(function (View $view, Request $request) {
 ?>
 
 <x-guest-layout>
-    <div class="container mx-auto py-4">
+    <div class="container py-4">
         @if($identity)
             <div class="d-flex justify-content-between align-items-center mb-3 gap-3 flex-wrap">
                 <div>
