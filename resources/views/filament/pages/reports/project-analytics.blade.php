@@ -25,10 +25,10 @@
 
                 <div class="mt-3 text-xs">
                     Backfill tip:
-                    <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800">
+                    <code class="px-1 py-0.5 rounded bg-gray-100">
                         php artisan reports:backfill --days=30
                     </code>
-                    <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800">
+                    <code class="px-1 py-0.5 rounded bg-gray-100">
                         php artisan reports:compute-metrics
                     </code>
                 </div>
