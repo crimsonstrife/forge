@@ -76,7 +76,6 @@
 </script>
 @vite($viteEntries)
 
-@fluxAppearance
 @livewireStyles
 
 @stack('meta')

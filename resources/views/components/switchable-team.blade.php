@@ -7,11 +7,11 @@
     <input type="hidden" name="team_id" value="{{ $team->id }}">
 
     <x-dynamic-component :component="$component" href="#" x-on:click.prevent="$root.submit();">
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center gap-2">
             @if (Auth::user()->isCurrentTeam($team))
-                <wa-icon class="me-2" name="check-circle"></wa-icon>
+                <span class="text-success" aria-hidden="true">✓</span>
             @endif
-            <div class="text-truncate">{{ $team->name }}</div>
+            <span class="text-truncate">{{ $team->name }}</span>
         </div>
     </x-dynamic-component>
 </form>

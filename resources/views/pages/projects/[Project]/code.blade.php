@@ -42,7 +42,7 @@ render(function (View $view, Project $project) {
     </x-slot>
 
     <div class="py-4">
-        <div class="container mx-auto py-4">
+        <div class="container py-4">
             <x-projects.page-card :project="$project">
                 {{-- Primary content for the Code tab --}}
                 <div class="row g-4">

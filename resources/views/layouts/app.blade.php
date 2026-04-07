@@ -11,10 +11,10 @@
         'includeMaterialIcons' => true,
     ])
 </head>
-<body x-data="themeSwitcher()" :class="{ 'dark': switchOn }">
+<body>
 <x-banner />
 
-<div class="min-vh-100 bg-body-tertiary">
+<div class="min-vh-100 d-flex flex-column bg-body">
     @livewire('navigation-menu')
 
     {{-- Header partial (uses the $header slot if present) --}}
@@ -24,18 +24,17 @@
         <livewire:onboarding.prompt />
     @endauth
 
-    <main>
+    <main class="flex-grow-1">
         {{ $slot }}
     </main>
+
     {{-- Footer partial --}}
-    @include('layouts.partials.footer', [
-    'footerLogo' => view('components.application-footer-logo', ['class' => 'h-24'])
-    ])
+    @include('layouts.partials.footer')
+
     @cookieconsentview
 </div>
 
 @stack('modals')
-@fluxScripts
 @livewireScripts
 @cookieconsentscripts
 @stack('scripts')

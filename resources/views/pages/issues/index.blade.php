@@ -172,7 +172,7 @@ render(function (View $view, Request $request, IssueExplorerService $explorer) {
     @endphp
 
     <div class="py-4">
-        <div class="container mx-auto py-4">
+        <div class="container py-4">
             <div class="row g-4">
                 <div class="col-12 col-xl-3">
                     <div class="card shadow-sm mb-3">

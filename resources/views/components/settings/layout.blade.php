@@ -1,20 +1,29 @@
-<div class="flex items-start max-md:flex-col">
-    <div class="me-10 w-full pb-4 md:w-[220px]">
-        <flux:navlist>
-            <flux:navlist.item :href="route('profile.show')">{{ __('Profile') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('settings.password')" wire:navigate>{{ __('Password') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('settings.appearance')" wire:navigate>{{ __('Appearance') }}</flux:navlist.item>
-        </flux:navlist>
-    </div>
+<div class="row g-4 align-items-start">
+    <aside class="col-12 col-md-3 col-xl-2">
+        <nav class="list-group list-group-flush border rounded-3 overflow-hidden" aria-label="{{ __('Settings') }}">
+            <a href="{{ route('profile.show') }}"
+               class="list-group-item list-group-item-action {{ request()->routeIs('profile.show', 'settings.profile') ? 'active' : '' }}">
+                {{ __('Profile') }}
+            </a>
+            <a href="{{ route('settings.password') }}"
+               class="list-group-item list-group-item-action {{ request()->routeIs('settings.password') ? 'active' : '' }}">
+                {{ __('Password') }}
+            </a>
+            <a href="{{ route('settings.appearance') }}"
+               class="list-group-item list-group-item-action {{ request()->routeIs('settings.appearance') ? 'active' : '' }}">
+                {{ __('Appearance') }}
+            </a>
+        </nav>
+    </aside>
 
-    <flux:separator class="md:hidden" />
+    <section class="col-12 col-md-9 col-xl-8">
+        <div class="mb-4">
+            <h2 class="h4 mb-1">{{ $heading ?? '' }}</h2>
+            <p class="text-body-secondary mb-0">{{ $subheading ?? '' }}</p>
+        </div>
 
-    <div class="flex-1 self-stretch max-md:pt-6">
-        <flux:heading>{{ $heading ?? '' }}</flux:heading>
-        <flux:subheading>{{ $subheading ?? '' }}</flux:subheading>
-
-        <div class="mt-5 w-full max-w-lg">
+        <div class="vstack gap-4" style="max-width: 42rem;">
             {{ $slot }}
         </div>
-    </div>
+    </section>
 </div>

@@ -277,7 +277,7 @@ render(function (View $view, Project $project, Request $request) {
     </x-slot>
 
     <div class="py-4">
-        <div class="container mx-auto py-4">
+        <div class="container py-4">
             <form class="d-flex flex-wrap align-items-center gap-2 mb-3" method="get" role="search">
                 <input type="text"
                        name="q"

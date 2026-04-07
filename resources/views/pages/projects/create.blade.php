@@ -10,7 +10,7 @@ middleware(['auth','verified']);
     </x-slot>
 
     <div class="py-4">
-        <div class="container mx-auto px-3">
+        <div class="container px-3">
             <livewire:projects.create-project-form />
         </div>
     </div>

@@ -8,7 +8,7 @@ middleware(['auth','verified']);
 ?>
 
 <x-app-layout>
-    <div class="container mx-auto py-4">
+    <div class="container py-4">
         @livewire('staff.support.products.create')
     </div>
 </x-app-layout>

@@ -1,109 +1,109 @@
+@php($allowReg = app(\App\Settings\AuthSettings::class)->allowRegistration ?? true)
+
 <x-guest-layout>
-{{-- MAIN --}}
-    @php($allowReg = app(\App\Settings\AuthSettings::class)->allowRegistration ?? true)
-<x-slot class="flex-fill">
-    <div class="container py-5">
-        <div class="row g-4 align-items-center">
-            {{-- Left: Hero / CTAs --}}
-            <div class="col-lg-6">
-                <h1 class="display-5 fw-semibold mb-2">
-                    Welcome to {{ config('app.name', 'Forge') }}
-                </h1>
-                <p class="text-secondary mb-4">
-                    Your all-in-one workspace for projects, issues, docs, and more.
-                </p>
-
-                @auth
-                    <div class="d-flex flex-wrap gap-2">
-                        <a href="{{ route('dashboard') }}" class="btn btn-dark">
-                            <i class="fa-solid fa-house me-1"></i> Go to Dashboard
-                        </a>
-                        <a href="{{ route('today.index') }}" class="btn btn-outline-secondary">
-                            <i class="fa-solid fa-calendar-day me-1"></i> Today's Work
-                        </a>
-                        <a href="{{ route('projects.index') }}" class="btn btn-outline-secondary">
-                            <i class="fa-solid fa-diagram-project me-1"></i> Browse Projects
-                        </a>
+    <section class="py-5">
+        <div class="container py-4">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-7">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <x-application-mark style="height: 3rem;" />
+                        <span class="badge text-bg-primary-subtle text-primary-emphasis border border-primary-subtle">
+                            {{ __('Project and issue management') }}
+                        </span>
                     </div>
-                @else
-                    <div class="d-flex flex-wrap gap-2">
-                        <a href="{{ route('login') }}" class="btn btn-dark">
-                            <i class="fa-solid fa-right-to-bracket me-1"></i> Sign in
-                        </a>
-                        @if ($allowReg)
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="btn btn-outline-secondary">
-                                    <i class="fa-regular fa-id-card me-1"></i> Create an account
-                                </a>
+
+                    <h1 class="display-5 fw-bold mb-3">
+                        {{ __('Build, track, and ship with :app.', ['app' => config('app.name', 'Forge')]) }}
+                    </h1>
+                    <p class="lead text-body-secondary mb-4">
+                        {{ __('Forge brings projects, issues, docs, support, and delivery workflows into one focused Laravel workspace.') }}
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-3">
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg">{{ __('Go to Dashboard') }}</a>
+                            <a href="{{ route('today.index') }}" class="btn btn-outline-secondary btn-lg">{{ __('Today\'s Work') }}</a>
+                            <a href="{{ route('projects.index') }}" class="btn btn-outline-secondary btn-lg">{{ __('Browse Projects') }}</a>
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-primary btn-lg">{{ __('Sign in') }}</a>
+                            @if ($allowReg && Route::has('register'))
+                                <a href="{{ route('register') }}" class="btn btn-outline-secondary btn-lg">{{ __('Create an account') }}</a>
                             @endif
-                        @endif
+                        @endauth
                     </div>
-                @endauth
 
-                @env(['local','development'])
-                    @auth
-                        <div class="alert alert-secondary mt-4 py-2 px-3 small mb-0">
-                            <strong>Dev note:</strong> Edit this view at
-                            <code>resources/views/welcome.blade.php</code>.
-                        </div>
-                    @endauth
-                @endenv
-            </div>
+                    @env(['local', 'development'])
+                        @auth
+                            <div class="alert alert-secondary mt-4 py-2 px-3 small mb-0">
+                                <strong>{{ __('Dev note:') }}</strong>
+                                {{ __('Edit this view at') }} <code>resources/views/welcome.blade.php</code>.
+                            </div>
+                        @endauth
+                    @endenv
+                </div>
 
-            {{-- Right: Quick links / Info --}}
-            <div class="col-lg-6">
-                @auth
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <a href="#" class="text-decoration-none">
-                                <div class="card shadow-sm border-0 h-100">
-                                    <div class="card-body d-flex gap-3 align-items-start">
-                                        <div class="btn btn-outline-secondary rounded-circle p-3 disabled">
-                                            <i class="fa-solid fa-circle-dot"></i>
-                                        </div>
-                                        <div>
-                                            <h2 class="h6 fw-semibold mb-1 text-dark">Issues</h2>
-                                            <p class="mb-0 text-secondary small">
-                                                Track work, link PRs, upload attachments, and discuss.
-                                            </p>
-                                        </div>
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h2 class="h5 fw-semibold mb-3">{{ __('What Forge helps with') }}</h2>
+                            <div class="vstack gap-3">
+                                <div class="d-flex gap-3">
+                                    <span class="badge rounded-pill text-bg-primary align-self-start">1</span>
+                                    <div>
+                                        <div class="fw-semibold">{{ __('Project planning') }}</div>
+                                        <p class="text-body-secondary small mb-0">{{ __('Organize work by project, milestone, goal, team, and status.') }}</p>
                                     </div>
                                 </div>
-                            </a>
-                        </div>
-
-                        <div class="col-12">
-                            <a href="{{ route('projects.index') }}" class="text-decoration-none">
-                                <div class="card shadow-sm border-0 h-100">
-                                    <div class="card-body d-flex gap-3 align-items-start">
-                                        <div class="btn btn-outline-secondary rounded-circle p-3 disabled">
-                                            <i class="fa-solid fa-diagram-project"></i>
-                                        </div>
-                                        <div>
-                                            <h2 class="h6 fw-semibold mb-1 text-dark">Projects</h2>
-                                            <p class="mb-0 text-secondary small">
-                                                Organize work by status, type, and priority.
-                                            </p>
-                                        </div>
+                                <div class="d-flex gap-3">
+                                    <span class="badge rounded-pill text-bg-success align-self-start">2</span>
+                                    <div>
+                                        <div class="fw-semibold">{{ __('Issue execution') }}</div>
+                                        <p class="text-body-secondary small mb-0">{{ __('Track priorities, estimates, attachments, comments, and linked code work.') }}</p>
                                     </div>
                                 </div>
-                            </a>
+                                <div class="d-flex gap-3">
+                                    <span class="badge rounded-pill text-bg-warning align-self-start">3</span>
+                                    <div>
+                                        <div class="fw-semibold">{{ __('Cross-app context') }}</div>
+                                        <p class="text-body-secondary small mb-0">{{ __('Connect repositories and Codex workspaces without leaving the flow.') }}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                @endauth
-
-                @guest
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                            <h2 class="h6 fw-semibold mb-1">Welcome</h2>
-                            <p class="mb-0 text-secondary small">
-                                Sign in to access your dashboard, projects, and docs.
-                            </p>
-                        </div>
-                    </div>
-                @endguest
+                </div>
             </div>
         </div>
-    </div>
-</x-slot>
+    </section>
+
+    <section class="py-5 bg-body-tertiary border-top">
+        <div class="container">
+            <div class="row g-4 text-center">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h3 class="h5">{{ __('Projects') }}</h3>
+                            <p class="text-body-secondary mb-0">{{ __('Shape roadmaps, backlogs, boards, calendars, and milestones around how your team ships.') }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h3 class="h5">{{ __('Issues') }}</h3>
+                            <p class="text-body-secondary mb-0">{{ __('Move work from idea to done with issue views, timers, notes, links, and transitions.') }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h3 class="h5">{{ __('Support') }}</h3>
+                            <p class="text-body-secondary mb-0">{{ __('Give teams and customers one place to request help, triage, and close the loop.') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </x-guest-layout>

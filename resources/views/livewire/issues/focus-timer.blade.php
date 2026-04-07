@@ -24,7 +24,7 @@
 
         <div class="mt-3">
             <label class="form-label">Notes</label>
-            <wa-textarea class="form-control" wire:model.debounce.750ms="runningNotes" rows="3" placeholder="What are you focusing on?" x-bind:disabled="!isRunning"></wa-textarea>
+            <textarea class="form-control" wire:model.debounce.750ms="runningNotes" rows="3" placeholder="What are you focusing on?" x-bind:disabled="!isRunning"></textarea>
             <div class="form-text">Notes save automatically while the timer runs.</div>
         </div>
 

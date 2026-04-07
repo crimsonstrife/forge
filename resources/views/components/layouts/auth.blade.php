@@ -1,12 +1,13 @@
 @php ob_start(); @endphp
-<div class="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-    <div class="flex w-full max-w-sm flex-col gap-2">
-        <!-- Brand -->
-        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ $user ? route('dashboard') : url('/') }}">
+<div class="min-vh-100 d-flex flex-column justify-content-center align-items-center bg-body-tertiary py-5">
+    <div class="w-100 px-3" style="max-width: 28rem;">
+        <a class="navbar-brand d-flex align-items-center justify-content-center gap-2 mb-4" href="{{ auth()->check() ? route('dashboard') : url('/') }}">
             <x-application-logo />
         </a>
-        <div class="flex flex-col gap-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
             {{ $slot }}
+            </div>
         </div>
     </div>
 </div>
@@ -15,4 +16,7 @@
 @include('layouts.guest', [
     'slot' => $content,
     'header' => $header ?? null,
+    'showNavigation' => false,
+    'showFooter' => false,
+    'showCookieConsent' => false,
 ])

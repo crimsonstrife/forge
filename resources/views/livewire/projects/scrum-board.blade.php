@@ -159,7 +159,7 @@
 
                 <div class="mt-3 d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-outline-secondary btn-sm" wire:click="$set('showCreateSprint', false)">{{ __('Cancel') }}</button>
-                    <wa-button variant="brand" size="sm" wire:click="createSprint">{{ __('Create') }}</wa-button>
+                    <button type="button" class="btn btn-primary btn-sm" wire:click="createSprint">{{ __('Create') }}</button>
                 </div>
             </div>
         </div>
@@ -180,7 +180,7 @@
 
                 <div class="mt-3 d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-outline-secondary btn-sm" wire:click="$set('showEndSprint', false)">{{ __('Cancel') }}</button>
-                    <wa-button variant="danger" size="sm" wire:click="endCurrentSprint">{{ __('End sprint') }}</wa-button>
+                    <button type="button" class="btn btn-danger btn-sm" wire:click="endCurrentSprint">{{ __('End sprint') }}</button>
                 </div>
             </div>
         </div>

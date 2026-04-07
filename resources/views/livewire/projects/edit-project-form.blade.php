@@ -83,6 +83,6 @@
 
     <div class="card-footer d-flex justify-content-end gap-2">
         <a href="{{ route('projects.show', ['project'=>$project]) }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
-        <wa-button variant="brand" wire:click="save">{{ __('Save') }}</wa-button>
+        <button type="button" class="btn btn-primary" wire:click="save">{{ __('Save') }}</button>
     </div>
 </div>

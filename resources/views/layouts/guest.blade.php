@@ -10,27 +10,37 @@
         'includeMaterialIcons' => true,
     ])
 </head>
-<body x-data="themeSwitcher()" :class="{ 'dark': switchOn }">
+<body>
 <x-banner />
 
-<div class="min-vh-100 bg-body-tertiary">
-    @livewire('navigation-menu')
+@php
+    $showNavigation = $showNavigation ?? true;
+    $showFooter = $showFooter ?? true;
+    $showCookieConsent = $showCookieConsent ?? true;
+@endphp
+
+<div class="min-vh-100 d-flex flex-column bg-body">
+    @if ($showNavigation)
+        @livewire('navigation-menu')
+    @endif
 
     {{-- Header partial (uses the $header slot if present) --}}
     @include('layouts.partials.header', ['header' => $header ?? null])
 
-    <main>
+    <main class="flex-grow-1">
         {{ $slot }}
     </main>
 
-    {{-- Footer partial --}}
-    @include('layouts.partials.footer', [
-    'footerLogo' => view('components.application-footer-logo', ['class' => 'h-24'])
-    ])
-    @cookieconsentview
+    @if ($showFooter)
+        {{-- Footer partial --}}
+        @include('layouts.partials.footer')
+    @endif
+
+    @if ($showCookieConsent)
+        @cookieconsentview
+    @endif
 </div>
 @stack('modals')
-@fluxScripts
 @livewireScripts
 @cookieconsentscripts
 @stack('scripts')

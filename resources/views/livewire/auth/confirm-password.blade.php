@@ -1,14 +1,13 @@
-<div class="flex flex-col gap-6">
+<div class="vstack gap-4">
     <x-auth-header
         :title="__('Confirm password')"
         :description="__('This is a secure area of the application. Please confirm your password before continuing.')"
     />
 
-    <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
+    <x-validation-errors class="mb-3" />
 
-    <form method="POST" wire:submit="confirmPassword" class="flex flex-col gap-6">
-        <!-- Password -->
+    <form method="POST" wire:submit="confirmPassword" class="vstack gap-3">
         <x-input
             wire:model="password"
             :label="__('Password')"
@@ -19,8 +18,6 @@
             viewable
         />
 
-        <wa-button type="submit" variant="brand" aria-label="{{ __('Confirm') }}">
-            <span>{{ __('Confirm') }}</span>
-        </wa-button>
+        <button type="submit" class="btn btn-primary">{{ __('Confirm') }}</button>
     </form>
 </div>
