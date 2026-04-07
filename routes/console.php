@@ -1,6 +1,7 @@
 <?php
 
 use App\Console\Commands\CheckForAppUpdate;
+use App\Console\Commands\DeleteExpiredBans;
 use App\Console\Commands\RecalcIssueRollups;
 use App\Console\Commands\ReverbHealthCheck;
 use App\Console\Commands\SendIssueNotificationDigests;
@@ -19,6 +20,17 @@ use Spatie\Health\Commands\RunHealthChecksCommand;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+if (config('ban.automated_cleanup_enabled', true)) {
+    $scheduledExpiredBanCleanup = Schedule::command(DeleteExpiredBans::class);
+    $periodicity = config('ban.automated_cleanup_periodicity', 'everyMinute');
+
+    if (is_string($periodicity) && method_exists($scheduledExpiredBanCleanup, $periodicity)) {
+        $scheduledExpiredBanCleanup->{$periodicity}();
+    } else {
+        $scheduledExpiredBanCleanup->everyMinute();
+    }
+}
 
 Schedule::command(CheckForAppUpdate::class)
     ->dailyAt('09:00');
