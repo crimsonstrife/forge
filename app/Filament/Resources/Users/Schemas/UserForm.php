@@ -44,7 +44,9 @@ final class UserForm
                             ->revealable()
                             ->dehydrated(fn ($state) => filled($state))
                             ->required(fn (?object $record) => $record === null)
-                            ->rule(fn (?object $record) => $record ? 'nullable|confirmed|min:8' : 'required|confirmed|min:8')
+                            ->rules(fn (?object $record) => $record
+                                ? ['nullable', 'confirmed', 'min:8']
+                                : ['required', 'confirmed', 'min:8'])
                             ->mutateDehydratedStateUsing(fn (string $state) => Hash::make($state)),
 
                         TextInput::make('password_confirmation')
