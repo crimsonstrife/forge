@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Ban;
+
 return [
 
     /*
@@ -23,7 +25,7 @@ return [
     |
      */
 
-    'model' => \App\Models\Ban::class,
+    'model' => Ban::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -91,5 +93,28 @@ return [
     |
     */
     'cache_duration' => 120, // Duration in minutes
+
+    /*
+    |--------------------------------------------------------------------------
+    | Package Scheduler
+    |--------------------------------------------------------------------------
+    |
+    | Keep Banhammer's raw auto-scheduler disabled so Forge can schedule its
+    | own wrapper command with transient database DNS handling.
+    |
+    */
+    'scheduler_enabled' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Expired Ban Cleanup Schedule
+    |--------------------------------------------------------------------------
+    |
+    | Forge schedules the expired ban cleanup itself so transient network/DNS
+    | failures can be logged gracefully without masking real query failures.
+    |
+    */
+    'automated_cleanup_enabled' => env('BANHAMMER_SCHEDULER_ENABLED', true),
+    'automated_cleanup_periodicity' => env('BANHAMMER_SCHEDULER_PERIODICITY', 'everyMinute'),
 
 ];
