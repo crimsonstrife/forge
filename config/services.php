@@ -76,5 +76,12 @@ return [
         'redirect' => env('ATLASSIAN_REDIRECT_URI')
     ],
 
+    'mailgun' => [
+        'domain' => env('MAILGUN_DOMAIN'),
+        'secret' => env('MAILGUN_SECRET'),
+        'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
+        'scheme' => 'https',
+    ],
+
     'socialite_providers' => explode(',', env('SOCIALITE_PROVIDERS', 'github,gitlab,gitea,discord,todoist,atlassian,slack')),
 ];
