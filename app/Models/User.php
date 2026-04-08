@@ -27,12 +27,12 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     use HasApiTokens;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory;
+
     use HasPermissions;
-
     use HasPermissionSets;
-
     use HasProfilePhoto;
     use HasRoles;
     use HasTeams;
@@ -104,6 +104,15 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->belongsToMany(Project::class, 'project_user', 'user_id', 'project_id')
             ->withPivot(['role'])
             ->withTimestamps();
+    }
+
+    public function isCurrentTeam($team): bool
+    {
+        if ($team === null || $this->currentTeam === null) {
+            return false;
+        }
+
+        return (string) $team->getKey() === (string) $this->currentTeam->getKey();
     }
 
     public function socialAccounts(): HasMany
