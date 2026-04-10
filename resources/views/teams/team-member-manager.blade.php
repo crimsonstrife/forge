@@ -23,7 +23,7 @@
                     @if (count($this->roles) > 0)
                         <div class="col-12">
                             <label class="form-label">{{ __('Role') }}</label>
-                            @error('role') <div class="text-danger small mb-1">{{ $message }}</div> @enderror>
+                            @error('role') <div class="text-danger small mb-1">{{ $message }}</div> @enderror
 
                             <div class="list-group">
                                 @foreach ($this->roles as $role)
@@ -104,6 +104,7 @@
 
                 <div class="d-grid gap-2">
                     @foreach ($team->users->sortBy('name') as $user)
+                        @php($roleName = $this->roleName($user->membership->role))
                         <div class="d-flex align-items-center justify-content-between border rounded px-3 py-2">
                             <div class="d-flex align-items-center gap-2">
                                 <x-avatar :src="$user->profile_photo_url" :name="$user->name" preset="sm" />
@@ -114,11 +115,11 @@
                                 @if (Gate::check('updateTeamMember', $team) && Laravel\Jetstream\Jetstream::hasRoles())
                                     <button type="button" class="btn btn-link p-0"
                                             wire:click="manageRole('{{ $user->id }}')">
-                                        {{ Laravel\Jetstream\Jetstream::findRole($user->membership->role)->name }}
+                                        {{ $roleName ?? __('Assign role') }}
                                     </button>
                                 @elseif (Laravel\Jetstream\Jetstream::hasRoles())
                                     <div class="text-body-secondary small">
-                                        {{ Laravel\Jetstream\Jetstream::findRole($user->membership->role)->name }}
+                                        {{ $roleName ?? __('No role assigned') }}
                                     </div>
                                 @endif
 
