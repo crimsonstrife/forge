@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\V1;
+use App\Http\Controllers\Api\V1\SystemIssueController;
+use App\Http\Controllers\Api\V1\SystemOrganizationController;
 use App\Http\Controllers\Api\V1\SystemProjectController;
 use App\Http\Controllers\Webhooks\GitHubWebhookController;
 use Illuminate\Http\Request;
@@ -41,6 +43,10 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 Route::prefix('v1/system')->name('api.v1.system.')->middleware(['client:projects:read', 'throttle:api'])->group(function (): void {
     Route::get('projects', [SystemProjectController::class, 'index'])->name('projects.index');
     Route::get('projects/{project}', [SystemProjectController::class, 'show'])->name('projects.show');
+    Route::get('projects/{project}/issues', [SystemIssueController::class, 'index'])->name('projects.issues.index');
+
+    Route::get('organizations', [SystemOrganizationController::class, 'index'])->name('organizations.index');
+    Route::get('organizations/{organization}', [SystemOrganizationController::class, 'show'])->name('organizations.show');
 });
 
 /*

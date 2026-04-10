@@ -72,7 +72,7 @@ class Repository extends BaseModel
 
     public function supportsVcsCreation(): bool
     {
-        return strtolower((string) $this->provider) === 'github';
+        return in_array(strtolower((string) $this->provider), ['github', 'crucible'], true);
     }
 
     public function displayPath(): string

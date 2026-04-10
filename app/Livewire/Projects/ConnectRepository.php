@@ -227,10 +227,22 @@ final class ConnectRepository extends Component
             ]);
         }
 
-        if (($remote['forge_project_id'] ?? '') !== (string) $this->project->id) {
-            throw ValidationException::withMessages([
-                'provider' => 'This Crucible repository is not linked to this Forge project in Crucible yet. Link it from Crucible first, then connect it here.',
-            ]);
+        // Register the Forge integration on Crucible's side if not already linked.
+        $existingProjectId = $remote['forge_project_id'] ?? '';
+        if ($existingProjectId !== (string) $this->project->id) {
+            try {
+                $service->registerForgeIntegration(
+                    trim($this->owner),
+                    trim($this->name),
+                    (string) $this->project->id,
+                    $this->project->name,
+                    (string) auth()->id(),
+                );
+            } catch (\Throwable $e) {
+                throw ValidationException::withMessages([
+                    'provider' => 'Could not register the integration on Crucible: ' . $e->getMessage(),
+                ]);
+            }
         }
 
         $repo = Repository::query()->updateOrCreate(
@@ -248,9 +260,9 @@ final class ConnectRepository extends Component
                     'repository_name' => $remote['name'] ?? $remote['slug'],
                     'repository_slug' => $remote['slug'],
                     'web_url' => $remote['web_url'] ?? null,
-                    'forge_project_id' => $remote['forge_project_id'] ?? null,
-                    'forge_project_name' => $remote['forge_project_name'] ?? null,
-                    'forge_url' => $remote['forge_url'] ?? null,
+                    'forge_project_id' => (string) $this->project->id,
+                    'forge_project_name' => $this->project->name,
+                    'forge_url' => config('app.url'),
                     'visibility' => $remote['visibility'] ?? null,
                     'vcs_type' => $remote['vcs_type'] ?? null,
                 ],

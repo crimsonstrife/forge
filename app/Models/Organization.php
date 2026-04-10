@@ -31,7 +31,7 @@ class Organization extends BaseModel
     protected $casts = ['id' => 'string'];
 
     /** @var array<int, string> */
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = ['name', 'slug', 'crucible_org_id', 'crucible_org_slug'];
 
     public function projects(): HasMany
     {

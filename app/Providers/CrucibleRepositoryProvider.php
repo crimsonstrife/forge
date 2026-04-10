@@ -5,7 +5,6 @@ namespace App\Providers;
 use App\Contracts\RepositoryProviderInterface;
 use App\Models\Repository;
 use App\Services\CrucibleService;
-use RuntimeException;
 
 final class CrucibleRepositoryProvider implements RepositoryProviderInterface
 {
@@ -40,7 +39,7 @@ final class CrucibleRepositoryProvider implements RepositoryProviderInterface
 
     public function createBranch(Repository $repository, string $token, string $newBranch, ?string $fromRef = null): array
     {
-        throw new RuntimeException('Create branch is not available from Forge for Crucible repositories yet.');
+        return $this->crucible->createBranch($repository, $newBranch, $fromRef, $token);
     }
 
     public function createPullRequest(
@@ -51,7 +50,7 @@ final class CrucibleRepositoryProvider implements RepositoryProviderInterface
         string $base,
         ?string $body = null
     ): array {
-        throw new RuntimeException('Open pull request is not available from Forge for Crucible repositories yet.');
+        return $this->crucible->createPullRequest($repository, $title, $head, $base, $body, $token);
     }
 
     public function getDefaultBranch(Repository $repository, string $token): string
