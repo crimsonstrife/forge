@@ -13,13 +13,13 @@ use Livewire\Component;
 #[Layout('components.layouts.auth.card')]
 class Register extends Component
 {
-    public string $name = '';
+    public $name = '';
 
-    public string $email = '';
+    public $email = '';
 
-    public string $password = '';
+    public $password = '';
 
-    public string $password_confirmation = '';
+    public $password_confirmation = '';
 
     /**
      * Handle an incoming registration request.
@@ -27,11 +27,13 @@ class Register extends Component
     public function register(): void
     {
         $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'name' => ['bail', 'required', 'string', 'max:255'],
+            'email' => ['bail', 'required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['bail', 'required', 'string', 'confirmed', Rules\Password::defaults()],
+            'password_confirmation' => ['bail', 'required', 'string'],
         ]);
 
+        unset($validated['password_confirmation']);
         $validated['password'] = Hash::make($validated['password']);
 
         event(new Registered(($user = User::create($validated))));

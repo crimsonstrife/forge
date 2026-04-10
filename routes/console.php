@@ -15,6 +15,8 @@ use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use Spatie\Health\Checks\Checks\QueueCheck;
+use Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
 use Spatie\Health\Commands\RunHealthChecksCommand;
 
 Artisan::command('inspire', function () {
@@ -79,3 +81,5 @@ Schedule::call(static function (): void {
         }
     });
 })->dailyAt('01:40');
+
+Schedule::command(DispatchQueueCheckJobsCommand::class)->everyMinute();
