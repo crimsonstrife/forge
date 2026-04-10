@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\Projects\ProjectBacklog;
 use App\Models\Issue;
 use App\Models\IssuePriority;
 use App\Models\IssueStatus;
@@ -91,6 +92,28 @@ class ProjectBacklogTest extends TestCase
             'id' => $sprint->id,
             'capacity' => 21,
         ]);
+    }
+
+    public function test_it_mounts_with_legacy_scalar_project_settings(): void
+    {
+        [, $project] = $this->projectContext();
+
+        DB::table('projects')
+            ->where('id', $project->id)
+            ->update(['settings' => json_encode('estimate_minutes')]);
+
+        $component = app(ProjectBacklog::class);
+        $component->project = $project->fresh();
+
+        $setPlanningUnit = \Closure::bind(function (): void {
+            $this->setPlanningUnit();
+        }, $component, ProjectBacklog::class);
+
+        $setPlanningUnit();
+
+        $this->assertSame('estimate_minutes', $component->planningUnit);
+        $this->assertSame('Estimated time', $component->planningUnitLabel);
+        $this->assertSame('min', $component->planningUnitShort);
     }
 
     /**

@@ -132,14 +132,14 @@ class Project extends BaseModel
 
     public function setting(string $key, mixed $default = null): mixed
     {
-        $merged = array_replace_recursive($this->defaultSettings(), $this->settings ?? []);
+        $merged = array_replace_recursive($this->defaultSettings(), $this->normalizedSettings());
 
         return Arr::get($merged, $key, $default);
     }
 
     public function setSetting(string $key, mixed $value): static
     {
-        $settings = $this->settings ?? [];
+        $settings = $this->normalizedSettings();
         Arr::set($settings, $key, $value);
         $this->settings = $settings;
 
@@ -148,9 +148,28 @@ class Project extends BaseModel
 
     public function updateSettings(array $values): static
     {
-        $this->settings = array_replace_recursive($this->settings ?? [], $values);
+        $this->settings = array_replace_recursive($this->normalizedSettings(), $values);
 
         return $this;
+    }
+
+    private function normalizedSettings(): array
+    {
+        $settings = $this->settings;
+
+        if (is_array($settings)) {
+            return $settings;
+        }
+
+        if (is_string($settings) && in_array($settings, ['story_points', 'estimate_minutes'], true)) {
+            return [
+                'issues' => [
+                    'estimate_unit' => $settings,
+                ],
+            ];
+        }
+
+        return [];
     }
 
     public function getActivitylogOptions(): LogOptions
