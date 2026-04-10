@@ -166,6 +166,134 @@ final class CrucibleService
     }
 
     /**
+     * Create a branch on a Crucible repository.
+     *
+     * @return array{name: string, url: string|null}
+     */
+    public function createBranch(Repository $repository, string $branchName, ?string $fromRef, string $forForgeUserId, ?string $forgeIssueKey = null): array
+    {
+        if (! $this->isConfigured()) {
+            throw new RuntimeException('Crucible integration is not configured.');
+        }
+
+        $url = sprintf(
+            '%s/api/v1/%s/%s/branches',
+            $this->baseUrl(),
+            rawurlencode((string) $repository->owner),
+            rawurlencode((string) $repository->name),
+        );
+
+        $payload = array_filter([
+            'name' => $branchName,
+            'from_ref' => $fromRef,
+            'forge_issue_key' => $forgeIssueKey,
+            'for_forge_user_id' => $forForgeUserId,
+        ], static fn (mixed $v): bool => $v !== null && $v !== '');
+
+        $response = $this->client()->post($url, $payload);
+
+        if ($response->failed()) {
+            throw new RuntimeException(
+                'Crucible branch creation failed (HTTP ' . $response->status() . '): '
+                . substr((string) $response->body(), 0, 300)
+            );
+        }
+
+        $data = $response->json('data') ?? $response->json();
+
+        return [
+            'name' => (string) ($data['name'] ?? $branchName),
+            'url' => $data['url'] ?? null,
+        ];
+    }
+
+    /**
+     * Create a pull request on a Crucible repository.
+     *
+     * @return array{number: int|null, title: string, state: string, url: string|null}
+     */
+    public function createPullRequest(Repository $repository, string $title, string $head, string $base, ?string $body, string $forForgeUserId, ?string $forgeIssueKey = null): array
+    {
+        if (! $this->isConfigured()) {
+            throw new RuntimeException('Crucible integration is not configured.');
+        }
+
+        $url = sprintf(
+            '%s/api/v1/%s/%s/pull-requests',
+            $this->baseUrl(),
+            rawurlencode((string) $repository->owner),
+            rawurlencode((string) $repository->name),
+        );
+
+        $payload = array_filter([
+            'title' => $title,
+            'head' => $head,
+            'base' => $base,
+            'body' => $body,
+            'forge_issue_key' => $forgeIssueKey,
+            'for_forge_user_id' => $forForgeUserId,
+        ], static fn (mixed $v): bool => $v !== null && $v !== '');
+
+        $response = $this->client()->post($url, $payload);
+
+        if ($response->failed()) {
+            throw new RuntimeException(
+                'Crucible pull request creation failed (HTTP ' . $response->status() . '): '
+                . substr((string) $response->body(), 0, 300)
+            );
+        }
+
+        $data = $response->json('data') ?? $response->json();
+
+        return [
+            'number' => isset($data['number']) ? (int) $data['number'] : null,
+            'title' => (string) ($data['title'] ?? $title),
+            'state' => (string) ($data['state'] ?? 'open'),
+            'url' => $data['url'] ?? null,
+        ];
+    }
+
+    /**
+     * Register a Forge integration on a Crucible repository.
+     *
+     * Calls Crucible's POST /{org}/{repo}/forge-integration endpoint to create
+     * or update the ForgeIntegration record, removing the need to configure the
+     * link from the Crucible side first.
+     *
+     * @return array{id: string, api_token: string|null}|null
+     */
+    public function registerForgeIntegration(string $organizationSlug, string $repositorySlug, string $forgeProjectId, string $forgeProjectName, string $forForgeUserId): ?array
+    {
+        if (! $this->isConfigured()) {
+            return null;
+        }
+
+        $url = sprintf(
+            '%s/api/v1/%s/%s/forge-integration',
+            $this->baseUrl(),
+            rawurlencode($organizationSlug),
+            rawurlencode($repositorySlug),
+        );
+
+        $response = $this->client()
+            ->post($url, array_filter([
+                'forge_project_id' => $forgeProjectId,
+                'forge_project_name' => $forgeProjectName,
+                'forge_url' => config('app.url'),
+                'for_forge_user_id' => $forForgeUserId,
+            ]));
+
+        if ($response->failed()) {
+            throw new RuntimeException(
+                'Crucible integration registration failed (HTTP ' . $response->status() . '): '
+                . substr((string) $response->body(), 0, 300)
+            );
+        }
+
+        return $response->json('data');
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function fetchIndexPage(int $page = 1, string $query = '', string $forForgeUserId = ''): array

@@ -63,6 +63,7 @@ class AuthServiceProvider extends ServiceProvider
             'codex:read'        => 'Read Codex workspaces and pages on your behalf',
             // Forge API token scopes (used by Jetstream PATs)
             'projects:read'     => 'Read projects',
+            'organizations:read' => 'Read organizations',
             'issues:read'       => 'Read issues',
             'issues:write'      => 'Create and update issues',
             'comments:write'    => 'Post comments',
