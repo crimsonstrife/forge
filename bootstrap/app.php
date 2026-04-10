@@ -26,7 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'ingest.key'        => VerifyIngestKey::class,
             'auth.registration' => EnsureRegistrationIsEnabled::class,
             // Validates client credentials tokens (machine-to-machine OAuth2)
-            'client'            => \Laravel\Passport\Http\Middleware\CheckClientCredentials::class,
+            'client'            => \Laravel\Passport\Http\Middleware\CheckToken::class,
         ]);
         $middleware->group('api', [
             EnsureFrontendRequestsAreStateful::class,
