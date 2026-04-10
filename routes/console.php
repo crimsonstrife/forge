@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Schedule;
 use Spatie\Health\Checks\Checks\QueueCheck;
 use Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
 use Spatie\Health\Commands\RunHealthChecksCommand;
+use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -48,6 +49,10 @@ Schedule::command(RecalcIssueRollups::class)
 
 Schedule::command(ReverbHealthCheck::class)
     ->everyFiveMinutes();
+
+// Record the scheduler heartbeat before running health checks that depend on it.
+Schedule::command(ScheduleCheckHeartbeatCommand::class)
+    ->everyMinute();
 
 Schedule::command(RunHealthChecksCommand::class)
     ->everyMinute();
