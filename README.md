@@ -104,6 +104,25 @@ The test suite uses in-memory SQLite via `phpunit.xml`.
 - Reverb, social OAuth, Codex, and Crucible integrations only need configuration if you plan to use them.
 - CI currently installs PHP and Node dependencies, runs `npm run build`, migrates against SQLite, and performs package discovery.
 
+## DigitalOcean Valkey
+
+When pointing Forge at DigitalOcean Managed Valkey, keep Laravel's cache, queue, and session drivers set to `redis` and configure the connection itself for `phpredis` over TLS:
+
+```env
+REDIS_CLIENT=phpredis
+REDIS_SCHEME=tls
+REDIS_HOST=your-cluster.db.ondigitalocean.com
+REDIS_PORT=25061
+REDIS_PASSWORD=your_password
+REDIS_DB=0
+REDIS_CACHE_DB=1
+```
+
+- Do not prefix `REDIS_HOST` with `tls://`; the scheme is configured separately through `REDIS_SCHEME`.
+- Forge now requires the `phpredis` extension via Composer's `ext-redis` platform requirement. Install a recent build with TLS support on your target hosts.
+- DigitalOcean uses Let's Encrypt certificates, so no custom CA bundle or disabled peer verification should be necessary.
+- If you want a local non-TLS Redis instance instead, override `REDIS_SCHEME=tcp`, `REDIS_HOST=127.0.0.1`, and `REDIS_PORT=6379` in your local `.env`.
+
 ## License
 
 GNU Affero General Public License v3.0
