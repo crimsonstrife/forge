@@ -54,7 +54,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->register();
         $this->registerPolicies();
 
-        Passport::setClientUuids(true);
+        //Passport::setClientUuids(true); No longer needed, this is now the default in newer Passport versions
         Passport::tokensExpireIn(now()->addDays(15));
         Passport::refreshTokensExpireIn(now()->addDays(30));
         Passport::tokensCan([
