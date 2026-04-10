@@ -143,7 +143,10 @@ return [
 
     'redis' => [
 
-        'client' => env('REDIS_CLIENT', 'phpredis'),
+        // DigitalOcean Managed Valkey requires TLS with phpredis.
+        'client' => env('REDIS_SCHEME', 'tls') === 'tls'
+            ? 'phpredis'
+            : env('REDIS_CLIENT', 'phpredis'),
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
