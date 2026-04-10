@@ -54,6 +54,9 @@ class AuthServiceProvider extends ServiceProvider
         $this->register();
         $this->registerPolicies();
 
+        // Passport 13 expects the authorization response contract to be bound explicitly.
+        Passport::authorizationView('vendor.passport.authorize');
+
         //Passport::setClientUuids(true); No longer needed, this is now the default in newer Passport versions
         Passport::tokensExpireIn(now()->addDays(15));
         Passport::refreshTokensExpireIn(now()->addDays(30));

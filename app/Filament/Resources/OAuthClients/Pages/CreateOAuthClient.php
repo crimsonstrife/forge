@@ -22,7 +22,18 @@ class CreateOAuthClient extends CreateRecord
 
     protected function afterCreate(): void
     {
-        $secret = $this->record->secret;
+        $secret = $this->record->plainSecret;
+
+        if (! filled($secret)) {
+            \Filament\Notifications\Notification::make()
+                ->title('Client Created')
+                ->body('The client was created, but the plaintext secret is no longer available. Rotate the secret to generate a new one.')
+                ->danger()
+                ->persistent()
+                ->send();
+
+            return;
+        }
 
         \Filament\Notifications\Notification::make()
             ->title('Client Created — Copy Your Secret')

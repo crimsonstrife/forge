@@ -67,7 +67,7 @@
                     </div>
 
                     <p class="text-body-secondary text-center mt-3 mb-0" style="font-size: 0.78rem;">
-                        {{ __('You are logged in as :name (:email)', ['name' => auth()->user()->name, 'email' => auth()->user()->email]) }}
+                        {{ __('You are logged in as :name (:email)', ['name' => $user->name, 'email' => $user->email]) }}
                     </p>
 
                 </div>
