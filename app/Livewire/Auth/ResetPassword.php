@@ -18,11 +18,11 @@ class ResetPassword extends Component
     #[Locked]
     public string $token = '';
 
-    public string $email = '';
+    public $email = '';
 
-    public string $password = '';
+    public $password = '';
 
-    public string $password_confirmation = '';
+    public $password_confirmation = '';
 
     /**
      * Mount the component.
@@ -31,7 +31,9 @@ class ResetPassword extends Component
     {
         $this->token = $token;
 
-        $this->email = request()->string('email')->value();
+        $email = request()->input('email');
+
+        $this->email = is_string($email) ? $email : '';
     }
 
     /**
@@ -39,20 +41,25 @@ class ResetPassword extends Component
      */
     public function resetPassword(): void
     {
-        $this->validate([
-            'token' => ['required'],
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+        $validated = $this->validate([
+            'token' => ['bail', 'required'],
+            'email' => ['bail', 'required', 'string', 'email'],
+            'password' => ['bail', 'required', 'string', 'confirmed', Rules\Password::defaults()],
+            'password_confirmation' => ['bail', 'required', 'string'],
         ]);
 
         // Here we will attempt to reset the user's password. If it is successful we
         // will update the password on an actual user model and persist it to the
         // database. Otherwise we will parse the error and return the response.
         $status = Password::reset(
-            $this->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user) {
+            [
+                'email' => $validated['email'],
+                'password' => $validated['password'],
+                'token' => $validated['token'],
+            ],
+            function ($user, $password) {
                 $user->forceFill([
-                    'password' => Hash::make($this->password),
+                    'password' => Hash::make($password),
                     'remember_token' => Str::random(60),
                 ])->save();
 

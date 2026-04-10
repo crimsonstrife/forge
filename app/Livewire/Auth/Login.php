@@ -15,24 +15,28 @@ use Livewire\Component;
 #[Layout('components.layouts.auth.card')]
 class Login extends Component
 {
-    #[Validate('required|string|email')]
-    public string $email = '';
+    #[Validate('bail|required|string|email')]
+    public $email = '';
 
-    #[Validate('required|string')]
-    public string $password = '';
+    #[Validate('bail|required|string')]
+    public $password = '';
 
-    public bool $remember = false;
+    #[Validate('bail|boolean')]
+    public $remember = false;
 
     /**
      * Handle an incoming authentication request.
      */
     public function login(): void
     {
-        $this->validate();
+        $validated = $this->validate();
 
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+        if (! Auth::attempt(
+            ['email' => $validated['email'], 'password' => $validated['password']],
+            (bool) ($validated['remember'] ?? false)
+        )) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

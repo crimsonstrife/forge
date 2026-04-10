@@ -10,20 +10,20 @@ use Livewire\Component;
 #[Layout('components.layouts.auth.card')]
 class ConfirmPassword extends Component
 {
-    public string $password = '';
+    public $password = '';
 
     /**
      * Confirm the current user's password.
      */
     public function confirmPassword(): void
     {
-        $this->validate([
-            'password' => ['required', 'string'],
+        $validated = $this->validate([
+            'password' => ['bail', 'required', 'string'],
         ]);
 
         if (! Auth::guard('web')->validate([
             'email' => Auth::user()->email,
-            'password' => $this->password,
+            'password' => $validated['password'],
         ])) {
             throw ValidationException::withMessages([
                 'password' => __('auth.password'),
