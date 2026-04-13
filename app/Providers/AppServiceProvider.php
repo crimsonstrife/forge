@@ -9,27 +9,32 @@ use App\Models\PermissionSet;
 use App\Models\PersonalAccessToken;
 use App\Models\Project;
 use App\Models\Role;
-use App\Session\ResilientSessionManager;
 use App\Observers\CommentObserver;
 use App\Observers\IssueObserver;
 use App\Observers\PermissionSetObserver;
 use App\Observers\ProjectObserver;
 use App\Observers\RoleObserver;
+use App\Session\ResilientSessionManager;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
-use Illuminate\Contracts\Cache\Factory as CacheFactory;
+use Illuminate\Cache\Events\CacheFailedOver;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Contracts\Cache\Factory as CacheFactory;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Session\SessionManager;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 use Laravel\Telescope\TelescopeServiceProvider;
+use SocialiteProviders\GitHub\Provider;
 use SocialiteProviders\Manager\SocialiteWasCalled;
+use Throwable;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,7 +43,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        if (class_exists(TelescopeServiceProvider::class) && $this->app->environment('local')) {
+        if (class_exists(TelescopeServiceProvider::class)
+            && $this->app->environment('local')
+            && class_exists(\Redis::class)) {
             $this->app->register(TelescopeServiceProvider::class);
         }
 
@@ -72,6 +79,40 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Event::listen(CacheFailedOver::class, function (CacheFailedOver $event): void {
+            if (! $this->shouldLogCacheFailover($event)) {
+                return;
+            }
+
+            $store = $this->cacheFailoverLogStore();
+            $logKey = sprintf(
+                'cache:failover:%s:%s',
+                $event->storeName ?? 'unknown',
+                sha1($event->exception::class.'|'.$event->exception->getMessage())
+            );
+
+            try {
+                $shouldLog = Cache::store($store)->add(
+                    $logKey,
+                    true,
+                    now()->addMinutes($this->cacheFailoverLogThrottleMinutes())
+                );
+            } catch (Throwable) {
+                $shouldLog = true;
+            }
+
+            if (! $shouldLog) {
+                return;
+            }
+
+            Log::warning('Primary cache store failed over to the configured fallback store.', [
+                'store' => $event->storeName,
+                'fallback_store' => $this->cacheFailoverLogStore(),
+                'exception' => $event->exception::class,
+                'message' => $event->exception->getMessage(),
+            ]);
+        });
+
         if ($this->app->runningInConsole()) {
             return; // do not touch URL/Request during composer/CLI
         }
@@ -93,7 +134,7 @@ class AppServiceProvider extends ServiceProvider
             $key = $request->attributes->get('ingest_key');
             $bucket = $key?->id ?? $request->ip();
 
-            return [Limit::perMinute(20)->by('ingest:' . $bucket)];
+            return [Limit::perMinute(20)->by('ingest:'.$bucket)];
         });
 
         Paginator::useBootstrapFive();
@@ -105,12 +146,29 @@ class AppServiceProvider extends ServiceProvider
         PermissionSet::observe(PermissionSetObserver::class);
 
         Event::listen(static function (SocialiteWasCalled $event) {
-            $event->extendSocialite('github', \SocialiteProviders\GitHub\Provider::class);
+            $event->extendSocialite('github', Provider::class);
             $event->extendSocialite('gitea', \SocialiteProviders\Gitea\Provider::class);
             $event->extendSocialite('gitlab', \SocialiteProviders\GitLab\Provider::class);
             $event->extendSocialite('discord', \SocialiteProviders\Discord\Provider::class);
             $event->extendSocialite('todoist', \SocialiteProviders\Todoist\Provider::class);
             $event->extendSocialite('atlassian', \SocialiteProviders\Atlassian\Provider::class);
         });
+    }
+
+    private function shouldLogCacheFailover(CacheFailedOver $event): bool
+    {
+        return $event->storeName === config('cache.stores.failover.primary_store');
+    }
+
+    private function cacheFailoverLogStore(): string
+    {
+        $store = (string) config('cache.stores.failover.fallback_store', 'file');
+
+        return $store === 'failover' ? 'file' : $store;
+    }
+
+    private function cacheFailoverLogThrottleMinutes(): int
+    {
+        return max(1, (int) config('cache.stores.failover.log_throttle_minutes', 5));
     }
 }

@@ -1,5 +1,10 @@
 <?php
 
+use Spatie\Health\Models\HealthCheckResultHistoryItem;
+use Spatie\Health\Notifications\CheckFailedNotification;
+use Spatie\Health\Notifications\Notifiable;
+use Spatie\Health\ResultStores\EloquentHealthResultStore;
+
 return [
     /*
      * A result store is responsible for saving the results of the checks. The
@@ -7,9 +12,9 @@ return [
      * can use multiple stores at the same time.
      */
     'result_stores' => [
-        Spatie\Health\ResultStores\EloquentHealthResultStore::class => [
+        EloquentHealthResultStore::class => [
             'connection' => env('HEALTH_DB_CONNECTION', env('DB_CONNECTION')),
-            'model' => Spatie\Health\Models\HealthCheckResultHistoryItem::class,
+            'model' => HealthCheckResultHistoryItem::class,
             'keep_history_for_days' => 5,
         ],
 
@@ -38,14 +43,14 @@ return [
         'enabled' => true,
 
         'notifications' => [
-            Spatie\Health\Notifications\CheckFailedNotification::class => ['mail'],
+            CheckFailedNotification::class => ['mail'],
         ],
 
         /*
          * Here you can specify the notifiable to which the notifications should be sent. The default
          * notifiable will use the variables specified in this config file.
          */
-        'notifiable' => Spatie\Health\Notifications\Notifiable::class,
+        'notifiable' => Notifiable::class,
 
         /*
          * When checks start failing, you could potentially end up getting
@@ -114,6 +119,8 @@ return [
         'heartbeat_url' => env('HORIZON_HEARTBEAT_URL', null),
     ],
 
+    'queue_check_enabled' => env('HEALTH_QUEUE_CHECK_ENABLED', false),
+
     /*
      * You can specify a heartbeat URL for the Schedule check.
      * This URL will be pinged if the Schedule check is successful.
@@ -122,6 +129,8 @@ return [
     'schedule' => [
         'heartbeat_url' => env('SCHEDULE_HEARTBEAT_URL', null),
     ],
+
+    'reverb_healthcheck_enabled' => env('REVERB_HEALTHCHECK_ENABLED', false),
 
     /*
      * You can set a theme for the local results page

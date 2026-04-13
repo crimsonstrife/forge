@@ -19,16 +19,22 @@ class BuildProjectDailyReportsJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
+    public int $tries = 5;
+
+    /** @var array<int, int> */
+    public array $backoff = [5, 15, 30, 60];
+
+    private const TRANSACTION_ATTEMPTS = 5;
+
     public function __construct(
         private readonly string $projectId,
         private readonly Carbon $forDate
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {
         $start = $this->forDate->copy()->startOfDay();
-        $end   = $this->forDate->copy()->endOfDay();
+        $end = $this->forDate->copy()->endOfDay();
 
         $issues = DB::table('issues as issues')
             ->leftJoin('issue_metrics as metrics', 'metrics.issue_id', '=', 'issues.id')
@@ -57,16 +63,19 @@ class BuildProjectDailyReportsJob implements ShouldQueue
 
             if ($firstDoneAt?->lte($end)) {
                 $done++;
+
                 continue;
             }
 
             if ($firstStartedAt?->lte($end)) {
                 $wip++;
+
                 continue;
             }
 
             if ((bool) ($issue->current_status_is_done ?? false) && Carbon::parse($issue->issue_updated_at)->lte($end)) {
                 $done++;
+
                 continue;
             }
 
@@ -88,7 +97,7 @@ class BuildProjectDailyReportsJob implements ShouldQueue
             ->values();
 
         $median = $this->percentile($doneIssues, 0.5);
-        $p75    = $this->percentile($doneIssues, 0.75);
+        $p75 = $this->percentile($doneIssues, 0.75);
 
         DB::transaction(function () use ($open, $wip, $done, $throughput, $median, $p75, $start): void {
             DB::table('report_project_daily_summaries')->upsert(
@@ -118,8 +127,7 @@ class BuildProjectDailyReportsJob implements ShouldQueue
                     'updated_at',
                 ],
             );
-
-        });
+        }, self::TRANSACTION_ATTEMPTS);
 
         $rankedStatusEvents = DB::table('issue_status_events')
             ->where('changed_at', '<=', $end)
@@ -162,23 +170,27 @@ class BuildProjectDailyReportsJob implements ShouldQueue
         }
 
         if ($values === []) {
-            DB::table('report_cfd_snapshots')
-                ->where('project_id', $this->projectId)
-                ->where('report_date', $start->toDateString())
-                ->delete();
+            DB::transaction(function () use ($start): void {
+                DB::table('report_cfd_snapshots')
+                    ->where('project_id', $this->projectId)
+                    ->where('report_date', $start->toDateString())
+                    ->delete();
+            }, self::TRANSACTION_ATTEMPTS);
 
             return;
         }
 
-        DB::table('report_cfd_snapshots')->upsert(
-            $values,
-            ['project_id', 'report_date', 'issue_status_id'],
-            ['count', 'updated_at'],
-        );
+        DB::transaction(function () use ($values): void {
+            DB::table('report_cfd_snapshots')->upsert(
+                $values,
+                ['project_id', 'report_date', 'issue_status_id'],
+                ['count', 'updated_at'],
+            );
+        }, self::TRANSACTION_ATTEMPTS);
     }
 
     /**
-     * @param Collection<int,int> $sortedMinutes
+     * @param  Collection<int,int>  $sortedMinutes
      */
     private function percentile(Collection $sortedMinutes, float $p): int
     {
@@ -188,7 +200,7 @@ class BuildProjectDailyReportsJob implements ShouldQueue
         }
 
         $rank = ($n - 1) * $p;
-        $low  = (int) floor($rank);
+        $low = (int) floor($rank);
         $high = (int) ceil($rank);
 
         if ($low === $high) {
@@ -196,6 +208,7 @@ class BuildProjectDailyReportsJob implements ShouldQueue
         }
 
         $weight = $rank - $low;
+
         return (int) round((1 - $weight) * $sortedMinutes[$low] + $weight * $sortedMinutes[$high]);
     }
 }

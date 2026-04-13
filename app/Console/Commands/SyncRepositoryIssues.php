@@ -32,8 +32,9 @@ final class SyncRepositoryIssues extends Command
 
         $link = $this->resolveLink();
 
-        if (!$link) {
+        if (! $link) {
             $this->error('Could not resolve a project-repository link. Provide --link OR all of --project --provider --owner --name, or use --all.');
+
             return self::INVALID;
         }
 
@@ -55,6 +56,7 @@ final class SyncRepositoryIssues extends Command
 
         if ($total === 0) {
             $this->warn('No project-repository links found.');
+
             return self::SUCCESS;
         }
 
@@ -70,10 +72,11 @@ final class SyncRepositoryIssues extends Command
                 $ok = $this->syncLink($link);
             } catch (Throwable $e) {
                 $failures++;
-                $this->error("Failed to sync link (ID: {$link->id}): " . $e->getMessage());
+                $this->error("Failed to sync link (ID: {$link->id}): ".$e->getMessage());
+
                 continue;
             }
-            if (!$ok) {
+            if (! $ok) {
                 $failures++;
             }
             $this->newLine();
@@ -81,15 +84,18 @@ final class SyncRepositoryIssues extends Command
 
         if ($this->option('queue')) {
             $this->info("Dispatched {$total} job(s) to the queue.");
+
             return self::SUCCESS;
         }
 
         if ($failures > 0) {
             $this->error("Completed with {$failures} failure(s).");
+
             return self::FAILURE;
         }
 
         $this->info('All syncs completed successfully.');
+
         return self::SUCCESS;
     }
 
@@ -109,6 +115,7 @@ final class SyncRepositoryIssues extends Command
         if ($this->option('queue')) {
             InitialImportRepositoryIssues::dispatch($link->id);
             $this->info('Dispatched to queue.');
+
             return true;
         }
 
@@ -117,17 +124,24 @@ final class SyncRepositoryIssues extends Command
 
         $link->refresh();
 
-        $this->line('Started:  ' . ($link->initial_import_started_at?->toDateTimeString() ?? '—'));
-        $this->line('Finished: ' . ($link->initial_import_finished_at?->toDateTimeString() ?? '—'));
-        $this->line('Status:   ' . ($link->last_sync_status ?? '—'));
+        $this->line('Started:  '.($link->initial_import_started_at?->toDateTimeString() ?? '—'));
+        $this->line('Finished: '.($link->initial_import_finished_at?->toDateTimeString() ?? '—'));
+        $this->line('Status:   '.($link->last_sync_status ?? '—'));
 
-        if ($link->last_sync_error) {
+        if ($link->last_sync_status === 'error') {
             $this->newLine();
-            $this->error('Error: ' . $link->last_sync_error);
+            $this->error('Error: '.($link->last_sync_error ?: 'The sync completed with an error status.'));
+
             return false;
         }
 
+        if ($link->last_sync_error) {
+            $this->newLine();
+            $this->warn('Note: '.$link->last_sync_error);
+        }
+
         $this->info('Sync complete.');
+
         return true;
     }
 
@@ -145,11 +159,11 @@ final class SyncRepositoryIssues extends Command
         }
 
         $projectIdOrKey = (string) $this->option('project');
-        $provider       = strtolower((string) $this->option('provider'));
-        $owner          = strtolower((string) $this->option('owner'));
-        $name           = (string) $this->option('name');
+        $provider = strtolower((string) $this->option('provider'));
+        $owner = strtolower((string) $this->option('owner'));
+        $name = (string) $this->option('name');
 
-        if (!$projectIdOrKey || !$provider || !$owner || !$name) {
+        if (! $projectIdOrKey || ! $provider || ! $owner || ! $name) {
             return null;
         }
 
@@ -159,20 +173,22 @@ final class SyncRepositoryIssues extends Command
             ->orWhere('slug', $projectIdOrKey)
             ->first();
 
-        if (!$project) {
-            $this->error('Project not found: ' . $projectIdOrKey);
+        if (! $project) {
+            $this->error('Project not found: '.$projectIdOrKey);
+
             return null;
         }
 
         $repo = Repository::query()
             ->where([
                 'provider' => $provider,
-                'owner'    => $owner,
-                'name'     => $name,
+                'owner' => $owner,
+                'name' => $name,
             ])->first();
 
-        if (!$repo) {
-            $this->error('Repository not found: ' . "{$provider}:{$owner}/{$name}");
+        if (! $repo) {
+            $this->error('Repository not found: '."{$provider}:{$owner}/{$name}");
+
             return null;
         }
 
@@ -182,8 +198,9 @@ final class SyncRepositoryIssues extends Command
             ->where('repository_id', $repo->id)
             ->first();
 
-        if (!$link) {
+        if (! $link) {
             $this->error('No link exists for that project/repository pair.');
+
             return null;
         }
 

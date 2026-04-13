@@ -111,11 +111,22 @@ class Issue extends BaseModel implements HasMedia
     protected static function booted(): void
     {
         static::saved(static function (Issue $i): void {
-            cache()->tags(['project-public-'.$i->project_id])->flush();
+            self::flushProjectPublicCache($i->project_id);
         });
         static::deleted(static function (Issue $i): void {
-            cache()->tags(['project-public-'.$i->project_id])->flush();
+            self::flushProjectPublicCache($i->project_id);
         });
+    }
+
+    private static function flushProjectPublicCache(string $projectId): void
+    {
+        $cache = cache()->store();
+
+        if (! method_exists($cache, 'supportsTags') || ! $cache->supportsTags()) {
+            return;
+        }
+
+        $cache->tags(['project-public-'.$projectId])->flush();
     }
 
     public function getActivitylogOptions(): LogOptions
