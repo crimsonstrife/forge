@@ -15,7 +15,6 @@ use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
-use Spatie\Health\Checks\Checks\QueueCheck;
 use Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
 use Spatie\Health\Commands\RunHealthChecksCommand;
 use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
@@ -33,6 +32,8 @@ if (config('ban.automated_cleanup_enabled', true)) {
     } else {
         $scheduledExpiredBanCleanup->everyMinute();
     }
+
+    $scheduledExpiredBanCleanup->withoutOverlapping(10);
 }
 
 Schedule::command(CheckForAppUpdate::class)
@@ -42,20 +43,26 @@ Schedule::command(SendIssueNotificationDigests::class)
     ->dailyAt('08:00');
 
 Schedule::command(SyncRepositoryIssues::class, ['--all'])
-    ->everyFifteenMinutes();
+    ->everyFifteenMinutes()
+    ->withoutOverlapping(30);
 
 Schedule::command(RecalcIssueRollups::class)
     ->everyFiveMinutes();
 
-Schedule::command(ReverbHealthCheck::class)
-    ->everyFiveMinutes();
+if (config('health.reverb_healthcheck_enabled')) {
+    Schedule::command(ReverbHealthCheck::class)
+        ->everyFiveMinutes()
+        ->withoutOverlapping(10);
+}
 
 // Record the scheduler heartbeat before running health checks that depend on it.
 Schedule::command(ScheduleCheckHeartbeatCommand::class)
-    ->everyMinute();
+    ->everyMinute()
+    ->withoutOverlapping(5);
 
 Schedule::command(RunHealthChecksCommand::class)
-    ->everyMinute();
+    ->everyMinute()
+    ->withoutOverlapping(10);
 
 Schedule::call(static function (): void {
     $yesterday = Carbon::yesterday();
@@ -87,4 +94,8 @@ Schedule::call(static function (): void {
     });
 })->dailyAt('01:40');
 
-Schedule::command(DispatchQueueCheckJobsCommand::class)->everyMinute();
+if (config('health.queue_check_enabled') && config('queue.default') !== 'sync') {
+    Schedule::command(DispatchQueueCheckJobsCommand::class)
+        ->everyMinute()
+        ->withoutOverlapping(5);
+}

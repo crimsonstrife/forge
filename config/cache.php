@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('CACHE_STORE', 'database'),
+    'default' => env('CACHE_STORE', env('APP_ENV') === 'production' ? 'failover' : 'database'),
 
     /*
     |--------------------------------------------------------------------------
@@ -50,6 +50,17 @@ return [
             'driver' => 'file',
             'path' => storage_path('framework/cache/data'),
             'lock_path' => storage_path('framework/cache/data'),
+        ],
+
+        'failover' => [
+            'driver' => 'failover',
+            'primary_store' => env('CACHE_FAILOVER_PRIMARY', 'redis'),
+            'fallback_store' => env('CACHE_FAILOVER_FALLBACK', 'file'),
+            'log_throttle_minutes' => (int) env('CACHE_FAILOVER_LOG_THROTTLE_MINUTES', 5),
+            'stores' => array_values(array_filter([
+                env('CACHE_FAILOVER_PRIMARY', 'redis'),
+                env('CACHE_FAILOVER_FALLBACK', 'file'),
+            ])),
         ],
 
         'memcached' => [

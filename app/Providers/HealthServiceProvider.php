@@ -3,15 +3,15 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Spatie\CpuLoadHealthCheck\CpuLoadCheck;
 use Spatie\Health\Checks\Checks\CacheCheck;
 use Spatie\Health\Checks\Checks\DatabaseCheck;
-use Spatie\Health\Checks\Checks\DebugModeCheck;
-use Spatie\Health\Checks\Checks\EnvironmentCheck;
+use Spatie\Health\Checks\Checks\OptimizedAppCheck;
 use Spatie\Health\Checks\Checks\QueueCheck;
-use Spatie\Health\Checks\Checks\RedisCheck;
 use Spatie\Health\Checks\Checks\ScheduleCheck;
 use Spatie\Health\Checks\Checks\UsedDiskSpaceCheck;
 use Spatie\Health\Facades\Health;
+use Spatie\SecurityAdvisoriesHealthCheck\SecurityAdvisoriesCheck;
 
 class HealthServiceProvider extends ServiceProvider
 {
@@ -20,24 +20,28 @@ class HealthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $checks = [
-            DatabaseCheck::new(),
-            CacheCheck::new(),
-            EnvironmentCheck::new(),
-            DebugModeCheck::new(),
+            DatabaseCheck::new()->name('Check Database Connection'),
+            CacheCheck::new()
+                ->driver((string) config('cache.default'))
+                ->name('Cache Check'),
+            OptimizedAppCheck::new()->name('Check Optimization'),
             UsedDiskSpaceCheck::new()
+                ->name('Check Used Disk Space')
                 ->warnWhenUsedSpaceIsAbovePercentage(75)
                 ->failWhenUsedSpaceIsAbovePercentage(90),
-
-            // Only add if Redis is configured in your app.
-            // RedisCheck::new()->if(fn () => config('database.redis.default.host') !== null),
-
-            // Optional but useful if you rely on the scheduler.
-            ScheduleCheck::new(),
+            ScheduleCheck::new()
+                ->name('Check Scheduler')
+                ->useCacheStore('file'),
+            CpuLoadCheck::new()
+                ->failWhenLoadIsHigherInTheLast5Minutes(2.0)
+                ->failWhenLoadIsHigherInTheLast15Minutes(1.5),
+            SecurityAdvisoriesCheck::new()->name('Check Security Advisories'),
         ];
 
-        // Avoid serializing a deferred run-condition closure into HealthQueueJob.
-        if (config('queue.default') !== 'sync') {
-            $checks[] = QueueCheck::new();
+        if (config('health.queue_check_enabled') && config('queue.default') !== 'sync') {
+            $checks[] = QueueCheck::new()
+                ->name('Check Job Queue')
+                ->useCacheStore('file');
         }
 
         Health::checks($checks);

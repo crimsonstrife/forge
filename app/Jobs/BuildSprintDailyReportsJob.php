@@ -19,12 +19,18 @@ final class BuildSprintDailyReportsJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
+    public int $tries = 5;
+
+    /** @var array<int, int> */
+    public array $backoff = [5, 15, 30, 60];
+
+    private const TRANSACTION_ATTEMPTS = 5;
+
     public function __construct(
         private readonly string $projectId,
         private readonly string $sprintId,
         private readonly Carbon $forDate
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {
@@ -63,19 +69,21 @@ final class BuildSprintDailyReportsJob implements ShouldQueue
         $remainingPoints = (int) ($remaining->points ?? 0);
         $remainingIssues = (int) ($remaining->count ?? 0);
 
-        DB::table('report_sprint_daily_summaries')->upsert(
-            [[
-                'id'                => (string) Str::uuid(),
-                'project_id'        => $this->projectId,
-                'sprint_id'         => $this->sprintId,
-                'report_date'       => $day->toDateString(),
-                'remaining_points'  => $remainingPoints,
-                'remaining_issues'  => $remainingIssues,
-                'created_at'        => now(),
-                'updated_at'        => now(),
-            ]],
-            ['project_id', 'sprint_id', 'report_date'],
-            ['remaining_points', 'remaining_issues', 'updated_at'],
-        );
+        DB::transaction(function () use ($day, $remainingPoints, $remainingIssues): void {
+            DB::table('report_sprint_daily_summaries')->upsert(
+                [[
+                    'id' => (string) Str::uuid(),
+                    'project_id' => $this->projectId,
+                    'sprint_id' => $this->sprintId,
+                    'report_date' => $day->toDateString(),
+                    'remaining_points' => $remainingPoints,
+                    'remaining_issues' => $remainingIssues,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]],
+                ['project_id', 'sprint_id', 'report_date'],
+                ['remaining_points', 'remaining_issues', 'updated_at'],
+            );
+        }, self::TRANSACTION_ATTEMPTS);
     }
 }
