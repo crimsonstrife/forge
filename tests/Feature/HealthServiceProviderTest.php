@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Providers\AppHealthServiceProvider;
 use App\Providers\HealthServiceProvider;
 use Spatie\Health\Checks\Checks\QueueCheck;
 use Spatie\Health\Checks\Checks\ScheduleCheck;
@@ -57,6 +58,17 @@ class HealthServiceProviderTest extends TestCase
         );
 
         $this->assertSame('file', $scheduleCheck->getCacheStoreName());
+    }
+
+    public function test_legacy_app_health_service_provider_does_not_register_duplicate_checks(): void
+    {
+        (new AppHealthServiceProvider($this->app))->boot();
+
+        $this->assertCount(0, Health::registeredChecks());
+
+        $this->bootHealthServiceProvider();
+
+        $this->assertCount(7, Health::registeredChecks());
     }
 
     protected function bootHealthServiceProvider(): void
