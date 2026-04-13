@@ -7,6 +7,8 @@ use Illuminate\Support\Str;
 
 class TicketKeyService
 {
+    private const MAX_KEYS_TO_SCAN = 500;
+
     public function __construct(private ?string $prefix = null)
     {
         $this->prefix = $this->prefix ?: (string) config('support.ticket_key_prefix', 'SD');
@@ -53,10 +55,31 @@ class TicketKeyService
 
     private function currentMaxTicketNumber(string $prefix): int
     {
+        $query = DB::table('tickets')->where('key', 'like', $prefix.'-%');
+        $suffixOffset = strlen($prefix) + 2;
+
+        return match (DB::connection()->getDriverName()) {
+            'mariadb', 'mysql' => (int) ($query
+                ->whereRaw('SUBSTRING(`key`, ?) REGEXP ?', [$suffixOffset, '^[0-9]+$'])
+                ->selectRaw('MAX(CAST(SUBSTRING(`key`, ?) AS UNSIGNED)) as max_ticket_number', [$suffixOffset])
+                ->value('max_ticket_number') ?? 0),
+            'sqlite' => (int) ($query
+                ->whereRaw('SUBSTR("key", ?) <> ?', [$suffixOffset, ''])
+                ->whereRaw('SUBSTR("key", ?) NOT GLOB ?', [$suffixOffset, '*[^0-9]*'])
+                ->selectRaw('MAX(CAST(SUBSTR("key", ?) AS INTEGER)) as max_ticket_number', [$suffixOffset])
+                ->value('max_ticket_number') ?? 0),
+            default => $this->currentMaxTicketNumberFallback($prefix),
+        };
+    }
+
+    private function currentMaxTicketNumberFallback(string $prefix): int
+    {
         $pattern = sprintf('/^%s-(\d+)$/', preg_quote($prefix, '/'));
 
         return DB::table('tickets')
             ->where('key', 'like', $prefix.'-%')
+            ->orderByDesc('created_at')
+            ->limit(self::MAX_KEYS_TO_SCAN)
             ->pluck('key')
             ->reduce(static function (int $max, string $key) use ($pattern): int {
                 if (! preg_match($pattern, $key, $matches)) {

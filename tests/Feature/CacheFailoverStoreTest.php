@@ -79,11 +79,9 @@ class CacheFailoverStoreTest extends TestCase
             'stores' => ['failing-test-primary', 'array-fallback'],
         ]);
 
-        app('cache')->forgetDriver([
-            'failing-test-primary',
-            'array-fallback',
-            'failover',
-        ]);
+        foreach (['failing-test-primary', 'array-fallback', 'failover'] as $driver) {
+            app('cache')->forgetDriver($driver);
+        }
     }
 }
 
