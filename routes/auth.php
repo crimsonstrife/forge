@@ -18,6 +18,7 @@ Route::middleware('guest')->group(function () {
         ->middleware(EnsureRegistrationIsEnabled::class);
     Route::get('forgot-password', ForgotPassword::class)->name('password.request');
     Route::get('reset-password/{token}', ResetPassword::class)->name('password.reset');
+    Route::view('two-factor-challenge', 'auth.two-factor-challenge')->name('two-factor.login');
 });
 
 Route::middleware('auth')->group(function () {
