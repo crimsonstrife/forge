@@ -38,6 +38,12 @@ final class SyncRepositoryIssues extends Command
             return self::INVALID;
         }
 
+        if (! $link->repository->supportsIssueSync()) {
+            $this->warn($this->unsupportedProviderMessage($link));
+
+            return self::SUCCESS;
+        }
+
         $ok = $this->syncLink($link);
 
         return $ok ? self::SUCCESS : self::FAILURE;
@@ -49,24 +55,45 @@ final class SyncRepositoryIssues extends Command
     private function handleAll(): int
     {
         $with = ['project', 'repository', 'repository.statusMappings'];
+        $supportedProviders = Repository::issueSyncProviders();
+        $baseQuery = ProjectRepository::query()->whereHas('repository');
 
-        $total = ProjectRepository::query()
-            ->whereHas('repository')
+        $unsupportedTotal = (clone $baseQuery)
+            ->whereHas('repository', fn ($query) => $query->whereNotIn('provider', $supportedProviders))
             ->count();
 
+        $total = (clone $baseQuery)
+            ->whereHas('repository', fn ($query) => $query->whereIn('provider', $supportedProviders))
+            ->count();
+
+        if ($unsupportedTotal > 0) {
+            $this->warn(sprintf(
+                'Skipping %d linked repositor%s that %s not support issue sync.',
+                $unsupportedTotal,
+                $unsupportedTotal === 1 ? 'y' : 'ies',
+                $unsupportedTotal === 1 ? 'does' : 'do'
+            ));
+            $this->newLine();
+        }
+
         if ($total === 0) {
-            $this->warn('No project-repository links found.');
+            $this->warn('No issue-sync repository links found.');
 
             return self::SUCCESS;
         }
 
-        $this->info("Syncing all linked repositories ({$total})…");
+        $this->info("Syncing all issue-sync repository links ({$total})…");
         $this->newLine();
 
         $failures = 0;
 
         // Stream results to keep memory usage low.
-        foreach (ProjectRepository::query()->with($with)->whereHas('repository')->cursor() as $link) {
+        foreach (
+            ProjectRepository::query()
+                ->with($with)
+                ->whereHas('repository', fn ($query) => $query->whereIn('provider', $supportedProviders))
+                ->cursor() as $link
+        ) {
             /** @var ProjectRepository $link */
             try {
                 $ok = $this->syncLink($link);
@@ -104,6 +131,12 @@ final class SyncRepositoryIssues extends Command
      */
     private function syncLink(ProjectRepository $link): bool
     {
+        if (! $link->repository->supportsIssueSync()) {
+            $this->warn($this->unsupportedProviderMessage($link));
+
+            return true;
+        }
+
         $this->line(sprintf(
             '<info>Syncing</info> %s/%s (%s) <comment>→</comment> Project %s',
             $link->repository->owner,
@@ -143,6 +176,15 @@ final class SyncRepositoryIssues extends Command
         $this->info('Sync complete.');
 
         return true;
+    }
+
+    private function unsupportedProviderMessage(ProjectRepository $link): string
+    {
+        return sprintf(
+            'Skipping %s (%s): this provider does not support issue sync.',
+            $link->repository->displayPath(),
+            $link->repository->provider
+        );
     }
 
     /**
