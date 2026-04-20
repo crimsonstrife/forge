@@ -38,5 +38,19 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->dontReport([
+            \Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException::class,
+            \Livewire\Exceptions\RootTagMissingFromViewException::class,
+        ]);
+
+        $exceptions->dontReportWhen(function (\Throwable $e) {
+            if (! $e instanceof \TypeError) {
+                return false;
+            }
+
+            $msg = $e->getMessage();
+
+            return str_contains($msg, 'Filament\Notifications\Collection')
+                || str_contains($msg, 'Filament\Notifications\Livewire\Notifications::$isFilamentNotificationsComponent');
+        });
     })->create();
