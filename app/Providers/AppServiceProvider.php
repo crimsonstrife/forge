@@ -29,9 +29,11 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 use Laravel\Telescope\TelescopeServiceProvider;
+use Livewire\Livewire;
 use SocialiteProviders\GitHub\Provider;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use Throwable;
@@ -112,6 +114,16 @@ class AppServiceProvider extends ServiceProvider
                 'message' => $event->exception->getMessage(),
             ]);
         });
+
+        RateLimiter::for('livewire-update', static function (Request $request) {
+            $key = optional($request->user())?->getAuthIdentifier() ?? $request->ip();
+
+            return Limit::perMinute(240)->by('lw:'.$key);
+        });
+
+        Livewire::setUpdateRoute(static fn ($handle) => Route::post('/livewire/update', $handle)
+            ->middleware(['web', 'throttle:livewire-update'])
+            ->name('livewire.update'));
 
         if ($this->app->runningInConsole()) {
             return; // do not touch URL/Request during composer/CLI
