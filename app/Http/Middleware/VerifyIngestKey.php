@@ -10,14 +10,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class VerifyIngestKey
 {
-    public function __construct(private IngestKeyManager $manager)
-    {
-    }
+    public function __construct(private IngestKeyManager $manager) {}
 
     public function __invoke(Request $request, Closure $next): Response
     {
         // Extract token from either header:
-        $raw = $request->header('X-Forge-Api-Key') ?: $request->header('Authorization');
+        $raw = $request->header('X-Forge-Api-Key') ?: $request->header('X-Ingest-Key') ?: $request->header('Authorization');
         $parsed = $this->manager->parseToken($raw);
 
         if ($parsed === null) {
@@ -39,6 +37,7 @@ class VerifyIngestKey
 
         // Attach for downstream consumers
         $request->attributes->set('ingest_key', $key);
+        $request->attributes->set('service_product', $key->serviceProduct);
 
         // if client sent service_product_id and it's not this key's product -> forbid
         $incoming = $request->input('service_product_id');

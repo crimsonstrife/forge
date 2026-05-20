@@ -12,18 +12,27 @@ class IssueExternalRef extends Model
     use HasUuids;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [
-        'issue_id','repository_id','provider','external_issue_id','number','url','state','payload'
+        'issue_id', 'repository_id', 'provider', 'external_issue_id', 'number', 'url', 'state', 'payload', 'source_type', 'source_id',
     ];
+
     protected $casts = [
         'payload' => 'array',
         'id' => 'string',
     ];
 
-    public function issue(): BelongsTo { return $this->belongsTo(Issue::class); }
-    public function repository(): BelongsTo { return $this->belongsTo(Repository::class); }
+    public function issue(): BelongsTo
+    {
+        return $this->belongsTo(Issue::class);
+    }
+
+    public function repository(): BelongsTo
+    {
+        return $this->belongsTo(Repository::class);
+    }
 
     public static function boot(): void
     {

@@ -281,6 +281,13 @@ class Issue extends BaseModel implements HasMedia
         return $this->belongsToMany(Ticket::class, 'ticket_issue_links');
     }
 
+    /** @return BelongsToMany<FeedbackPost> */
+    public function feedbackPosts(): BelongsToMany
+    {
+        return $this->belongsToMany(FeedbackPost::class, 'feedback_post_issue_links', 'issue_id', 'post_id')
+            ->withPivot(['created_by_user_id', 'created_at']);
+    }
+
     public function notes(): HasMany
     {
         return $this->hasMany(Note::class);

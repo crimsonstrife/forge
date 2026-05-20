@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\FeedbackIdentity;
+use App\Models\User;
+
 return [
 
     /*
@@ -45,6 +48,11 @@ return [
             'driver' => 'passport',
             'provider' => 'users',
         ],
+
+        'feedback-session' => [
+            'driver' => 'feedback-session',
+            'provider' => 'feedback-identities',
+        ],
     ],
 
     /*
@@ -67,7 +75,12 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => env('AUTH_MODEL', User::class),
+        ],
+
+        'feedback-identities' => [
+            'driver' => 'eloquent',
+            'model' => FeedbackIdentity::class,
         ],
 
         // 'users' => [

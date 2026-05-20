@@ -18,6 +18,7 @@
 - **Issue management** with Issue Explorer, saved views, comments, attachments, action items, issue links, time tracking, and collaboration panels.
 - **Goals, notes, organizations, and search** for work above the single-project level.
 - **Support desk workflows** including public ticket intake, staff triage, support access links, and ticket-to-issue conversion.
+- **Feedback boards** for product ideas and bug reports with magic-link identities, voting, comments, moderation, and issue escalation.
 - **Repository and docs integrations** including GitHub webhooks, Crucible repository/branch/PR linking, and Codex page linking.
 - **Admin and operations** through Filament, health/status pages, reporting exports, onboarding tours, and API docs tooling.
 - **APIs** for public project issue feeds, support ticket ingest, authenticated project/issue access, and system-to-system project reads.
