@@ -17,7 +17,7 @@
         "blaspsoft/blasp": "^3.0",
         "calebporzio/sushi": "^2.5",
         "codedge/laravel-selfupdater": "^3.10",
-        "dedoc/scramble": "^0.12.34",
+        "dedoc/scramble": "^0.13.25",
         "doctrine/dbal": "^4.3",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-settings-plugin": "^4.0",
