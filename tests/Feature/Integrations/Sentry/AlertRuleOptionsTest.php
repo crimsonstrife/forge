@@ -13,7 +13,7 @@ class AlertRuleOptionsTest extends TestCase
 {
     use RefreshDatabase;
 
-    private string $clientSecret = 'sentry-shh-secret';
+    private string $installationUuid = '9a89a822-0b62-4b62-9b99-905b9d742dd1';
 
     protected function setUp(): void
     {
@@ -26,20 +26,18 @@ class AlertRuleOptionsTest extends TestCase
         $s->enabled = true;
         $s->org_slug = 'acme';
         $s->client_id = 'cid';
-        $s->client_secret = $this->clientSecret;
+        $s->client_secret = 'cs';
         $s->auth_token = 'tok';
         $s->api_base = 'https://sentry.io/api/0';
+        $s->installation_uuid = $this->installationUuid;
         $s->save();
     }
 
-    public function test_projects_endpoint_returns_choices_when_signed(): void
+    public function test_projects_endpoint_returns_choices_when_installation_id_matches(): void
     {
         Project::factory()->count(2)->create();
 
-        $sig = hash_hmac('sha256', '', $this->clientSecret);
-        $response = $this->call('GET', '/api/sentry/options/projects', [], [], [], [
-            'HTTP_SENTRY_HOOK_SIGNATURE' => $sig,
-        ]);
+        $response = $this->get('/api/sentry/options/projects?installationId='.$this->installationUuid);
 
         $response->assertOk();
         $json = $response->json();
@@ -50,10 +48,7 @@ class AlertRuleOptionsTest extends TestCase
 
     public function test_issue_types_endpoint_returns_seeded_types(): void
     {
-        $sig = hash_hmac('sha256', '', $this->clientSecret);
-        $response = $this->call('GET', '/api/sentry/options/issue-types', [], [], [], [
-            'HTTP_SENTRY_HOOK_SIGNATURE' => $sig,
-        ]);
+        $response = $this->get('/api/sentry/options/issue-types?installationId='.$this->installationUuid);
 
         $response->assertOk();
         $labels = array_column($response->json('choices'), 1);
@@ -63,10 +58,7 @@ class AlertRuleOptionsTest extends TestCase
 
     public function test_priorities_endpoint_returns_seeded_priorities(): void
     {
-        $sig = hash_hmac('sha256', '', $this->clientSecret);
-        $response = $this->call('GET', '/api/sentry/options/priorities', [], [], [], [
-            'HTTP_SENTRY_HOOK_SIGNATURE' => $sig,
-        ]);
+        $response = $this->get('/api/sentry/options/priorities?installationId='.$this->installationUuid);
 
         $response->assertOk();
         $labels = array_column($response->json('choices'), 1);
@@ -74,12 +66,15 @@ class AlertRuleOptionsTest extends TestCase
         $this->assertContains('Low', $labels);
     }
 
-    public function test_endpoint_rejects_request_with_bad_signature(): void
+    public function test_endpoint_rejects_request_with_wrong_installation_id(): void
     {
-        $response = $this->call('GET', '/api/sentry/options/projects', [], [], [], [
-            'HTTP_SENTRY_HOOK_SIGNATURE' => 'bogus',
-        ]);
+        $response = $this->get('/api/sentry/options/projects?installationId=not-the-right-uuid');
+        $this->assertSame(401, $response->getStatusCode());
+    }
 
+    public function test_endpoint_rejects_request_with_no_installation_id(): void
+    {
+        $response = $this->get('/api/sentry/options/projects');
         $this->assertSame(401, $response->getStatusCode());
     }
 
@@ -89,11 +84,17 @@ class AlertRuleOptionsTest extends TestCase
         $s->enabled = false;
         $s->save();
 
-        $sig = hash_hmac('sha256', '', $this->clientSecret);
-        $response = $this->call('GET', '/api/sentry/options/projects', [], [], [], [
-            'HTTP_SENTRY_HOOK_SIGNATURE' => $sig,
-        ]);
+        $response = $this->get('/api/sentry/options/projects?installationId='.$this->installationUuid);
+        $this->assertSame(403, $response->getStatusCode());
+    }
 
+    public function test_endpoint_rejects_when_installation_not_yet_recorded(): void
+    {
+        $s = app(SentrySettings::class);
+        $s->installation_uuid = null;
+        $s->save();
+
+        $response = $this->get('/api/sentry/options/projects?installationId='.$this->installationUuid);
         $this->assertSame(403, $response->getStatusCode());
     }
 }

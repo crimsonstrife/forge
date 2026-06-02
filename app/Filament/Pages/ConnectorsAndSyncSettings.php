@@ -44,6 +44,11 @@ final class ConnectorsAndSyncSettings extends Page implements HasForms
 
     public function mount(): void
     {
+        $this->refreshData();
+    }
+
+    private function refreshData(): void
+    {
         $github = app(GithubSettings::class);
         $gitea = app(GiteaSettings::class);
         $sync = app(SyncSettings::class);
@@ -55,10 +60,16 @@ final class ConnectorsAndSyncSettings extends Page implements HasForms
             'github_client_id' => $github->client_id,
             'github_api_base' => $github->api_base,
             'github_web_base' => $github->web_base,
+            'github_client_secret_set' => filled($github->client_secret),
+            'github_webhook_secret_set' => filled($github->webhook_secret),
+            'github_personal_access_token_set' => filled($github->personal_access_token),
             'gitea_enabled' => $gitea->enabled,
             'gitea_base_url' => $gitea->base_url,
             'gitea_app_name' => $gitea->app_name,
             'gitea_client_id' => $gitea->client_id,
+            'gitea_client_secret_set' => filled($gitea->client_secret),
+            'gitea_webhook_secret_set' => filled($gitea->webhook_secret),
+            'gitea_personal_access_token_set' => filled($gitea->personal_access_token),
             'sync_allow_outbound' => $sync->allow_outbound_issue_updates,
             'sync_auto_transition' => $sync->auto_transition_on_pr_merge,
             'sync_link_keyword_fix' => $sync->link_keyword_fix,
@@ -71,7 +82,16 @@ final class ConnectorsAndSyncSettings extends Page implements HasForms
             'sentry_default_issue_type_id' => $sentry->default_issue_type_id,
             'sentry_default_priority_id' => $sentry->default_priority_id,
             'sentry_installation_uuid' => $sentry->installation_uuid,
+            'sentry_client_secret_set' => filled($sentry->client_secret),
+            'sentry_auth_token_set' => filled($sentry->auth_token),
         ];
+    }
+
+    private function storedBadge(string $dataKey): string
+    {
+        return ! empty($this->data[$dataKey])
+            ? 'Configured (leave blank to keep current value)'
+            : 'Not set';
     }
 
     /**
@@ -88,11 +108,14 @@ final class ConnectorsAndSyncSettings extends Page implements HasForms
                         TextInput::make('github_app_name')->label('App Name')->required(),
                         TextInput::make('github_client_id')->label('Client ID'),
                         TextInput::make('github_client_secret')->label('Client Secret')->password()->revealable()
-                            ->dehydrated(fn ($s) => filled($s)),
+                            ->dehydrated(fn ($s) => filled($s))
+                            ->helperText(fn () => $this->storedBadge('github_client_secret_set')),
                         TextInput::make('github_webhook_secret')->label('Webhook Secret')->password()->revealable()
-                            ->dehydrated(fn ($s) => filled($s)),
+                            ->dehydrated(fn ($s) => filled($s))
+                            ->helperText(fn () => $this->storedBadge('github_webhook_secret_set')),
                         TextInput::make('github_personal_access_token')->label('Personal Access Token')->password()->revealable()
-                            ->dehydrated(fn ($s) => filled($s)),
+                            ->dehydrated(fn ($s) => filled($s))
+                            ->helperText(fn () => $this->storedBadge('github_personal_access_token_set')),
                         TextInput::make('github_api_base')->label('API Base')->default('https://api.github.com')->required(),
                         TextInput::make('github_web_base')->label('Web Base')->default('https://github.com')->required(),
                     ])->columns(2),
@@ -103,11 +126,14 @@ final class ConnectorsAndSyncSettings extends Page implements HasForms
                         TextInput::make('gitea_app_name')->label('App Name')->required(),
                         TextInput::make('gitea_client_id')->label('Client ID'),
                         TextInput::make('gitea_client_secret')->label('Client Secret')->password()->revealable()
-                            ->dehydrated(fn ($s) => filled($s)),
+                            ->dehydrated(fn ($s) => filled($s))
+                            ->helperText(fn () => $this->storedBadge('gitea_client_secret_set')),
                         TextInput::make('gitea_webhook_secret')->label('Webhook Secret')->password()->revealable()
-                            ->dehydrated(fn ($s) => filled($s)),
+                            ->dehydrated(fn ($s) => filled($s))
+                            ->helperText(fn () => $this->storedBadge('gitea_webhook_secret_set')),
                         TextInput::make('gitea_personal_access_token')->label('Personal Access Token')->password()->revealable()
-                            ->dehydrated(fn ($s) => filled($s)),
+                            ->dehydrated(fn ($s) => filled($s))
+                            ->helperText(fn () => $this->storedBadge('gitea_personal_access_token_set')),
                     ])->columns(2),
 
                     Section::make('Sync Policy')->schema([
@@ -124,9 +150,11 @@ final class ConnectorsAndSyncSettings extends Page implements HasForms
                             TextInput::make('sentry_org_slug')->label('Sentry org slug')->placeholder('acme'),
                             TextInput::make('sentry_client_id')->label('Client ID'),
                             TextInput::make('sentry_client_secret')->label('Client Secret')->password()->revealable()
-                                ->dehydrated(fn ($s) => filled($s)),
+                                ->dehydrated(fn ($s) => filled($s))
+                                ->helperText(fn () => $this->storedBadge('sentry_client_secret_set')),
                             TextInput::make('sentry_auth_token')->label('Auth Token')->password()->revealable()
-                                ->dehydrated(fn ($s) => filled($s)),
+                                ->dehydrated(fn ($s) => filled($s))
+                                ->helperText(fn () => $this->storedBadge('sentry_auth_token_set')),
                             TextInput::make('sentry_api_base')->label('API Base')->default('https://sentry.io/api/0')->required(),
                             Select::make('sentry_default_project_id')->label('Default Forge project')
                                 ->options(fn () => Project::query()->orderBy('name')->pluck('name', 'id')->all())
@@ -217,6 +245,8 @@ final class ConnectorsAndSyncSettings extends Page implements HasForms
         $sentry->default_issue_type_id = $this->data['sentry_default_issue_type_id'] ? (int) $this->data['sentry_default_issue_type_id'] : null;
         $sentry->default_priority_id = $this->data['sentry_default_priority_id'] ? (int) $this->data['sentry_default_priority_id'] : null;
         $sentry->save();
+
+        $this->refreshData();
 
         Notification::make()->title('Settings saved')->success()->send();
     }
