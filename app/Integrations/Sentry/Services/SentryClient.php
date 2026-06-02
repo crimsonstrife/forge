@@ -90,7 +90,6 @@ final class SentryClient
                             ['name' => 'forge_priority_id', 'value' => (string) $priorityId],
                         ],
                         'sentryAppInstallationUuid' => (string) $this->settings->installation_uuid,
-                        'hasSchemaFormConfig' => true,
                     ],
                 ],
             ],
