@@ -12,6 +12,7 @@ use App\Providers\HorizonServiceProvider;
 use App\Providers\JetstreamServiceProvider;
 use App\Providers\ModelObserverServiceProvider;
 use App\Providers\RepositoryServiceProvider;
+use App\Providers\SentryIntegrationServiceProvider;
 use App\Providers\SoloModeServiceProvider;
 use App\Providers\TelescopeServiceProvider;
 use App\Providers\VoltServiceProvider;
@@ -33,6 +34,7 @@ return [
     JetstreamServiceProvider::class,
     ModelObserverServiceProvider::class,
     RepositoryServiceProvider::class,
+    SentryIntegrationServiceProvider::class,
     SoloModeServiceProvider::class,
     TelescopeServiceProvider::class,
     VoltServiceProvider::class,
