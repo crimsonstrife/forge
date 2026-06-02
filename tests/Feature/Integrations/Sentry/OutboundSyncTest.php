@@ -194,7 +194,7 @@ class OutboundSyncTest extends TestCase
                 && $request['conditions'][0]['id'] === 'sentry.rules.conditions.first_seen_event.FirstSeenEventCondition'
                 && $action['id'] === 'sentry.rules.actions.notify_event_sentry_app.NotifyEventSentryAppAction'
                 && $action['sentryAppInstallationUuid'] === '9a89a822-6e0b-4b62-9b99-905b9d742dd1'
-                && $action['hasSchemaFormConfig'] === true
+                && ! array_key_exists('hasSchemaFormConfig', $action)
                 && $action['settings'] === [
                     ['name' => 'forge_project_id', 'value' => (string) $project->id],
                     ['name' => 'forge_issue_type_id', 'value' => (string) $type->id],
