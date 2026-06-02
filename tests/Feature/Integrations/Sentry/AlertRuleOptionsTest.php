@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Integrations\Sentry;
 
+use App\Models\IssuePriority;
+use App\Models\IssueType;
 use App\Models\Project;
 use App\Settings\SentrySettings;
 use Database\Seeders\IssueEnumsSeeder;
@@ -98,5 +100,53 @@ class AlertRuleOptionsTest extends TestCase
 
         $response->assertOk();
         $this->assertSame($this->installationUuid, app(SentrySettings::class)->refresh()->installation_uuid);
+    }
+
+    public function test_alert_rule_settings_endpoint_accepts_valid_configuration(): void
+    {
+        $project = Project::factory()->create();
+        $type = IssueType::query()->where('key', 'BUG')->firstOrFail();
+        $priority = IssuePriority::query()->where('key', 'HIGH')->firstOrFail();
+
+        $response = $this->postJson('/api/sentry/alert-rule?installationId='.$this->installationUuid, [
+            'forge_project_id' => (string) $project->id,
+            'forge_issue_type_id' => (string) $type->id,
+            'forge_priority_id' => (string) $priority->id,
+        ]);
+
+        $response->assertNoContent();
+    }
+
+    public function test_alert_rule_settings_endpoint_accepts_settings_array_payload(): void
+    {
+        $project = Project::factory()->create();
+        $type = IssueType::query()->where('key', 'BUG')->firstOrFail();
+        $priority = IssuePriority::query()->where('key', 'HIGH')->firstOrFail();
+
+        $response = $this->postJson('/api/sentry/alert-rule?installationId='.$this->installationUuid, [
+            'settings' => [
+                ['name' => 'forge_project_id', 'value' => (string) $project->id],
+                ['name' => 'forge_issue_type_id', 'value' => (string) $type->id],
+                ['name' => 'forge_priority_id', 'value' => (string) $priority->id],
+            ],
+        ]);
+
+        $response->assertNoContent();
+    }
+
+    public function test_alert_rule_settings_endpoint_returns_sentry_error_shape_for_invalid_configuration(): void
+    {
+        $type = IssueType::query()->where('key', 'BUG')->firstOrFail();
+        $priority = IssuePriority::query()->where('key', 'HIGH')->firstOrFail();
+
+        $response = $this->postJson('/api/sentry/alert-rule?installationId='.$this->installationUuid, [
+            'forge_project_id' => 'missing-project',
+            'forge_issue_type_id' => (string) $type->id,
+            'forge_priority_id' => (string) $priority->id,
+        ]);
+
+        $response
+            ->assertStatus(400)
+            ->assertJson(['message' => 'Choose a valid Forge project.']);
     }
 }

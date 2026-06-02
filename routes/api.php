@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\SystemIssueController;
 use App\Http\Controllers\Api\V1\SystemOrganizationController;
 use App\Http\Controllers\Api\V1\SystemProjectController;
 use App\Http\Controllers\Sentry\AlertRuleOptionsController;
+use App\Http\Controllers\Sentry\AlertRuleSettingsController;
 use App\Http\Controllers\Webhooks\GitHubWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,10 @@ Route::prefix('sentry/options')
         Route::get('issue-types', [AlertRuleOptionsController::class, 'issueTypes'])->name('issue-types');
         Route::get('priorities', [AlertRuleOptionsController::class, 'priorities'])->name('priorities');
     });
+
+Route::post('sentry/alert-rule', [AlertRuleSettingsController::class, 'store'])
+    ->name('sentry.alert-rule.store')
+    ->middleware('sentry.installation');
 
 Route::prefix('v1')->name('api.v1.')->group(function () {
     // Public (throttled) ingest; optionally protect with 'ingest.key' later.

@@ -5,7 +5,7 @@
       "title": "Send to Forge",
       "settings": {
         "type": "alert-rule-settings",
-        "uri": "/api/webhooks/sentry",
+        "uri": "/api/sentry/alert-rule",
         "required_fields": [
           {
             "type": "select",
