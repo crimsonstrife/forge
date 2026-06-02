@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Integrations\Sentry\Support\SentryRequestSignature;
 use App\Settings\SentrySettings;
 use Closure;
 use Illuminate\Http\Request;
@@ -23,19 +24,17 @@ final class VerifySentryHookSignature
             return response('Sentry integration disabled', 403);
         }
 
-        $secret = (string) ($settings->client_secret ?? '');
-        if ($secret === '') {
+        if (filled($settings->client_secret ?? null) === false) {
             return response('Sentry integration missing client secret', 403);
         }
 
-        $provided = (string) $request->header('Sentry-Hook-Signature', '');
+        $provided = (string) $request->header(SentryRequestSignature::HEADER, '');
         if ($provided === '') {
-            return response('Missing Sentry-Hook-Signature', 401);
+            return response('Missing '.SentryRequestSignature::HEADER, 401);
         }
 
-        $expected = hash_hmac('sha256', $request->getContent(), $secret);
-        if (! hash_equals($expected, $provided)) {
-            return response('Invalid Sentry-Hook-Signature', 401);
+        if (! SentryRequestSignature::verify($request, $provided)) {
+            return response('Invalid '.SentryRequestSignature::HEADER, 401);
         }
 
         return $next($request);

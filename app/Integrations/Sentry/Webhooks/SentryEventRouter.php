@@ -4,6 +4,7 @@ namespace App\Integrations\Sentry\Webhooks;
 
 use App\Integrations\Sentry\Services\SentryInstallationService;
 use App\Integrations\Sentry\Services\SentryIssueSyncService;
+use App\Integrations\Sentry\Support\SentryHeaders;
 use Illuminate\Support\Facades\Log;
 
 final class SentryEventRouter
@@ -16,7 +17,7 @@ final class SentryEventRouter
 
     /**
      * @param  array<string,mixed>  $payload
-     * @param  array<string,array<int,string>>  $headers
+     * @param  array<string,mixed>  $headers
      */
     public function dispatch(string $resource, array $payload, array $headers): void
     {
@@ -29,14 +30,13 @@ final class SentryEventRouter
     }
 
     /**
-     * @param  array<string,array<int,string>>  $headers
+     * @param  array<string,mixed>  $headers
      */
     private function logUnhandled(string $resource, array $headers): void
     {
-        $requestId = $headers['request-id'][0] ?? null;
         Log::info('Sentry webhook resource not handled', [
             'resource' => $resource,
-            'request_id' => $requestId,
+            'request_id' => SentryHeaders::value($headers, 'Request-ID'),
         ]);
     }
 }

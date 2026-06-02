@@ -2,6 +2,7 @@
 
 namespace App\Integrations\Sentry\Webhooks;
 
+use App\Integrations\Sentry\Support\SentryHeaders;
 use App\Integrations\Sentry\Support\SentrySyncContext;
 use App\Models\WebhookDelivery;
 use Illuminate\Support\Facades\Log;
@@ -12,23 +13,25 @@ final class ProcessSentryWebhookJob extends ProcessWebhookJob
 {
     public function handle(SentryEventRouter $router): void
     {
-        $resource = $this->headerValue('sentry-hook-resource');
-        $requestId = $this->headerValue('request-id');
+        $headers = (array) ($this->webhookCall->headers ?? []);
+        $resource = SentryHeaders::value($headers, 'Sentry-Hook-Resource');
+        $requestId = SentryHeaders::value($headers, 'Request-ID');
+        $signature = SentryHeaders::value($headers, 'Sentry-Hook-Signature');
 
         $delivery = WebhookDelivery::query()->create([
             'provider' => 'sentry',
             'event_type' => $resource,
-            'signature' => $this->headerValue('sentry-hook-signature'),
-            'headers' => $this->webhookCall->headers ?? [],
+            'signature' => $signature,
+            'headers' => $headers,
             'payload' => json_encode($this->webhookCall->payload ?? [], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
         ]);
 
         try {
-            SentrySyncContext::run(function () use ($router, $resource): void {
+            SentrySyncContext::run(function () use ($router, $resource, $headers): void {
                 $router->dispatch(
                     resource: (string) $resource,
                     payload: (array) ($this->webhookCall->payload ?? []),
-                    headers: (array) ($this->webhookCall->headers ?? []),
+                    headers: $headers,
                 );
             });
 
@@ -46,16 +49,5 @@ final class ProcessSentryWebhookJob extends ProcessWebhookJob
             ]);
             throw $e;
         }
-    }
-
-    private function headerValue(string $name): ?string
-    {
-        $headers = (array) ($this->webhookCall->headers ?? []);
-        $values = $headers[$name] ?? null;
-        if (is_array($values)) {
-            return (string) ($values[0] ?? '');
-        }
-
-        return is_string($values) ? $values : null;
     }
 }

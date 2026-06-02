@@ -24,7 +24,6 @@ final class SentryIssueSyncService
     public function upsertFromAlert(array $payload): void
     {
         $data = (array) ($payload['data'] ?? []);
-        $issueData = (array) ($data['event']['issue_id'] ?? null) ?: (array) ($data['issue'] ?? []);
         $sentryId = $this->extractSentryIssueId($payload);
         $title = (string) ($data['issue']['title'] ?? $data['event']['title'] ?? '(no title)');
         $culprit = (string) ($data['issue']['culprit'] ?? $data['event']['culprit'] ?? '');
