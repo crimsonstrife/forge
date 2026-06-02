@@ -3,7 +3,6 @@
     {
       "type": "alert-rule-action",
       "title": "Send to Forge",
-      "uri": "/api/webhooks/sentry",
       "settings": {
         "type": "alert-rule-settings",
         "uri": "/api/sentry/alert-rule",

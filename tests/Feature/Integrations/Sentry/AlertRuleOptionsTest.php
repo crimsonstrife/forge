@@ -108,7 +108,7 @@ class AlertRuleOptionsTest extends TestCase
         $type = IssueType::query()->where('key', 'BUG')->firstOrFail();
         $priority = IssuePriority::query()->where('key', 'HIGH')->firstOrFail();
 
-        $response = $this->postJson('/api/sentry/alert-rule?installationId='.$this->installationUuid, [
+        $response = $this->postSignedAlertRuleJson([
             'forge_project_id' => (string) $project->id,
             'forge_issue_type_id' => (string) $type->id,
             'forge_priority_id' => (string) $priority->id,
@@ -123,7 +123,7 @@ class AlertRuleOptionsTest extends TestCase
         $type = IssueType::query()->where('key', 'BUG')->firstOrFail();
         $priority = IssuePriority::query()->where('key', 'HIGH')->firstOrFail();
 
-        $response = $this->postJson('/api/sentry/alert-rule?installationId='.$this->installationUuid, [
+        $response = $this->postSignedAlertRuleJson([
             'settings' => [
                 ['name' => 'forge_project_id', 'value' => (string) $project->id],
                 ['name' => 'forge_issue_type_id', 'value' => (string) $type->id],
@@ -139,7 +139,7 @@ class AlertRuleOptionsTest extends TestCase
         $type = IssueType::query()->where('key', 'BUG')->firstOrFail();
         $priority = IssuePriority::query()->where('key', 'HIGH')->firstOrFail();
 
-        $response = $this->postJson('/api/sentry/alert-rule?installationId='.$this->installationUuid, [
+        $response = $this->postSignedAlertRuleJson([
             'forge_project_id' => 'missing-project',
             'forge_issue_type_id' => (string) $type->id,
             'forge_priority_id' => (string) $priority->id,
@@ -148,5 +148,34 @@ class AlertRuleOptionsTest extends TestCase
         $response
             ->assertStatus(400)
             ->assertJson(['message' => 'Choose a valid Forge project.']);
+    }
+
+    public function test_alert_rule_settings_endpoint_rejects_missing_signature(): void
+    {
+        $response = $this->postJson('/api/sentry/alert-rule', []);
+
+        $this->assertSame(401, $response->getStatusCode());
+    }
+
+    /**
+     * @param  array<string,mixed>  $payload
+     */
+    private function postSignedAlertRuleJson(array $payload): \Illuminate\Testing\TestResponse
+    {
+        $body = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $this->assertIsString($body);
+
+        return $this->call(
+            'POST',
+            '/api/sentry/alert-rule',
+            [],
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_SENTRY_HOOK_SIGNATURE' => hash_hmac('sha256', $body, 'cs'),
+            ],
+            $body,
+        );
     }
 }

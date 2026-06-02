@@ -9,10 +9,10 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Used by the alert-rule options endpoints, which Sentry signs the same way
+ * Used by Sentry UI-component POST callbacks, which Sentry signs the same way
  * as webhooks (HMAC-SHA256 of the raw body using the integration's client
  * secret). The Spatie webhook-client config handles signing for /webhooks/sentry;
- * this middleware applies the same check to GET option lookups.
+ * this middleware applies the same check to routes outside webhook-client.
  */
 final class VerifySentryHookSignature
 {
