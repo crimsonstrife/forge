@@ -22,7 +22,7 @@ Route::webhooks('/webhooks/sentry', 'sentry');
 
 Route::prefix('sentry/options')
     ->name('sentry.options.')
-    ->middleware('sentry.hook')
+    ->middleware('sentry.installation')
     ->group(function (): void {
         Route::get('projects', [AlertRuleOptionsController::class, 'projects'])->name('projects');
         Route::get('issue-types', [AlertRuleOptionsController::class, 'issueTypes'])->name('issue-types');
