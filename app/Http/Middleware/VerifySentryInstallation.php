@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Auth for Sentry UI-component option lookups (e.g. /api/sentry/options/*).
+ * Auth for Sentry UI-component requests (e.g. /api/sentry/options/*).
  *
  * Sentry signs webhook deliveries (POSTs with a body) using HMAC-SHA256, but
  * UI component select-option requests are GETs with no body. Instead, Sentry
