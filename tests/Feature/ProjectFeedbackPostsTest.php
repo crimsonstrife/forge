@@ -10,6 +10,7 @@ use App\Models\Team;
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
@@ -61,6 +62,14 @@ class ProjectFeedbackPostsTest extends TestCase
             ->assertOk()
             ->assertSee('Player Ideas')
             ->assertSee('Add a better map view');
+    }
+
+    public function test_project_feedback_route_is_registered_in_the_route_collection(): void
+    {
+        $route = Route::getRoutes()->getByName('projects.feedback');
+
+        $this->assertNotNull($route);
+        $this->assertSame('projects/{project}/feedback', $route->uri());
     }
 
     public function test_project_feedback_posts_respect_project_view_permission(): void
