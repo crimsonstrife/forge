@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4418b9fce377273469709e8a9b09914b",
+    "content-hash": "336fea664f92aca27f3be14e538c6858",
     "packages": [
         {
             "name": "achyutn/filament-log-viewer",
@@ -6725,26 +6725,27 @@
         },
         {
             "name": "metalogico/laravel-formello",
-            "version": "v1.3.3",
+            "version": "v2.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/metalogico/laravel-formello.git",
-                "reference": "b27899defbe00fff4ddac16064a8b7c89f65179e"
+                "url": "https://github.com/metalogico/laravel-formello",
+                "reference": "d7a4e7513d00996fec193aa2f1cf142d10280ddd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/metalogico/laravel-formello/zipball/b27899defbe00fff4ddac16064a8b7c89f65179e",
-                "reference": "b27899defbe00fff4ddac16064a8b7c89f65179e",
+                "url": "https://api.github.com/repos/metalogico/laravel-formello/zipball/d7a4e7513d00996fec193aa2f1cf142d10280ddd",
+                "reference": "d7a4e7513d00996fec193aa2f1cf142d10280ddd",
                 "shasum": ""
             },
             "require": {
-                "laravel/framework": "^9.0|^10.0|^11.0|^12.0",
-                "php": "^8.0"
+                "laravel/framework": "^9.0|^10.0|^11.0|^12.0|^13.0",
+                "php": "^8.1"
             },
             "require-dev": {
-                "orchestra/testbench": "^10.4",
-                "pestphp/pest": "^3.8",
-                "pestphp/pest-plugin-laravel": "^3.2"
+                "orchestra/testbench": "^8.0|^9.0|^10.0",
+                "pestphp/pest": "^2.0|^3.0|^4.0",
+                "pestphp/pest-plugin-laravel": "^2.0|^3.0|^4.0",
+                "phpunit/phpunit": "^10.0|^11.0|^12.0"
             },
             "type": "library",
             "extra": {
@@ -6772,7 +6773,7 @@
                     "email": "michele.brandolin@gmail.com"
                 }
             ],
-            "description": "A Laravel package for generating Bootstrap 5 forms based on models",
+            "description": "A Laravel package for generating Bootstrap 5 and Tailwind CSS 4 forms based on models",
             "homepage": "https://github.com/metalogico/laravel-formello",
             "keywords": [
                 "Forms",
@@ -6781,11 +6782,7 @@
                 "laravel",
                 "metalogico"
             ],
-            "support": {
-                "issues": "https://github.com/metalogico/laravel-formello/issues",
-                "source": "https://github.com/metalogico/laravel-formello/tree/v1.3.3"
-            },
-            "time": "2025-11-25T11:45:36+00:00"
+            "time": "2026-04-20T11:05:50+00:00"
         },
         {
             "name": "mews/purifier",
