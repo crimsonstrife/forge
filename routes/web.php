@@ -17,6 +17,7 @@ use App\Http\Controllers\TransitionStatusController;
 use App\Livewire\Feedback\AdminDiscussion;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
+use App\Models\Project;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -107,6 +108,9 @@ Route::middleware([
     Route::get('/projects/{project}/calendar.ics', ProjectCalendarController::class)
         ->middleware(['auth', 'verified'])
         ->name('projects.calendar.ics');
+    Route::get('/projects/{project}/feedback', static fn (Project $project) => view('pages.projects.[Project].feedback', [
+        'project' => $project,
+    ]))->name('projects.feedback');
     Route::delete('/projects/{project}', ProjectController::class)
         ->name('projects.destroy');
     Route::delete('/projects/{project}/issues/{issue}', IssueController::class)

@@ -1,4 +1,7 @@
-@php use App\Models\Project; @endphp
+@php
+    use App\Models\Project;
+    use Symfony\Component\Routing\Exception\RouteNotFoundException;
+@endphp
 @props(['project'])
 
 @php
@@ -19,10 +22,17 @@
 
 <ul class="nav nav-tabs card-header-tabs">
     @foreach ($tabs as $t)
+        @php
+            try {
+                $url = route($t['route'], ['project' => $project]);
+            } catch (RouteNotFoundException) {
+                continue;
+            }
+        @endphp
         <li class="nav-item">
             <a
                 class="nav-link {{ request()->routeIs($t['route']) ? 'active' : '' }}"
-                href="{{ route($t['route'], ['project' => $project]) }}"
+                href="{{ $url }}"
             >
                 {{ __($t['label']) }}
             </a>
