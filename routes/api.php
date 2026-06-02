@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\Feedback\Admin;
 use App\Http\Controllers\Api\V1\SystemIssueController;
 use App\Http\Controllers\Api\V1\SystemOrganizationController;
 use App\Http\Controllers\Api\V1\SystemProjectController;
+use App\Http\Controllers\Sentry\AlertRuleOptionsController;
 use App\Http\Controllers\Webhooks\GitHubWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,17 @@ Route::get('/user', static function (Request $request) {
 
 Route::post('/webhooks/github', [GitHubWebhookController::class, 'handle'])
     ->name('webhooks.github');
+
+Route::webhooks('/webhooks/sentry', 'sentry');
+
+Route::prefix('sentry/options')
+    ->name('sentry.options.')
+    ->middleware('sentry.hook')
+    ->group(function (): void {
+        Route::get('projects', [AlertRuleOptionsController::class, 'projects'])->name('projects');
+        Route::get('issue-types', [AlertRuleOptionsController::class, 'issueTypes'])->name('issue-types');
+        Route::get('priorities', [AlertRuleOptionsController::class, 'priorities'])->name('priorities');
+    });
 
 Route::prefix('v1')->name('api.v1.')->group(function () {
     // Public (throttled) ingest; optionally protect with 'ingest.key' later.
