@@ -32,7 +32,7 @@ Route::prefix('sentry/options')
 
 Route::post('sentry/alert-rule', [AlertRuleSettingsController::class, 'store'])
     ->name('sentry.alert-rule.store')
-    ->middleware('sentry.installation');
+    ->middleware('sentry.hook');
 
 Route::prefix('v1')->name('api.v1.')->group(function () {
     // Public (throttled) ingest; optionally protect with 'ingest.key' later.
