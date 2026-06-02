@@ -88,13 +88,15 @@ class AlertRuleOptionsTest extends TestCase
         $this->assertSame(403, $response->getStatusCode());
     }
 
-    public function test_endpoint_rejects_when_installation_not_yet_recorded(): void
+    public function test_endpoint_captures_first_installation_id_when_not_yet_recorded(): void
     {
         $s = app(SentrySettings::class);
         $s->installation_uuid = null;
         $s->save();
 
         $response = $this->get('/api/sentry/options/projects?installationId='.$this->installationUuid);
-        $this->assertSame(403, $response->getStatusCode());
+
+        $response->assertOk();
+        $this->assertSame($this->installationUuid, app(SentrySettings::class)->refresh()->installation_uuid);
     }
 }
