@@ -11,6 +11,7 @@
         ['label' => 'Calendar',   'route' => 'projects.calendar'],
         ['label' => 'Timeline',   'route' => 'projects.timeline'],
         ['label' => 'Roadmap',    'route' => 'projects.roadmap'],
+        ['label' => 'Feedback',   'route' => 'projects.feedback'],
         ['label' => 'Code',       'route' => 'projects.code'],
         ['label' => 'Transitions','route' => 'projects.transitions'],
     ];

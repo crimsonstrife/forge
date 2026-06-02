@@ -14,6 +14,7 @@ use App\Observers\IssueObserver;
 use App\Observers\PermissionSetObserver;
 use App\Observers\ProjectObserver;
 use App\Observers\RoleObserver;
+use App\Services\Feedback\FeedbackSessionService;
 use App\Session\ResilientSessionManager;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
@@ -25,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Session\SessionManager;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
@@ -125,13 +127,59 @@ class AppServiceProvider extends ServiceProvider
             ->middleware(['web', 'throttle:livewire-update'])
             ->name('livewire.update'));
 
-        if ($this->app->runningInConsole()) {
-            return; // do not touch URL/Request during composer/CLI
-        }
+        Auth::viaRequest('feedback-session', static function (Request $request) {
+            $header = (string) $request->header('Authorization', '');
+            if (! str_starts_with($header, 'Bearer ')) {
+                return null;
+            }
 
-        Scramble::configure()->withDocumentTransformers(function (OpenApi $doc) {
-            $doc->info->title = config('app.name').' API';
-            $doc->secure(SecurityScheme::http('bearer')); // default for all endpoints
+            return app(FeedbackSessionService::class)->resolveBearer(substr($header, 7), $request);
+        });
+
+        RateLimiter::for('feedback', static function (Request $request) {
+            $key = $request->attributes->get('ingest_key');
+            $bucket = $key?->id ?? $request->ip();
+
+            return Limit::perMinute(120)->by('feedback:'.$bucket);
+        });
+
+        RateLimiter::for('feedback-auth', static function (Request $request) {
+            $email = strtolower((string) $request->input('email', ''));
+
+            return [
+                Limit::perHour(5)->by('feedback-auth-email:'.hash('sha256', $email)),
+                Limit::perHour(20)->by('feedback-auth-ip:'.$request->ip()),
+            ];
+        });
+
+        RateLimiter::for('feedback-vote', static function (Request $request) {
+            $header = (string) $request->header('Authorization', '');
+            $identity = str_starts_with($header, 'Bearer ')
+                ? app(FeedbackSessionService::class)->resolveBearer(substr($header, 7))
+                : null;
+            $bucket = $identity?->getAuthIdentifier() ?? $request->ip();
+
+            return Limit::perHour(60)->by('feedback-vote:'.$bucket);
+        });
+
+        RateLimiter::for('feedback-post', static function (Request $request) {
+            $header = (string) $request->header('Authorization', '');
+            $identity = str_starts_with($header, 'Bearer ')
+                ? app(FeedbackSessionService::class)->resolveBearer(substr($header, 7))
+                : null;
+            $bucket = $identity?->getAuthIdentifier() ?? $request->ip();
+
+            return Limit::perDay(5)->by('feedback-post:'.$bucket);
+        });
+
+        RateLimiter::for('feedback-comment', static function (Request $request) {
+            $header = (string) $request->header('Authorization', '');
+            $identity = str_starts_with($header, 'Bearer ')
+                ? app(FeedbackSessionService::class)->resolveBearer(substr($header, 7))
+                : null;
+            $bucket = $identity?->getAuthIdentifier() ?? $request->ip();
+
+            return Limit::perHour(20)->by('feedback-comment:'.$bucket);
         });
 
         RateLimiter::for('api', static function (Request $request) {
@@ -147,6 +195,15 @@ class AppServiceProvider extends ServiceProvider
             $bucket = $key?->id ?? $request->ip();
 
             return [Limit::perMinute(20)->by('ingest:'.$bucket)];
+        });
+
+        if ($this->app->runningInConsole()) {
+            return; // do not touch URL/Request during composer/CLI
+        }
+
+        Scramble::configure()->withDocumentTransformers(function (OpenApi $doc) {
+            $doc->info->title = config('app.name').' API';
+            $doc->secure(SecurityScheme::http('bearer')); // default for all endpoints
         });
 
         Paginator::useBootstrapFive();

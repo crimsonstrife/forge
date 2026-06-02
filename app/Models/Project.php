@@ -223,6 +223,11 @@ class Project extends BaseModel
         return $this->hasMany(Issue::class);
     }
 
+    public function serviceProducts(): BelongsToMany
+    {
+        return $this->belongsToMany(ServiceProduct::class, 'project_service_product');
+    }
+
     public function sprints(): HasMany
     {
         return $this->hasMany(Sprint::class);

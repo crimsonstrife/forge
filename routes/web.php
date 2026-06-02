@@ -14,6 +14,7 @@ use App\Http\Controllers\ProjectCalendarController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectMilestoneController;
 use App\Http\Controllers\TransitionStatusController;
+use App\Livewire\Feedback\AdminDiscussion;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use Illuminate\Support\Facades\DB;
@@ -86,6 +87,8 @@ Route::middleware([
     Route::get('/dashboard', static function () {
         return view('dashboard');
     })->name('dashboard');
+    Route::get('/admin/feedback/{board:slug}', AdminDiscussion::class)
+        ->name('admin.feedback.board');
     Route::post('/notifications/mark-all-read', MarkAllReadController::class)
         ->name('notifications.markAllRead');
     Route::get('/status', HealthCheckResultsController::class)->name('status');

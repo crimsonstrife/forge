@@ -1,0 +1,35 @@
+{
+  "elements": [
+    {
+      "type": "alert-rule-action",
+      "title": "Send to Forge",
+      "settings": {
+        "type": "alert-rule-settings",
+        "uri": "/api/webhooks/sentry",
+        "required_fields": [
+          {
+            "type": "select",
+            "label": "Forge project",
+            "name": "forge_project_id",
+            "uri": "/api/sentry/options/projects",
+            "async": true
+          },
+          {
+            "type": "select",
+            "label": "Issue type",
+            "name": "forge_issue_type_id",
+            "uri": "/api/sentry/options/issue-types",
+            "async": true
+          },
+          {
+            "type": "select",
+            "label": "Priority",
+            "name": "forge_priority_id",
+            "uri": "/api/sentry/options/priorities",
+            "async": true
+          }
+        ]
+      }
+    }
+  ]
+}

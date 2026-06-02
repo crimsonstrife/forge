@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Api\V1;
+use App\Http\Controllers\Api\V1\Feedback;
+use App\Http\Controllers\Api\V1\Feedback\Admin;
 use App\Http\Controllers\Api\V1\SystemIssueController;
 use App\Http\Controllers\Api\V1\SystemOrganizationController;
 use App\Http\Controllers\Api\V1\SystemProjectController;
+use App\Http\Controllers\Sentry\AlertRuleOptionsController;
 use App\Http\Controllers\Webhooks\GitHubWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +17,17 @@ Route::get('/user', static function (Request $request) {
 
 Route::post('/webhooks/github', [GitHubWebhookController::class, 'handle'])
     ->name('webhooks.github');
+
+Route::webhooks('/webhooks/sentry', 'sentry');
+
+Route::prefix('sentry/options')
+    ->name('sentry.options.')
+    ->middleware('sentry.hook')
+    ->group(function (): void {
+        Route::get('projects', [AlertRuleOptionsController::class, 'projects'])->name('projects');
+        Route::get('issue-types', [AlertRuleOptionsController::class, 'issueTypes'])->name('issue-types');
+        Route::get('priorities', [AlertRuleOptionsController::class, 'priorities'])->name('priorities');
+    });
 
 Route::prefix('v1')->name('api.v1.')->group(function () {
     // Public (throttled) ingest; optionally protect with 'ingest.key' later.
@@ -90,3 +104,84 @@ Route::prefix('v1')->middleware(['auth:api,sanctum', 'throttle:api'])->group(fun
     Route::post('issues/{issue:id}/time', [V1\IssueTimeController::class, 'store'])
         ->name('api.v1.issues.time.store');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Feedback API
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/feedback')
+    ->name('api.v1.feedback.')
+    ->middleware(['ingest.key', 'throttle:feedback'])
+    ->group(function (): void {
+        Route::post('auth/request', Feedback\AuthRequestController::class)
+            ->middleware('throttle:feedback-auth')
+            ->name('auth.request');
+        Route::post('auth/verify', Feedback\AuthVerifyController::class)
+            ->name('auth.verify');
+        Route::post('auth/logout', Feedback\AuthLogoutController::class)
+            ->middleware('feedback.identity')
+            ->name('auth.logout');
+        Route::get('auth/me', Feedback\AuthMeController::class)
+            ->middleware('feedback.identity')
+            ->name('auth.me');
+
+        Route::get('boards/{slug}', [Feedback\BoardController::class, 'show'])
+            ->middleware('feedback.identity.optional')
+            ->name('boards.show');
+        Route::get('boards/{slug}/posts', [Feedback\PostController::class, 'index'])
+            ->middleware('feedback.identity.optional')
+            ->name('boards.posts.index');
+        Route::post('boards/{slug}/posts', [Feedback\PostController::class, 'store'])
+            ->middleware(['feedback.identity', 'throttle:feedback-post'])
+            ->name('boards.posts.store');
+
+        Route::get('posts/{post}', [Feedback\PostController::class, 'show'])
+            ->middleware('feedback.identity.optional')
+            ->name('posts.show');
+        Route::patch('posts/{post}', [Feedback\PostController::class, 'update'])
+            ->middleware('feedback.identity')
+            ->name('posts.update');
+        Route::delete('posts/{post}', [Feedback\PostController::class, 'destroy'])
+            ->middleware('feedback.identity')
+            ->name('posts.destroy');
+        Route::post('posts/{post}/vote', [Feedback\PostVoteController::class, 'store'])
+            ->middleware(['feedback.identity', 'throttle:feedback-vote'])
+            ->name('posts.vote');
+        Route::get('posts/{post}/comments', [Feedback\CommentController::class, 'index'])
+            ->middleware('feedback.identity.optional')
+            ->name('posts.comments.index');
+        Route::post('posts/{post}/comments', [Feedback\CommentController::class, 'store'])
+            ->middleware(['feedback.identity', 'throttle:feedback-comment'])
+            ->name('posts.comments.store');
+
+        Route::patch('comments/{comment}', [Feedback\CommentController::class, 'update'])
+            ->middleware('feedback.identity')
+            ->name('comments.update');
+        Route::delete('comments/{comment}', [Feedback\CommentController::class, 'destroy'])
+            ->middleware('feedback.identity')
+            ->name('comments.destroy');
+        Route::post('comments/{comment}/vote', [Feedback\CommentVoteController::class, 'store'])
+            ->middleware(['feedback.identity', 'throttle:feedback-vote'])
+            ->name('comments.vote');
+    });
+
+Route::prefix('v1/feedback/admin')
+    ->name('api.v1.feedback.admin.')
+    ->middleware(['auth:api,sanctum', 'throttle:api'])
+    ->group(function (): void {
+        Route::get('boards', [Admin\AdminBoardController::class, 'index'])->name('boards.index');
+        Route::post('boards', [Admin\AdminBoardController::class, 'store'])->name('boards.store');
+        Route::patch('boards/{board}', [Admin\AdminBoardController::class, 'update'])->name('boards.update');
+        Route::get('boards/{board}/posts', [Admin\AdminPostController::class, 'index'])->name('boards.posts.index');
+
+        Route::patch('posts/{post}', [Admin\AdminPostController::class, 'update'])->name('posts.update');
+        Route::post('posts/{post}/status', [Admin\AdminPostController::class, 'status'])->name('posts.status');
+        Route::post('posts/{post}/pin', [Admin\AdminPostController::class, 'pin'])->name('posts.pin');
+        Route::post('posts/{post}/merge', [Admin\AdminPostController::class, 'merge'])->name('posts.merge');
+        Route::post('posts/{post}/convert-issue', [Admin\AdminPostController::class, 'convertIssue'])->name('posts.convert-issue');
+        Route::post('posts/{post}/comments', [Admin\AdminPostController::class, 'comments'])->name('posts.comments.store');
+
+        Route::patch('identities/{identity}/block', [Admin\AdminIdentityController::class, 'block'])->name('identities.block');
+        Route::delete('comments/{comment}', [Admin\AdminCommentController::class, 'destroy'])->name('comments.destroy');
+    });
