@@ -11,7 +11,9 @@ use RuntimeException;
 
 final class SentryClient
 {
-    public function __construct(private readonly SentrySettings $settings) {}
+    public function __construct(private readonly SentrySettings $settings)
+    {
+    }
 
     public function isConfigured(): bool
     {

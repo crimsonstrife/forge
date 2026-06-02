@@ -30,7 +30,7 @@ class SentrySignatureValidatorTest extends TestCase
         $config = $this->makeConfig();
         $this->bindSettings(enabled: true, secret: $secret);
 
-        $this->assertTrue((new SentrySignatureValidator)->isValid($request, $config));
+        $this->assertTrue((new SentrySignatureValidator())->isValid($request, $config));
     }
 
     public function test_returns_false_when_body_is_tampered(): void
@@ -45,7 +45,7 @@ class SentrySignatureValidatorTest extends TestCase
         $config = $this->makeConfig();
         $this->bindSettings(enabled: true, secret: $secret);
 
-        $this->assertFalse((new SentrySignatureValidator)->isValid($request, $config));
+        $this->assertFalse((new SentrySignatureValidator())->isValid($request, $config));
     }
 
     public function test_returns_false_when_integration_disabled(): void
@@ -60,7 +60,7 @@ class SentrySignatureValidatorTest extends TestCase
         $config = $this->makeConfig();
         $this->bindSettings(enabled: false, secret: $secret);
 
-        $this->assertFalse((new SentrySignatureValidator)->isValid($request, $config));
+        $this->assertFalse((new SentrySignatureValidator())->isValid($request, $config));
     }
 
     public function test_returns_false_when_secret_empty(): void
@@ -72,7 +72,7 @@ class SentrySignatureValidatorTest extends TestCase
         $config = $this->makeConfig();
         $this->bindSettings(enabled: true, secret: '');
 
-        $this->assertFalse((new SentrySignatureValidator)->isValid($request, $config));
+        $this->assertFalse((new SentrySignatureValidator())->isValid($request, $config));
     }
 
     public function test_returns_false_when_header_missing(): void
@@ -82,7 +82,7 @@ class SentrySignatureValidatorTest extends TestCase
         $config = $this->makeConfig();
         $this->bindSettings(enabled: true, secret: 'shh');
 
-        $this->assertFalse((new SentrySignatureValidator)->isValid($request, $config));
+        $this->assertFalse((new SentrySignatureValidator())->isValid($request, $config));
     }
 
     private function makeConfig(): WebhookConfig
@@ -95,7 +95,7 @@ class SentrySignatureValidatorTest extends TestCase
 
     private function bindSettings(bool $enabled, string $secret): void
     {
-        $settings = new \stdClass;
+        $settings = new \stdClass();
         $settings->enabled = $enabled;
         $settings->client_secret = $secret;
 

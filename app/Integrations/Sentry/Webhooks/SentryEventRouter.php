@@ -11,7 +11,8 @@ final class SentryEventRouter
     public function __construct(
         private readonly SentryIssueSyncService $issues,
         private readonly SentryInstallationService $installations,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string,mixed>  $payload

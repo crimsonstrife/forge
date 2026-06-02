@@ -6,7 +6,9 @@ use App\Settings\SentrySettings;
 
 final class SentryInstallationService
 {
-    public function __construct(private readonly SentrySettings $settings) {}
+    public function __construct(private readonly SentrySettings $settings)
+    {
+    }
 
     /**
      * Handle the 'installation' resource. Action is 'created' or 'deleted'.

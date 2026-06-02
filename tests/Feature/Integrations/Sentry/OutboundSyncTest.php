@@ -35,8 +35,7 @@ class OutboundSyncTest extends TestCase
         // RefreshDatabase wraps each test in a transaction that never commits.
         // ->afterCommit() jobs would never dispatch. Swap the txn manager on
         // the active connection so callbacks fire immediately.
-        $immediate = new class extends DatabaseTransactionsManager
-        {
+        $immediate = new class () extends DatabaseTransactionsManager {
             public function addCallback($callback)
             {
                 $callback();

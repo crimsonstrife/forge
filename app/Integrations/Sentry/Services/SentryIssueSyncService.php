@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Log;
 
 final class SentryIssueSyncService
 {
-    public function __construct(private readonly SentrySettings $settings) {}
+    public function __construct(private readonly SentrySettings $settings)
+    {
+    }
 
     /**
      * Inbound from an alert-rule-action firing (resource = 'event_alert').
@@ -54,7 +56,7 @@ final class SentryIssueSyncService
             return;
         }
 
-        $issue = new Issue;
+        $issue = new Issue();
         $issue->project_id = (string) $project->id;
         $issue->issue_type_id = $this->settings->default_issue_type_id;
         $issue->issue_priority_id = $this->settings->default_priority_id;

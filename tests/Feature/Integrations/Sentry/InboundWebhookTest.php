@@ -71,7 +71,9 @@ class InboundWebhookTest extends TestCase
         $response = $this->call(
             'POST',
             '/api/webhooks/sentry',
-            [], [], [],
+            [],
+            [],
+            [],
             [
                 'CONTENT_TYPE' => 'application/json',
                 'HTTP_SENTRY_HOOK_RESOURCE' => 'event_alert',
@@ -122,7 +124,9 @@ class InboundWebhookTest extends TestCase
         $response = $this->call(
             'POST',
             '/api/webhooks/sentry',
-            [], [], [],
+            [],
+            [],
+            [],
             [
                 'CONTENT_TYPE' => 'application/json',
                 'HTTP_SENTRY_HOOK_RESOURCE' => 'event_alert',
@@ -151,7 +155,9 @@ class InboundWebhookTest extends TestCase
         $response = $this->call(
             'POST',
             '/api/webhooks/sentry',
-            [], [], [],
+            [],
+            [],
+            [],
             [
                 'CONTENT_TYPE' => 'application/json',
                 'HTTP_SENTRY_HOOK_RESOURCE' => 'installation',
