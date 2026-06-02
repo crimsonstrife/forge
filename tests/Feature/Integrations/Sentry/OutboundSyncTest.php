@@ -161,6 +161,48 @@ class OutboundSyncTest extends TestCase
         });
     }
 
+    public function test_sentry_client_creates_issue_alert_rule_for_sentry_app_action(): void
+    {
+        $project = Project::factory()->create();
+        $type = IssueType::query()->where('key', 'BUG')->firstOrFail();
+        $priority = IssuePriority::query()->where('key', 'HIGH')->firstOrFail();
+
+        $settings = app(SentrySettings::class);
+        $settings->installation_uuid = '9a89a822-6e0b-4b62-9b99-905b9d742dd1';
+        $settings->save();
+
+        Http::fake([
+            'sentry.io/api/0/projects/acme/crash-game/rules/' => Http::response(['id' => 'rule-123'], 201),
+        ]);
+
+        $rule = app(SentryClient::class)->createIssueAlertRule(
+            sentryProjectSlug: 'crash-game',
+            ruleName: 'Send new issues to Forge',
+            forgeProjectId: (string) $project->id,
+            issueTypeId: $type->id,
+            priorityId: $priority->id,
+            frequency: 5,
+        );
+
+        $this->assertSame('rule-123', $rule['id']);
+
+        Http::assertSent(function ($request) use ($project, $type, $priority) {
+            $action = $request['actions'][0] ?? [];
+
+            return $request->method() === 'POST'
+                && str_ends_with($request->url(), '/projects/acme/crash-game/rules/')
+                && $request['conditions'][0]['id'] === 'sentry.rules.conditions.first_seen_event.FirstSeenEventCondition'
+                && $action['id'] === 'sentry.rules.actions.notify_event_sentry_app.NotifyEventSentryAppAction'
+                && $action['sentryAppInstallationUuid'] === '9a89a822-6e0b-4b62-9b99-905b9d742dd1'
+                && $action['hasSchemaFormConfig'] === true
+                && $action['settings'] === [
+                    ['name' => 'forge_project_id', 'value' => (string) $project->id],
+                    ['name' => 'forge_issue_type_id', 'value' => (string) $type->id],
+                    ['name' => 'forge_priority_id', 'value' => (string) $priority->id],
+                ];
+        });
+    }
+
     private function makeIssue(): Issue
     {
         $project = Project::factory()->create();

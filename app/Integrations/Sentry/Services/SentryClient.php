@@ -52,6 +52,58 @@ final class SentryClient
     }
 
     /**
+     * @return array<string,mixed>
+     *
+     * @throws ConnectionException
+     */
+    public function createIssueAlertRule(
+        string $sentryProjectSlug,
+        string $ruleName,
+        string $forgeProjectId,
+        int $issueTypeId,
+        int $priorityId,
+        int $frequency = 5,
+    ): array {
+        $this->ensureAlertRuleConfigured();
+
+        $resp = $this->client()->post(
+            sprintf(
+                '/projects/%s/%s/rules/',
+                rawurlencode((string) $this->settings->org_slug),
+                rawurlencode($sentryProjectSlug),
+            ),
+            [
+                'name' => $ruleName,
+                'frequency' => max(5, min(43200, $frequency)),
+                'actionMatch' => 'all',
+                'filterMatch' => 'all',
+                'conditions' => [
+                    ['id' => 'sentry.rules.conditions.first_seen_event.FirstSeenEventCondition'],
+                ],
+                'filters' => [],
+                'actions' => [
+                    [
+                        'id' => 'sentry.rules.actions.notify_event_sentry_app.NotifyEventSentryAppAction',
+                        'settings' => [
+                            ['name' => 'forge_project_id', 'value' => $forgeProjectId],
+                            ['name' => 'forge_issue_type_id', 'value' => (string) $issueTypeId],
+                            ['name' => 'forge_priority_id', 'value' => (string) $priorityId],
+                        ],
+                        'sentryAppInstallationUuid' => (string) $this->settings->installation_uuid,
+                        'hasSchemaFormConfig' => true,
+                    ],
+                ],
+            ],
+        );
+
+        $this->assertOk($resp, 'create issue alert rule');
+
+        $json = $resp->json();
+
+        return is_array($json) ? $json : [];
+    }
+
+    /**
      * @throws ConnectionException
      */
     public function ping(): bool
@@ -91,6 +143,19 @@ final class SentryClient
     {
         if (! $this->isConfigured()) {
             throw new RuntimeException('Sentry integration is not enabled or missing an auth token.');
+        }
+    }
+
+    private function ensureAlertRuleConfigured(): void
+    {
+        $this->ensureConfigured();
+
+        if (! filled($this->settings->org_slug)) {
+            throw new RuntimeException('Sentry integration is missing an org slug.');
+        }
+
+        if (! filled($this->settings->installation_uuid)) {
+            throw new RuntimeException('Sentry installation UUID has not been recorded yet.');
         }
     }
 

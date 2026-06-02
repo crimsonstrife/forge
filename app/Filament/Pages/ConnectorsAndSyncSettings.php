@@ -185,6 +185,49 @@ final class ConnectorsAndSyncSettings extends Page implements HasForms
             Action::make('testSentry')->label('Test Sentry')
                 ->visible(fn () => (bool) ($this->data['sentry_enabled'] ?? false))
                 ->action(fn () => $this->testSentry()),
+            Action::make('createSentryAlertRule')
+                ->label('Create Sentry Rule')
+                ->visible(fn () => (bool) ($this->data['sentry_enabled'] ?? false))
+                ->schema([
+                    TextInput::make('sentry_project_slug')
+                        ->label('Sentry project slug')
+                        ->required(),
+                    TextInput::make('rule_name')
+                        ->label('Rule name')
+                        ->default('Send new issues to Forge')
+                        ->required(),
+                    TextInput::make('frequency')
+                        ->label('Action frequency minutes')
+                        ->numeric()
+                        ->minValue(5)
+                        ->maxValue(43200)
+                        ->default(5)
+                        ->required(),
+                    Select::make('forge_project_id')
+                        ->label('Forge project')
+                        ->options(fn () => Project::query()->orderBy('name')->pluck('name', 'id')->all())
+                        ->default(fn () => $this->data['sentry_default_project_id'] ?? null)
+                        ->searchable()
+                        ->preload()
+                        ->required(),
+                    Select::make('forge_issue_type_id')
+                        ->label('Issue type')
+                        ->options(fn () => IssueType::query()->orderBy('name')->pluck('name', 'id')->all())
+                        ->default(fn () => $this->data['sentry_default_issue_type_id'] ?? null)
+                        ->searchable()
+                        ->preload()
+                        ->required(),
+                    Select::make('forge_priority_id')
+                        ->label('Priority')
+                        ->options(fn () => IssuePriority::query()->orderBy('name')->pluck('name', 'id')->all())
+                        ->default(fn () => $this->data['sentry_default_priority_id'] ?? null)
+                        ->searchable()
+                        ->preload()
+                        ->required(),
+                ])
+                ->action(function (array $data): void {
+                    $this->createSentryAlertRule($data);
+                }),
         ];
     }
 
@@ -267,6 +310,36 @@ final class ConnectorsAndSyncSettings extends Page implements HasForms
                 : Notification::make()->title('Sentry ping failed')->danger()->send();
         } catch (\Throwable $e) {
             Notification::make()->title('Sentry error')->body($e->getMessage())->danger()->send();
+        }
+    }
+
+    /**
+     * @param  array<string,mixed>  $data
+     */
+    private function createSentryAlertRule(array $data): void
+    {
+        try {
+            $rule = app(SentryClient::class)->createIssueAlertRule(
+                sentryProjectSlug: trim((string) ($data['sentry_project_slug'] ?? '')),
+                ruleName: trim((string) ($data['rule_name'] ?? 'Send new issues to Forge')),
+                forgeProjectId: (string) ($data['forge_project_id'] ?? ''),
+                issueTypeId: (int) ($data['forge_issue_type_id'] ?? 0),
+                priorityId: (int) ($data['forge_priority_id'] ?? 0),
+                frequency: (int) ($data['frequency'] ?? 5),
+            );
+
+            $ruleId = (string) ($rule['id'] ?? '');
+            Notification::make()
+                ->title('Sentry rule created')
+                ->body($ruleId !== '' ? 'Rule ID: '.$ruleId : 'Sentry accepted the rule.')
+                ->success()
+                ->send();
+        } catch (\Throwable $e) {
+            Notification::make()
+                ->title('Could not create Sentry rule')
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
         }
     }
 
