@@ -17,7 +17,7 @@
         "bootstrap": "^5.3.8",
         "concurrently": "^9.0.1",
         "laravel-precognition-alpine": "^1.0.0",
-        "laravel-vite-plugin": "^2.0",
+        "laravel-vite-plugin": "^3.1",
         "shiki": "^3.13.0",
         "sortablejs": "^1.15.6",
         "tinymce": "^8.1.2",
