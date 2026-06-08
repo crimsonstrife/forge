@@ -41,7 +41,7 @@
         "livewire/volt": "^1.7",
         "mchev/banhammer": "^2.4",
         "meilisearch/meilisearch-php": "^1.15",
-        "metalogico/laravel-formello": "^1.2",
+        "metalogico/laravel-formello": "^2.1",
         "mews/purifier": "^3.4",
         "nesbot/carbon": "^3.10",
         "omaressaouaf/laravel-id-generator": "^1.2",
